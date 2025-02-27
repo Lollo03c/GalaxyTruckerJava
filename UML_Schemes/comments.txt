@@ -1,0 +1,2 @@
+Componenti:
+  (stef): non ho ben capito perchè hai inserito "componentType" nella superclasse se poi ogni componente che eredita ha le sue feature; secondo me Component dovrebbe essere <abstract>, mentre le sottoclassi si specializzano in base al loro tipo, senza tenere "componentType"
