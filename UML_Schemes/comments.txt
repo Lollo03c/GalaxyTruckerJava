@@ -1,3 +1,7 @@
 Componenti:
   (stef): non ho ben capito perchè hai inserito "componentType" nella superclasse se poi ogni componente che eredita ha le sue feature; secondo me Component dovrebbe essere <abstract>, mentre le sottoclassi si specializzano in base al loro tipo, senza tenere "componentType"
     (anto): tenuto un campo componentType perche i diversi componenti fanno operazioni diverse, e quindi potrebbe essere necessario dover distinguere la tipologia del componente in seguito
+
+Chiedere al Prof:  
+  - Limite personaggi umani
+  - 
