@@ -1,8 +1,6 @@
 # Compiled class file
 *.class
 
-src/
-
 # Log file
 *.log
 

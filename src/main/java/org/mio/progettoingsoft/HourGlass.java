@@ -7,4 +7,8 @@ public class HourGlass {
     public HourGlass(){
         delay = 0;
     }
+
+    public void rotate(){
+
+    }
 }

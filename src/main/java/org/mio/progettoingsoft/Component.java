@@ -28,8 +28,8 @@ public abstract class Component {
         return !comp.equals(Connector.FLAT);
     }
 
-    public void position(Direction direzione){
-        // da ruotare i connettori
+    public void rotate(Direction direzione){
+        // da ruotare i connettori e tutte le direzioni
     }
 
 

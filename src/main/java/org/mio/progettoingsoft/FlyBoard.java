@@ -1,7 +1,8 @@
-package org.mio.scheletroprogetto;
+package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.Component;
+import org.mio.progettoingsoft.HourGlass;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.components.GoodType;
 
@@ -24,6 +25,8 @@ public class FlyBoard {
     private  List<Component> uncoverdeComponents;
 
     private  Map<GoodType, Integer> remainingGoods;
+
+    private HourGlass hourGlass;
 
     public FlyBoard(){}
 
@@ -49,6 +52,10 @@ public class FlyBoard {
 
     public List<Player> getScoryBoard(){
         return new LinkedList<>();
+    }
+
+    public void playAdventureCard(){
+
     }
 
 
