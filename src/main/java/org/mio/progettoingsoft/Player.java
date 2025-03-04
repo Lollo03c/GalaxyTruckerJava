@@ -11,4 +11,27 @@ public class Player {
         this.username = username;
         shipBoard = null;
     }
+
+    public String getUsername(){
+        return username;
+    }
+
+    public ShipBoard getShipBoard(){
+        return shipBoard;
+    }
+
+    public void takeCoveredComponent(Component component){
+
+    }
+
+    public void refuseComponent(Component component){ //when not added it joins the heap as uncovered
+    }
+
+    public void discardComponent(Component comp){
+
+    }
+
+    public void bookComponent(){
+
+    }
 }

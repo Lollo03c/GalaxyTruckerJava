@@ -17,4 +17,12 @@ public class ShipBoard {
     public ShipBoard(){
 
     }
+
+    public boolean addComponentToPosition(Component component, int row, int column, int angle){
+        return false;
+    }
+
+    public void removeComponent(int row, int column){
+
+    }
 }

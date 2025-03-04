@@ -5,10 +5,7 @@ import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.components.GoodType;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Stack;
+import java.util.*;
 
 public class FlyBoard {
 //    private  HourGlass hourGlass;
@@ -22,7 +19,7 @@ public class FlyBoard {
 
     private  List<Optional<Player>> circuit;
 
-    private  List<Player> league;
+    private  List<Player> scoryBoard;
     private  Stack<Component> coveredComponents;
     private  List<Component> uncoverdeComponents;
 
@@ -30,10 +27,30 @@ public class FlyBoard {
 
     public FlyBoard(){}
 
-    public void StartGame(){}
+    public void StartGame(){
 
-    public void addGood(GoodType type, Integer quant){}
+    }
+
+    public void addGood(GoodType type, Integer quant){
+
+    }
+
     public Boolean removeGood(GoodType type, Integer quant){
         return false;
     }
+
+    public void moveRocket(Player player, int nPos){
+
+    }
+
+    public Player getPosition(int position){
+        return new Player("");
+    }
+
+    public List<Player> getScoryBoard(){
+        return new LinkedList<>();
+    }
+
+
+
 }
