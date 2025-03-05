@@ -11,27 +11,31 @@ public class Housing extends Component {
 
 //    private final Set<AlienType> aliensAllowed;
     private final Boolean isFirst;
-    private final Map<AlienType, Integer> guestedAlien;
-    private Integer guestedHuman;
+    private final Map<AlienType, Boolean> guestedAlien;
 
-    public Housing(Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.HOUSING, topConn, bottomConn, rightConn, leftConn);
+    private Integer guestedHuman;
+    private HousingColor color;
+
+    public Housing(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.HOUSING, topConn, bottomConn, rightConn, leftConn);
 
         guestedAlien = new HashMap<>();
         guestedHuman = 0;
         this.isFirst = false;
     }
 
-    public Housing(Boolean isFirst, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.HOUSING, topConn, bottomConn, rightConn, leftConn);
+    public Housing(int id, boolean isFirst, HousingColor color,  Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.HOUSING, topConn, bottomConn, rightConn, leftConn);
 
         guestedAlien = new HashMap<>();
         guestedHuman = 0;
         this.isFirst = isFirst;
+        this.color = color;
+
     }
 
     public void addAlienType(AlienType type){
-        guestedAlien.put(type, 0);
+        guestedAlien.put(type, false);
     }
 
     public Boolean canContain(AlienType type){
@@ -57,7 +61,7 @@ public class Housing extends Component {
 
     public Boolean addAlien(AlienType type){
         if (isEmpty() && guestedAlien.containsKey(type)){
-            guestedAlien.put(type, guestedAlien.get(type) + 1);
+            guestedAlien.put(type, true);
             return true;
         }
 
@@ -65,12 +69,12 @@ public class Housing extends Component {
     }
 
     public Boolean removeAlien(AlienType type){
-        return guestedAlien.replace(type, 1, 0);
+        return guestedAlien.replace(type, true, false);
     }
 
     private Boolean containsAlien(){
         for (AlienType type : guestedAlien.keySet()){
-            if (guestedAlien.get(type) > 0)
+            if (guestedAlien.get(type))
                 return true;
         }
 

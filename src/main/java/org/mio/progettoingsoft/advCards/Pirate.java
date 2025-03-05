@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.advCards;
 
-import org.mio.progettoingsoft.advcards.AdvancedEnemy;
+import org.mio.progettoingsoft.advCards.AdvancedEnemy;
 
 import java.util.List;
 

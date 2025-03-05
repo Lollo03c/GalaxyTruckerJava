@@ -3,7 +3,7 @@ module org.mio.progettoingsoft {
     requires javafx.fxml;
 
     requires org.controlsfx.controls;
-    requires java.desktop;
+    requires com.fasterxml.jackson.databind;
 
     opens org.mio.progettoingsoft to javafx.fxml;
     exports org.mio.progettoingsoft;

@@ -8,12 +8,14 @@ public class EnergyDepot extends Component {
 
     private final Boolean isTriple;
     private Integer storedQuant;
+    private Integer maxQuant;
 
-    public EnergyDepot(Boolean isTriple, Connector topConn, Connector bottomConn, org.mio.progettoingsoft.Connector rightConn, Connector leftConn) {
-        super(ComponentType.ENERGY_DEPOT, topConn, bottomConn, rightConn, leftConn);
+    public EnergyDepot(int id, Boolean isTriple, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn) {
+        super(id, ComponentType.ENERGY_DEPOT, topConn, bottomConn, rightConn, leftConn);
 
         this.isTriple = isTriple;
         storedQuant = isTriple ? 3 : 2;
+        maxQuant = isTriple ? 3 : 2;
     }
 
     public Integer getStoredQuantity(){

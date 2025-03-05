@@ -9,12 +9,14 @@ public class Drill extends Component {
 
     private Direction direction;
 
-    public Drill(Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.DRILL, topConn, bottomConn, rightConn, leftConn);
+    public Drill(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.DRILL, topConn, bottomConn, rightConn, leftConn);
+        direction = Direction.FRONT;
     }
 
-    protected Drill(ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(type, topConn, bottomConn, rightConn, leftConn);
+    protected Drill(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, type, topConn, bottomConn, rightConn, leftConn);
+        direction = Direction.FRONT;
     }
 
     public Direction getDirection(){
@@ -23,5 +25,27 @@ public class Drill extends Component {
 
     public void setDirection(Direction dir){
         this.direction = dir;
+    }
+
+    @Override
+    public void rotateClockwise(){
+        super.rotateClockwise();
+        this.direction = switch(direction){
+            case FRONT -> Direction.RIGHT;
+            case RIGHT -> Direction.BACK;
+            case BACK -> Direction.LEFT;
+            case LEFT -> Direction.FRONT;
+        };
+    }
+
+    @Override
+    public void rotateCounterClockwise(){
+        super.rotateCounterClockwise();
+        this.direction = switch(direction){
+            case FRONT -> Direction.LEFT;
+            case LEFT -> Direction.BACK;
+            case BACK -> Direction.RIGHT;
+            case RIGHT -> Direction.FRONT;
+        };
     }
 }

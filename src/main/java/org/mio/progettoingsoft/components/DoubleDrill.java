@@ -4,7 +4,7 @@ import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
 
 public class DoubleDrill extends Drill{
-    public DoubleDrill(Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.DOUBLE_DRILL, topConn, bottomConn, rightConn, leftConn);
+    public DoubleDrill(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.DOUBLE_DRILL, topConn, bottomConn, rightConn, leftConn);
     }
 }

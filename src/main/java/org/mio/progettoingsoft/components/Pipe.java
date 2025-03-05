@@ -6,7 +6,7 @@ import org.mio.progettoingsoft.Connector;
 
 public class Pipe extends Component {
 
-    public Pipe(Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.PIPE, topConn, bottomConn, rightConn, leftConn);
+    public Pipe(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.PIPE, topConn, bottomConn, rightConn, leftConn);
     }
 }

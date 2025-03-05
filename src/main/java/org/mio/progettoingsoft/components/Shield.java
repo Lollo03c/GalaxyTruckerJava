@@ -13,12 +13,15 @@ import java.util.Set;
 public class Shield extends Component {
     private Set<Direction> directions;
 
-    public Shield(Direction firstDirection, Direction secondDirection, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.SHIELD, topConn, bottomConn, rightConn, leftConn);
+    public Shield(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.SHIELD, topConn, bottomConn, rightConn, leftConn);
 
         directions = new HashSet<>(2);
-        directions.add(firstDirection);
-        directions.add(secondDirection);
+        directions.add(Direction.FRONT);
+        directions.add(Direction.RIGHT);
+    }
 
+    public Boolean isCovered(Direction dir){
+        return directions.contains(dir);
     }
 }

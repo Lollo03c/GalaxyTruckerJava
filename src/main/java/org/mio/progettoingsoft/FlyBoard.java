@@ -1,11 +1,17 @@
 package org.mio.progettoingsoft;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.HourGlass;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.*;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.*;
 
 public class FlyBoard {
@@ -21,14 +27,16 @@ public class FlyBoard {
     private  List<Optional<Player>> circuit;
 
     private  List<Player> scoryBoard;
-    private  Stack<Component> coveredComponents;
+    private final List<Component> coveredComponents;
     private  List<Component> uncoverdeComponents;
 
     private  Map<GoodType, Integer> remainingGoods;
 
     private HourGlass hourGlass;
 
-    public FlyBoard(){}
+    public FlyBoard(){
+        this.coveredComponents = new ArrayList<>();
+    }
 
     public void StartGame(){
 
@@ -58,6 +66,89 @@ public class FlyBoard {
 
     }
 
+    private void loadComponents() {
+        final int nComponents = 156;
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            JsonNode rootNode = mapper.readTree(new File("src/main/java/org/mio/progettoingsoft/components.json"));
+
+            for (int i = 0; i < nComponents; i++){
+                String type = rootNode.get(i).path("type").asText();
+                int id = rootNode.get(i).path("id").asInt();
+                Connector top = Connector.stringToConnector(rootNode.get(i).path("top").asText());
+                Connector left = Connector.stringToConnector(rootNode.get(i).path("left").asText());
+                Connector bottom = Connector.stringToConnector(rootNode.get(i).path("bottom").asText());
+                Connector right = Connector.stringToConnector(rootNode.get(i).path("right").asText());
+
+                switch (type){
+                    case "ENERGY_DEPOT":
+                    {
+                        boolean isTriple = rootNode.get(i).path("kind").asInt() == 3;
+                        this.coveredComponents.add(new EnergyDepot(id, isTriple , top, bottom, right, left));
+                    }break;
+
+                    case "DEPOT": {
+                        boolean isBig = rootNode.get(i).path("isBig").asBoolean();
+                        boolean isHazard = rootNode.get(i).path("isHazard").asBoolean();
+                        this.coveredComponents.add(new Depot(id, isBig, isHazard, top, bottom, right, left));
+                    }break;
+
+                    case "HOUSING": {
+                        boolean isFirst = rootNode.get(i).path("isFirst").asBoolean();
+                        if (isFirst) {
+                            HousingColor color = HousingColor.stringToColor(rootNode.get(i).path("color").asText());
+                            this.coveredComponents.add(new Housing(id, isFirst, color, top, bottom, right, left));
+                        } else {
+                            this.coveredComponents.add(new Housing(id, top, bottom, right, left));
+                        }
+                    }break;
+
+                    case "PIPE":
+                        this.coveredComponents.add(new Pipe(id,top,  bottom, right, left));
+                        break;
+
+                    case "ENGINE":
+                        this.coveredComponents.add(new Engine(id, top, bottom, right, left));
+                        break;
+
+                    case "DOUBLE_ENGINE":
+                        this.coveredComponents.add(new DoubleEngine(id, top, bottom, right, left));
+                        break;
+                    case "DRILL":
+                        this.coveredComponents.add(new Drill(id, top, bottom, right, left));
+                        break;
+                    case "DOUBLE_DRILL":
+                        this.coveredComponents.add(new DoubleDrill(id, top, bottom, right, left));
+                        break;
+                    case "ALIEN_HOUSING":
+                        AlienType color = AlienType.stringToAlienType(rootNode.get(i).path("color").asText());
+                        this.coveredComponents.add(new AlienHousing(id,color,top, bottom,right,left));
+                        break;
+                    case "SHIELD":
+                        this.coveredComponents.add(new Shield(id,top,bottom,right,left));
+                        break;
+                }
+
+                Collections.shuffle(coveredComponents);
+            }
+
+            //System.out.println("First type : " + type);
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static void main(String[] args) {
+        FlyBoard fly = new FlyBoard();
+        fly.loadComponents();
+
+        int a = 0;
+    }
 
 
 }

@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft;
 
+import java.util.Set;
+
 public class ShipBoard {
     private  Component[][] shipComponents;
     private  Component[] bookedComponents;
@@ -22,7 +24,8 @@ public class ShipBoard {
         return false;
     }
 
-    public void removeComponent(int row, int column){
-
+    public void removeComponent(int row, int column) {
     }
 }
+
+

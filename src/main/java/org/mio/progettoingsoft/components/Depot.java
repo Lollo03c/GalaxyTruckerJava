@@ -16,8 +16,8 @@ public class Depot extends Component {
     private final Map<GoodType, Integer> storedGoods;
 
 
-    public Depot(Boolean isBig, boolean isHazard, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn) {
-        super(ComponentType.DEPOT, topConn, bottomConn, rightConn, leftConn);
+    public Depot(int id, boolean isBig, boolean isHazard, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn) {
+        super(id, ComponentType.DEPOT, topConn, bottomConn, rightConn, leftConn);
         this.isBig = isBig;
         this.isHazard = isHazard;
 

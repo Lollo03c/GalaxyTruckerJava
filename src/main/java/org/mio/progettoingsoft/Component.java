@@ -1,15 +1,18 @@
 package org.mio.progettoingsoft;
 
 public abstract class Component {
-    private final Connector topConnector, bottomConnector, rightConnector, leftConnector;
+    private Connector topConnector, bottomConnector, rightConnector, leftConnector;
     private final ComponentType type;
+    
+    private final int id;
 
-    protected Component(ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+    protected Component(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         topConnector = topConn;
         bottomConnector = bottomConn;
         rightConnector = rightConn;
         leftConnector = leftConn;
-
+        this.id = id;
+        
         this.type = type;
     }
 
@@ -28,8 +31,22 @@ public abstract class Component {
         return !comp.equals(Connector.FLAT);
     }
 
-    public void rotate(Direction direzione){
-        // da ruotare i connettori e tutte le direzioni
+    // the two "rotate" methods move the components in the selected order (clockwise or no)
+    // then it should change the "pointing direction" of the component
+    public void rotateClockwise(){
+        Connector tmp = this.topConnector;
+        this.topConnector = this.leftConnector;
+        this.leftConnector = this.bottomConnector;
+        this.bottomConnector = this.rightConnector;
+        this.rightConnector = tmp;
+    }
+
+    public void rotateCounterClockwise(){
+        Connector tmp = this.topConnector;
+        this.topConnector = this.rightConnector;
+        this.rightConnector = this.bottomConnector;
+        this.bottomConnector = this.leftConnector;
+        this.leftConnector = tmp;
     }
 
 

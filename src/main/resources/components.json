@@ -1,0 +1,1473 @@
+[
+  {
+    "id" : "1",
+    "type" : "ENERGY_DEPOT",
+    "top" : "triple",
+    "left" : "flat",
+    "bottom" : "double",
+    "right" : "single",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "2",
+    "type" : "ENERGY_DEPOT",
+    "top" : "triple",
+    "left" : "flat",
+    "bottom" : "flat",
+    "right" : "double",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "3",
+    "type" : "ENERGY_DEPOT",
+    "top" : "triple",
+    "left" : "flat",
+    "bottom" : "single",
+    "right" : "double",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "4",
+    "type" : "ENERGY_DEPOT",
+    "top" : "double",
+    "left" : "single",
+    "bottom" : "double",
+    "right" : "single",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "5",
+    "type" : "ENERGY_DEPOT",
+    "top" : "triple",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "6",
+    "type" : "ENERGY_DEPOT",
+    "top" : "triple",
+    "left" : "single",
+    "bottom" : "single",
+    "right" : "single",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "7",
+    "type" : "ENERGY_DEPOT",
+    "top" : "triple",
+    "left" : "double",
+    "bottom" : "double",
+    "right" : "double",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "8",
+    "type" : "ENERGY_DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "9",
+    "type" : "ENERGY_DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "10",
+    "type" : "ENERGY_DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "triple",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "11",
+    "type" : "ENERGY_DEPOT",
+    "top" : "triple",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "kind" : "2"
+  },
+  {
+    "id" : "12",
+    "type" : "ENERGY_DEPOT",
+    "top" : "single",
+    "left" : "flat",
+    "bottom" : "double",
+    "right" : "flat",
+
+    "kind" : "3"
+  },
+  {
+    "id" : "13",
+    "type" : "ENERGY_DEPOT",
+    "top" : "single",
+    "left" : "flat",
+    "bottom" : "double",
+    "right" : "single",
+
+    "kind" : "3"
+  },
+  {
+    "id" : "14",
+    "type" : "ENERGY_DEPOT",
+    "top" : "double",
+    "left" : "flat",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "kind" : "3"
+  },
+  {
+    "id" : "15",
+    "type" : "ENERGY_DEPOT",
+    "top" : "double",
+    "left" : "flat",
+    "bottom" : "flat",
+    "right" : "single",
+
+    "kind" : "3"
+  },
+  {
+    "id" : "16",
+    "type" : "ENERGY_DEPOT",
+    "top" : "double",
+    "left" : "flat",
+    "bottom" : "single",
+    "right" : "double",
+
+    "kind" : "3"
+  },
+  {
+    "id" : "17",
+    "type" : "ENERGY_DEPOT",
+    "top" : "flat",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "kind" : "3"
+  },
+  {
+    "id" : "18",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "flat",
+    "bottom" : "triple",
+    "right" :  "single",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "19",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "single",
+    "bottom" : "triple",
+    "right" :  "single",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "20",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" :  "triple",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "21",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "22",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "23",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "single",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "24",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "double",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "25",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" :  "single",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "26",
+    "type" : "DEPOT",
+    "top" : "triple",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "false",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "27",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "28",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "29",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "double",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "30",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "flat",
+    "bottom" : "double",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "31",
+    "type" : "DEPOT",
+    "top" : "single",
+    "left" : "single",
+    "bottom" : "double",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "32",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "double",
+    "bottom" : "single",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "false"
+  },
+  {
+    "id" : "33",
+    "type" : "HOUSING",
+    "top" : "triple",
+    "right" : "triple",
+    "bottom" : "triple",
+    "left" : "triple",
+    "isFirst" : "1",
+    "color" : "blue"
+  },
+  {
+    "id" : "34",
+    "type" : "HOUSING",
+    "top" : "triple",
+    "right" : "triple",
+    "bottom" : "triple",
+    "left" : "triple",
+    "isFirst" : "1",
+    "color" : "green"
+  },
+  {
+    "id" : "35",
+    "type" : "HOUSING",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "triple",
+    "left" : "single",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "36",
+    "type" : "HOUSING",
+    "top" : "single",
+    "right" : "double",
+    "bottom" : "single",
+    "left" : "single",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "37",
+    "type" : "HOUSING",
+    "top" : "single",
+    "right" : "double",
+    "bottom" : "double",
+    "left" : "single",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "38",
+    "type" : "HOUSING",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "single",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "39",
+    "type" : "HOUSING",
+    "top" : "double",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "single",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "40",
+    "type" : "HOUSING",
+    "top" : "double",
+    "right" : "single",
+    "bottom" : "double",
+    "left" : "single",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "41",
+    "type" : "HOUSING",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "triple",
+    "left" : "double",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "42",
+    "type" : "HOUSING",
+    "top" : "single",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "double",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "43",
+    "type" : "HOUSING",
+    "top" : "double",
+    "right" : "single",
+    "bottom" : "double",
+    "left" : "double",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "44",
+    "type" : "HOUSING",
+    "top" : "triple",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "double",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "45",
+    "type" : "HOUSING",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "triple",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "46",
+    "type" : "HOUSING",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "single",
+    "left" : "triple",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "47",
+    "type" : "HOUSING",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "triple",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "48",
+    "type" : "HOUSING",
+    "top" : "single",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "triple",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "49",
+    "type" : "HOUSING",
+    "top" : "single",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "triple",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "50",
+    "type" : "HOUSING",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "triple",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "51",
+    "type" : "HOUSING",
+    "top" : "double",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "triple",
+    "isFirst" : "0"
+  },
+  {
+    "id" : "52",
+    "type" : "HOUSING",
+    "top" : "triple",
+    "right" : "triple",
+    "bottom" : "triple",
+    "left" : "triple",
+    "isFirst" : "1",
+    "color" : "red"
+  },
+  {
+    "id" : "53",
+    "type" : "PIPE",
+    "top" : "triple",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "single"
+  },
+  {
+    "id" : "54",
+    "type" : "PIPE",
+    "top" : "single",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "triple"
+  },
+  {
+    "id" : "55",
+    "type" : "PIPE",
+    "top" : "single",
+    "left" : "triple",
+    "bottom" : "single",
+    "right" :  "triple"
+  },
+  {
+    "id" : "56",
+    "type" : "PIPE",
+    "top" : "single",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" :  "triple"
+  },
+  {
+    "id" : "57",
+    "type" : "PIPE",
+    "top" : "double",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "triple"
+  },
+  {
+    "id" : "58",
+    "type" : "PIPE",
+    "top" : "triple",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" :  "single"
+  },
+  {
+    "id" : "59",
+    "type" : "PIPE",
+    "top" : "triple",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "double"
+  },
+  {
+    "id" : "60",
+    "type" : "PIPE",
+    "top" : "triple",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" :  "double"
+  },
+  {
+    "id" : "61",
+    "type" : "HOUSING",
+    "top" : "triple",
+    "right" : "triple",
+    "bottom" : "triple",
+    "left" : "triple",
+    "isFirst" : "1",
+    "color" : "yellow"
+  },
+
+  {
+    "id" : "62",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "single",
+    "right" :  "double",
+
+    "isBig" : "false",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "63",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "triple",
+
+    "isBig" : "false",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "64",
+    "type" : "DEPOT",
+    "top" : "single",
+    "left" : "triple",
+    "bottom" : "single",
+    "right" :  "single",
+
+    "isBig" : "false",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "65",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "single",
+
+    "isBig" : "false",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "66",
+    "type" : "DEPOT",
+    "top" : "double",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" :  "double",
+
+    "isBig" : "false",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "67",
+    "type" : "DEPOT",
+    "top" : "triple",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "false",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "68",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "69",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" :  "double",
+
+    "isBig" : "true",
+    "isHazard" : "true"
+  },
+
+  {
+    "id" : "70",
+    "type" : "DEPOT",
+    "top" : "flat",
+    "left" : "double",
+    "bottom" : "flat",
+    "right" :  "flat",
+
+    "isBig" : "true",
+    "isHazard" : "true"
+  },
+  {
+    "id" : "71",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "72",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "73",
+    "type" : "ENGINE",
+    "top" : "single",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "74",
+    "type" : "ENGINE",
+    "top" : "single",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "75",
+    "type" : "ENGINE",
+    "top" : "single",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "76",
+    "type" : "ENGINE",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "77",
+    "type" : "ENGINE",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "78",
+    "type" : "ENGINE",
+    "top" : "double",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "79",
+    "type" : "ENGINE",
+    "top" : "triple",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "80",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "81",
+    "type" : "ENGINE",
+    "top" : "double",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "82",
+    "type" : "ENGINE",
+    "top" : "triple",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "83",
+    "type" : "ENGINE",
+    "top" : "triple",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "84",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "85",
+    "type" : "ENGINE",
+    "top" : "single",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "86",
+    "type" : "ENGINE",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "87",
+    "type" : "ENGINE",
+    "top" : "triple",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "88",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "89",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "90",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "91",
+    "type" : "ENGINE",
+    "top" : "single",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "92",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "single",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "93",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "single",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "94",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+{
+    "id" : "95",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "triple",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "96",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "single",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "97",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "double",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "98",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "triple",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "99",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "100",
+    "type" : "DOUBLE_ENGINE",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "101",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "102",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "103",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "104",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "105",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "106",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "double",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "107",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "triple",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "108",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "109",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "single",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "110",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "triple",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "111",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "single",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "112",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "113",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "114",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "triple",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "115",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "single",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "116",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "triple",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "117",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "118",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "119",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "120",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "triple",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "121",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "122",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "triple",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "123",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "double",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "124",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "125",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "126",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "127",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "128",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "triple",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "129",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "130",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "double",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "131",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "double",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "132",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "single",
+    "kind" : ""
+  },
+  {
+    "id" : "133",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "triple",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "134",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "single",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "135",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "136",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "137",
+    "type" : "ALIEN_HOUSING",
+    "top" : "single",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" : "single",
+
+    "color" : "brown"
+  },
+  {
+    "id" : "138",
+    "type" : "ALIEN_HOUSING",
+    "top" : "double",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" : "single",
+
+    "color" : "brown"
+  },
+  {
+    "id" : "139",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "color" : "brown"
+  },
+  {
+    "id" : "140",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "single",
+    "right" : "flat",
+
+    "color" : "brown"
+  },
+  {
+    "id" : "141",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "double",
+
+    "color" : "brown"
+  },
+  {
+    "id" : "142",
+    "type" : "ALIEN_HOUSING",
+    "top" : "single",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "color" : "brown"
+  },
+  {
+    "id" : "143",
+    "type" : "ALIEN_HOUSING",
+    "top" : "single",
+    "left" : "double",
+    "bottom" : "flat",
+    "right" : "double",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "144",
+    "type" : "ALIEN_HOUSING",
+    "top" : "double",
+    "left" : "double",
+    "bottom" : "flat",
+    "right" : "double",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "145",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "146",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" : "flat",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "147",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "single",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "148",
+    "type" : "ALIEN_HOUSING",
+    "top" : "double",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "149",
+    "type" : "SHIELD",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "triple",
+    "left" : "single"
+  },
+  {
+    "id" : "150",
+    "type" : "SHIELD",
+    "top" : "single",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "single"
+  },
+  {
+    "id" : "151",
+    "type" : "SHIELD",
+    "top" : "double",
+    "right" : "single",
+    "bottom" : "double",
+    "left" : "single"
+  },
+  {
+    "id" : "152",
+    "type" : "SHIELD",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "triple",
+    "left" : "double"
+  },
+  {
+    "id" : "153",
+    "type" : "SHIELD",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "double",
+    "left" : "double"
+  },
+  {
+    "id" : "154",
+    "type" : "SHIELD",
+    "top" : "single",
+    "right" : "double",
+    "bottom" : "single",
+    "left" : "double"
+  },
+  {
+    "id" : "155",
+    "type" : "SHIELD",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "single",
+    "left" : "triple"
+  },
+  {
+    "id" : "156",
+    "type" : "SHIELD",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "double",
+    "left" : "triple"
+  }
+]

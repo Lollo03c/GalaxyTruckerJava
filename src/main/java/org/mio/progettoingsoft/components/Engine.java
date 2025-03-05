@@ -9,21 +9,41 @@ public class Engine extends Component {
 
     private Direction direction;
 
-    public Engine(Direction direction, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.ENGINE, topConn, bottomConn, rightConn, leftConn);
+    public Engine(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.ENGINE, topConn, bottomConn, rightConn, leftConn);
 
-        this.direction = direction;
+        this.direction = Direction.BACK;
     }
 
-    protected Engine(ComponentType type, Direction direction, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(ComponentType.ENGINE, topConn, bottomConn, rightConn, leftConn);
+    protected Engine(int id, ComponentType type,Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        super(id, ComponentType.ENGINE, topConn, bottomConn, rightConn, leftConn);
 
-        this.direction = direction;
+        this.direction = Direction.BACK;
     }
 
     public void setDirection(Direction dir){
         direction = dir;
     }
 
+    @Override
+    public void rotateClockwise(){
+        super.rotateClockwise();
+        this.direction = switch(direction){
+            case FRONT -> Direction.RIGHT;
+            case RIGHT -> Direction.BACK;
+            case BACK -> Direction.LEFT;
+            case LEFT -> Direction.FRONT;
+        };
+    }
 
+    @Override
+    public void rotateCounterClockwise(){
+        super.rotateCounterClockwise();
+        this.direction = switch(direction){
+            case FRONT -> Direction.LEFT;
+            case LEFT -> Direction.BACK;
+            case BACK -> Direction.RIGHT;
+            case RIGHT -> Direction.FRONT;
+        };
+    }
 }

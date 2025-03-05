@@ -12,6 +12,8 @@ public class Player {
     private Integer discardedComponents;
     private Map<GoodType, Integer> goods;
 
+    private Component inHand;
+
     public Player(String username) {
         this.username = username;
         shipBoard = null;
