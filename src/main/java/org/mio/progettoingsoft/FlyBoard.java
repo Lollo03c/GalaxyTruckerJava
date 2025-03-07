@@ -74,7 +74,7 @@ public class FlyBoard {
         try {
             JsonNode rootNode = mapper.readTree(new File("src/main/java/org/mio/progettoingsoft/components.json"));
 
-            for (int i = 0; i < nComponents; i++){
+            for (int i = 0; i < nComponents; i++) {
                 String type = rootNode.get(i).path("type").asText();
                 int id = rootNode.get(i).path("id").asInt();
                 Connector top = Connector.stringToConnector(rootNode.get(i).path("top").asText());
@@ -82,25 +82,27 @@ public class FlyBoard {
                 Connector bottom = Connector.stringToConnector(rootNode.get(i).path("bottom").asText());
                 Connector right = Connector.stringToConnector(rootNode.get(i).path("right").asText());
 
-                switch (type){
-                    case "ENERGY_DEPOT":
-                    {
+                switch (type) {
+                    case "ENERGY_DEPOT": {
                         boolean isTriple = rootNode.get(i).path("kind").asInt() == 3;
-                        this.coveredComponents.add(new EnergyDepot(id, isTriple , top, bottom, right, left));
-                    }break;
+                        this.coveredComponents.add(new EnergyDepot(id, isTriple, top, bottom, right, left));
+                    }
+                    break;
 
                     case "DEPOT": {
                         boolean isBig = rootNode.get(i).path("isBig").asBoolean();
                         boolean isHazard = rootNode.get(i).path("isHazard").asBoolean();
                         this.coveredComponents.add(new Depot(id, isBig, isHazard, top, bottom, right, left));
-                    }break;
+                    }
+                    break;
 
                     case "HOUSING": {
                         this.coveredComponents.add(new Housing(id, top, bottom, right, left));
-                    }break;
+                    }
+                    break;
 
                     case "PIPE":
-                        this.coveredComponents.add(new Pipe(id,top,  bottom, right, left));
+                        this.coveredComponents.add(new Pipe(id, top, bottom, right, left));
                         break;
 
                     case "ENGINE":
@@ -118,10 +120,10 @@ public class FlyBoard {
                         break;
                     case "ALIEN_HOUSING":
                         AlienType color = AlienType.stringToAlienType(rootNode.get(i).path("color").asText());
-                        this.coveredComponents.add(new AlienHousing(id,color,top, bottom,right,left));
+                        this.coveredComponents.add(new AlienHousing(id, color, top, bottom, right, left));
                         break;
                     case "SHIELD":
-                        this.coveredComponents.add(new Shield(id,top,bottom,right,left));
+                        this.coveredComponents.add(new Shield(id, top, bottom, right, left));
                         break;
                 }
 
@@ -130,19 +132,10 @@ public class FlyBoard {
 
             //System.out.println("First type : " + type);
 
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
 
     }
-
-    public static void main(String[] args) {
-        FlyBoard fly = new FlyBoard();
-        fly.loadComponents();
-
-q        int a = 0;
-    }
-
-
 }
