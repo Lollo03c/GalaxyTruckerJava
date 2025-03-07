@@ -36,7 +36,20 @@ public class FlyBoard {
 
     public FlyBoard(){
         this.coveredComponents = new ArrayList<>();
+        this.scoryBoard = new ArrayList<>();
         loadComponents();
+    }
+
+    public Boolean addPlayer(String username){
+        boolean toAdd =scoryBoard.stream().noneMatch(player -> player.getUsername().equals(username))
+                && scoryBoard.size() < 4;
+
+        if (toAdd){
+            scoryBoard.add(new Player(username));
+            return true;
+        }
+
+        return false;
     }
 
     public void StartGame(){
@@ -60,7 +73,7 @@ public class FlyBoard {
     }
 
     public List<Player> getScoryBoard(){
-        return new LinkedList<>();
+        return scoryBoard;
     }
 
     public void playAdventureCard(){

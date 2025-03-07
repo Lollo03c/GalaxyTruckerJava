@@ -5,6 +5,9 @@ import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.Depot;
 import org.mio.progettoingsoft.components.EnergyDepot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class FlyBoardTest {
@@ -222,6 +225,35 @@ class FlyBoardTest {
         assertEquals(8, fly.getCoveredComponents().stream()
                 .filter(component -> component.getType().equals(ComponentType.SHIELD))
                 .count()
+        );
+    }
+
+    @Test
+    void shuold_create_4_players(){
+        List<String> users = new ArrayList<>(4);
+        users.add("Antonio");
+        users.add("Lorenzo");
+        users.add("Andrea");
+        users.add("Stefano");
+
+        FlyBoard fly = new FlyBoard();
+
+        fly.addPlayer(users.get(0));
+        fly.addPlayer(users.get(0));
+        fly.addPlayer(users.get(1));
+        fly.addPlayer(users.get(2));
+        fly.addPlayer(users.get(3));
+        fly.addPlayer(users.get(3));
+        fly.addPlayer("Sbagliato");
+
+        assertEquals(4, fly.getScoryBoard().size());
+        for (String user : users){
+            assertTrue(fly.getScoryBoard().stream().anyMatch(
+                    player -> player.getUsername().equals(user)
+            ));
+        }
+        assertFalse(fly.getScoryBoard().stream()
+                .anyMatch(player -> player.getUsername().equals("Sbagliato"))
         );
     }
 
