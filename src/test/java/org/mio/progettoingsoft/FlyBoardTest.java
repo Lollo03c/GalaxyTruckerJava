@@ -10,10 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class FlyBoardTest {
 
     @Test
-    void should_construct_153_components(){
+    void should_construct_152_components(){
         FlyBoard flyBoard = new FlyBoard();
 
-        flyBoard.loadComponents();
         int loadedComponents = flyBoard.getCoveredComponents().size();
 
         assertEquals(152, loadedComponents);
@@ -23,7 +22,6 @@ class FlyBoardTest {
     void should_load_11_double_batteries(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
         int count = 0;
         for (Component comp : fly.getCoveredComponents()){
             if (comp.getEnergyQuantity() == 2)
@@ -37,7 +35,7 @@ class FlyBoardTest {
     void should_load_6_double_batteries(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
         for (Component comp : fly.getCoveredComponents()){
             if (comp.getEnergyQuantity() == 3)
@@ -51,7 +49,7 @@ class FlyBoardTest {
     void should_load_9_simple_depot(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(9, fly.getCoveredComponents().stream()
@@ -66,7 +64,7 @@ class FlyBoardTest {
     void should_load_9_triple_depot(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(6, fly.getCoveredComponents().stream()
@@ -81,7 +79,7 @@ class FlyBoardTest {
     void should_load_17_housing(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(17, fly.getCoveredComponents().stream()
@@ -94,7 +92,7 @@ class FlyBoardTest {
     void should_load_8_pipe(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(8, fly.getCoveredComponents().stream()
@@ -107,7 +105,7 @@ class FlyBoardTest {
     void should_load_6_hazard_single_depot(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(6, fly.getCoveredComponents().stream()
@@ -122,7 +120,7 @@ class FlyBoardTest {
     void should_load_3_hazard_double_depot(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(3, fly.getCoveredComponents().stream()
@@ -137,7 +135,7 @@ class FlyBoardTest {
     void should_load_21_engine(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(21, fly.getCoveredComponents().stream()
@@ -150,7 +148,7 @@ class FlyBoardTest {
     void should_load_9_double_engine(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(9, fly.getCoveredComponents().stream()
@@ -163,7 +161,7 @@ class FlyBoardTest {
     void should_load_25_drill(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(25, fly.getCoveredComponents().stream()
@@ -176,7 +174,7 @@ class FlyBoardTest {
     void should_load_11_double_drill(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(11, fly.getCoveredComponents().stream()
@@ -189,7 +187,7 @@ class FlyBoardTest {
     void should_load_6_brown_alien_housing(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(6, fly.getCoveredComponents().stream()
@@ -204,7 +202,7 @@ class FlyBoardTest {
     void should_load_6_purple_alien_housing(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(6, fly.getCoveredComponents().stream()
@@ -218,7 +216,7 @@ class FlyBoardTest {
     void should_load_8_shield(){
         FlyBoard fly = new FlyBoard();
 
-        fly.loadComponents();
+        
         int count = 0;
 
         assertEquals(8, fly.getCoveredComponents().stream()

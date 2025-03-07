@@ -41,6 +41,9 @@ public class FlyBoard {
 
     public FlyBoard(){
         this.coveredComponents = new ArrayList<>();
+
+        loadComponents();
+
     }
 
     public void StartGame(){
@@ -72,7 +75,6 @@ public class FlyBoard {
     }
 
     public void loadComponents() {
-
 
         ObjectMapper mapper = new ObjectMapper();
 
