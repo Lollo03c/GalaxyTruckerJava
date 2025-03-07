@@ -27,11 +27,6 @@ public class FlyBoard {
     private  List<Optional<Player>> circuit;
 
     private  List<Player> scoryBoard;
-
-    public List<Component> getCoveredComponents() {
-        return coveredComponents;
-    }
-
     private final List<Component> coveredComponents;
     private  List<Component> uncoverdeComponents;
 
@@ -41,9 +36,6 @@ public class FlyBoard {
 
     public FlyBoard(){
         this.coveredComponents = new ArrayList<>();
-
-        loadComponents();
-
     }
 
     public void StartGame(){
@@ -75,12 +67,12 @@ public class FlyBoard {
     }
 
     public void loadComponents() {
+        final int nComponents = 156;
 
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            JsonNode rootNode = mapper.readTree(new File("src/main/resources/components.json"));
-            final int nComponents = rootNode.size();
+            JsonNode rootNode = mapper.readTree(new File("src/main/java/org/mio/progettoingsoft/components.json"));
 
             for (int i = 0; i < nComponents; i++){
                 String type = rootNode.get(i).path("type").asText();
@@ -89,10 +81,6 @@ public class FlyBoard {
                 Connector left = Connector.stringToConnector(rootNode.get(i).path("left").asText());
                 Connector bottom = Connector.stringToConnector(rootNode.get(i).path("bottom").asText());
                 Connector right = Connector.stringToConnector(rootNode.get(i).path("right").asText());
-
-                if (id == 34){
-                    int b = 0;
-                }
 
                 switch (type){
                     case "ENERGY_DEPOT":
@@ -140,10 +128,21 @@ public class FlyBoard {
                 Collections.shuffle(coveredComponents);
             }
 
+            //System.out.println("First type : " + type);
+
         } catch (IOException e){
             e.printStackTrace();
         }
 
 
     }
+
+    public static void main(String[] args) {
+        FlyBoard fly = new FlyBoard();
+        fly.loadComponents();
+
+q        int a = 0;
+    }
+
+
 }

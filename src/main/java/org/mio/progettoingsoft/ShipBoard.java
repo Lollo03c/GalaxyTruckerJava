@@ -5,7 +5,7 @@ import org.mio.progettoingsoft.components.GraveYard;
 import java.util.Set;
 
 public class ShipBoard {
-    private  Component[][] shipComponents;
+    private final Component[][] shipComponents;
     private  Component[] bookedComponents;
     private  int exposedConnectors;
     private  int maxEnergy;
@@ -32,7 +32,7 @@ public class ShipBoard {
 
     }
 
-    public boolean addComponentToPosition(Component component, int row, int column, int angle){
+    public boolean addComponentToPosition(Component component, int row, int column){
         if (shipComponents[row][column] == null){
             shipComponents[row][column] = component;
             return true;
