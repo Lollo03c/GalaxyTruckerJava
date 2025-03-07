@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.GraveYard;
+
 import java.util.Set;
 
 public class ShipBoard {
@@ -16,11 +18,25 @@ public class ShipBoard {
     private  int numAstronauts;
     private  boolean completedBuild;
 
+
     public ShipBoard(){
+        shipComponents = new Component[5][7];
+        shipComponents[0][0] = new GraveYard();
+        shipComponents[0][1] = new GraveYard();
+        shipComponents[0][3] = new GraveYard();
+
+        shipComponents[1][0] = new GraveYard();
+        shipComponents[1][6] = new GraveYard();
+
+        shipComponents[4][3] = new GraveYard();
 
     }
 
     public boolean addComponentToPosition(Component component, int row, int column, int angle){
+        if (shipComponents[row][column] == null){
+            shipComponents[row][column] = component;
+            return true;
+        }
         return false;
     }
 

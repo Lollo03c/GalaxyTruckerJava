@@ -341,8 +341,6 @@
     "right" : "triple",
     "bottom" : "triple",
     "left" : "triple",
-    "isFirst" : "1",
-    "color" : "blue"
   },
   {
     "id" : "34",
@@ -351,8 +349,6 @@
     "right" : "triple",
     "bottom" : "triple",
     "left" : "triple",
-    "isFirst" : "1",
-    "color" : "green"
   },
   {
     "id" : "35",
@@ -360,8 +356,7 @@
     "top" : "flat",
     "right" : "flat",
     "bottom" : "triple",
-    "left" : "single",
-    "isFirst" : "0"
+    "left" : "single"
   },
   {
     "id" : "36",
@@ -369,8 +364,7 @@
     "top" : "single",
     "right" : "double",
     "bottom" : "single",
-    "left" : "single",
-    "isFirst" : "0"
+    "left" : "single"
   },
   {
     "id" : "37",
@@ -378,8 +372,7 @@
     "top" : "single",
     "right" : "double",
     "bottom" : "double",
-    "left" : "single",
-    "isFirst" : "0"
+    "left" : "single"
   },
   {
     "id" : "38",
@@ -387,8 +380,7 @@
     "top" : "double",
     "right" : "flat",
     "bottom" : "flat",
-    "left" : "single",
-    "isFirst" : "0"
+    "left" : "single"
   },
   {
     "id" : "39",
@@ -396,8 +388,7 @@
     "top" : "double",
     "right" : "single",
     "bottom" : "flat",
-    "left" : "single",
-    "isFirst" : "0"
+    "left" : "single"
   },
   {
     "id" : "40",
@@ -405,8 +396,7 @@
     "top" : "double",
     "right" : "single",
     "bottom" : "double",
-    "left" : "single",
-    "isFirst" : "0"
+    "left" : "single"
   },
   {
     "id" : "41",
@@ -414,8 +404,7 @@
     "top" : "flat",
     "right" : "single",
     "bottom" : "triple",
-    "left" : "double",
-    "isFirst" : "0"
+    "left" : "double"
   },
   {
     "id" : "42",
@@ -423,8 +412,7 @@
     "top" : "single",
     "right" : "double",
     "bottom" : "flat",
-    "left" : "double",
-    "isFirst" : "0"
+    "left" : "double"
   },
   {
     "id" : "43",
@@ -432,8 +420,7 @@
     "top" : "double",
     "right" : "single",
     "bottom" : "double",
-    "left" : "double",
-    "isFirst" : "0"
+    "left" : "double"
   },
   {
     "id" : "44",
@@ -442,7 +429,6 @@
     "right" : "flat",
     "bottom" : "flat",
     "left" : "double",
-    "isFirst" : "0"
   },
   {
     "id" : "45",
@@ -450,8 +436,7 @@
     "top" : "flat",
     "right" : "single",
     "bottom" : "flat",
-    "left" : "triple",
-    "isFirst" : "0"
+    "left" : "triple"
   },
   {
     "id" : "46",
@@ -459,8 +444,7 @@
     "top" : "flat",
     "right" : "single",
     "bottom" : "single",
-    "left" : "triple",
-    "isFirst" : "0"
+    "left" : "triple"
   },
   {
     "id" : "47",
@@ -468,8 +452,7 @@
     "top" : "flat",
     "right" : "double",
     "bottom" : "flat",
-    "left" : "triple",
-    "isFirst" : "0"
+    "left" : "triple"
   },
   {
     "id" : "48",
@@ -477,8 +460,7 @@
     "top" : "single",
     "right" : "flat",
     "bottom" : "single",
-    "left" : "triple",
-    "isFirst" : "0"
+    "left" : "triple"
   },
   {
     "id" : "49",
@@ -486,8 +468,7 @@
     "top" : "single",
     "right" : "flat",
     "bottom" : "double",
-    "left" : "triple",
-    "isFirst" : "0"
+    "left" : "triple"
   },
   {
     "id" : "50",
@@ -495,8 +476,7 @@
     "top" : "double",
     "right" : "flat",
     "bottom" : "double",
-    "left" : "triple",
-    "isFirst" : "0"
+    "left" : "triple"
   },
   {
     "id" : "51",
@@ -504,8 +484,7 @@
     "top" : "double",
     "right" : "double",
     "bottom" : "flat",
-    "left" : "triple",
-    "isFirst" : "0"
+    "left" : "triple"
   },
   {
     "id" : "52",
@@ -513,9 +492,7 @@
     "top" : "triple",
     "right" : "triple",
     "bottom" : "triple",
-    "left" : "triple",
-    "isFirst" : "1",
-    "color" : "red"
+    "left" : "triple"
   },
   {
     "id" : "53",

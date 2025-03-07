@@ -66,7 +66,7 @@ public class FlyBoard {
 
     }
 
-    private void loadComponents() {
+    public void loadComponents() {
         final int nComponents = 156;
 
         ObjectMapper mapper = new ObjectMapper();
@@ -96,13 +96,7 @@ public class FlyBoard {
                     }break;
 
                     case "HOUSING": {
-                        boolean isFirst = rootNode.get(i).path("isFirst").asBoolean();
-                        if (isFirst) {
-                            HousingColor color = HousingColor.stringToColor(rootNode.get(i).path("color").asText());
-                            this.coveredComponents.add(new Housing(id, isFirst, color, top, bottom, right, left));
-                        } else {
-                            this.coveredComponents.add(new Housing(id, top, bottom, right, left));
-                        }
+                        this.coveredComponents.add(new Housing(id, top, bottom, right, left));
                     }break;
 
                     case "PIPE":
@@ -147,7 +141,7 @@ public class FlyBoard {
         FlyBoard fly = new FlyBoard();
         fly.loadComponents();
 
-        int a = 0;
+q        int a = 0;
     }
 
 

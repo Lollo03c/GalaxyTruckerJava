@@ -8,7 +8,9 @@ public class Player {
 
     private final String username;
     private Integer credits;
-    private final ShipBoard shipBoard;
+
+    private ShipBoard shipBoard;
+
     private Integer discardedComponents;
     private Map<GoodType, Integer> goods;
 
@@ -34,8 +36,9 @@ public class Player {
     public void refuseComponent(Component component) { //when not added it joins the heap as uncovered
     }
 
-    public void discardComponent(Component comp) {
-
+    public void discardComponent(int row, int column) {
+//        shipBoard.get(row, column) = null;
+        discardedComponents++;
     }
 
     public void bookComponent() {
@@ -48,6 +51,14 @@ public class Player {
 
     public void addCredits(int quantity) {
         credits += quantity;
+    }
+    public boolean removeCredits(int quantity) {
+        if (credits >= quantity){
+            credits -= quantity;
+            return true;
+        }
+
+        return false;
     }
 
     public Integer getGoods(GoodType type) {
@@ -72,5 +83,14 @@ public class Player {
 
     public void rotateHourGlass(){
 
+    }
+
+    //rotazione orario
+    public void addCompoment(Component comp, int row, int column, int rotations){
+        for (int i = 0; i < rotations; i++){
+            comp.rotateClockwise();
+        }
+
+       // shipBoard.addComponentToPosition(comp, row, column);
     }
 }
