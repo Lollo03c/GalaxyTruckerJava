@@ -18,7 +18,9 @@ public class Player {
 
     public Player(String username) {
         this.username = username;
-        shipBoard = null;
+        shipBoard = new ShipBoard();
+// bisogna aggiungere i colori della cabina principale: avevamo deciso di rimuoverli dal json dato che
+//non sono carte che si possono pescare e posizionare. Mettiamo un attr in ShipBoard?
     }
 
     public String getUsername() {
@@ -87,10 +89,13 @@ public class Player {
 
     //rotazione orario
     public void addCompoment(Component comp, int row, int column, int rotations){
+// DOMANDA : Dove il giocatore sceglie quante volte girare il componente?
         for (int i = 0; i < rotations; i++){
             comp.rotateClockwise();
         }
+//secondo me potremmo mettere il metodo void e non fare il controllo con l'if
+        if(!shipBoard.addComponentToPosition(comp, row, column))
+            System.out.println("Occupied cell");
 
-       // shipBoard.addComponentToPosition(comp, row, column);
     }
 }

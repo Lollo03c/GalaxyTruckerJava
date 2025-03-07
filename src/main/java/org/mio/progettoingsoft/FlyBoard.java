@@ -141,7 +141,7 @@ public class FlyBoard {
         FlyBoard fly = new FlyBoard();
         fly.loadComponents();
 
-q        int a = 0;
+       int a = 0;
     }
 
 
