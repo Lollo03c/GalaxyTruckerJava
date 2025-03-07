@@ -135,10 +135,8 @@ public class FlyBoard {
                         break;
                 }
 
-//                Collections.shuffle(coveredComponents);
+                Collections.shuffle(coveredComponents);
             }
-
-            //System.out.println("First type : " + type);
 
         } catch (IOException e){
             e.printStackTrace();
@@ -146,13 +144,4 @@ public class FlyBoard {
 
 
     }
-
-    public static void main(String[] args) {
-        FlyBoard fly = new FlyBoard();
-        fly.loadComponents();
-
-        int a = 0;
-    }
-
-
 }

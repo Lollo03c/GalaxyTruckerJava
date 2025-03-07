@@ -16,7 +16,7 @@ public class Engine extends Component {
     }
 
     protected Engine(int id, ComponentType type,Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
-        super(id, ComponentType.ENGINE, topConn, bottomConn, rightConn, leftConn);
+        super(id, type, topConn, bottomConn, rightConn, leftConn);
 
         this.direction = Direction.BACK;
     }

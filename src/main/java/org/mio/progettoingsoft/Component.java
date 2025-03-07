@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
 import javax.swing.text.StyledEditorKit;
@@ -59,6 +60,10 @@ public abstract class Component {
 
     public Boolean addGood(GoodType type){
         return false;
+    }
+
+    public AlienType getColorAlien(){
+        return AlienType.NOALIEAN;
     }
 
 

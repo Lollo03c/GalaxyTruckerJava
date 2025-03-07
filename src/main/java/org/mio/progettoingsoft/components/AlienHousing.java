@@ -13,7 +13,8 @@ public class AlienHousing extends Component {
         this.color = color;
     }
 
-    public AlienType getColor() {
+    @Override
+    public AlienType getColorAlien() {
         return color;
     }
 }
