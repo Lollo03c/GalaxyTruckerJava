@@ -90,6 +90,7 @@ public class Player {
     //rotazione orario
     public void addCompoment(Component comp, int row, int column, int rotations){
 // DOMANDA : Dove il giocatore sceglie quante volte girare il componente?
+//        (Anto) credo sia compito del controller
         for (int i = 0; i < rotations; i++){
             comp.rotateClockwise();
         }

@@ -2,11 +2,18 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.GraveYard;
 
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class ShipBoard {
-    private final Component[][] shipComponents;
+    private final Optional<Component>[][] shipComponents;
     private  Component[] bookedComponents;
+
+    private final List<Cordinate> bannedCoordinates;
+
+    private final int rows;
+    private final int columns;
+
     private  int exposedConnectors;
     private  int maxEnergy;
     private  int availableEnergy;
@@ -20,28 +27,74 @@ public class ShipBoard {
 
 
     public ShipBoard(){
-        shipComponents = new Component[5][7];
-        shipComponents[0][0] = new GraveYard();
-        shipComponents[0][1] = new GraveYard();
-        shipComponents[0][3] = new GraveYard();
+        rows = 5;
+        columns = 7;
+        shipComponents = new Optional[rows][columns];
+        bannedCoordinates = new ArrayList<>(6);
 
-        shipComponents[1][0] = new GraveYard();
-        shipComponents[1][6] = new GraveYard();
+        for (int i = 0; i < rows; i++)
+            for(int j = 0; j <columns; j++)
+                shipComponents[i][j] = Optional.empty();
 
-        shipComponents[4][3] = new GraveYard();
+        bannedCoordinates.add(new Cordinate(0, 0));
+        bannedCoordinates.add(new Cordinate(0, 1));
+        bannedCoordinates.add(new Cordinate(0, 3));
+        bannedCoordinates.add(new Cordinate(1, 0));
+        bannedCoordinates.add(new Cordinate(1, 6));
+        bannedCoordinates.add(new Cordinate(4, 3));
+    }
 
+    public boolean isEmptyComponent(int row, int column){
+        if (!validRow(row) || validColumn(column))
+            return false;
+
+        return shipComponents[row][column].isEmpty();
     }
 
     public boolean addComponentToPosition(Component component, int row, int column){
-        if (shipComponents[row][column] == null){
-            shipComponents[row][column] = component;
+        if (bannedCoordinates.contains(new Cordinate(row, column)))
+            return false;
+
+        if (!validRow(row) || !validColumn(column))
+            return false;
+
+        if (shipComponents[row][column].isEmpty()){
+            shipComponents[row][column] = Optional.of(component);
             return true;
         }
+
         return false;
+    }
+
+    public boolean removeComponentFromPosition(int row, int column){
+        if(!validRow(row) || !validColumn(column) || shipComponents[row][column].isEmpty())
+            return false;
+
+        shipComponents[row][column] = Optional.empty();
+        return true;
+    }
+
+    private Stream<Optional<Component>> getStreamComponents(){
+        return Arrays.stream(shipComponents).flatMap(Arrays::stream);
+    }
+
+    public int getQuantBatteries(){
+        return getStreamComponents().flatMapToInt(optComp ->
+                optComp.stream().mapToInt(component -> component.getEnergyQuantity())).sum();
     }
 
     public void removeComponent(int row, int column) {
     }
+
+    private boolean validRow(int row){
+        return row >= 0 && row < rows;
+    }
+
+    private boolean validColumn(int column){
+        return column >= 0 && column < columns;
+    }
+
+
 }
 
 

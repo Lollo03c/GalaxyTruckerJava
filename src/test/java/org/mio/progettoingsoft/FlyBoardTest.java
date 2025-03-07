@@ -3,7 +3,6 @@ package org.mio.progettoingsoft;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.Depot;
-import org.mio.progettoingsoft.components.EnergyDepot;
 
 import java.util.ArrayList;
 import java.util.List;
