@@ -36,6 +36,7 @@ public class FlyBoard {
 
     public FlyBoard(){
         this.coveredComponents = new ArrayList<>();
+        loadComponents();
     }
 
     public void StartGame(){
@@ -66,13 +67,18 @@ public class FlyBoard {
 
     }
 
+    public List<Component> getCoveredComponents(){
+        return coveredComponents;
+    }
+
     public void loadComponents() {
-        final int nComponents = 156;
+
 
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            JsonNode rootNode = mapper.readTree(new File("src/main/java/org/mio/progettoingsoft/components.json"));
+            JsonNode rootNode = mapper.readTree(new File("src/main/resources/components.json"));
+            final int nComponents = rootNode.size();
 
             for (int i = 0; i < nComponents; i++) {
                 String type = rootNode.get(i).path("type").asText();
