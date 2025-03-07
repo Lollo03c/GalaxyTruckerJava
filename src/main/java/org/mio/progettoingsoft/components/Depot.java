@@ -9,7 +9,16 @@ import java.util.Map;
 
 public class Depot extends Component {
 
+    public Boolean getBig() {
+        return isBig;
+    }
+
     private final Boolean isBig;
+
+    public Boolean getHazard() {
+        return isHazard;
+    }
+
     private final Boolean isHazard;
     private int storedQuantity;
     private final int maxQuantity;
@@ -46,6 +55,7 @@ public class Depot extends Component {
         return storedGoods.getOrDefault(type, 0);
     }
 
+    @Override
     public Boolean addGood(GoodType type){
         if (storedGoods.containsKey(type) && storedQuantity < maxQuantity){
             storedQuantity++;

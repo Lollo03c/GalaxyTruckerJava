@@ -335,22 +335,6 @@
     "isHazard" : "false"
   },
   {
-    "id" : "33",
-    "type" : "HOUSING",
-    "top" : "triple",
-    "right" : "triple",
-    "bottom" : "triple",
-    "left" : "triple",
-  },
-  {
-    "id" : "34",
-    "type" : "HOUSING",
-    "top" : "triple",
-    "right" : "triple",
-    "bottom" : "triple",
-    "left" : "triple",
-  },
-  {
     "id" : "35",
     "type" : "HOUSING",
     "top" : "flat",
@@ -428,7 +412,7 @@
     "top" : "triple",
     "right" : "flat",
     "bottom" : "flat",
-    "left" : "double",
+    "left" : "double"
   },
   {
     "id" : "45",
@@ -484,14 +468,6 @@
     "top" : "double",
     "right" : "double",
     "bottom" : "flat",
-    "left" : "triple"
-  },
-  {
-    "id" : "52",
-    "type" : "HOUSING",
-    "top" : "triple",
-    "right" : "triple",
-    "bottom" : "triple",
     "left" : "triple"
   },
   {
@@ -558,17 +534,6 @@
     "bottom" : "double",
     "right" :  "double"
   },
-  {
-    "id" : "61",
-    "type" : "HOUSING",
-    "top" : "triple",
-    "right" : "triple",
-    "bottom" : "triple",
-    "left" : "triple",
-    "isFirst" : "1",
-    "color" : "yellow"
-  },
-
   {
     "id" : "62",
     "type" : "DEPOT",

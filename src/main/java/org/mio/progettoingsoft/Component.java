@@ -1,5 +1,9 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.GoodType;
+
+import javax.swing.text.StyledEditorKit;
+
 public abstract class Component {
     private Connector topConnector, bottomConnector, rightConnector, leftConnector;
     private final ComponentType type;
@@ -49,6 +53,13 @@ public abstract class Component {
         this.leftConnector = tmp;
     }
 
+    public Integer getEnergyQuantity(){
+        return 0;
+    }
+
+    public Boolean addGood(GoodType type){
+        return false;
+    }
 
 
 

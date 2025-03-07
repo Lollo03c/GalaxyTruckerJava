@@ -18,7 +18,8 @@ public class EnergyDepot extends Component {
         maxQuant = isTriple ? 3 : 2;
     }
 
-    public Integer getStoredQuantity(){
+    @Override
+    public Integer getEnergyQuantity(){
         return storedQuant;
     }
 
