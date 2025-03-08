@@ -1,10 +1,12 @@
 package org.mio.progettoingsoft.advCards;
 
 public class Slaver extends AdvancedEnemy{
-    private int crewLost;
+    private final int crewLost;
+    private final int reward;
 
-    protected Slaver(int level, int strength, int daysLost, int reward, int crewLost) {
-        super(level, strength, daysLost, reward);
+    protected Slaver(int id, int level, int strength, int daysLost, int reward, int crewLost) {
+        super(id, level, strength, daysLost);
+        this.reward = reward;
         this.crewLost = crewLost;
     }
 }

@@ -17,7 +17,7 @@ public abstract class Component {
         rightConnector = rightConn;
         leftConnector = leftConn;
         this.id = id;
-        
+//togliamo il type, lo usiamo solo per fare lo switch per leggere il json, dopo non ci interessa tenerlo
         this.type = type;
     }
 

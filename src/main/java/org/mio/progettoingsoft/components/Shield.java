@@ -36,7 +36,7 @@ public class Shield extends Component {
         });
     }
     public void rotateCounterClockwise(){
-        super.rotateClockwise();
+        super.rotateCounterClockwise();
         directions.set(0, switch (directions.get(0)) {
             case FRONT -> Direction.LEFT;
             case RIGHT -> Direction.FRONT;

@@ -10,7 +10,7 @@ public class AbandonedStation extends AdventureCard {
     private int crewNeeded;
     private List<GoodType> goods;
 
-    protected AbandonedStation(int level) {
-        super(level);
+    protected AbandonedStation(int id, int level) {
+        super(id, level);
     }
 }

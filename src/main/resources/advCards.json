@@ -1,0 +1,306 @@
+[
+  {
+    "id" : "1",
+    "level" : "1",
+    "type" : "SLAVERS",
+
+    "strength" : "6",
+    "daysLost" : "1",
+    "reward" : "5",
+    "crewLost" : "3"
+  },
+  {
+    "id" : "2",
+    "level" : "1",
+    "type" : "SMUGGLERS",
+
+    "strength" : "4",
+    "daysLost" : "1",
+    "reward" : ["YELLOW", "GREEN" , "BLUE"],
+    "goodsLost" : "2"
+  },
+  {
+    "id" : "3",
+    "level" : "1",
+    "type" : "PIRATE",
+
+    "strength" : "5",
+    "daysLost" : "1",
+    "reward" : "4",
+    "cannons" : [["FRONT", "LIGHT"], ["FRONT", "HEAVY"], ["FRONT", "LIGHT"]]
+  },
+  {
+    "id" : "4",
+    "level" : "1",
+    "type" : "STARDUST"
+  },
+  {
+    "id" : "5",
+    "level" : "1",
+    "type" : "OPENSPACE"
+  },
+  {
+    "id" : "6",
+    "level" : "1",
+    "type" : "OPENSPACE"
+  },
+  {
+    "id" : "7",
+    "level" : "1",
+    "type" : "OPENSPACE"
+  },
+  {
+    "id" : "8",
+    "level" : "1",
+    "type" : "OPENSPACE"
+  },
+  {
+    "id" : "9",
+    "level" : "1",
+    "type" : "METEORSWARM",
+
+    "meteors" : [["FRONT", "BIG"], ["LEFT", "SMALL"], ["RIGHT", "SMALL"]]
+  },
+  {
+    "id" : "10",
+    "level" : "1",
+    "type" : "METEORSWARM",
+
+    "meteors" : [["FRONT", "SMALL"], ["FRONT", "SMALL"], ["LEFT", "SMALL"], ["RIGHT", "SMALL"], ["BACK", "SMALL"]]
+  },
+  {
+    "id" : "11",
+    "level" : "1",
+    "type" : "METEORSWARM",
+
+    "meteors" : [["FRONT", "BIG"], ["FRONT", "SMALL"], ["FRONT", "BIG"]]
+  },
+  {
+    "id" : "12",
+    "level" : "1",
+    "type" : "PLANETS",
+
+    "daysLost" : "3",
+    "planets" : [["RED", "GREEN", "BLUE", "BLUE", "BLUE"], ["BLUE", "YELLOW", "RED"], ["RED", "BLUE", "BLUE", "BLUE"], ["RED", "GREEN"]]
+  },
+  {
+    "id" : "13",
+    "level" : "1",
+    "type" : "PLANETS",
+
+    "daysLost" : "2",
+    "planets" : [["RED","RED"], ["RED", "BLUE", "BLUE"], ["YELLOW"]]
+  },
+  {
+    "id" : "14",
+    "level" : "1",
+    "type" : "PLANETS",
+
+    "daysLost" : "3",
+    "planets" : [["YELLOW", "GREEN", "BLUE", "BLUE"], ["YELLOW", "YELLOW"]]
+  },
+  {
+    "id" : "15",
+    "level" : "1",
+    "type" : "PLANETS",
+
+    "daysLost" : "3",
+    "planets" : [["GREEN", "GREEN"], ["YELLOW"], ["BLUE", "BLUE", "BLUE"]]
+  },
+  {
+    "id" : "16",
+    "level" : "1",
+    "type" : "COMBATZONE",
+
+    "criterion" : ["CREW", "ENGINE_POWER", "FIRE_POWER"],
+    "penalty" : [["daysLost", "3"], ["crewLost","2"], ["cannonsPenalty", ["BACK", "LIGHT"], ["BACK", "HEAVY"]]]
+  },
+  {
+    "id" : "17",
+    "level" : "1",
+    "type" : "ABANDONEDSHIP",
+
+    "daysLost" : "1",
+    "credits" : "3",
+    "crewLost" : "2"
+  },
+  {
+    "id" : "18",
+    "level" : "1",
+    "type" : "ABANDONEDSHIP",
+
+    "daysLost" : "1",
+    "credits" : "4",
+    "crewLost" : "3"
+  },
+  {
+    "id" : "19",
+    "level" : "1",
+    "type" : "ABANDONEDSTATION",
+
+    "daysLost" : "1",
+    "crewNeeded" : "5",
+    "goods" : ["YELLOW", "GREEN"]
+  },
+  {
+    "id" : "20",
+    "level" : "1",
+    "type" : "ABANDONEDSTATION",
+
+    "daysLost" : "1",
+    "crewNeeded" : "6",
+    "goods" : ["RED", "RED"]
+  },
+  {
+    "id" : "21",
+    "level" : "2",
+    "type" : "SLAVERS",
+
+    "strength" : "7",
+    "daysLost" : "2",
+    "reward" : "8",
+    "crewLost" : "4"
+  },
+  {
+    "id" : "22",
+    "level" : "2",
+    "type" : "SMUGGLERS",
+
+    "strength" : "8",
+    "daysLost" : "1",
+    "reward" : ["RED", "YELLOW" , "YELLOW"],
+    "goodsLost" : "3"
+  },
+  {
+    "id" : "23",
+    "level" : "2",
+    "type" : "PIRATE",
+
+    "strength" : "6",
+    "daysLost" : "2",
+    "reward" : "7",
+    "cannons" : [["FRONT", "HEAVY"], ["FRONT", "LIGHT"], ["FRONT", "HEAVY"]]
+  },
+  {
+    "id" : "24",
+    "level" : "2",
+    "type" : "STARDUST"
+  },
+  {
+    "id" : "25",
+    "level" : "2",
+    "type" : "EPIDEMIC"
+  },
+  {
+    "id" : "26",
+    "level" : "2",
+    "type" : "OPENSPACE"
+  },
+  {
+    "id" : "27",
+    "level" : "2",
+    "type" : "OPENSPACE"
+  },
+  {
+    "id" : "28",
+    "level" : "2",
+    "type" : "OPENSPACE"
+  },
+  {
+    "id" : "29",
+    "level" : "2",
+    "type" : "METEORSWARM",
+
+    "meteors" : [["FRONT", "SMALL"], ["FRONT", "SMALL"], ["LEFT", "BIG"],["LEFT", "SMALL"], ["LEFT", "SMALL"]]
+  },
+  {
+    "id" : "30",
+    "level" : "2",
+    "type" : "METEORSWARM",
+
+    "meteors" : [["FRONT", "BIG"], ["FRONT", "BIG"], ["BACK", "SMALL"],["BACK", "SMALL"]]
+  },
+  {
+    "id" : "31",
+    "level" : "2",
+    "type" : "METEORSWARM",
+
+    "meteors" : [["FRONT", "SMALL"], ["FRONT", "SMALL"], ["RIGHT", "BIG"],["RIGHT", "SMALL"], ["RIGHT", "SMALL"]]
+  },
+  {
+    "id" : "32",
+    "level" : "2",
+    "type" : "PLANETS",
+
+    "daysLost" : "4",
+    "planets" : [["RED", "RED", "RED", "YELLOW"], ["RED", "RED", "GREEN", "GREEN"], ["RED", "BLUE", "BLUE", "BLUE", "BLUE"]]
+  },
+  {
+    "id" : "33",
+    "level" : "2",
+    "type" : "PLANETS",
+
+    "daysLost" : "3",
+    "planets" : [["RED", "RED"], ["GREEN", "GREEN", "GREEN", "GREEN"]]
+  },
+  {
+    "id" : "34",
+    "level" : "2",
+    "type" : "PLANETS",
+
+    "daysLost" : "2",
+    "planets" : [["RED", "YELLOW"], ["YELLOW", "GREEN", "BLUE"], ["GREEN", "GREEN"], ["YELLOW"]]
+  },
+  {
+    "id" : "35",
+    "level" : "2",
+    "type" : "PLANETS",
+
+    "daysLost" : "3",
+    "planets" : [["GREEN", "GREEN", "GREEN", "GREEN"], ["YELLOW", "YELLOW"], ["BLUE", "BLUE", "BLUE", "BLUE"]]
+  },
+  {
+    "id" : "36",
+    "level" : "2",
+    "type" : "COMBATZONE",
+
+    "criterion" : ["FIRE_POWER", "ENGINE_POWER", "CREW"],
+    "penalty" : [["daysLost", "4"], ["goodsLost","3"], ["cannonsPenalty", ["FRONT", "LIGHT"], ["RIGHT", "LIGHT"],["LEFT","LIGHT"], ["BACK","HEAVY"]]]
+  },
+  {
+    "id" : "37",
+    "level" : "2",
+    "type" : "ABANDONEDSHIP",
+
+    "daysLost" : "1",
+    "credits" : "6",
+    "crewLost" : "4"
+  },
+  {
+    "id" : "38",
+    "level" : "2",
+    "type" : "ABANDONEDSHIP",
+
+    "daysLost" : "2",
+    "credits" : "8",
+    "crewLost" : "5"
+  },
+  {
+    "id" : "39",
+    "level" : "2",
+    "type" : "ABANDONEDSTATION",
+
+    "daysLost" : "1",
+    "crewNeeded" : "7",
+    "goods" : ["RED", "YELLOW"]
+  },
+  {
+    "id" : "40",
+    "level" : "2",
+    "type" : "ABANDONEDSTATION",
+
+    "daysLost" : "2",
+    "crewNeeded" : "8",
+    "goods" : ["YELLOW", "YELLOW", "GREEN"]
+  }
+]

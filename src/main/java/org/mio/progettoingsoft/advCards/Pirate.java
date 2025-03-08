@@ -5,9 +5,12 @@ import org.mio.progettoingsoft.advCards.AdvancedEnemy;
 import java.util.List;
 
 public class Pirate extends AdvancedEnemy{
-    private List<CannonPenalty> cannons;
+    private final List<CannonPenalty> cannons;
+    private final int reward;
 
-    protected Pirate(int level, int strength, int daysLost, int reward) {
-        super(level, strength, daysLost, reward);
+    protected Pirate(int id, int level, int strength, int daysLost, List<CannonPenalty> cannons, int reward) {
+        super(id, level, strength, daysLost);
+        this.cannons = cannons;
+        this.reward = reward;
     }
 }
