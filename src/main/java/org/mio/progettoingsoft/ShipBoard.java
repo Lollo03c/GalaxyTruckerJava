@@ -2,12 +2,17 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GraveYard;
+import org.mio.progettoingsoft.exceptions.FullGoodDepot;
+import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 public class ShipBoard {
     private final Optional<Component>[][] shipComponents;
+    List<Component> componentList;
+    Stream<Component> componentStream;
+
     private  Component[] bookedComponents;
 
     private final List<Cordinate> bannedCoordinates;
@@ -15,9 +20,11 @@ public class ShipBoard {
     private final int rows;
     private final int columns;
 
+    private  int availableEnergy;
+    private Map<GoodType, Integer> goods;
+
     private  int exposedConnectors;
     private  int maxEnergy;
-    private  int availableEnergy;
     private  int maxSpecialGoods;
     private  int numSpecialGoods;
     private  int maxNormalGoods;
@@ -43,6 +50,11 @@ public class ShipBoard {
         bannedCoordinates.add(new Cordinate(1, 0));
         bannedCoordinates.add(new Cordinate(1, 6));
         bannedCoordinates.add(new Cordinate(4, 3));
+
+        goods = new HashMap<>();
+        for (GoodType type : GoodType.values()){
+            goods.put(type, 0);
+        }
     }
 
     public int getRows(){
@@ -71,12 +83,17 @@ public class ShipBoard {
         if (!validRow(row) || !validColumn(column))
             return false;
 
-        if (shipComponents[row][column].isEmpty()){
-            shipComponents[row][column] = Optional.of(component);
-            return true;
+        if (shipComponents[row][column].isPresent()){
+            return false;
         }
 
-        return false;
+        shipComponents[row][column] = Optional.of(component);
+        availableEnergy += component.getEnergyQuantity();
+
+        getComponentsStream();
+        getComponentsList();
+
+        return true;
     }
 
     public boolean removeComponentFromPosition(int row, int column){
@@ -91,23 +108,33 @@ public class ShipBoard {
         return Arrays.stream(shipComponents).flatMap(Arrays::stream);
     }
 
-    public List<Component> getComponentsList(){
-        return getStreamOptComponents()
+    private void getComponentsList(){
+        componentList =  getStreamOptComponents()
                 .filter(optComp -> optComp.isPresent())
                 .map(optComp -> optComp.get())
                 .toList();
     }
 
-    public Stream<Component> getComponentsStream(){
-        return  getStreamOptComponents()
+    private void getComponentsStream(){
+        componentStream =  getStreamOptComponents()
                 .filter(optComp -> optComp.isPresent())
                 .map(optComp -> optComp.get());
     }
 
     public int getQuantBatteries(){
-        return getComponentsStream()
-                .mapToInt(comp -> comp.getEnergyQuantity())
-                .sum();
+        return availableEnergy;
+    }
+
+    public void removeEnergy() throws NotEnoughBatteries{
+        boolean removed = false;
+
+        for (int i = 0; !removed && i < componentList.size(); i++)
+            removed = componentList.get(i).removeOneEnergy();
+
+        if (!removed)
+            throw  new NotEnoughBatteries();
+
+        availableEnergy--;
     }
 
     public void removeComponent(int row, int column) {
@@ -121,16 +148,27 @@ public class ShipBoard {
         return column >= 0 && column < columns;
     }
 
-    public Map<GoodType, Integer> getStoredGoods() {
-        Map<GoodType, Integer> goodsMap = new HashMap<>();
-        List<Component> components = getComponentsList();
+    private Map<GoodType, Integer> getStoredGoods() {
+        return goods;
+    }
 
-        for (Component comp : components){
-            goodsMap.putAll(comp.getStoredGoods());
+    public Integer getStoredQuantityGoods(GoodType type){
+        return goods.getOrDefault(type, 0);
+    }
+
+    public void addGood(GoodType type) throws FullGoodDepot {
+        boolean added = false;
+
+        for (int i = 0; !added && i < componentList.size(); i++){
+            added = componentList.get(i).addGood(type);
         }
 
-        return goodsMap;
+        if (!added)
+            throw new FullGoodDepot(type);
+
+        goods.put(type, goods.get(type) + 1);
     }
+
 
 }
 

@@ -60,24 +60,18 @@ public class Player {
     public void addCredits(int quantity) {
         credits += quantity;
     }
-    public boolean removeCredits(int quantity) {
-        if (credits >= quantity){
-            credits -= quantity;
-            return true;
-        }
 
-        return false;
+    public void removeCredits(int quantity) {
+        credits = Integer.max(0, credits - quantity);
     }
 
     public Integer getGoodsQuantiy(GoodType type) {
-        return shipBoard.getComponentsStream()
-                .mapToInt(comp -> comp.getStoredGoods().getOrDefault(type, 0))
-                .sum();
+        return shipBoard.getStoredQuantityGoods(type);
     }
 
     public void addGoods(GoodType type, Integer quantity) {
         for (int i = 0; i < quantity; i++)
-            addGood(type);
+            shipBoard.addGood(type);
     }
 
     public void removeGoods(GoodType type, Integer quantity) {
@@ -114,29 +108,6 @@ public class Player {
     }
 
     public void removeEnergy() throws NotEnoughBatteries {
-        boolean removed = false;
-        List<Component> components = shipBoard.getComponentsList();
-
-        for (int i = 0; !removed && i < components.size(); i++)
-            removed = components.get(i).removeOneEnergy();
-
-        if (!removed)
-            throw  new NotEnoughBatteries();
-    }
-
-    private void addGood(GoodType type) throws FullGoodDepot{
-        boolean added = false;
-        List<Component> components = shipBoard.getComponentsList();
-
-        for (int i = 0; !added && i < components.size(); i++){
-            added = components.get(i).addGood(type);
-        }
-
-        if (!added)
-            throw new FullGoodDepot(type);
-    }
-
-    public Map<GoodType, Integer> getStoredGoods(){
-        return shipBoard.getStoredGoods();
+        shipBoard.removeEnergy();
     }
 }

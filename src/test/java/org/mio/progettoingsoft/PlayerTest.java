@@ -96,6 +96,7 @@ class PlayerTest {
         assertEquals(2, player.getGoodsQuantiy(GoodType.YELLOW));
 
         assertThrows(FullGoodDepot.class, () -> player.addGoods(GoodType.BLUE, 1));
+        assertEquals(0, player.getGoodsQuantiy(GoodType.BLUE));
 
 
     }
