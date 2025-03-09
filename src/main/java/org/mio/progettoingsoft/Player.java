@@ -1,9 +1,11 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.exceptions.FullGoodDepot;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
 
 import java.awt.desktop.PreferencesEvent;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +19,6 @@ public class Player {
     private ShipBoard shipBoard;
 
     private Integer discardedComponents;
-    private Map<GoodType, Integer> goods;
 
     private Component inHand;
 
@@ -68,12 +69,15 @@ public class Player {
         return false;
     }
 
-    public Integer getGoods(GoodType type) {
-        return goods.get(type);
+    public Integer getGoodsQuantiy(GoodType type) {
+        return shipBoard.getComponentsStream()
+                .mapToInt(comp -> comp.getStoredGoods().getOrDefault(type, 0))
+                .sum();
     }
 
     public void addGoods(GoodType type, Integer quantity) {
-
+        for (int i = 0; i < quantity; i++)
+            addGood(type);
     }
 
     public void removeGoods(GoodType type, Integer quantity) {
@@ -118,5 +122,21 @@ public class Player {
 
         if (!removed)
             throw  new NotEnoughBatteries();
+    }
+
+    private void addGood(GoodType type) throws FullGoodDepot{
+        boolean added = false;
+        List<Component> components = shipBoard.getComponentsList();
+
+        for (int i = 0; !added && i < components.size(); i++){
+            added = components.get(i).addGood(type);
+        }
+
+        if (!added)
+            throw new FullGoodDepot(type);
+    }
+
+    public Map<GoodType, Integer> getStoredGoods(){
+        return shipBoard.getStoredGoods();
     }
 }

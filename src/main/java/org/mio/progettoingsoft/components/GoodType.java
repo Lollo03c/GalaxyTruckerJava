@@ -12,4 +12,15 @@ public enum GoodType {
     public int getValue(){
         return value;
     }
+
+    @Override
+    public String toString(){
+        return switch (this){
+            case RED -> "RED";
+            case BLUE -> "BLUE";
+            case GREEN -> "GREEN";
+            case YELLOW -> "YELLOW";
+        };
+
+    }
 }

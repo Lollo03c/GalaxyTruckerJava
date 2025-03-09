@@ -83,7 +83,10 @@ public class Depot extends Component {
             return true;
         }
         return false;
+    }
 
-
+    @Override
+    public Map<GoodType, Integer> getStoredGoods(){
+        return storedGoods;
     }
 }

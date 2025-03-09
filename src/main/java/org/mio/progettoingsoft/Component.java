@@ -4,6 +4,9 @@ import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
 import javax.swing.text.StyledEditorKit;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 public abstract class Component {
@@ -71,6 +74,9 @@ public abstract class Component {
         return AlienType.NOALIEAN;
     }
 
+    public Map<GoodType, Integer> getStoredGoods(){
+        return Collections.emptyMap();
+    }
 
 
 }

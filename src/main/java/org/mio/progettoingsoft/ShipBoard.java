@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GraveYard;
 
 import java.util.*;
@@ -120,6 +121,16 @@ public class ShipBoard {
         return column >= 0 && column < columns;
     }
 
+    public Map<GoodType, Integer> getStoredGoods() {
+        Map<GoodType, Integer> goodsMap = new HashMap<>();
+        List<Component> components = getComponentsList();
+
+        for (Component comp : components){
+            goodsMap.putAll(comp.getStoredGoods());
+        }
+
+        return goodsMap;
+    }
 
 }
 
