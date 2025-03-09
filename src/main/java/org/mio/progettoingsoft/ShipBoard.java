@@ -44,6 +44,18 @@ public class ShipBoard {
         bannedCoordinates.add(new Cordinate(4, 3));
     }
 
+    public int getRows(){
+        return rows;
+    }
+
+    public int getColumns(){
+        return columns;
+    }
+
+    public Optional<Component> getComponent(int row, int col){
+        return shipComponents[row][col];
+    }
+
     public boolean isEmptyComponent(int row, int column){
         if (!validRow(row) || validColumn(column))
             return false;
@@ -74,13 +86,27 @@ public class ShipBoard {
         return true;
     }
 
-    private Stream<Optional<Component>> getStreamComponents(){
+    private Stream<Optional<Component>> getStreamOptComponents(){
         return Arrays.stream(shipComponents).flatMap(Arrays::stream);
     }
 
+    public List<Component> getComponentsList(){
+        return getStreamOptComponents()
+                .filter(optComp -> optComp.isPresent())
+                .map(optComp -> optComp.get())
+                .toList();
+    }
+
+    public Stream<Component> getComponentsStream(){
+        return  getStreamOptComponents()
+                .filter(optComp -> optComp.isPresent())
+                .map(optComp -> optComp.get());
+    }
+
     public int getQuantBatteries(){
-        return getStreamComponents().flatMapToInt(optComp ->
-                optComp.stream().mapToInt(component -> component.getEnergyQuantity())).sum();
+        return getComponentsStream()
+                .mapToInt(comp -> comp.getEnergyQuantity())
+                .sum();
     }
 
     public void removeComponent(int row, int column) {

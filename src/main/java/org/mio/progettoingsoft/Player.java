@@ -1,8 +1,13 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
 
+import java.awt.desktop.PreferencesEvent;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Player {
 
@@ -98,5 +103,20 @@ public class Player {
         if(!shipBoard.addComponentToPosition(comp, row, column))
             System.out.println("Occupied cell");
 
+    }
+
+    public Integer getQuantBatteries(){
+        return shipBoard.getQuantBatteries();
+    }
+
+    public void removeEnergy() throws NotEnoughBatteries {
+        boolean removed = false;
+        List<Component> components = shipBoard.getComponentsList();
+
+        for (int i = 0; !removed && i < components.size(); i++)
+            removed = components.get(i).removeOneEnergy();
+
+        if (!removed)
+            throw  new NotEnoughBatteries();
     }
 }

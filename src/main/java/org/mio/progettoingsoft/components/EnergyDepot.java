@@ -4,6 +4,8 @@ import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
 
+import java.util.Optional;
+
 public class EnergyDepot extends Component {
 
     private final Boolean isTriple;
@@ -23,9 +25,10 @@ public class EnergyDepot extends Component {
         return storedQuant;
     }
 
+    @Override
     //returns true if the energy depot contains some enery to remove
     public Boolean removeOneEnergy(){
-        if (storedQuant > 1){
+        if (storedQuant >= 1){
             storedQuant--;
             return true;
         }

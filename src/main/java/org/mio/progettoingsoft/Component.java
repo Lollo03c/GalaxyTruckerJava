@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
 import javax.swing.text.StyledEditorKit;
+import java.util.Optional;
 
 public abstract class Component {
     private Connector topConnector, bottomConnector, rightConnector, leftConnector;
@@ -56,6 +57,10 @@ public abstract class Component {
 
     public Integer getEnergyQuantity(){
         return 0;
+    }
+
+    public Boolean removeOneEnergy(){
+        return false;
     }
 
     public Boolean addGood(GoodType type){
