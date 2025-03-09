@@ -45,8 +45,11 @@ public class Housing extends Component {
         return guestedAlien.containsKey(type);
     }
 
-    public Boolean addMember(){
-        if (!containsAlien() && guestedHuman < 2){
+    @Override
+    public Boolean addHumanMember(){
+        boolean canGuestHuman = ! guestedAlien.containsValue(true);
+
+        if (canGuestHuman && guestedHuman < 2){
             guestedHuman++;
             return true;
         }
@@ -54,7 +57,13 @@ public class Housing extends Component {
         return false;
     }
 
-    public Boolean removeMember(){
+    @Override
+    public Integer getQuantityMembers(){
+        return guestedHuman;
+    }
+
+    @Override
+    public Boolean removeHumanMember(){
         if (guestedHuman > 0){
             guestedHuman--;
             return true;
@@ -62,6 +71,7 @@ public class Housing extends Component {
         return false;
     }
 
+    @Override
     public Boolean addAlien(AlienType type){
         if (isEmpty() && guestedAlien.containsKey(type)){
             guestedAlien.put(type, true);
@@ -71,21 +81,18 @@ public class Housing extends Component {
         return false;
     }
 
+    @Override
     public Boolean removeAlien(AlienType type){
         return guestedAlien.replace(type, true, false);
     }
 
-    private Boolean containsAlien(){
-        for (AlienType type : guestedAlien.keySet()){
-            if (guestedAlien.get(type))
-                return true;
-        }
-
-        return false;
+    @Override
+    public Boolean containsAlien(AlienType type){
+        return getGuestedAlien().getOrDefault(type, false);
     }
 
     private Boolean isEmpty(){
-        return guestedHuman == 0 && !containsAlien();
+        return guestedHuman == 0 && !guestedAlien.containsValue(true);
     }
 
     public Map<AlienType, Boolean> getGuestedAlien(){

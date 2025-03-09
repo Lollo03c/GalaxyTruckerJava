@@ -10,4 +10,13 @@ public enum AlienType {
             default ->  AlienType.NOALIEAN;
         };
     }
+
+    @Override
+    public String toString(){
+        return switch (this){
+            case PURPLE -> "PURPLE";
+            case BROWN -> "BROWS";
+            case NOALIEAN -> "NO_ALIEN";
+        };
+    }
 }

@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.components.GraveYard;
 import org.mio.progettoingsoft.exceptions.FullGoodDepot;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
 import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
+import org.mio.progettoingsoft.exceptions.NotEnoughHousing;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -206,6 +207,17 @@ public class ShipBoard {
             throw new NotEnoughGoods(type);
 
         goods.put(type, goods.get(type) - 1);
+    }
+
+    public void addHumanGuest() throws NotEnoughHousing{
+        boolean added = false;
+
+        for (int i = 0; !added && i < componentList.size(); i++)
+            added = componentList.get(i).addHumanMember();
+
+
+        if (!added)
+            throw new NotEnoughHousing();
     }
 }
 

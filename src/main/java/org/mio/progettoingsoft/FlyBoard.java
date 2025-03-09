@@ -170,6 +170,7 @@ public class FlyBoard {
                 String type = rootNode.get(i).path("type").asText();
                 int id = rootNode.get(i).path("id").asInt();
                 int level = rootNode.get(i).path("level").asInt();
+                Iterator<JsonNode> elements;
                 switch (type) {
                     case "SLAVERS":
                         int strength = rootNode.get(i).path("strength").asInt();
@@ -184,7 +185,7 @@ public class FlyBoard {
                         JsonNode rewardNode = rootNode.get("reward");
                         int goodsLost = rootNode.get(i).path("goodsLost").asInt();
                         List<GoodType> rewardList = new ArrayList<>();
-                        Iterator<JsonNode> elements = rewardNode.elements();
+                        elements = rewardNode.elements();
                         while (elements.hasNext()) {
                             GoodType t = GoodType.stringToGoodType(elements.next().asText());
                             rewardList.add(t);
@@ -196,9 +197,9 @@ public class FlyBoard {
                         strength = rootNode.get(i).path("strength").asInt();
                         daysLost = rootNode.get(i).path("daysLost").asInt();
                         reward = rootNode.get(i).path("reward").asInt();
-                        JsonNode cannonsNode = rootNode.get("reward");
+                        JsonNode cannonsNode = rootNode.get("rward");
                         List<CannonPenalty> cannons = new ArrayList<>();
-                        Iterator<JsonNode> elements = rewardNode.elements();
+                        elements = cannonsNode.elements();
                 }
             }
         }

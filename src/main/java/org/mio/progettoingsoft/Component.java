@@ -1,14 +1,10 @@
 package org.mio.progettoingsoft;
 
-import javafx.scene.control.Alert;
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
-import javax.swing.text.StyledEditorKit;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class Component {
     private Connector topConnector, bottomConnector, rightConnector, leftConnector;
@@ -75,6 +71,10 @@ public abstract class Component {
         return false;
     }
 
+    public Map<GoodType, Integer> getStoredGoods(){
+        return Collections.emptyMap();
+    }
+
     public void addAlienType(AlienType color){
         return ;
     }
@@ -82,11 +82,7 @@ public abstract class Component {
     public AlienType getColorAlien(){
         return AlienType.NOALIEAN;
     }
-
-    public Map<GoodType, Integer> getStoredGoods(){
-        return Collections.emptyMap();
-    }
-
+     
     public Boolean isCompatible(Component other, Direction direction){
         return switch (direction){
             case FRONT -> topConnector.isCompatible(other.bottomConnector);
@@ -94,6 +90,30 @@ public abstract class Component {
             case RIGHT -> rightConnector.isCompatible(other.leftConnector);
             case LEFT -> leftConnector.isCompatible(other.rightConnector);
         };
+    }
+
+    public Boolean addHumanMember(){
+        return false;
+    }
+
+    public Boolean removeHumanMember(){
+        return false;
+    }
+
+    public Integer getQuantityMembers(){
+        return 0;
+    }
+
+    public Boolean addAlien(AlienType type){
+        return false;
+    }
+
+    public Boolean removeAlien(AlienType type){
+        return false;
+    }
+
+    public Boolean containsAlien(AlienType type){
+        return false;
     }
 
 

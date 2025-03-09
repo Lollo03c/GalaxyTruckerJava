@@ -3,6 +3,8 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.FullGoodDepot;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
+import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
+import org.mio.progettoingsoft.exceptions.NotEnoughHousing;
 
 import java.awt.desktop.PreferencesEvent;
 import java.util.HashMap;
@@ -74,7 +76,7 @@ public class Player {
             shipBoard.addGood(type);
     }
 
-    public void removeGoods(GoodType type, Integer quantity) {
+    public void removeGoods(GoodType type, Integer quantity) throws NotEnoughGoods {
         for (int i = 0; i < quantity; i++)
             shipBoard.removeGood(type);
     }
@@ -110,5 +112,14 @@ public class Player {
 
     public void removeEnergy() throws NotEnoughBatteries {
         shipBoard.removeEnergy();
+    }
+
+    public void addHumanGuest(int quantity) throws NotEnoughHousing{
+        for (int i = 0; i < quantity; i++)
+            shipBoard.addHumanGuest();
+    }
+
+    public void addAlien() throws NotEnoughHousing{
+
     }
 }
