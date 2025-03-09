@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 public class ShipBoard {
     private final Optional<Component>[][] shipComponents;
     List<Component> componentList;
-    Stream<Component> componentStream;
 
     private  Component[] bookedComponents;
 
@@ -77,6 +76,24 @@ public class ShipBoard {
         return shipComponents[row][column].isEmpty();
     }
 
+    public List<Component> getAdjacent(Component component, int row, int column){
+        List<Component> possibles = new ArrayList<>();
+        if (shipComponents[row-1][column].isPresent() && component.isCompatible(shipComponents[row-1][column].get(), Direction.FRONT)){
+            possibles.add(shipComponents[row-1][column].get());
+        }
+        if (shipComponents[row+1][column].isPresent() && component.isCompatible(shipComponents[row+1][column].get(), Direction.BACK)){
+            possibles.add(shipComponents[row+1][column].get());
+        }
+        if (shipComponents[row][column+1].isPresent() && component.isCompatible(shipComponents[row][column+1].get(), Direction.RIGHT)){
+            possibles.add(shipComponents[row][column+1].get());
+        }
+        if (shipComponents[row][column-1].isPresent() && component.isCompatible(shipComponents[row][column-1].get(), Direction.LEFT)){
+            possibles.add(shipComponents[row][column-1].get());
+        }
+
+        return possibles;
+    }
+
     public boolean addComponentToPosition(Component component, int row, int column){
         if (bannedCoordinates.contains(new Cordinate(row, column)))
             return false;
@@ -91,7 +108,15 @@ public class ShipBoard {
         shipComponents[row][column] = Optional.of(component);
         availableEnergy += component.getEnergyQuantity();
 
-        getComponentsStream();
+        List<Component> adj = getAdjacent(component, row, column);
+
+        for (Component comp : getAdjacent(component, row, column)) {
+            component.addAlienType(comp.getColorAlien());
+            comp.addAlienType(component.getColorAlien());
+        }
+
+
+
         getComponentsList();
 
         return true;
@@ -116,8 +141,8 @@ public class ShipBoard {
                 .toList();
     }
 
-    private void getComponentsStream(){
-        componentStream =  getStreamOptComponents()
+    private Stream<Component> getComponentsStream(){
+        return getStreamOptComponents()
                 .filter(optComp -> optComp.isPresent())
                 .map(optComp -> optComp.get());
     }
@@ -182,7 +207,6 @@ public class ShipBoard {
 
         goods.put(type, goods.get(type) - 1);
     }
-
 }
 
 

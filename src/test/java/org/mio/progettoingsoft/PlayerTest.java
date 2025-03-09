@@ -2,10 +2,7 @@ package org.mio.progettoingsoft;
 
 import javafx.scene.effect.BlurType;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.components.Depot;
-import org.mio.progettoingsoft.components.EnergyDepot;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.Housing;
+import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.FullGoodDepot;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
 import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
@@ -121,5 +118,29 @@ class PlayerTest {
         assertEquals(0, player.getGoodsQuantiy(GoodType.YELLOW));
 
 
+    }
+
+    @Test
+    void should_add_some_aliens(){
+        Player player = new Player("test");
+
+        Component house = new Housing(1, Connector.TRIPLE, Connector.SINGLE, right, left);
+        Component brown = new AlienHousing(1, AlienType.BROWN, top, Connector.DOUBLE, right, left);
+        Component purple = new AlienHousing(1, AlienType.PURPLE, Connector.SINGLE, bottom, right, Connector.DOUBLE);
+
+        Component secondHouse = new Housing(1, top, bottom, Connector.DOUBLE, left);
+
+        player.addCompoment(house, 2, 3, 0);
+        player.addCompoment(brown, 1, 3, 0);
+        player.addCompoment(purple, 3, 3, 0);
+
+
+        assertTrue(((Housing)house).getGuestedAlien().containsKey(AlienType.BROWN));
+        assertTrue(((Housing)house).getGuestedAlien().containsKey(AlienType.PURPLE));
+        assertFalse(((Housing)house).getGuestedAlien().containsKey(AlienType.NOALIEAN));
+
+        player.addCompoment(secondHouse, 3, 2, 0);
+        assertTrue(((Housing)secondHouse).getGuestedAlien().containsKey(AlienType.PURPLE));
+        assertFalse(((Housing)secondHouse).getGuestedAlien().containsKey(AlienType.NOALIEAN));
     }
 }

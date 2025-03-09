@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import javafx.scene.control.Alert;
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
@@ -74,6 +75,10 @@ public abstract class Component {
         return false;
     }
 
+    public void addAlienType(AlienType color){
+        return ;
+    }
+
     public AlienType getColorAlien(){
         return AlienType.NOALIEAN;
     }
@@ -82,7 +87,14 @@ public abstract class Component {
         return Collections.emptyMap();
     }
 
-
+    public Boolean isCompatible(Component other, Direction direction){
+        return switch (direction){
+            case FRONT -> topConnector.isCompatible(other.bottomConnector);
+            case BACK -> bottomConnector.isCompatible(other.topConnector);
+            case RIGHT -> rightConnector.isCompatible(other.leftConnector);
+            case LEFT -> leftConnector.isCompatible(other.rightConnector);
+        };
+    }
 
 
 

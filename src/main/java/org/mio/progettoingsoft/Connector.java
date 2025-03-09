@@ -22,4 +22,14 @@ public enum Connector {
             default -> Connector.FLAT;
         };
     }
+
+    public Boolean isCompatible(Connector other){
+        if (this.equals(Connector.FLAT) || other.equals(Connector.FLAT))
+            return false;
+
+        if (this.equals(Connector.TRIPLE) || other.equals(Connector.TRIPLE))
+            return true;
+
+        return this.equals(other);
+    }
 }
