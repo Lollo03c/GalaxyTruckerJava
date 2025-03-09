@@ -76,9 +76,11 @@ public class Depot extends Component {
         return false;
     }
 
+    @Override
     public Boolean removeGood(GoodType type){
         if (storedGoods.getOrDefault(type, 0) > 0){
             storedGoods.put(type, storedGoods.get(type) - 1);
+            storedQuantity--;
 
             return true;
         }

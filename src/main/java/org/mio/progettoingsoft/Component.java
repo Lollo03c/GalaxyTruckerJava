@@ -70,6 +70,10 @@ public abstract class Component {
         return false;
     }
 
+    public Boolean removeGood(GoodType type){
+        return false;
+    }
+
     public AlienType getColorAlien(){
         return AlienType.NOALIEAN;
     }
@@ -77,6 +81,7 @@ public abstract class Component {
     public Map<GoodType, Integer> getStoredGoods(){
         return Collections.emptyMap();
     }
+
 
 
 

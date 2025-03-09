@@ -8,9 +8,11 @@ import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.exceptions.FullGoodDepot;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
+import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
 
 import javax.swing.*;
 import java.lang.reflect.ParameterizedType;
+import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,6 +99,26 @@ class PlayerTest {
 
         assertThrows(FullGoodDepot.class, () -> player.addGoods(GoodType.BLUE, 1));
         assertEquals(0, player.getGoodsQuantiy(GoodType.BLUE));
+    }
+
+    @Test
+    void should_remove_goods(){
+        Player player = new Player("test");
+
+        Component c1 = new Depot(1, false, false, top, bottom, right, left);
+
+        player.addCompoment(c1, 1, 1, 0);
+        player.addGoods(GoodType.YELLOW, 2);
+
+        player.removeGoods(GoodType.YELLOW, 1);
+        assertEquals(1, player.getGoodsQuantiy(GoodType.YELLOW));
+        assertEquals(0, player.getGoodsQuantiy(GoodType.BLUE));
+
+        assertThrows(NotEnoughGoods.class, () -> player.removeGoods(GoodType.BLUE, 1));
+
+        player.addGoods(GoodType.YELLOW, 1);
+        player.removeGoods(GoodType.YELLOW, 2);
+        assertEquals(0, player.getGoodsQuantiy(GoodType.YELLOW));
 
 
     }

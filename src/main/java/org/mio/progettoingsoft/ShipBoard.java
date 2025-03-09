@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GraveYard;
 import org.mio.progettoingsoft.exceptions.FullGoodDepot;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
+import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -169,6 +170,18 @@ public class ShipBoard {
         goods.put(type, goods.get(type) + 1);
     }
 
+    public void removeGood(GoodType type) throws NotEnoughGoods{
+        boolean removed = false;
+
+        for (int i = 0; !removed && i < componentList.size(); i++){
+            removed = componentList.get(i).removeGood(type);
+        }
+
+        if(!removed)
+            throw new NotEnoughGoods(type);
+
+        goods.put(type, goods.get(type) - 1);
+    }
 
 }
 

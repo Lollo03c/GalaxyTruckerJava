@@ -69,13 +69,14 @@ public class Player {
         return shipBoard.getStoredQuantityGoods(type);
     }
 
-    public void addGoods(GoodType type, Integer quantity) {
+    public void addGoods(GoodType type, Integer quantity) throws FullGoodDepot {
         for (int i = 0; i < quantity; i++)
             shipBoard.addGood(type);
     }
 
     public void removeGoods(GoodType type, Integer quantity) {
-
+        for (int i = 0; i < quantity; i++)
+            shipBoard.removeGood(type);
     }
 
     public Integer getPower(){
