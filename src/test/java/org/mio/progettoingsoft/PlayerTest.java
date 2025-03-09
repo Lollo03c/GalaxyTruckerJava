@@ -46,4 +46,24 @@ class PlayerTest {
         assertThrows(NotEnoughBatteries.class, () -> player.removeEnergy());
     }
 
+    @Test
+    public void should_manage_two_batteries(){
+        Component c1 = new EnergyDepot(1, false, top, bottom, right, left);
+        Component c2 = new EnergyDepot(1, true, top, bottom, right, left);
+        Component c3 = new Housing(1, top, bottom, right, left);
+
+        Player player = new Player("test");
+        player.addCompoment(c1, 1, 1, 0);
+        player.addCompoment(c3, 2, 2, 0);
+        player.addCompoment(c2, 3, 3, 0);
+
+        for (int i = 4; i >= 0; i--){
+            player.removeEnergy();
+            assertEquals(i, player.getQuantBatteries());
+        }
+
+        assertThrows(NotEnoughBatteries.class, () -> player.removeEnergy());
+
+    }
+
 }
