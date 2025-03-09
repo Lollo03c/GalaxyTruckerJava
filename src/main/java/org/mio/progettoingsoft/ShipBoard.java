@@ -1,11 +1,10 @@
 package org.mio.progettoingsoft;
 
+import org.jetbrains.annotations.NotNull;
+import org.mio.progettoingsoft.components.DoubleEngine;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GraveYard;
-import org.mio.progettoingsoft.exceptions.FullGoodDepot;
-import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
-import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
-import org.mio.progettoingsoft.exceptions.NotEnoughHousing;
+import org.mio.progettoingsoft.exceptions.*;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -22,7 +21,11 @@ public class ShipBoard {
     private final int columns;
 
     private  int availableEnergy;
+    private float baseFirePower;
+    private int baseEnginePower;
+
     private Map<GoodType, Integer> goods;
+
 
     private  int exposedConnectors;
     private  int maxEnergy;
@@ -56,6 +59,9 @@ public class ShipBoard {
         for (GoodType type : GoodType.values()){
             goods.put(type, 0);
         }
+
+        baseFirePower = 0f;
+        baseEnginePower = 0;
     }
 
     public int getRows(){
@@ -77,46 +83,55 @@ public class ShipBoard {
         return shipComponents[row][column].isEmpty();
     }
 
-    public List<Component> getAdjacent(Component component, int row, int column){
-        List<Component> possibles = new ArrayList<>();
-        if (shipComponents[row-1][column].isPresent() && component.isCompatible(shipComponents[row-1][column].get(), Direction.FRONT)){
-            possibles.add(shipComponents[row-1][column].get());
+    public Map<Direction, Component> getAdjacent(int row, int column){
+        Map<Direction, Component> adjacents = new HashMap();
+
+        if (validRow(row-1) && shipComponents[row-1][column].isPresent() ){
+            adjacents.put(Direction.FRONT, shipComponents[row-1][column].get());
         }
-        if (shipComponents[row+1][column].isPresent() && component.isCompatible(shipComponents[row+1][column].get(), Direction.BACK)){
-            possibles.add(shipComponents[row+1][column].get());
+        if (validRow(row+1) && shipComponents[row+1][column].isPresent() ){
+            adjacents.put(Direction.BACK, shipComponents[row+1][column].get());
         }
-        if (shipComponents[row][column+1].isPresent() && component.isCompatible(shipComponents[row][column+1].get(), Direction.RIGHT)){
-            possibles.add(shipComponents[row][column+1].get());
+        if (validColumn(column + 1) && shipComponents[row][column+1].isPresent() ){
+            adjacents.put(Direction.RIGHT, shipComponents[row][column+1].get());
         }
-        if (shipComponents[row][column-1].isPresent() && component.isCompatible(shipComponents[row][column-1].get(), Direction.LEFT)){
-            possibles.add(shipComponents[row][column-1].get());
+        if (validColumn(column - 1) && shipComponents[row][column-1].isPresent() ){
+            adjacents.put(Direction.LEFT, shipComponents[row][column-1].get());
         }
 
-        return possibles;
+        return adjacents;
     }
 
-    public boolean addComponentToPosition(Component component, int row, int column){
+    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacement{
         if (bannedCoordinates.contains(new Cordinate(row, column)))
-            return false;
+            throw new IncorrectPlacement(row, column, component);
 
         if (!validRow(row) || !validColumn(column))
-            return false;
+            throw new IncorrectPlacement(row, column, component);
 
         if (shipComponents[row][column].isPresent()){
-            return false;
+            throw new IncorrectPlacement(row, column, component);
         }
+
+        Map<Direction, Component> adjacent = getAdjacent(row, column);
+        boolean added = false;
+        for (Direction dir : adjacent.keySet()){
+            added = added || component.isCompatible(adjacent.get(dir), dir);
+        }
+
+        if (!added)
+            throw new IncorrectPlacement(row, column, component);
 
         shipComponents[row][column] = Optional.of(component);
         availableEnergy += component.getEnergyQuantity();
 
-        List<Component> adj = getAdjacent(component, row, column);
-
-        for (Component comp : getAdjacent(component, row, column)) {
+        for (Component comp : getAdjacent(row, column).values()) {
             component.addAlienType(comp.getColorAlien());
             comp.addAlienType(component.getColorAlien());
         }
 
-
+        baseFirePower += component.getFirePower();
+        baseEnginePower += component.getEnginePower();
 
         getComponentsList();
 
@@ -218,6 +233,103 @@ public class ShipBoard {
 
         if (!added)
             throw new NotEnoughHousing();
+    }
+
+
+
+    public List<Component> getDoubleEngine(){
+        return getComponentsStream()
+                .filter(comp -> comp.getType().equals(ComponentType.DOUBLE_ENGINE))
+                .toList();
+    }
+
+    public List<Component> getDoubleDrill(Direction dir){
+        return getComponentsStream()
+                .filter(comp -> comp.getType().equals(ComponentType.DOUBLE_DRILL))
+                .filter(comp -> comp.getDirection() != null)
+                .filter(comp -> comp.getDirection().equals(dir))
+                .toList();
+    }
+
+    private List<Component> getIncorrectEngines() {
+        List<Component> incorrect = new ArrayList<>();
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++)
+                if (shipComponents[i][j].isPresent()){
+                    Component comp = shipComponents[i][j].get();
+                    if (comp.getType().equals(ComponentType.ENGINE) || comp.getType().equals(ComponentType.DOUBLE_ENGINE)){
+                        if (! comp.getDirection().equals(Direction.BACK)){
+                            incorrect.add(comp);
+                        }
+                        else if (validRow(i+1) && shipComponents[i + 1][j].isPresent()){
+                            incorrect.add(shipComponents[i][j].get());
+                        }
+
+
+                    }
+
+                }
+        }
+        return incorrect;
+    }
+
+    private List<Component> getIncorrectDrill() {
+        List<Component> incorrect = new ArrayList<>();
+
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < columns; j++){
+                if (shipComponents[i][j].isPresent()) {
+                    Component comp = shipComponents[i][j].get();
+
+                    if (comp.getType().equals(ComponentType.DRILL) || comp.getType().equals(ComponentType.DOUBLE_DRILL)) {
+                        int row = i;
+                        int col = j;
+
+                        switch (comp.getDirection()){
+                            case FRONT -> row--;
+                            case BACK -> row++;
+                            case LEFT -> col--;
+                            case RIGHT -> col++;
+                        }
+
+                        if (validRow(row) && validColumn(col) && shipComponents[row][col].isPresent())
+                            incorrect.add(shipComponents[row][col].get());
+
+
+                    }
+                }
+
+            }
+        }
+
+        return incorrect;
+    }
+
+    public Set<Component> getIncorrectComponents(){
+        Set<Component> incorrect = new HashSet<>();
+
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < columns; j++){
+                if (shipComponents[i][j].isPresent()) {
+                    Component comp = shipComponents[i][j].get();
+
+                    //
+                    Map<Direction, Component> adjcent = getAdjacent(i, j);
+                    boolean correct = true;
+                    for (Direction dir : adjcent.keySet()) {
+                        correct = correct && comp.isCompatible(adjcent.get(dir), dir);
+                    }
+
+                    if (!correct) {
+                        incorrect.add(shipComponents[i][j].get());
+                    }
+                }
+
+            }
+        }
+
+        return incorrect;
     }
 }
 

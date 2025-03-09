@@ -112,10 +112,29 @@ public abstract class Component {
         return false;
     }
 
-    public Boolean containsAlien(AlienType type){
+    public Boolean containsAlien(AlienType type) {
         return false;
     }
 
+    public Float getFirePower(){
+        return 0f;
+    }
 
+    public int getEnginePower(){
+        return 0;
+    }
+
+    public Direction getDirection(){
+        return null;
+    }
+
+    public Connector getConnector(Direction dir){
+        return switch (dir){
+            case FRONT -> topConnector;
+            case RIGHT -> rightConnector;
+            case BACK -> bottomConnector;
+            case LEFT -> leftConnector;
+        };
+    }
 
 }

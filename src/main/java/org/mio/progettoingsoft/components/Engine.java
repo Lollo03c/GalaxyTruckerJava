@@ -8,6 +8,7 @@ import org.mio.progettoingsoft.Direction;
 public class Engine extends Component {
 
     private Direction direction;
+    private final int enginePower = 1;
 
     public Engine(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         super(id, ComponentType.ENGINE, topConn, bottomConn, rightConn, leftConn);
@@ -19,6 +20,11 @@ public class Engine extends Component {
         super(id, type, topConn, bottomConn, rightConn, leftConn);
 
         this.direction = Direction.BACK;
+    }
+
+    @Override
+    public Direction getDirection(){
+        return direction;
     }
 
     public void setDirection(Direction dir){
@@ -45,5 +51,10 @@ public class Engine extends Component {
             case BACK -> Direction.RIGHT;
             case RIGHT -> Direction.FRONT;
         };
+    }
+
+    @Override
+    public int getEnginePower(){
+        return enginePower;
     }
 }

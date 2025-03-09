@@ -1,10 +1,7 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.exceptions.FullGoodDepot;
-import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
-import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
-import org.mio.progettoingsoft.exceptions.NotEnoughHousing;
+import org.mio.progettoingsoft.exceptions.*;
 
 import java.awt.desktop.PreferencesEvent;
 import java.util.HashMap;
@@ -94,15 +91,15 @@ public class Player {
     }
 
     //rotazione orario
-    public void addCompoment(Component comp, int row, int column, int rotations){
+    public void addCompoment(Component comp, int row, int column, int rotations) throws IncorrectPlacement {
 // DOMANDA : Dove il giocatore sceglie quante volte girare il componente?
 //        (Anto) credo sia compito del controller
         for (int i = 0; i < rotations; i++){
             comp.rotateClockwise();
         }
 //secondo me potremmo mettere il metodo void e non fare il controllo con l'if
-        if(!shipBoard.addComponentToPosition(comp, row, column))
-            System.out.println("Occupied cell");
+        shipBoard.addComponentToPosition(comp, row, column);
+//            System.out.println("Occupied cell");
 
     }
 

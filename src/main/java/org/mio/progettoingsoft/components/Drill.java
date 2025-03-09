@@ -19,6 +19,7 @@ public class Drill extends Component {
         direction = Direction.FRONT;
     }
 
+    @Override
     public Direction getDirection(){
         return this.direction;
     }
@@ -47,5 +48,13 @@ public class Drill extends Component {
             case BACK -> Direction.RIGHT;
             case RIGHT -> Direction.FRONT;
         };
+    }
+
+    @Override
+    public Float getFirePower(){
+        if (direction.equals(Direction.FRONT))
+            return 1f;
+
+        return 0.5f;
     }
 }
