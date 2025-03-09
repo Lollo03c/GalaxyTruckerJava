@@ -23,6 +23,7 @@ public enum GoodType {
         };
 
     }
+
     public static GoodType stringToGoodType(String s){
         return switch (s){
             case "BLUE" -> GoodType.BLUE;
