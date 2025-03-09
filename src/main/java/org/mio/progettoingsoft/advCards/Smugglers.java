@@ -9,7 +9,7 @@ public class Smugglers extends AdvancedEnemy {
     private final int stolenGoods;
     private final List<GoodType> goods;
 
-    protected Smugglers(int id, int level, int strength, int daysLost, int stolenGoods, List<GoodType> goods) {
+    public Smugglers(int id, int level, int strength, int daysLost, int stolenGoods, List<GoodType> goods) {
         super(id, level, strength, daysLost);
         this.stolenGoods = stolenGoods;
         this.goods = goods;

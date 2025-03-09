@@ -23,4 +23,14 @@ public enum GoodType {
         };
 
     }
+    public static GoodType stringToGoodType(String s){
+        return switch (s){
+            case "BLUE" -> GoodType.BLUE;
+            case "GREEN"-> GoodType.GREEN;
+            case "YELLOW"-> GoodType.YELLOW;
+            case "RED" -> GoodType.RED;
+            default -> GoodType.BLUE;
+
+        };
+    }
 }

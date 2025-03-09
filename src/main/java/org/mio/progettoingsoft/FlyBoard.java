@@ -6,6 +6,9 @@ import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.HourGlass;
 import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
+import org.mio.progettoingsoft.advCards.Slaver;
+import org.mio.progettoingsoft.advCards.Smugglers;
 import org.mio.progettoingsoft.components.*;
 
 
@@ -156,5 +159,51 @@ public class FlyBoard {
         }
 
 
+    }
+
+    public void loadAdventureCard(){
+        ObjectMapper mapper = new ObjectMapper();
+        try{
+            JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
+            final int nCards = rootNode.size();
+            for (int i = 0; i < nCards; i++) {
+                String type = rootNode.get(i).path("type").asText();
+                int id = rootNode.get(i).path("id").asInt();
+                int level = rootNode.get(i).path("level").asInt();
+                switch (type) {
+                    case "SLAVERS":
+                        int strength = rootNode.get(i).path("strength").asInt();
+                        int daysLost = rootNode.get(i).path("daysLost").asInt();
+                        int reward = rootNode.get(i).path("reward").asInt();
+                        int crewLost = rootNode.get(i).path("crewLost").asInt();
+                        this.deck.add(new Slaver(id,level,strength,daysLost,reward,crewLost));
+                        break;
+                    case "SMUGGLERS":
+                        strength = rootNode.get(i).path("strength").asInt();
+                        daysLost = rootNode.get(i).path("daysLost").asInt();
+                        JsonNode rewardNode = rootNode.get("reward");
+                        int goodsLost = rootNode.get(i).path("goodsLost").asInt();
+                        List<GoodType> rewardList = new ArrayList<>();
+                        Iterator<JsonNode> elements = rewardNode.elements();
+                        while (elements.hasNext()) {
+                            GoodType t = GoodType.stringToGoodType(elements.next().asText());
+                            rewardList.add(t);
+
+                        }
+                        this.deck.add(new Smugglers(id,level,strength,daysLost,goodsLost,rewardList));
+                        break;
+                    case "PIRATE":
+                        strength = rootNode.get(i).path("strength").asInt();
+                        daysLost = rootNode.get(i).path("daysLost").asInt();
+                        reward = rootNode.get(i).path("reward").asInt();
+                        JsonNode cannonsNode = rootNode.get("reward");
+                        List<CannonPenalty> cannons = new ArrayList<>();
+                        Iterator<JsonNode> elements = rewardNode.elements();
+                }
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }
