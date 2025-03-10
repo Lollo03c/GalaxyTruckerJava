@@ -64,19 +64,19 @@ public class Player {
         credits = Integer.max(0, credits - quantity);
     }
 
-    public Integer getGoodsQuantiy(GoodType type) {
-        return shipBoard.getStoredQuantityGoods(type);
-    }
+//    public Integer getGoodsQuantiy(GoodType type) {
+//        return shipBoard.getStoredQuantityGoods(type);
+//    }
 
-    public void addGoods(GoodType type, Integer quantity) throws FullGoodDepot {
-        for (int i = 0; i < quantity; i++)
-            shipBoard.addGood(type);
-    }
+//    public void addGoods(GoodType type, Integer quantity) throws FullGoodDepot {
+//        for (int i = 0; i < quantity; i++)
+//            shipBoard.addGood(type);
+//    }
 
-    public void removeGoods(GoodType type, Integer quantity) throws NotEnoughGoods {
-        for (int i = 0; i < quantity; i++)
-            shipBoard.removeGood(type);
-    }
+//    public void removeGoods(GoodType type, Integer quantity) throws NotEnoughGoods {
+//        for (int i = 0; i < quantity; i++)
+//            shipBoard.removeGood(type);
+//    }
 
     public Integer getPower(){
         return 0;

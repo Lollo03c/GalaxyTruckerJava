@@ -7,7 +7,13 @@ import org.mio.progettoingsoft.Direction;
 
 public class DoubleEngine extends Engine {
 
+    private final int baseEnginePower = 0;
+
     public DoubleEngine(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         super(id, ComponentType.DOUBLE_ENGINE, topConn, bottomConn, rightConn, leftConn);
+    }
+
+    public int getEnginePower(){
+        return baseEnginePower;
     }
 }

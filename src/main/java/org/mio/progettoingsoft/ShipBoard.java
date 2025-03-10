@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft;
 
-import org.jetbrains.annotations.NotNull;
+import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.DoubleEngine;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GraveYard;
@@ -72,13 +72,28 @@ public class ShipBoard {
         return columns;
     }
 
-    public Optional<Component> getComponent(int row, int col){
-        return shipComponents[row][col];
+    public int getBaseEnginePower(){
+        return baseEnginePower;
     }
 
-    public boolean isEmptyComponent(int row, int column){
+    public float getBaseFirePower(){
+        return baseFirePower;
+    }
+
+    public Component getComponent(int row, int col) throws EmptyComponent, InvalidPosition{
+        if (!validRow(row) || !validColumn(col))
+            throw new InvalidPosition(row, col);
+
+        if (shipComponents[row][col].isEmpty())
+            throw new EmptyComponent(row, col);
+
+        return shipComponents[row][col].get();
+
+    }
+
+    public boolean isEmptyComponent(int row, int column) throws InvalidPosition{
         if (!validRow(row) || validColumn(column))
-            return false;
+            throw new InvalidPosition(row, column);
 
         return shipComponents[row][column].isEmpty();
     }
@@ -102,25 +117,26 @@ public class ShipBoard {
         return adjacents;
     }
 
-    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacement{
+    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacement, InvalidPosition{
         if (bannedCoordinates.contains(new Cordinate(row, column)))
-            throw new IncorrectPlacement(row, column, component);
+            throw new InvalidPosition(row, column);
 
         if (!validRow(row) || !validColumn(column))
-            throw new IncorrectPlacement(row, column, component);
+            throw new InvalidPosition(row, column);
 
         if (shipComponents[row][column].isPresent()){
             throw new IncorrectPlacement(row, column, component);
         }
 
-        Map<Direction, Component> adjacent = getAdjacent(row, column);
-        boolean added = false;
-        for (Direction dir : adjacent.keySet()){
-            added = added || component.isCompatible(adjacent.get(dir), dir);
-        }
 
-        if (!added)
-            throw new IncorrectPlacement(row, column, component);
+//        Map<Direction, Component> adjacent = getAdjacent(row, column);
+//        boolean added = false;
+//        for (Direction dir : adjacent.keySet()){
+//            added = added || component.isCompatible(adjacent.get(dir), dir);
+//        }
+//
+//        if (!added)
+//            throw new IncorrectPlacement(row, column, component);
 
         shipComponents[row][column] = Optional.of(component);
         availableEnergy += component.getEnergyQuantity();
@@ -134,16 +150,30 @@ public class ShipBoard {
         baseEnginePower += component.getEnginePower();
 
         getComponentsList();
-
-        return true;
     }
 
-    public boolean removeComponentFromPosition(int row, int column){
-        if(!validRow(row) || !validColumn(column) || shipComponents[row][column].isEmpty())
-            return false;
+    public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacement, InvalidPosition{
+        while(angle > 0) {
+            comp.rotateClockwise();
+            angle--;
+        }
+        addComponentToPosition(comp, row, column);
+    }
 
+    public void removeComponent(int row, int column) throws EmptyComponent {
+        if (!validRow(row) || !validColumn(column)){
+            throw new InvalidPosition(row, column);
+        }
+
+        if (shipComponents[row][column].isEmpty())
+            throw new EmptyComponent(row, column);
+
+        Component toRemove = shipComponents[row][column].get();
         shipComponents[row][column] = Optional.empty();
-        return true;
+
+        availableEnergy -= toRemove.getEnergyQuantity();
+        baseEnginePower -= toRemove.getEnginePower();
+        baseFirePower -= toRemove.getFirePower();
     }
 
     private Stream<Optional<Component>> getStreamOptComponents(){
@@ -179,9 +209,6 @@ public class ShipBoard {
         availableEnergy--;
     }
 
-    public void removeComponent(int row, int column) {
-    }
-
     private boolean validRow(int row){
         return row >= 0 && row < rows;
     }
@@ -198,7 +225,7 @@ public class ShipBoard {
         return goods.getOrDefault(type, 0);
     }
 
-    public void addGood(GoodType type) throws FullGoodDepot {
+    /*public void addGood(GoodType type) throws FullGoodDepot {
         boolean added = false;
 
         for (int i = 0; !added && i < componentList.size(); i++){
@@ -222,6 +249,19 @@ public class ShipBoard {
             throw new NotEnoughGoods(type);
 
         goods.put(type, goods.get(type) - 1);
+    }*/
+
+    public List<Component> canContainGood(GoodType type){
+        return getComponentsStream()
+                .filter(comp -> comp.canContainsGood(type))
+                .toList();
+    }
+
+    public List<Component> canRemoveGoods(){
+        return getComponentsStream()
+                .filter(comp -> comp.getStoredGoods().values().stream()
+                        .anyMatch(val -> val > 0))
+                .toList();
     }
 
     public void addHumanGuest() throws NotEnoughHousing{
@@ -233,6 +273,24 @@ public class ShipBoard {
 
         if (!added)
             throw new NotEnoughHousing();
+    }
+
+    public List<Component> canContainsHumanGuest() {
+        return getComponentsStream()
+                .filter(comp -> comp.canContainsHumanGuest())
+                .toList();
+    }
+
+    public List<Component> canContainsAlienGuest(AlienType type){
+        return getComponentsStream()
+                .filter(comp -> comp.canContainsAlien(type))
+                .toList();
+    }
+
+    public List<Component> canRemoveGuest(){
+        return getComponentsStream()
+                .filter(comp -> comp.containsGuest())
+                .toList();
     }
 
 

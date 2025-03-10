@@ -72,53 +72,53 @@ class PlayerTest {
 
     }
 
-    @Test
-    public void should_add_some_goods(){
-        Player player = new Player("test");
+//    @Test
+//    public void should_add_some_goods(){
+//        Player player = new Player("test");
+//
+//        Component c1 = new Depot(1, false, false, top, bottom, right, left);
+//        Component c2 = new Depot(1, false, true, top, bottom, right, left);
+//
+//
+//        player.addCompoment(c1, 1, 1, 0);
+//        assertThrows(FullGoodDepot.class, () -> player.addGoods(GoodType.RED, 1));
+//
+//        player.addCompoment(c2, 2, 2, 0);
+//        player.addGoods(GoodType.RED, 1);
+//        assertEquals(1, player.getGoodsQuantiy(GoodType.RED));
+//        assertEquals(0, player.getGoodsQuantiy(GoodType.YELLOW));
+//
+//        player.addGoods(GoodType.YELLOW, 1);
+//        assertEquals(1, player.getGoodsQuantiy(GoodType.YELLOW));
+//
+//        player.addGoods(GoodType.YELLOW, 1);
+//        assertEquals(2, player.getGoodsQuantiy(GoodType.YELLOW));
+//
+//        assertThrows(FullGoodDepot.class, () -> player.addGoods(GoodType.BLUE, 1));
+//        assertEquals(0, player.getGoodsQuantiy(GoodType.BLUE));
+//    }
 
-        Component c1 = new Depot(1, false, false, top, bottom, right, left);
-        Component c2 = new Depot(1, false, true, top, bottom, right, left);
-
-
-        player.addCompoment(c1, 1, 1, 0);
-        assertThrows(FullGoodDepot.class, () -> player.addGoods(GoodType.RED, 1));
-
-        player.addCompoment(c2, 2, 2, 0);
-        player.addGoods(GoodType.RED, 1);
-        assertEquals(1, player.getGoodsQuantiy(GoodType.RED));
-        assertEquals(0, player.getGoodsQuantiy(GoodType.YELLOW));
-
-        player.addGoods(GoodType.YELLOW, 1);
-        assertEquals(1, player.getGoodsQuantiy(GoodType.YELLOW));
-
-        player.addGoods(GoodType.YELLOW, 1);
-        assertEquals(2, player.getGoodsQuantiy(GoodType.YELLOW));
-
-        assertThrows(FullGoodDepot.class, () -> player.addGoods(GoodType.BLUE, 1));
-        assertEquals(0, player.getGoodsQuantiy(GoodType.BLUE));
-    }
-
-    @Test
-    void should_remove_goods(){
-        Player player = new Player("test");
-
-        Component c1 = new Depot(1, false, false, top, bottom, right, left);
-
-        player.addCompoment(c1, 1, 1, 0);
-        player.addGoods(GoodType.YELLOW, 2);
-
-        player.removeGoods(GoodType.YELLOW, 1);
-        assertEquals(1, player.getGoodsQuantiy(GoodType.YELLOW));
-        assertEquals(0, player.getGoodsQuantiy(GoodType.BLUE));
-
-        assertThrows(NotEnoughGoods.class, () -> player.removeGoods(GoodType.BLUE, 1));
-
-        player.addGoods(GoodType.YELLOW, 1);
-        player.removeGoods(GoodType.YELLOW, 2);
-        assertEquals(0, player.getGoodsQuantiy(GoodType.YELLOW));
-
-
-    }
+//    @Test
+//    void should_remove_goods(){
+//        Player player = new Player("test");
+//
+//        Component c1 = new Depot(1, false, false, top, bottom, right, left);
+//
+//        player.addCompoment(c1, 1, 1, 0);
+//        player.addGoods(GoodType.YELLOW, 2);
+//
+//        player.removeGoods(GoodType.YELLOW, 1);
+//        assertEquals(1, player.getGoodsQuantiy(GoodType.YELLOW));
+//        assertEquals(0, player.getGoodsQuantiy(GoodType.BLUE));
+//
+//        assertThrows(NotEnoughGoods.class, () -> player.removeGoods(GoodType.BLUE, 1));
+//
+//        player.addGoods(GoodType.YELLOW, 1);
+//        player.removeGoods(GoodType.YELLOW, 2);
+//        assertEquals(0, player.getGoodsQuantiy(GoodType.YELLOW));
+//
+//
+//    }
 
     @Test
     void should_add_some_aliens(){

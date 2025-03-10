@@ -92,4 +92,12 @@ public class Depot extends Component {
     public Map<GoodType, Integer> getStoredGoods(){
         return storedGoods;
     }
+
+    @Override
+    public Boolean canContainsGood(GoodType type){
+        if (storedQuantity < maxQuantity && storedGoods.containsKey(type))
+            return true;
+
+        return false;
+    }
 }

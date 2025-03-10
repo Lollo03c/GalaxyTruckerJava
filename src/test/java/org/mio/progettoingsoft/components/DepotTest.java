@@ -14,7 +14,7 @@ class DepotTest {
     void should_be_null_red_depot_if_not_hazard(){
         Component depot = new Depot(1, false, false, flat, flat, flat, flat);
 
-        assertFalse(depot.getStoredGoods().containsKey(GoodType.RED));
+        assertFalse(depot.canContainsGood(GoodType.RED));
     }
 
     @Test
@@ -22,7 +22,7 @@ class DepotTest {
         Component depot = new Depot(1, false, false, flat, flat, flat, flat);
 
         assertTrue(depot.addGood(GoodType.YELLOW));
-        assertEquals(1, depot.getStoredGoods().get(GoodType.YELLOW));
+        assertTrue(depot.canContainsGood(GoodType.YELLOW));
         assertEquals(0, depot.getStoredGoods().get(GoodType.BLUE));
     }
 

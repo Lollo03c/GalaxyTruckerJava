@@ -137,4 +137,20 @@ public abstract class Component {
         };
     }
 
+    public Boolean canContainsAlien(AlienType type){
+        return false;
+    }
+
+    public Boolean canContainsGood(GoodType type){
+        return false;
+    }
+
+    public Boolean canContainsHumanGuest(){
+        return false;
+    }
+
+    public Boolean containsGuest(){
+        return false;
+    }
+
 }

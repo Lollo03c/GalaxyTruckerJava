@@ -98,5 +98,18 @@ public class Housing extends Component {
     public Map<AlienType, Boolean> getGuestedAlien(){
         return guestedAlien;
     }
+
+    @Override
+    public Boolean canContainsAlien(AlienType type){
+        if(guestedAlien.containsKey(type) && isEmpty())
+            return true;
+
+        return false;
+    }
+
+    @Override
+    public Boolean containsGuest(){
+        return !isEmpty();
+    }
 }
 
