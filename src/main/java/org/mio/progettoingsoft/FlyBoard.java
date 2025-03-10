@@ -6,9 +6,7 @@ import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.HourGlass;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.advCards.CannonPenalty;
-import org.mio.progettoingsoft.advCards.Slaver;
-import org.mio.progettoingsoft.advCards.Smugglers;
+import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.components.*;
 
 
@@ -39,8 +37,10 @@ public class FlyBoard {
 
     public FlyBoard(){
         this.coveredComponents = new ArrayList<>();
+        this.uncoverdeComponents = new ArrayList<>();
         this.scoryBoard = new ArrayList<>();
         loadComponents();
+        loadAdventureCard();
     }
 
     public Boolean addPlayer(String username){
@@ -89,7 +89,6 @@ public class FlyBoard {
 
     public void loadComponents() {
 
-
         ObjectMapper mapper = new ObjectMapper();
 
         try {
@@ -118,9 +117,8 @@ public class FlyBoard {
                     }
                     break;
 
-                    case "HOUSING": {
+                    case "HOUSING":
                         this.coveredComponents.add(new Housing(id, top, bottom, right, left));
-                    }
                     break;
 
                     case "PIPE":
@@ -162,44 +160,82 @@ public class FlyBoard {
     }
 
     public void loadAdventureCard(){
+
         ObjectMapper mapper = new ObjectMapper();
+
         try{
             JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
             final int nCards = rootNode.size();
+
             for (int i = 0; i < nCards; i++) {
-                String type = rootNode.get(i).path("type").asText();
                 int id = rootNode.get(i).path("id").asInt();
                 int level = rootNode.get(i).path("level").asInt();
-                Iterator<JsonNode> elements;
+                String type = rootNode.get(i).path("type").asText();
+
                 switch (type) {
-                    case "SLAVERS":
+                    case "SLAVERS": {
                         int strength = rootNode.get(i).path("strength").asInt();
                         int daysLost = rootNode.get(i).path("daysLost").asInt();
                         int reward = rootNode.get(i).path("reward").asInt();
                         int crewLost = rootNode.get(i).path("crewLost").asInt();
-                        this.deck.add(new Slaver(id,level,strength,daysLost,reward,crewLost));
-                        break;
-                    case "SMUGGLERS":
-                        strength = rootNode.get(i).path("strength").asInt();
-                        daysLost = rootNode.get(i).path("daysLost").asInt();
-                        JsonNode rewardNode = rootNode.get("reward");
-                        int goodsLost = rootNode.get(i).path("goodsLost").asInt();
-                        List<GoodType> rewardList = new ArrayList<>();
-                        elements = rewardNode.elements();
-                        while (elements.hasNext()) {
-                            GoodType t = GoodType.stringToGoodType(elements.next().asText());
-                            rewardList.add(t);
+                        this.deck.add(new Slaver(id, level, strength, daysLost, reward, crewLost));
+                    }
+                    break;
 
+                    case "SMUGGLERS": {
+                        int strength = rootNode.get(i).path("strength").asInt();
+                        int daysLost = rootNode.get(i).path("daysLost").asInt();
+                        List<GoodType> rewardList = new ArrayList<>();
+                        JsonNode rewardNode = rootNode.get(i).path("reward");
+                        for (JsonNode reward : rewardNode) {
+                            rewardList.add(GoodType.stringToGoodType(reward.asText()));
                         }
-                        this.deck.add(new Smugglers(id,level,strength,daysLost,goodsLost,rewardList));
-                        break;
-                    case "PIRATE":
-                        strength = rootNode.get(i).path("strength").asInt();
-                        daysLost = rootNode.get(i).path("daysLost").asInt();
-                        reward = rootNode.get(i).path("reward").asInt();
-                        JsonNode cannonsNode = rootNode.get("rward");
+                        int goodsLost = rootNode.get(i).path("goodsLost").asInt();
+                        this.deck.add(new Smugglers(id, level, strength, daysLost, goodsLost, rewardList));
+                    }
+                    break;
+
+                    case "PIRATE": {
+                        int strength = rootNode.get(i).path("strength").asInt();
+                        int daysLost = rootNode.get(i).path("daysLost").asInt();
                         List<CannonPenalty> cannons = new ArrayList<>();
-                        elements = cannonsNode.elements();
+                        JsonNode cannonsNode = rootNode.get(i).path("cannons");
+                        for (JsonNode cannon : cannonsNode) {
+                            cannons.add(CannonPenalty.stringToCannonPenalty(cannon.get(1).asText(),cannon.get(0).asText()));
+                        }
+                        int reward = rootNode.get(i).path("reward").asInt();
+                        this.deck.add(new Pirate(id, level, strength, daysLost, cannons, reward));
+                    }
+                    break;
+
+                    case "STARDUST":
+                        this.deck.add(new Stardust(id, level));
+                        break;
+
+                    case "OPENSPACE":
+                        this.deck.add(new OpenSpace(id, level));
+                        break;
+
+                    case "METEORSWARM": {
+                        List<Meteor> meteors = new ArrayList<>();
+                        JsonNode meteorsNode = rootNode.get(i).path("meteors");
+                        for(JsonNode meteor : meteorsNode) {
+                            meteors.add(Meteor.stringToMeteor(meteor.get(1).asText(),meteor.get(0).asText()));
+                        }
+                        this.deck.add(new MeteorSwarm(id, level, meteors));
+                    }
+                    break;
+
+                    case "PLANETS": {
+                        int daysLost = rootNode.get(i).path("daysLost").asInt();
+                        List<Planet> planets = new ArrayList<>();
+                        JsonNode planetsNode = rootNode.get(i).path("planets");
+                        for(JsonNode planet : planetsNode) {
+                            planets.add(Planet.stringToPlanet(planet));
+                        }
+                        this.deck.add(new Planets(id, level, daysLost, planets));
+                    }
+                    break;
                 }
             }
         }

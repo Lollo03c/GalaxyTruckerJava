@@ -8,7 +8,7 @@ public class Pirate extends AdvancedEnemy{
     private final List<CannonPenalty> cannons;
     private final int reward;
 
-    protected Pirate(int id, int level, int strength, int daysLost, List<CannonPenalty> cannons, int reward) {
+    public Pirate(int id, int level, int strength, int daysLost, List<CannonPenalty> cannons, int reward) {
         super(id, level, strength, daysLost);
         this.cannons = cannons;
         this.reward = reward;

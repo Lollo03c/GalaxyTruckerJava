@@ -1,8 +1,10 @@
 package org.mio.progettoingsoft.advCards;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.components.GoodType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,5 +18,15 @@ public class Planet {
 
     public void land(Player player){
 
-    };
+    }
+
+    public static Planet stringToPlanet(JsonNode goodsNode){
+        List<GoodType> goods = new ArrayList<>();
+
+        for(JsonNode g : goodsNode){
+            goods.add(GoodType.stringToGoodType(g.asText()));
+        }
+
+        return new Planet(goods);
+    }
 }
