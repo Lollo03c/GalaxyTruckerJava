@@ -290,22 +290,26 @@ public class FlyBoard {
                     }
                     break;
 
-                    /* case "COMBATZONE": {
+                    case "COMBATZONE": {
                         List<CombatLine> combatLines = new ArrayList<>();
+                        List<Penalty> cannonPenalties = new ArrayList<>();
                         JsonNode criterionsNode = rootNode.get(i).path("criterion");
                         JsonNode penaltyNode = rootNode.get(i).path("penalty");
                         for (int j = 0; j < criterionsNode.size(); j++) {
                             if (penaltyNode.get(j).get(0).asText().equals("cannonsPenalty")) {
                                 for (JsonNode cannonsPenalty : penaltyNode.get(j).get(1)) {
-                                    combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), CannonPenalty.stringToCannonPenalty(cannonsPenalty.get(1).asText(), cannonsPenalty.get(0).asText())));
+                                    cannonPenalties.add(CannonPenalty.stringToCannonPenalty(cannonsPenalty.get(1).asText(), cannonsPenalty.get(0).asText()));
                                 }
+                                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), cannonPenalties));
                             } else {
-                                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), LoseSomethingPenalty.stringToPenalty(penaltyNode.get(j).get(0).asText(), penaltyNode.get(j).get(1).asInt())));
+                                List<Penalty> penaltyList = new ArrayList<>();
+                                penaltyList.add(LoseSomethingPenalty.stringToPenalty(penaltyNode.get(j).get(0).asText(), penaltyNode.get(j).get(1).asInt()));
+                                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), penaltyList));
                             }
                         }
                         this.deck.add(new CombatZone(id, level, combatLines));
                     }
-                    break; */
+                    break;
 
                     case "ABANDONEDSHIP": {
                         int daysLost = rootNode.get(i).path("daysLost").asInt();

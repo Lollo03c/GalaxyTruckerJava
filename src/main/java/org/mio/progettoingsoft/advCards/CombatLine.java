@@ -1,11 +1,13 @@
 package org.mio.progettoingsoft.advCards;
 
+import java.util.List;
+
 public class CombatLine {
     private Criterion criterion;
-    private Penalty penalty;
+    private List<Penalty> penalties;
 
-    public CombatLine(Criterion criterion, Penalty penalty) {
+    public CombatLine(Criterion criterion, List<Penalty> penalties) {
         this.criterion = criterion;
-        this.penalty = penalty;
+        this.penalties = penalties;
     }
 }

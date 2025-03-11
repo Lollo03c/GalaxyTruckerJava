@@ -113,7 +113,7 @@
     "type" : "COMBATZONE",
 
     "criterion" : ["CREW", "ENGINE_POWER", "FIRE_POWER"],
-    "penalty" : [["daysLost", "3"], ["crewLost","2"], ["cannonsPenalty", ["BACK", "LIGHT"], ["BACK", "HEAVY"]]]
+    "penalty" : [["daysLost", "3"], ["crewLost","2"], ["cannonsPenalty", [["BACK", "LIGHT"], ["BACK", "HEAVY"]]]]
   },
   {
     "id" : "17",
