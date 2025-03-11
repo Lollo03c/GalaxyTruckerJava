@@ -2,9 +2,10 @@ package org.mio.progettoingsoft;
 
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.*;
-import org.mio.progettoingsoft.exceptions.EmptyComponent;
-import org.mio.progettoingsoft.exceptions.IncorrectPlacement;
+import org.mio.progettoingsoft.exceptions.EmptyComponentException;
+import org.mio.progettoingsoft.exceptions.IncorrectPlacementException;
 
+import java.io.PipedOutputStream;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +39,7 @@ class ShipBoardTest {
         ship.addComponentToPosition(comp, 2, 2);
 
         assertEquals(comp, ship.getComponent(2, 2));
-        assertThrows(EmptyComponent.class, () -> ship.getComponent(1, 1));
+        assertThrows(EmptyComponentException.class, () -> ship.getComponent(1, 1));
     }
 
     @Test
@@ -50,7 +51,7 @@ class ShipBoardTest {
         assertEquals(comp, ship.getComponent(2, 2));
 
         ship.removeComponent(2, 2);
-        assertThrows(EmptyComponent.class, () -> ship.getComponent(2, 2));
+        assertThrows(EmptyComponentException.class, () -> ship.getComponent(2, 2));
     }
 
     @Test
@@ -62,7 +63,7 @@ class ShipBoardTest {
         ship.addComponentToPosition(comp, 2, 2);
         assertEquals(comp, ship.getComponent(2, 2));
 
-        assertThrows(IncorrectPlacement.class, () -> ship.addComponentToPosition(comp2, 2, 2));
+        assertThrows(IncorrectPlacementException.class, () -> ship.addComponentToPosition(comp2, 2, 2));
     }
 
     @Test
@@ -518,6 +519,36 @@ class ShipBoardTest {
         ship.addComponentToPosition(new DoubleEngine(6, Connector.FLAT, Connector.FLAT, Connector.SINGLE, Connector.FLAT), 1, 2);
         assertEquals(0, ship.getIncorrectComponents().size());
         assertEquals(0, ship.getIncorrectEngines().size());
+    }
+
+    // exposed connector tests
+    @Test
+    void should_init_ship_and_count_seven_exposed_connectors(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(7, ship.getExposedConnectors());
+    }
+
+    @Test
+    void should_init_ship_and_count_eight_exposed_connectors_with_border_components(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(5, Connector.SINGLE, Connector.SINGLE, Connector.SINGLE, Connector.FLAT), 4, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(8, ship.getExposedConnectors());
+    }
+
+    @Test
+    void should_init_ship_and_count_seven_exposed_connectors_with_spaces(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.TRIPLE, Connector.TRIPLE, Connector.FLAT), 2, 1);
+        ship.addComponentToPosition(new Pipe(6, Connector.SINGLE, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 1);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(7, ship.getExposedConnectors());
     }
 
 }

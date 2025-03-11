@@ -3,7 +3,6 @@ package org.mio.progettoingsoft.components;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Connector;
-import org.mio.progettoingsoft.exceptions.NotEnoughHousing;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -2,11 +2,11 @@ package org.mio.progettoingsoft.exceptions;
 
 import org.mio.progettoingsoft.components.GoodType;
 
-public class FullGoodDepot extends RuntimeException {
-    public FullGoodDepot(String message) {
+public class FullGoodDepotException extends RuntimeException {
+    public FullGoodDepotException(String message) {
         super(message);
     }
-    public FullGoodDepot(GoodType type){
+    public FullGoodDepotException(GoodType type){
       super("Not enough space to store : " + type);
     }
 }

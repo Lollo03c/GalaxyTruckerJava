@@ -1,15 +1,8 @@
 package org.mio.progettoingsoft;
 
-import javafx.scene.effect.BlurType;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.*;
-import org.mio.progettoingsoft.exceptions.FullGoodDepot;
-import org.mio.progettoingsoft.exceptions.NotEnoughBatteries;
-import org.mio.progettoingsoft.exceptions.NotEnoughGoods;
-
-import javax.swing.*;
-import java.lang.reflect.ParameterizedType;
-import java.time.Year;
+import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,7 +42,7 @@ class PlayerTest {
         player.removeEnergy();
         assertEquals(0, player.getQuantBatteries());
 
-        assertThrows(NotEnoughBatteries.class, () -> player.removeEnergy());
+        assertThrows(NotEnoughBatteriesException.class, () -> player.removeEnergy());
     }
 
     @Test
@@ -68,7 +61,7 @@ class PlayerTest {
             assertEquals(i, player.getQuantBatteries());
         }
 
-        assertThrows(NotEnoughBatteries.class, () -> player.removeEnergy());
+        assertThrows(NotEnoughBatteriesException.class, () -> player.removeEnergy());
 
     }
 

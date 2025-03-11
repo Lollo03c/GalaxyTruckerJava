@@ -112,20 +112,20 @@ public class ShipBoard {
         return baseFirePower;
     }
 
-    public Component getComponent(int row, int col) throws EmptyComponent, InvalidPosition{
+    public Component getComponent(int row, int col) throws EmptyComponentException, InvalidPositionException {
         if (!validRow(row) || !validColumn(col))
-            throw new InvalidPosition(row, col);
+            throw new InvalidPositionException(row, col);
 
         if (shipComponents[row][col].isEmpty())
-            throw new EmptyComponent(row, col);
+            throw new EmptyComponentException(row, col);
 
         return shipComponents[row][col].get();
 
     }
 
-    public boolean isEmptyComponent(int row, int column) throws InvalidPosition{
+    public boolean isEmptyComponent(int row, int column) throws InvalidPositionException {
         if (!validRow(row) || validColumn(column))
-            throw new InvalidPosition(row, column);
+            throw new InvalidPositionException(row, column);
 
         return shipComponents[row][column].isEmpty();
     }
@@ -149,15 +149,15 @@ public class ShipBoard {
         return adjacents;
     }
 
-    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacement, InvalidPosition{
+    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacementException, InvalidPositionException {
         if (bannedCoordinates.contains(new Cordinate(row, column)))
-            throw new InvalidPosition(row, column);
+            throw new InvalidPositionException(row, column);
 
         if (!validRow(row) || !validColumn(column))
-            throw new InvalidPosition(row, column);
+            throw new InvalidPositionException(row, column);
 
         if (shipComponents[row][column].isPresent()){
-            throw new IncorrectPlacement(row, column, component);
+            throw new IncorrectPlacementException(row, column, component);
         }
 
 
@@ -184,7 +184,7 @@ public class ShipBoard {
         getComponentsList();
     }
 
-    public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacement, InvalidPosition{
+    public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacementException, InvalidPositionException {
         while(angle > 0) {
             comp.rotateClockwise();
             angle--;
@@ -192,13 +192,13 @@ public class ShipBoard {
         addComponentToPosition(comp, row, column);
     }
 
-    public void removeComponent(int row, int column) throws EmptyComponent {
+    public void removeComponent(int row, int column) throws EmptyComponentException {
         if (!validRow(row) || !validColumn(column)){
-            throw new InvalidPosition(row, column);
+            throw new InvalidPositionException(row, column);
         }
 
         if (shipComponents[row][column].isEmpty())
-            throw new EmptyComponent(row, column);
+            throw new EmptyComponentException(row, column);
 
         Component toRemove = shipComponents[row][column].get();
         shipComponents[row][column] = Optional.empty();
@@ -229,14 +229,14 @@ public class ShipBoard {
         return availableEnergy;
     }
 
-    public void removeEnergy() throws NotEnoughBatteries{
+    public void removeEnergy() throws NotEnoughBatteriesException {
         boolean removed = false;
 
         for (int i = 0; !removed && i < componentList.size(); i++)
             removed = componentList.get(i).removeOneEnergy();
 
         if (!removed)
-            throw  new NotEnoughBatteries();
+            throw  new NotEnoughBatteriesException();
 
         availableEnergy--;
     }
@@ -296,7 +296,7 @@ public class ShipBoard {
                 .toList();
     }
 
-    public void addHumanGuest() throws NotEnoughHousing{
+    public void addHumanGuest() throws NotEnoughHousingException {
         boolean added = false;
 
         for (int i = 0; !added && i < componentList.size(); i++)
@@ -304,7 +304,7 @@ public class ShipBoard {
 
 
         if (!added)
-            throw new NotEnoughHousing();
+            throw new NotEnoughHousingException();
     }
 
     public List<Component> canContainsHumanGuest() {
@@ -397,6 +397,7 @@ public class ShipBoard {
     }
 
     // checks if the ALIEN_HOUSING components are connected to at least one HOUSING
+    // necessary (?) ask the profs
     public Set<Component> getIncorrectAlienHousings(){
         Set<Component> incorrect = new HashSet<>();
         for(int i = 0; i < rows; i++){
@@ -453,6 +454,31 @@ public class ShipBoard {
         }
 
         return incorrect;
+    }
+
+    //this method count the number of exposed connectors
+    public int getExposedConnectors(){
+        int numExposedConnectors = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (shipComponents[i][j].isPresent()) {
+                    Component comp = shipComponents[i][j].get();
+                    Map<Direction, Component> adjacent = getAdjacent(i, j);
+                    if(isExposed(comp, adjacent, Direction.FRONT)) numExposedConnectors++;
+                    if(isExposed(comp, adjacent, Direction.BACK)) numExposedConnectors++;
+                    if(isExposed(comp, adjacent, Direction.LEFT)) numExposedConnectors++;
+                    if(isExposed(comp, adjacent, Direction.RIGHT)) numExposedConnectors++;
+                }
+            }
+        }
+        return numExposedConnectors;
+    }
+
+    private boolean isExposed(Component comp, Map<Direction, Component> adj, Direction dir){
+        if(!comp.getConnector(dir).equals(Connector.FLAT)){
+            return !adj.containsKey(dir);
+        }
+        return false;
     }
 }
 

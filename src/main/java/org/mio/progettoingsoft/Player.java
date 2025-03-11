@@ -1,14 +1,6 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.*;
-
-import java.awt.desktop.PreferencesEvent;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public class Player {
 
@@ -91,7 +83,7 @@ public class Player {
     }
 
     //rotazione orario
-    public void addCompoment(Component comp, int row, int column, int rotations) throws IncorrectPlacement {
+    public void addCompoment(Component comp, int row, int column, int rotations) throws IncorrectPlacementException {
 // DOMANDA : Dove il giocatore sceglie quante volte girare il componente?
 //        (Anto) credo sia compito del controller
         for (int i = 0; i < rotations; i++){
@@ -107,16 +99,16 @@ public class Player {
         return shipBoard.getQuantBatteries();
     }
 
-    public void removeEnergy() throws NotEnoughBatteries {
+    public void removeEnergy() throws NotEnoughBatteriesException {
         shipBoard.removeEnergy();
     }
 
-    public void addHumanGuest(int quantity) throws NotEnoughHousing{
+    public void addHumanGuest(int quantity) throws NotEnoughHousingException {
         for (int i = 0; i < quantity; i++)
             shipBoard.addHumanGuest();
     }
 
-    public void addAlien() throws NotEnoughHousing{
+    public void addAlien() throws NotEnoughHousingException {
 
     }
 }

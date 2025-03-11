@@ -2,12 +2,12 @@ package org.mio.progettoingsoft.exceptions;
 
 import org.mio.progettoingsoft.components.GoodType;
 
-public class NotEnoughGoods extends RuntimeException {
-    public NotEnoughGoods(String message) {
+public class NotEnoughGoodsException extends RuntimeException {
+    public NotEnoughGoodsException(String message) {
         super(message);
     }
 
-    public  NotEnoughGoods(GoodType type){
+    public NotEnoughGoodsException(GoodType type){
       super("Not enough goods : " + type);
     }
 }

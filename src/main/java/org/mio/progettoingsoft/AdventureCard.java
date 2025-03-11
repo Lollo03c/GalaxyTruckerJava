@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft;
 
+import java.util.List;
+
 public abstract class AdventureCard {
 
     private final int level;
@@ -16,7 +18,7 @@ public abstract class AdventureCard {
     }
     public int getId(){ return id; }
 
-    public void start(){
+    public void start(FlyBoard flyBoard){
 
     }
 }
