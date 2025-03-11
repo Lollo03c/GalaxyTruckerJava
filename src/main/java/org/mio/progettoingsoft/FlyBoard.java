@@ -210,7 +210,6 @@ public class FlyBoard {
         circuit.set(index, Optional.of(player));
     }
 
-
     public List<AdventureCard> getAdventureCards(){return deck;}
 
     public void loadAdventureCard(){
