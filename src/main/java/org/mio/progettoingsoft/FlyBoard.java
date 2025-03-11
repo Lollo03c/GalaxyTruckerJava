@@ -159,6 +159,23 @@ public class FlyBoard {
 
 
     }
+    //    private  List<Optional<Player>> circuit;
+    //    list da 24 celle
+    public void loseDays(Player player, int days){
+        int index = circuit.indexOf(player);
+        for(int i = 0; i < days; i++){
+            if(index == 0){
+                index = 24;
+            }
+            int j = 1;
+            while(circuit.get(index-j).isPresent()){
+                j++;
+            }
+            circuit.remove(index);
+            circuit.add(index-j,Optional.of(player));
+            index = index -j;
+        }
+    }
 
     public List<AdventureCard> getAdventureCards(){return deck;}
 
