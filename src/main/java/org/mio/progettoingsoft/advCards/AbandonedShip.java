@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.advCards;
 
 import org.mio.progettoingsoft.AdventureCard;
+import org.mio.progettoingsoft.FlyBoard;
 
 public class AbandonedShip extends AdventureCard {
     private int daysLost;
@@ -12,5 +13,10 @@ public class AbandonedShip extends AdventureCard {
         this.daysLost = daysLost;
         this.credits = credits;
         this.crewLost = crewLost;
+    }
+
+    @Override
+    public void start(FlyBoard board){
+
     }
 }

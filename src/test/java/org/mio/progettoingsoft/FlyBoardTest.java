@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.components.Depot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -263,6 +264,55 @@ class FlyBoardTest {
         assertFalse(fly.getScoryBoard().stream()
                 .anyMatch(player -> player.getUsername().equals("Sbagliato"))
         );
+    }
+
+    @Test
+    void shold_advance_one(){
+        FlyBoard board = new FlyBoard();
+
+        Player player = new Player("test");
+        board.addPlayer(player);
+
+        board.getCircuit().set(23, Optional.of(player));
+        board.moveDays(player, 2);
+
+        assertEquals(1, board.getCircuit().indexOf(Optional.of(player)));
+    }
+
+    @Test
+    void shold_advance_advance_with_other_player_between(){
+        FlyBoard board = new FlyBoard();
+
+        Player first = new Player("test");
+        board.addPlayer(first);
+
+        Player second = new Player("t");
+        board.addPlayer(second);
+
+        board.getCircuit().set(23, Optional.of(first));
+        board.getCircuit().set(0, Optional.of(second));
+        board.moveDays(first, 2);
+
+        assertEquals(2, board.getCircuit().indexOf(Optional.of(first)));
+        assertEquals(0, board.getCircuit().indexOf(Optional.of(second)));
+    }
+
+    @Test
+    void shold_advance_retrat_with_other_player_between(){
+        FlyBoard board = new FlyBoard();
+
+        Player first = new Player("test");
+        board.addPlayer(first);
+
+        Player second = new Player("t");
+        board.addPlayer(second);
+
+        board.getCircuit().set(23, Optional.of(first));
+        board.getCircuit().set(0, Optional.of(second));
+        board.moveDays(second, -2);
+
+        assertEquals(23, board.getCircuit().indexOf(Optional.of(first)));
+        assertEquals(21, board.getCircuit().indexOf(Optional.of(second)));
     }
 
 

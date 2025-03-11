@@ -25,7 +25,7 @@ public class FlyBoard {
 
     private  List<AdventureCard> deck;
 
-    private  List<Optional<Player>> circuit;
+    private final List<Optional<Player>> circuit;
 
     private  List<Player> scoryBoard;
     private final List<Component> coveredComponents;
@@ -42,6 +42,16 @@ public class FlyBoard {
         this.deck = new ArrayList<>();
         loadComponents();
         loadAdventureCard();
+
+        circuit = new ArrayList<>(24);
+        for (int i =0; i < 24; i++)
+            circuit.add(Optional.empty());
+
+
+    }
+
+    public void addPlayer(Player player){
+        scoryBoard.add(player);
     }
 
     public Boolean addPlayer(String username){
@@ -60,12 +70,8 @@ public class FlyBoard {
 
     }
 
-    public void addGood(GoodType type, Integer quant){
-
-    }
-
-    public Boolean removeGood(GoodType type, Integer quant){
-        return false;
+    public List<Optional<Player>> getCircuit(){
+        return  circuit;
     }
 
     public void moveRocket(Player player, int nPos){
@@ -161,21 +167,49 @@ public class FlyBoard {
     }
     //    private  List<Optional<Player>> circuit;
     //    list da 24 celle
-    public void loseDays(Player player, int days){
-        int index = circuit.indexOf(player);
-        for(int i = 0; i < days; i++){
-            if(index == 0){
-                index = 24;
-            }
-            int j = 1;
-            while(circuit.get(index-j).isPresent()){
-                j++;
-            }
-            circuit.remove(index);
-            circuit.add(index-j,Optional.of(player));
-            index = index -j;
+    public void moveDays(Player player, int days){
+        boolean advance = days > 0 ? true : false;
+
+        if (advance){
+            for(int i = 0; i<days; i++)
+                advanceOne(player);
+        }
+        else{
+            for(int i = days; i < 0; i++)
+                retreatOne(player);
         }
     }
+
+    private void advanceOne(Player player){
+        int start = circuit.indexOf(Optional.of(player));
+        int index = start;
+
+        do {
+            index++;
+            if (index == 24)
+                index = 0;
+        }
+        while (circuit.get(index).isPresent());
+
+        circuit.set(start, Optional.empty());
+        circuit.set(index, Optional.of(player));
+    }
+
+    private void retreatOne(Player player){
+        int start = circuit.indexOf(Optional.of(player));
+        int index = start;
+
+        do {
+            index--;
+            if (index == -1)
+                index = 23;
+        }
+        while (circuit.get(index).isPresent());
+
+        circuit.set(start, Optional.empty());
+        circuit.set(index, Optional.of(player));
+    }
+
 
     public List<AdventureCard> getAdventureCards(){return deck;}
 

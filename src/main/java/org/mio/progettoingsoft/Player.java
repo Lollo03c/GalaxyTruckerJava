@@ -36,7 +36,7 @@ public class Player {
     }
 
     public void discardComponent(int row, int column) {
-//        shipBoard.get(row, column) = null;
+//        shipBoard.get
         discardedComponents++;
     }
 
