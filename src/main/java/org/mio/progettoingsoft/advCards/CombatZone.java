@@ -2,10 +2,12 @@ package org.mio.progettoingsoft.advCards;
 
 import org.mio.progettoingsoft.AdventureCard;
 
-public class CombatZone extends AdventureCard {
-    private final CombatLine[] lines;
+import java.util.List;
 
-    protected CombatZone(int id, int level, CombatLine[] lines) {
+public class CombatZone extends AdventureCard {
+    private final List<CombatLine> lines;
+
+    public CombatZone(int id, int level, List<CombatLine> lines) {
         super(id, level);
         this.lines = lines;
     }

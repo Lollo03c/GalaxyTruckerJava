@@ -3,17 +3,32 @@ package org.mio.progettoingsoft;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.EmptyComponent;
-import org.mio.progettoingsoft.exceptions.FullGoodDepot;
 import org.mio.progettoingsoft.exceptions.IncorrectPlacement;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShipBoardTest {
 
     private Connector flat = Connector.FLAT;
+/*
+    @Test
+    void should_create_basic_ship_board(){
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
+        for(int i = 0; i < ship.getRows(); i++){
+            for(int j = 0; j < ship.getColumns(); j++){
+                if(i == 2 && j == 3) {
+                    assertEquals(ComponentType.HOUSING, ship.getComponent(i, j).getType());
+                    assertTrue(ship.getComponent(i, j).isFirstHousing());
+                }
+                else
+                    if(ship.isValidPosition(i,j))
+                        assertTrue(ship.isEmptyComponent(i,j));
+            }
+        }
+    }
+ */
 
     @Test
     void should_add_a_component(){
@@ -113,7 +128,7 @@ class ShipBoardTest {
     }
 
     @Test
-    void shuold_add_some_components(){
+    void should_add_some_components(){
         ShipBoard ship = new ShipBoard();
 
         Component engine = new Engine(1, flat, flat, flat, flat);
@@ -272,6 +287,237 @@ class ShipBoardTest {
         assertTrue(notEmptyList.contains(notEmpty));
         assertFalse(notEmptyList.contains(empty));
 
+    }
+
+    // starting section: shipboard-check test
+    void init(ShipBoard ship){
+        ship.addComponentToPosition(new Housing(1, true, HousingColor.BLUE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 2, 3);
+        ship.addComponentToPosition(new Depot(2, false, false, Connector.TRIPLE, Connector.DOUBLE, flat, Connector.SINGLE), 2 ,4);
+        ship.addComponentToPosition(new Pipe(3, Connector.TRIPLE, Connector.FLAT, Connector.DOUBLE, Connector.SINGLE), 3, 3);
+        ship.addComponentToPosition(new EnergyDepot(4, false, Connector.FLAT, Connector.TRIPLE, Connector.SINGLE, Connector.DOUBLE), 3, 2);
+    }
+        // generic positioning tests
+    @Test
+    void should_pass_with_no_drills_or_engines(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+    }
+
+    @Test
+    void should_fail_due_to_mismatching_connectors(){
+        ShipBoard ship = new ShipBoard();
+        ship.addComponentToPosition(new Housing(1, true, HousingColor.BLUE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 2, 3);
+        ship.addComponentToPosition(new Depot(2, false, false, flat, flat, flat, flat), 2, 4);
+        int size = 0;
+        size += ship.getIncorrectComponents().size();
+        assertEquals(2, size);
+    }
+
+    @Test
+    void should_fail_due_to_flying_components(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Depot(3, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 0, 2);
+        assertEquals(1, ship.getIncorrectComponents().size());
+    }
+
+    @Test
+    void should_fail_due_to_flat_to_double(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Depot(5, false, false, flat, flat, flat, Connector.DOUBLE), 3, 4);
+        assertEquals(2, ship.getIncorrectComponents().size());
+    }
+
+    @Test
+    void should_pass_with_flat_to_flat(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 4);
+        ship.addComponentToPosition(new Pipe(6, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 3);
+        assertEquals(0, ship.getIncorrectComponents().size());
+    }
+
+        //alien housing positioning test
+    @Test
+    void should_fail_due_to_alien_housing_not_connected_to_housing(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new AlienHousing(5, AlienType.BROWN, Connector.FLAT, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 1);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectAlienHousings().size());
+    }
+
+    @Test
+    void should_fail_due_to_alien_housing_connected_to_first_housing(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new AlienHousing(5, AlienType.BROWN, Connector.FLAT, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 2, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectAlienHousings().size());
+    }
+
+    @Test
+    void should_pass_with_alien_housing_connected_to_housing(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new AlienHousing(5, AlienType.BROWN, Connector.SINGLE, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 1);
+        ship.addComponentToPosition(new Housing(6, Connector.FLAT, Connector.SINGLE, Connector.FLAT, Connector.FLAT), 2, 1);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectAlienHousings().size());
+    }
+
+        // drill positioning tests
+    @Test
+    void should_pass_with_front_drill(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Drill(5, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 3);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectDrills().size());
+    }
+
+    @Test
+    void should_pass_with_rotated_drill(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addRotatedComponentToPosition(new Drill(5, Connector.FLAT, Connector.FLAT, Connector.TRIPLE, Connector.FLAT), 1, 3, 1);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectDrills().size());
+    }
+
+    @Test
+    void should_fail_due_to_rotated_drill_directed_to_comp(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addRotatedComponentToPosition(new Drill(5, Connector.FLAT, Connector.FLAT, Connector.FLAT, Connector.TRIPLE), 2, 2, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectDrills().size());
+    }
+
+    @Test
+    void should_pass_with_rotated_drill_directed_to_comp_and_space(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 3, 1);
+        ship.addRotatedComponentToPosition(new Drill(6, flat, flat, Connector.TRIPLE, flat), 2, 1, 1);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectDrills().size());
+    }
+
+        // double drill positioning test
+    @Test
+    void should_pass_with_front_double_drill(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new DoubleDrill(5, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 3);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectDrills().size());
+    }
+
+    @Test
+    void should_pass_with_rotated_double_drill(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addRotatedComponentToPosition(new DoubleDrill(5, Connector.FLAT, Connector.FLAT, Connector.TRIPLE, Connector.FLAT), 1, 3, 1);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectDrills().size());
+    }
+
+    @Test
+    void should_fail_due_to_rotated_double_drill_directed_to_comp(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addRotatedComponentToPosition(new DoubleDrill(5, Connector.FLAT, Connector.FLAT, Connector.FLAT, Connector.TRIPLE), 2, 2, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectDrills().size());
+    }
+
+    @Test
+    void should_pass_with_rotated_double_drill_directed_to_comp_and_space(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 3, 1);
+        ship.addRotatedComponentToPosition(new DoubleDrill(6, flat, flat, Connector.TRIPLE, flat), 2, 1, 1);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectDrills().size());
+    }
+        // engine positioning test
+    @Test
+    void should_fail_due_to_rotated_engine(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addRotatedComponentToPosition(new Engine(5, Connector.DOUBLE, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 4, 3);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectEngines().size());
+    }
+
+    @Test
+    void should_fail_due_to_engine_directed_to_comp(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Engine(5, flat, flat, Connector.SINGLE, flat), 2, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectEngines().size());
+    }
+
+    @Test
+    void should_pass_with_engine_directed_to_comp_with_space(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.SINGLE, Connector.FLAT, Connector.TRIPLE), 1, 3);
+        ship.addComponentToPosition(new Engine(6, Connector.FLAT, Connector.FLAT, Connector.SINGLE, Connector.FLAT), 1, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectEngines().size());
+    }
+    // double engine positioning test
+    @Test
+    void should_fail_due_to_rotated_double_engine(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addRotatedComponentToPosition(new DoubleEngine(5, Connector.DOUBLE, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 4, 3);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectEngines().size());
+    }
+
+    @Test
+    void should_fail_due_to_double_engine_directed_to_comp(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new DoubleEngine(5, flat, flat, Connector.SINGLE, flat), 2, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getIncorrectEngines().size());
+    }
+
+    @Test
+    void should_pass_with_double_engine_directed_to_comp_with_space(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.SINGLE, Connector.FLAT, Connector.TRIPLE), 1, 3);
+        ship.addComponentToPosition(new DoubleEngine(6, Connector.FLAT, Connector.FLAT, Connector.SINGLE, Connector.FLAT), 1, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(0, ship.getIncorrectEngines().size());
     }
 
 }

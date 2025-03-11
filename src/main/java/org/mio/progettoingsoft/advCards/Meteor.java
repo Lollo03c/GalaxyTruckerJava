@@ -11,7 +11,7 @@ public abstract class Meteor {
     }
 
     public static Meteor stringToMeteor(String type, String direction) {
-        if(type == "SMALL"){
+        if(type.equals("SMALL")){
             return new SmallMeteor(Direction.stringToDirection(direction));
         }else{
             return new BigMeteor(Direction.stringToDirection(direction));

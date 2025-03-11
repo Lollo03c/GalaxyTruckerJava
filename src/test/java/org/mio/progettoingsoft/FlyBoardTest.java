@@ -199,7 +199,6 @@ class FlyBoardTest {
         );
     }
 
-
     @Test
     void should_load_6_purple_alien_housing(){
         FlyBoard fly = new FlyBoard();
@@ -225,6 +224,16 @@ class FlyBoardTest {
                 .filter(component -> component.getType().equals(ComponentType.SHIELD))
                 .count()
         );
+    }
+
+    @Test
+    void should_load_AdvCards(){
+        FlyBoard flyBoard = new FlyBoard();
+
+        int loadAdvCards = flyBoard.getAdventureCards().size();
+
+        // assertEquals(, loadAdvCards);
+
     }
 
     @Test

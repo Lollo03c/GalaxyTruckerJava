@@ -10,7 +10,7 @@ public abstract class CannonPenalty extends Penalty {
     }
 
     public static CannonPenalty stringToCannonPenalty(String type, String direction) {
-        if(type == "LIGHT") {
+        if(type.equals("LIGHT")) {
             return new LightCannon(Direction.stringToDirection(direction));
         }else{
             return new HeavyCannon(Direction.stringToDirection(direction));

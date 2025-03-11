@@ -153,4 +153,5 @@ public abstract class Component {
         return false;
     }
 
+    public Boolean isFirstHousing(){return false;}
 }

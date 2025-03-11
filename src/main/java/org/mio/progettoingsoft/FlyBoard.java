@@ -39,6 +39,7 @@ public class FlyBoard {
         this.coveredComponents = new ArrayList<>();
         this.uncoverdeComponents = new ArrayList<>();
         this.scoryBoard = new ArrayList<>();
+        this.deck = new ArrayList<>();
         loadComponents();
         loadAdventureCard();
     }
@@ -159,6 +160,8 @@ public class FlyBoard {
 
     }
 
+    public List<AdventureCard> getAdventureCards(){return deck;}
+
     public void loadAdventureCard(){
 
         ObjectMapper mapper = new ObjectMapper();
@@ -185,13 +188,13 @@ public class FlyBoard {
                     case "SMUGGLERS": {
                         int strength = rootNode.get(i).path("strength").asInt();
                         int daysLost = rootNode.get(i).path("daysLost").asInt();
-                        List<GoodType> rewardList = new ArrayList<>();
+                        List<GoodType> rewards = new ArrayList<>();
                         JsonNode rewardNode = rootNode.get(i).path("reward");
                         for (JsonNode reward : rewardNode) {
-                            rewardList.add(GoodType.stringToGoodType(reward.asText()));
+                            rewards.add(GoodType.stringToGoodType(reward.asText()));
                         }
                         int goodsLost = rootNode.get(i).path("goodsLost").asInt();
-                        this.deck.add(new Smugglers(id, level, strength, daysLost, goodsLost, rewardList));
+                        this.deck.add(new Smugglers(id, level, strength, daysLost, goodsLost, rewards));
                     }
                     break;
 
@@ -236,6 +239,42 @@ public class FlyBoard {
                         this.deck.add(new Planets(id, level, daysLost, planets));
                     }
                     break;
+
+                    /* case "COMBATZONE": {
+                        List<CombatLine> combatLines = new ArrayList<>();
+                        JsonNode criterionsNode = rootNode.get(i).path("criterion");
+                        JsonNode penaltyNode = rootNode.get(i).path("penalty");
+                        for (int j = 0; j < criterionsNode.size(); j++) {
+                            if (penaltyNode.get(j).get(0).asText().equals("cannonsPenalty")) {
+                                for (JsonNode cannonsPenalty : penaltyNode.get(j).get(1)) {
+                                    combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), CannonPenalty.stringToCannonPenalty(cannonsPenalty.get(1).asText(), cannonsPenalty.get(0).asText())));
+                                }
+                            } else {
+                                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), LoseSomethingPenalty.stringToPenalty(penaltyNode.get(j).get(0).asText(), penaltyNode.get(j).get(1).asInt())));
+                            }
+                        }
+                        this.deck.add(new CombatZone(id, level, combatLines));
+                    }
+                    break; */
+
+                    case "ABANDONEDSHIP": {
+                        int daysLost = rootNode.get(i).path("daysLost").asInt();
+                        int credits = rootNode.get(i).path("credits").asInt();
+                        int crewLost = rootNode.get(i).path("crewLost").asInt();
+                        this.deck.add(new AbandonedShip(id, level, daysLost, credits, crewLost));
+                    }
+                    break;
+
+                    case "ABANDONEDSTATION": {
+                        int daysLost = rootNode.get(i).path("daysLost").asInt();
+                        int crewNeeded = rootNode.get(i).path("crewNeeded").asInt();
+                        List<GoodType> goods = new ArrayList<>();
+                        JsonNode goodsNode = rootNode.get(i).path("goods");
+                        for (JsonNode good : goodsNode) {
+                            goods.add(GoodType.stringToGoodType(good.asText()));
+                        }
+                        this.deck.add(new AbandonedStation(id, level, goods));
+                    }
                 }
             }
         }

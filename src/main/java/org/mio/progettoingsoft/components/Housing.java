@@ -111,5 +111,10 @@ public class Housing extends Component {
     public Boolean containsGuest(){
         return !isEmpty();
     }
+
+    @Override
+    public Boolean isFirstHousing(){
+        return this.isFirst;
+    }
 }
 

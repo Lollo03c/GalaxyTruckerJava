@@ -1,9 +1,9 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.AlienType;
-import org.mio.progettoingsoft.components.DoubleEngine;
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GraveYard;
+import org.mio.progettoingsoft.components.Housing;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
 
 import java.util.*;
@@ -37,7 +37,34 @@ public class ShipBoard {
     private  int numAstronauts;
     private  boolean completedBuild;
 
+    public ShipBoard(HousingColor color){
+        rows = 5;
+        columns = 7;
+        shipComponents = new Optional[rows][columns];
+        bannedCoordinates = new ArrayList<>(6);
 
+        for (int i = 0; i < rows; i++)
+            for(int j = 0; j <columns; j++)
+                shipComponents[i][j] = Optional.empty();
+
+        shipComponents[2][3] = Optional.of(new Housing(1, true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
+
+
+        bannedCoordinates.add(new Cordinate(0, 0));
+        bannedCoordinates.add(new Cordinate(0, 1));
+        bannedCoordinates.add(new Cordinate(0, 3));
+        bannedCoordinates.add(new Cordinate(1, 0));
+        bannedCoordinates.add(new Cordinate(1, 6));
+        bannedCoordinates.add(new Cordinate(4, 3));
+
+        goods = new HashMap<>();
+        for (GoodType type : GoodType.values()){
+            goods.put(type, 0);
+        }
+
+        baseFirePower = 0;
+        baseEnginePower = 0;
+    }
     public ShipBoard(){
         rows = 5;
         columns = 7;
@@ -60,8 +87,13 @@ public class ShipBoard {
             goods.put(type, 0);
         }
 
-        baseFirePower = 0f;
+        baseFirePower = 0;
         baseEnginePower = 0;
+    }
+
+    public boolean isValidPosition(int row, int column){
+        Cordinate coord = new Cordinate(0,0);
+        return validRow(row) && validColumn(column) && !bannedCoordinates.contains(coord);
     }
 
     public int getRows(){
@@ -309,7 +341,7 @@ public class ShipBoard {
                 .toList();
     }
 
-    private List<Component> getIncorrectEngines() {
+    public List<Component> getIncorrectEngines() {
         List<Component> incorrect = new ArrayList<>();
 
         for (int i = 0; i < rows; i++) {
@@ -332,7 +364,7 @@ public class ShipBoard {
         return incorrect;
     }
 
-    private List<Component> getIncorrectDrill() {
+    public List<Component> getIncorrectDrills() {
         List<Component> incorrect = new ArrayList<>();
 
         for (int i = 0; i < rows; i++){
@@ -364,6 +396,33 @@ public class ShipBoard {
         return incorrect;
     }
 
+    // checks if the ALIEN_HOUSING components are connected to at least one HOUSING
+    public Set<Component> getIncorrectAlienHousings(){
+        Set<Component> incorrect = new HashSet<>();
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < columns; j++){
+                if(shipComponents[i][j].isPresent()){
+                    Component comp = shipComponents[i][j].get();
+                    if(comp.getType().equals(ComponentType.ALIEN_HOUSING)){
+                        boolean correct = false;
+                        Map<Direction, Component> adjacents = getAdjacent(i, j);
+                        for(Component component : adjacents.values()){
+                            correct = correct ||
+                                    (component.getType().equals(ComponentType.HOUSING) &&
+                                            !component.isFirstHousing());
+                        }
+                        if(!correct){
+                            incorrect.add(comp);
+                        }
+                    }
+                }
+            }
+        }
+        return incorrect;
+    }
+
+    //This method check the correct positioning of the component, except for the direction and nearby placement of drills
+    // the method insert in the set both component in case of connector mismatch
     public Set<Component> getIncorrectComponents(){
         Set<Component> incorrect = new HashSet<>();
 
@@ -373,11 +432,17 @@ public class ShipBoard {
                     Component comp = shipComponents[i][j].get();
 
                     //
-                    Map<Direction, Component> adjcent = getAdjacent(i, j);
+                    Map<Direction, Component> adjacent = getAdjacent(i, j);
                     boolean correct = true;
-                    for (Direction dir : adjcent.keySet()) {
-                        correct = correct && comp.isCompatible(adjcent.get(dir), dir);
+                    // Modified by Stefano to check if a component is flying (not connected to any other):
+                    if(adjacent.isEmpty()){
+                        correct = false;
+                    }else{
+                        for (Direction dir : adjacent.keySet()) {
+                            correct = correct && comp.isCompatible(adjacent.get(dir), dir);
+                        }
                     }
+
 
                     if (!correct) {
                         incorrect.add(shipComponents[i][j].get());
