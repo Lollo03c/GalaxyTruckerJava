@@ -2,10 +2,6 @@ package org.mio.progettoingsoft;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mio.progettoingsoft.AdventureCard;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.HourGlass;
-import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.components.*;
 
@@ -16,50 +12,49 @@ import java.net.ConnectException;
 import java.util.*;
 
 public class FlyBoard {
-//    private  HourGlass hourGlass;
-
     private  List<AdventureCard> selectionDeckPrivate;
     private  List<AdventureCard> selectionDeck1;
     private  List<AdventureCard> selectionDeck2;
     private  List<AdventureCard> selectionDeck3;
 
-    private  List<AdventureCard> deck;
+    private final List<AdventureCard> deck;
 
     private final List<Optional<Player>> circuit;
 
-    private  List<Player> scoryBoard;
+    private final List<Player> scoreBoard;
     private final List<Component> coveredComponents;
-    private  List<Component> uncoverdeComponents;
+    private final List<Component> uncoverdeComponents;
 
-    private  Map<GoodType, Integer> remainingGoods;
+    private final Map<GoodType, Integer> remainingGoods;
 
     private HourGlass hourGlass;
 
     public FlyBoard(){
         this.coveredComponents = new ArrayList<>();
         this.uncoverdeComponents = new ArrayList<>();
-        this.scoryBoard = new ArrayList<>();
+        this.scoreBoard = new ArrayList<>();
         this.deck = new ArrayList<>();
+        this.remainingGoods = new HashMap<>();
+
         loadComponents();
         loadAdventureCard();
 
-        circuit = new ArrayList<>(24);
-        for (int i =0; i < 24; i++)
+        this.circuit = new ArrayList<>(24);
+
+        for (int i = 0; i < 24; i++)
             circuit.add(Optional.empty());
-
-
     }
 
     public void addPlayer(Player player){
-        scoryBoard.add(player);
+        scoreBoard.add(player);
     }
 
     public Boolean addPlayer(String username){
-        boolean toAdd =scoryBoard.stream().noneMatch(player -> player.getUsername().equals(username))
-                && scoryBoard.size() < 4;
+        boolean toAdd = scoreBoard.stream().noneMatch(player -> player.getUsername().equals(username))
+                && scoreBoard.size() < 4;
 
         if (toAdd){
-            scoryBoard.add(new Player(username));
+            scoreBoard.add(new Player(username));
             return true;
         }
 
@@ -82,8 +77,8 @@ public class FlyBoard {
         return new Player("");
     }
 
-    public List<Player> getScoryBoard(){
-        return scoryBoard;
+    public List<Player> getScoreBoard(){
+        return scoreBoard;
     }
 
     public void playAdventureCard(){
@@ -190,11 +185,11 @@ public class FlyBoard {
                 index = 0;
             Optional<Player> player2 =circuit.get(index);
             if(player2.isPresent()){
-                int position1 = scoryBoard.indexOf(player);
-                int position2 = scoryBoard.indexOf(player2.get());
+                int position1 = scoreBoard.indexOf(player);
+                int position2 = scoreBoard.indexOf(player2.get());
                 if(position1 > position2) {
-                    scoryBoard.set(position1, player2.orElse(player));
-                    scoryBoard.set(position2, player);
+                    scoreBoard.set(position1, player2.orElse(player));
+                    scoreBoard.set(position2, player);
                 }
                 else{
                     //player2 viene doppiato e quindi eliminato(?)
@@ -217,11 +212,11 @@ public class FlyBoard {
                 index = 23;
             Optional<Player> player2 =circuit.get(index);
             if(player2.isPresent()){
-                int position1 = scoryBoard.indexOf(player);
-                int position2 = scoryBoard.indexOf(player2);
+                int position1 = scoreBoard.indexOf(player);
+                int position2 = scoreBoard.indexOf(player2);
                 if(position1 < position2){
-                    scoryBoard.set(position1, player2.orElse(player));
-                    scoryBoard.set(position2, player);
+                    scoreBoard.set(position1, player2.orElse(player));
+                    scoreBoard.set(position2, player);
                 }
                 else{
                     //player viene doppiato da player2 e quindi player viene eliminato
@@ -286,6 +281,10 @@ public class FlyBoard {
                     break;
 
                     case "STARDUST":
+                        this.deck.add(new Stardust(id, level));
+                        break;
+
+                    case "EPIDEMIC":
                         this.deck.add(new Stardust(id, level));
                         break;
 

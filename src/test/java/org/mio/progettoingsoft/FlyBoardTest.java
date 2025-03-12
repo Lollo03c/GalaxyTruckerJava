@@ -37,7 +37,6 @@ class FlyBoardTest {
     @Test
     void should_load_6_double_batteries(){
         FlyBoard fly = new FlyBoard();
-
         
         int count = 0;
         for (Component comp : fly.getCoveredComponents()){
@@ -51,7 +50,6 @@ class FlyBoardTest {
     @Test
     void should_load_9_simple_depot(){
         FlyBoard fly = new FlyBoard();
-
         
         int count = 0;
 
@@ -66,7 +64,6 @@ class FlyBoardTest {
     @Test
     void should_load_9_triple_depot(){
         FlyBoard fly = new FlyBoard();
-
         
         int count = 0;
 
@@ -81,7 +78,6 @@ class FlyBoardTest {
     @Test
     void should_load_17_housing(){
         FlyBoard fly = new FlyBoard();
-
         
         int count = 0;
 
@@ -94,7 +90,6 @@ class FlyBoardTest {
     @Test
     void should_load_8_pipe(){
         FlyBoard fly = new FlyBoard();
-
         
         int count = 0;
 
@@ -107,7 +102,6 @@ class FlyBoardTest {
     @Test
     void should_load_6_hazard_single_depot(){
         FlyBoard fly = new FlyBoard();
-
         
         int count = 0;
 
@@ -122,7 +116,6 @@ class FlyBoardTest {
     @Test
     void should_load_3_hazard_double_depot(){
         FlyBoard fly = new FlyBoard();
-
         
         int count = 0;
 
@@ -233,12 +226,12 @@ class FlyBoardTest {
 
         int loadAdvCards = flyBoard.getAdventureCards().size();
 
-        // assertEquals(, loadAdvCards);
+        assertEquals(40, loadAdvCards);
 
     }
 
     @Test
-    void shuold_create_4_players(){
+    void should_create_4_players(){
         List<String> users = new ArrayList<>(4);
         users.add("Antonio");
         users.add("Lorenzo");
@@ -255,19 +248,19 @@ class FlyBoardTest {
         fly.addPlayer(users.get(3));
         fly.addPlayer("Sbagliato");
 
-        assertEquals(4, fly.getScoryBoard().size());
+        assertEquals(4, fly.getScoreBoard().size());
         for (String user : users){
-            assertTrue(fly.getScoryBoard().stream().anyMatch(
+            assertTrue(fly.getScoreBoard().stream().anyMatch(
                     player -> player.getUsername().equals(user)
             ));
         }
-        assertFalse(fly.getScoryBoard().stream()
+        assertFalse(fly.getScoreBoard().stream()
                 .anyMatch(player -> player.getUsername().equals("Sbagliato"))
         );
     }
 
     @Test
-    void shold_advance_one(){
+    void shuold_advance_one(){
         FlyBoard board = new FlyBoard();
 
         Player player = new Player("test");
@@ -280,7 +273,7 @@ class FlyBoardTest {
     }
 
     @Test
-    void shold_advance_advance_with_other_player_between(){
+    void shuold_advance_advance_with_other_player_between(){
         FlyBoard board = new FlyBoard();
 
         Player first = new Player("test");
@@ -298,7 +291,7 @@ class FlyBoardTest {
     }
 
     @Test
-    void shold_advance_retrat_with_other_player_between(){
+    void shuold_advance_retrat_with_other_player_between(){
         FlyBoard board = new FlyBoard();
 
         Player first = new Player("test");
@@ -316,7 +309,7 @@ class FlyBoardTest {
     }
 
     @Test
-    void should_change_scoryBoard(){
+    void should_change_ScoreBoard(){
         FlyBoard board = new FlyBoard();
         Player player1 = new Player("test");
         board.addPlayer(player1);
@@ -324,14 +317,14 @@ class FlyBoardTest {
         board.addPlayer(player2);
         board.getCircuit().set(3,Optional.of(player1));
         board.getCircuit().set(1,Optional.of(player2));
-        assertEquals(0, board.getScoryBoard().indexOf(player1));
-        assertEquals(1, board.getScoryBoard().indexOf(player2));
+        assertEquals(0, board.getScoreBoard().indexOf(player1));
+        assertEquals(1, board.getScoreBoard().indexOf(player2));
         board.moveDays(player2,3);
-        assertEquals(player2,board.getScoryBoard().get(0));
-        assertEquals(player1,board.getScoryBoard().get(1));
+        assertEquals(player2,board.getScoreBoard().get(0));
+        assertEquals(player1,board.getScoreBoard().get(1));
         board.moveDays(player1,5);
         assertEquals(9,board.getCircuit().indexOf(Optional.of(player1)));
-        assertEquals(0, board.getScoryBoard().indexOf(player1));
+        assertEquals(0, board.getScoreBoard().indexOf(player1));
     }
 
 

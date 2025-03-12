@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class ShipBoard {
     private final Optional<Component>[][] shipComponents;
-    List<Component> componentList;
+    private List<Component> componentList;
 
     private  Component[] bookedComponents;
 

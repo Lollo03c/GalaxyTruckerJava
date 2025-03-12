@@ -14,7 +14,7 @@ public class Stardust extends AdventureCard {
 
     @Override
     public void start(FlyBoard flyboard){
-        List<Player> scoryBoard = flyboard.getScoryBoard();
+        List<Player> scoryBoard = flyboard.getScoreBoard();
         Collections.reverse(scoryBoard);
 
         for(Player p : scoryBoard){
