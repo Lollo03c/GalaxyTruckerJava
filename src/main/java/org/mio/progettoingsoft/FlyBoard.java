@@ -179,7 +179,7 @@ public class FlyBoard {
                 retreatOne(player);
         }
     }
-
+//advance one step and if necessary update the scoryboard
     private void advanceOne(Player player){
         int start = circuit.indexOf(Optional.of(player));
         int index = start;
@@ -188,6 +188,18 @@ public class FlyBoard {
             index++;
             if (index == 24)
                 index = 0;
+            Optional<Player> player2 =circuit.get(index);
+            if(player2.isPresent()){
+                int position1 = scoryBoard.indexOf(player);
+                int position2 = scoryBoard.indexOf(player2);
+                if(position1 < position2) {
+                    scoryBoard.set(position1, player2.orElse(player));
+                    scoryBoard.set(position2, player);
+                }
+                else{
+                    //player2 viene doppiato e quindi eliminato(?)
+                }
+            }
         }
         while (circuit.get(index).isPresent());
 
@@ -203,6 +215,18 @@ public class FlyBoard {
             index--;
             if (index == -1)
                 index = 23;
+            Optional<Player> player2 =circuit.get(index);
+            if(player2.isPresent()){
+                int position1 = scoryBoard.indexOf(player);
+                int position2 = scoryBoard.indexOf(player2);
+                if(position1 > position2){
+                    scoryBoard.set(position1, player2.orElse(player));
+                    scoryBoard.set(position2, player);
+                }
+                else{
+                    //player viene doppiato da player2 e quindi player viene eliminato
+                }
+            }
         }
         while (circuit.get(index).isPresent());
 
