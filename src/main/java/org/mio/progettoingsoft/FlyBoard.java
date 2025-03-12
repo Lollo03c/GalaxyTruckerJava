@@ -191,8 +191,8 @@ public class FlyBoard {
             Optional<Player> player2 =circuit.get(index);
             if(player2.isPresent()){
                 int position1 = scoryBoard.indexOf(player);
-                int position2 = scoryBoard.indexOf(player2);
-                if(position1 < position2) {
+                int position2 = scoryBoard.indexOf(player2.get());
+                if(position1 > position2) {
                     scoryBoard.set(position1, player2.orElse(player));
                     scoryBoard.set(position2, player);
                 }
@@ -219,7 +219,7 @@ public class FlyBoard {
             if(player2.isPresent()){
                 int position1 = scoryBoard.indexOf(player);
                 int position2 = scoryBoard.indexOf(player2);
-                if(position1 > position2){
+                if(position1 < position2){
                     scoryBoard.set(position1, player2.orElse(player));
                     scoryBoard.set(position2, player);
                 }

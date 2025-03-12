@@ -315,5 +315,24 @@ class FlyBoardTest {
         assertEquals(21, board.getCircuit().indexOf(Optional.of(second)));
     }
 
+    @Test
+    void should_change_scoryBoard(){
+        FlyBoard board = new FlyBoard();
+        Player player1 = new Player("test");
+        board.addPlayer(player1);
+        Player player2 = new Player("t");
+        board.addPlayer(player2);
+        board.getCircuit().set(3,Optional.of(player1));
+        board.getCircuit().set(1,Optional.of(player2));
+        assertEquals(0, board.getScoryBoard().indexOf(player1));
+        assertEquals(1, board.getScoryBoard().indexOf(player2));
+        board.moveDays(player2,3);
+        assertEquals(player2,board.getScoryBoard().get(0));
+        assertEquals(player1,board.getScoryBoard().get(1));
+        board.moveDays(player1,5);
+        assertEquals(9,board.getCircuit().indexOf(Optional.of(player1)));
+        assertEquals(0, board.getScoryBoard().indexOf(player1));
+    }
+
 
 }
