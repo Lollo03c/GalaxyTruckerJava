@@ -335,7 +335,7 @@
     "isHazard" : "false"
   },
   {
-    "id" : "33",
+    "id" : "35",
     "type" : "HOUSING",
     "top" : "flat",
     "right" : "flat",
@@ -343,7 +343,7 @@
     "left" : "single"
   },
   {
-    "id" : "34",
+    "id" : "36",
     "type" : "HOUSING",
     "top" : "single",
     "right" : "double",
@@ -351,7 +351,7 @@
     "left" : "single"
   },
   {
-    "id" : "35",
+    "id" : "37",
     "type" : "HOUSING",
     "top" : "single",
     "right" : "double",
@@ -359,7 +359,7 @@
     "left" : "single"
   },
   {
-    "id" : "36",
+    "id" : "38",
     "type" : "HOUSING",
     "top" : "double",
     "right" : "flat",
@@ -367,7 +367,7 @@
     "left" : "single"
   },
   {
-    "id" : "37",
+    "id" : "39",
     "type" : "HOUSING",
     "top" : "double",
     "right" : "single",
@@ -375,7 +375,7 @@
     "left" : "single"
   },
   {
-    "id" : "38",
+    "id" : "40",
     "type" : "HOUSING",
     "top" : "double",
     "right" : "single",
@@ -383,7 +383,7 @@
     "left" : "single"
   },
   {
-    "id" : "39",
+    "id" : "41",
     "type" : "HOUSING",
     "top" : "flat",
     "right" : "single",
@@ -391,7 +391,7 @@
     "left" : "double"
   },
   {
-    "id" : "40",
+    "id" : "42",
     "type" : "HOUSING",
     "top" : "single",
     "right" : "double",
@@ -399,7 +399,7 @@
     "left" : "double"
   },
   {
-    "id" : "41",
+    "id" : "43",
     "type" : "HOUSING",
     "top" : "double",
     "right" : "single",
@@ -407,7 +407,7 @@
     "left" : "double"
   },
   {
-    "id" : "42",
+    "id" : "44",
     "type" : "HOUSING",
     "top" : "triple",
     "right" : "flat",
@@ -415,39 +415,39 @@
     "left" : "double"
   },
   {
-    "id" : "43",
-    "type" : "HOUSING",
-    "top" : "flat",
-    "right" : "single",
-    "bottom" : "flat",
-    "left" : "triple"
-  },
-  {
-    "id" : "44",
-    "type" : "HOUSING",
-    "top" : "flat",
-    "right" : "single",
-    "bottom" : "single",
-    "left" : "triple"
-  },
-  {
     "id" : "45",
     "type" : "HOUSING",
     "top" : "flat",
-    "right" : "double",
+    "right" : "single",
     "bottom" : "flat",
     "left" : "triple"
   },
   {
     "id" : "46",
     "type" : "HOUSING",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "single",
+    "left" : "triple"
+  },
+  {
+    "id" : "47",
+    "type" : "HOUSING",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "triple"
+  },
+  {
+    "id" : "48",
+    "type" : "HOUSING",
     "top" : "single",
     "right" : "flat",
     "bottom" : "single",
     "left" : "triple"
   },
   {
-    "id" : "47",
+    "id" : "49",
     "type" : "HOUSING",
     "top" : "single",
     "right" : "flat",
@@ -455,7 +455,7 @@
     "left" : "triple"
   },
   {
-    "id" : "48",
+    "id" : "50",
     "type" : "HOUSING",
     "top" : "double",
     "right" : "flat",
@@ -463,7 +463,7 @@
     "left" : "triple"
   },
   {
-    "id" : "49",
+    "id" : "51",
     "type" : "HOUSING",
     "top" : "double",
     "right" : "double",
@@ -471,7 +471,7 @@
     "left" : "triple"
   },
   {
-    "id" : "50",
+    "id" : "53",
     "type" : "PIPE",
     "top" : "triple",
     "left" : "triple",
@@ -479,33 +479,9 @@
     "right" :  "single"
   },
   {
-    "id" : "51",
-    "type" : "PIPE",
-    "top" : "single",
-    "left" : "triple",
-    "bottom" : "flat",
-    "right" :  "triple"
-  },
-  {
-    "id" : "52",
-    "type" : "PIPE",
-    "top" : "single",
-    "left" : "triple",
-    "bottom" : "single",
-    "right" :  "triple"
-  },
-  {
-    "id" : "53",
-    "type" : "PIPE",
-    "top" : "single",
-    "left" : "triple",
-    "bottom" : "double",
-    "right" :  "triple"
-  },
-  {
     "id" : "54",
     "type" : "PIPE",
-    "top" : "double",
+    "top" : "single",
     "left" : "triple",
     "bottom" : "flat",
     "right" :  "triple"
@@ -513,13 +489,37 @@
   {
     "id" : "55",
     "type" : "PIPE",
+    "top" : "single",
+    "left" : "triple",
+    "bottom" : "single",
+    "right" :  "triple"
+  },
+  {
+    "id" : "56",
+    "type" : "PIPE",
+    "top" : "single",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" :  "triple"
+  },
+  {
+    "id" : "57",
+    "type" : "PIPE",
+    "top" : "double",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" :  "triple"
+  },
+  {
+    "id" : "58",
+    "type" : "PIPE",
     "top" : "triple",
     "left" : "triple",
     "bottom" : "double",
     "right" :  "single"
   },
   {
-    "id" : "56",
+    "id" : "59",
     "type" : "PIPE",
     "top" : "triple",
     "left" : "triple",
@@ -527,7 +527,7 @@
     "right" :  "double"
   },
   {
-    "id" : "57",
+    "id" : "60",
     "type" : "PIPE",
     "top" : "triple",
     "left" : "triple",
@@ -535,7 +535,7 @@
     "right" :  "double"
   },
   {
-    "id" : "58",
+    "id" : "62",
     "type" : "DEPOT",
     "top" : "flat",
     "left" : "triple",
@@ -546,7 +546,7 @@
     "isHazard" : "true"
   },
   {
-    "id" : "59",
+    "id" : "63",
     "type" : "DEPOT",
     "top" : "flat",
     "left" : "triple",
@@ -557,7 +557,7 @@
     "isHazard" : "true"
   },
   {
-    "id" : "60",
+    "id" : "64",
     "type" : "DEPOT",
     "top" : "single",
     "left" : "triple",
@@ -568,7 +568,7 @@
     "isHazard" : "true"
   },
   {
-    "id" : "61",
+    "id" : "65",
     "type" : "DEPOT",
     "top" : "double",
     "left" : "triple",
@@ -579,7 +579,7 @@
     "isHazard" : "true"
   },
   {
-    "id" : "62",
+    "id" : "66",
     "type" : "DEPOT",
     "top" : "double",
     "left" : "triple",
@@ -590,7 +590,7 @@
     "isHazard" : "true"
   },
   {
-    "id" : "63",
+    "id" : "67",
     "type" : "DEPOT",
     "top" : "triple",
     "left" : "triple",
@@ -601,7 +601,7 @@
     "isHazard" : "true"
   },
   {
-    "id" : "64",
+    "id" : "68",
     "type" : "DEPOT",
     "top" : "flat",
     "left" : "single",
@@ -612,7 +612,7 @@
     "isHazard" : "true"
   },
   {
-    "id" : "65",
+    "id" : "69",
     "type" : "DEPOT",
     "top" : "flat",
     "left" : "single",
@@ -624,7 +624,7 @@
   },
 
   {
-    "id" : "66",
+    "id" : "70",
     "type" : "DEPOT",
     "top" : "flat",
     "left" : "double",
@@ -635,46 +635,10 @@
     "isHazard" : "true"
   },
   {
-    "id" : "67",
-    "type" : "ENGINE",
-    "top" : "flat",
-    "right" : "triple",
-    "bottom" : "flat",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "68",
-    "type" : "ENGINE",
-    "top" : "flat",
-    "right" : "triple",
-    "bottom" : "flat",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "69",
-    "type" : "ENGINE",
-    "top" : "single",
-    "right" : "flat",
-    "bottom" : "flat",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "70",
-    "type" : "ENGINE",
-    "top" : "single",
-    "right" : "flat",
-    "bottom" : "flat",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
     "id" : "71",
     "type" : "ENGINE",
-    "top" : "single",
-    "right" : "single",
+    "top" : "flat",
+    "right" : "triple",
     "bottom" : "flat",
     "left" : "flat",
     "kind" : ""
@@ -682,8 +646,8 @@
   {
     "id" : "72",
     "type" : "ENGINE",
-    "top" : "double",
-    "right" : "flat",
+    "top" : "flat",
+    "right" : "triple",
     "bottom" : "flat",
     "left" : "flat",
     "kind" : ""
@@ -691,7 +655,7 @@
   {
     "id" : "73",
     "type" : "ENGINE",
-    "top" : "double",
+    "top" : "single",
     "right" : "flat",
     "bottom" : "flat",
     "left" : "flat",
@@ -700,8 +664,8 @@
   {
     "id" : "74",
     "type" : "ENGINE",
-    "top" : "double",
-    "right" : "triple",
+    "top" : "single",
+    "right" : "flat",
     "bottom" : "flat",
     "left" : "flat",
     "kind" : ""
@@ -709,8 +673,8 @@
   {
     "id" : "75",
     "type" : "ENGINE",
-    "top" : "triple",
-    "right" : "double",
+    "top" : "single",
+    "right" : "single",
     "bottom" : "flat",
     "left" : "flat",
     "kind" : ""
@@ -718,28 +682,28 @@
   {
     "id" : "76",
     "type" : "ENGINE",
-    "top" : "flat",
-    "right" : "triple",
+    "top" : "double",
+    "right" : "flat",
     "bottom" : "flat",
-    "left" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "77",
     "type" : "ENGINE",
     "top" : "double",
-    "right" : "single",
+    "right" : "flat",
     "bottom" : "flat",
-    "left" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "78",
     "type" : "ENGINE",
-    "top" : "triple",
-    "right" : "flat",
+    "top" : "double",
+    "right" : "triple",
     "bottom" : "flat",
-    "left" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
@@ -748,56 +712,83 @@
     "top" : "triple",
     "right" : "double",
     "bottom" : "flat",
-    "left" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "80",
     "type" : "ENGINE",
     "top" : "flat",
-    "right" : "single",
+    "right" : "triple",
     "bottom" : "flat",
-    "left" : "double",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "81",
     "type" : "ENGINE",
-    "top" : "single",
-    "right" : "double",
+    "top" : "double",
+    "right" : "single",
     "bottom" : "flat",
-    "left" : "double",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "82",
     "type" : "ENGINE",
-    "top" : "double",
+    "top" : "triple",
     "right" : "flat",
     "bottom" : "flat",
-    "left" : "double",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "83",
     "type" : "ENGINE",
     "top" : "triple",
-    "right" : "single",
+    "right" : "double",
     "bottom" : "flat",
-    "left" : "double",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "84",
     "type" : "ENGINE",
     "top" : "flat",
-    "right" : "flat",
+    "right" : "single",
     "bottom" : "flat",
-    "left" : "triple",
+    "left" : "double",
     "kind" : ""
   },
   {
     "id" : "85",
+    "type" : "ENGINE",
+    "top" : "single",
+    "right" : "double",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "86",
+    "type" : "ENGINE",
+    "top" : "double",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "87",
+    "type" : "ENGINE",
+    "top" : "triple",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "88",
     "type" : "ENGINE",
     "top" : "flat",
     "right" : "flat",
@@ -806,7 +797,16 @@
     "kind" : ""
   },
   {
-    "id" : "86",
+    "id" : "89",
+    "type" : "ENGINE",
+    "top" : "flat",
+    "right" : "flat",
+    "bottom" : "flat",
+    "left" : "triple",
+    "kind" : ""
+  },
+  {
+    "id" : "90",
     "type" : "ENGINE",
     "top" : "flat",
     "right" : "double",
@@ -815,7 +815,7 @@
     "kind" : ""
   },
   {
-    "id" : "87",
+    "id" : "91",
     "type" : "ENGINE",
     "top" : "single",
     "right" : "flat",
@@ -824,7 +824,7 @@
     "kind" : ""
   },
   {
-    "id" : "88",
+    "id" : "92",
     "type" : "DOUBLE_ENGINE",
     "top" : "single",
     "right" : "flat",
@@ -833,7 +833,7 @@
     "kind" : ""
   },
   {
-    "id" : "89",
+    "id" : "93",
     "type" : "DOUBLE_ENGINE",
     "top" : "single",
     "right" : "triple",
@@ -842,7 +842,7 @@
     "kind" : ""
   },
   {
-    "id" : "90",
+    "id" : "94",
     "type" : "DOUBLE_ENGINE",
     "top" : "double",
     "right" : "flat",
@@ -850,8 +850,8 @@
     "left" : "flat",
     "kind" : ""
   },
-{
-    "id" : "91",
+  {
+    "id" : "95",
     "type" : "DOUBLE_ENGINE",
     "top" : "triple",
     "right" : "triple",
@@ -860,7 +860,7 @@
     "kind" : ""
   },
   {
-    "id" : "92",
+    "id" : "96",
     "type" : "DOUBLE_ENGINE",
     "top" : "single",
     "right" : "single",
@@ -869,7 +869,7 @@
     "kind" : ""
   },
   {
-    "id" : "93",
+    "id" : "97",
     "type" : "DOUBLE_ENGINE",
     "top" : "double",
     "right" : "double",
@@ -878,7 +878,7 @@
     "kind" : ""
   },
   {
-    "id" : "94",
+    "id" : "98",
     "type" : "DOUBLE_ENGINE",
     "top" : "triple",
     "right" : "flat",
@@ -887,7 +887,7 @@
     "kind" : ""
   },
   {
-    "id" : "95",
+    "id" : "99",
     "type" : "DOUBLE_ENGINE",
     "top" : "flat",
     "right" : "triple",
@@ -896,7 +896,7 @@
     "kind" : ""
   },
   {
-    "id" : "96",
+    "id" : "100",
     "type" : "DOUBLE_ENGINE",
     "top" : "double",
     "right" : "flat",
@@ -905,47 +905,11 @@
     "kind" : ""
   },
   {
-    "id" : "97",
-    "type" : "DRILL",
-    "top" : "flat",
-    "right" : "flat",
-    "bottom" : "single",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "98",
-    "type" : "DRILL",
-    "top" : "flat",
-    "right" : "flat",
-    "bottom" : "single",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "99",
-    "type" : "DRILL",
-    "top" : "flat",
-    "right" : "flat",
-    "bottom" : "double",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "100",
-    "type" : "DRILL",
-    "top" : "flat",
-    "right" : "flat",
-    "bottom" : "double",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
     "id" : "101",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "single",
-    "bottom" : "flat",
+    "right" : "flat",
+    "bottom" : "single",
     "left" : "flat",
     "kind" : ""
   },
@@ -953,8 +917,8 @@
     "id" : "102",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "single",
-    "bottom" : "double",
+    "right" : "flat",
+    "bottom" : "single",
     "left" : "flat",
     "kind" : ""
   },
@@ -962,8 +926,8 @@
     "id" : "103",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "single",
-    "bottom" : "triple",
+    "right" : "flat",
+    "bottom" : "double",
     "left" : "flat",
     "kind" : ""
   },
@@ -971,8 +935,8 @@
     "id" : "104",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "double",
-    "bottom" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
     "left" : "flat",
     "kind" : ""
   },
@@ -980,8 +944,8 @@
     "id" : "105",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "double",
-    "bottom" : "single",
+    "right" : "single",
+    "bottom" : "flat",
     "left" : "flat",
     "kind" : ""
   },
@@ -989,8 +953,8 @@
     "id" : "106",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "double",
-    "bottom" : "triple",
+    "right" : "single",
+    "bottom" : "double",
     "left" : "flat",
     "kind" : ""
   },
@@ -998,8 +962,8 @@
     "id" : "107",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "triple",
-    "bottom" : "single",
+    "right" : "single",
+    "bottom" : "triple",
     "left" : "flat",
     "kind" : ""
   },
@@ -1007,44 +971,44 @@
     "id" : "108",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "flat",
+    "right" : "double",
     "bottom" : "flat",
-    "left" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "109",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "flat",
-    "bottom" : "double",
-    "left" : "single",
+    "right" : "double",
+    "bottom" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "110",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "flat",
+    "right" : "double",
     "bottom" : "triple",
-    "left" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "111",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "single",
+    "right" : "triple",
     "bottom" : "single",
-    "left" : "single",
+    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "112",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "double",
-    "bottom" : "triple",
+    "right" : "flat",
+    "bottom" : "flat",
     "left" : "single",
     "kind" : ""
   },
@@ -1052,8 +1016,8 @@
     "id" : "113",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "triple",
-    "bottom" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
     "left" : "single",
     "kind" : ""
   },
@@ -1062,43 +1026,43 @@
     "type" : "DRILL",
     "top" : "flat",
     "right" : "flat",
-    "bottom" : "flat",
-    "left" : "double",
+    "bottom" : "triple",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "115",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "flat",
+    "right" : "single",
     "bottom" : "single",
-    "left" : "double",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "116",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "flat",
+    "right" : "double",
     "bottom" : "triple",
-    "left" : "double",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "117",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "single",
+    "right" : "triple",
     "bottom" : "flat",
-    "left" : "double",
+    "left" : "single",
     "kind" : ""
   },
   {
     "id" : "118",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "single",
-    "bottom" : "triple",
+    "right" : "flat",
+    "bottom" : "flat",
     "left" : "double",
     "kind" : ""
   },
@@ -1106,8 +1070,8 @@
     "id" : "119",
     "type" : "DRILL",
     "top" : "flat",
-    "right" : "double",
-    "bottom" : "double",
+    "right" : "flat",
+    "bottom" : "single",
     "left" : "double",
     "kind" : ""
   },
@@ -1116,12 +1080,48 @@
     "type" : "DRILL",
     "top" : "flat",
     "right" : "flat",
+    "bottom" : "triple",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "121",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "flat",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "122",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "triple",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "123",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "double",
+    "bottom" : "double",
+    "left" : "double",
+    "kind" : ""
+  },
+  {
+    "id" : "124",
+    "type" : "DRILL",
+    "top" : "flat",
+    "right" : "flat",
     "bottom" : "double",
     "left" : "triple",
     "kind" : ""
   },
   {
-    "id" : "121",
+    "id" : "125",
     "type" : "DRILL",
     "top" : "flat",
     "right" : "double",
@@ -1130,61 +1130,61 @@
     "kind" : ""
   },
   {
-    "id" : "122",
+    "id" : "126",
     "type" : "DOUBLE_DRILL",
     "top" : "flat",
     "right" : "flat",
     "bottom" : "single",
     "left" : "triple",
-    "kind" : ""
-  },
-  {
-    "id" : "123",
-    "type" : "DOUBLE_DRILL",
-    "top" : "flat",
-    "right" : "flat",
-    "bottom" : "double",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "124",
-    "type" : "DOUBLE_DRILL",
-    "top" : "flat",
-    "right" : "single",
-    "bottom" : "triple",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "125",
-    "type" : "DOUBLE_DRILL",
-    "top" : "flat",
-    "right" : "triple",
-    "bottom" : "flat",
-    "left" : "flat",
-    "kind" : ""
-  },
-  {
-    "id" : "126",
-    "type" : "DOUBLE_DRILL",
-    "top" : "flat",
-    "right" : "triple",
-    "bottom" : "double",
-    "left" : "flat",
     "kind" : ""
   },
   {
     "id" : "127",
     "type" : "DOUBLE_DRILL",
     "top" : "flat",
+    "right" : "flat",
+    "bottom" : "double",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "128",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "single",
+    "bottom" : "triple",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "129",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "flat",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "130",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
+    "right" : "triple",
+    "bottom" : "double",
+    "left" : "flat",
+    "kind" : ""
+  },
+  {
+    "id" : "131",
+    "type" : "DOUBLE_DRILL",
+    "top" : "flat",
     "right" : "single",
     "bottom" : "double",
     "left" : "single",
     "kind" : ""
   },
   {
-    "id" : "128",
+    "id" : "132",
     "type" : "DOUBLE_DRILL",
     "top" : "flat",
     "right" : "double",
@@ -1193,7 +1193,7 @@
     "kind" : ""
   },
   {
-    "id" : "129",
+    "id" : "133",
     "type" : "DOUBLE_DRILL",
     "top" : "flat",
     "right" : "flat",
@@ -1202,7 +1202,7 @@
     "kind" : ""
   },
   {
-    "id" : "130",
+    "id" : "134",
     "type" : "DOUBLE_DRILL",
     "top" : "flat",
     "right" : "double",
@@ -1211,7 +1211,7 @@
     "kind" : ""
   },
   {
-    "id" : "131",
+    "id" : "135",
     "type" : "DOUBLE_DRILL",
     "top" : "flat",
     "right" : "flat",
@@ -1220,7 +1220,7 @@
     "kind" : ""
   },
   {
-    "id" : "132",
+    "id" : "136",
     "type" : "DOUBLE_DRILL",
     "top" : "flat",
     "right" : "flat",
@@ -1229,59 +1229,29 @@
     "kind" : ""
   },
   {
-    "id" : "133",
+    "id" : "137",
     "type" : "ALIEN_HOUSING",
     "top" : "single",
     "left" : "single",
     "bottom" : "flat",
     "right" : "single",
-
-    "color" : "brown"
-  },
-  {
-    "id" : "134",
-    "type" : "ALIEN_HOUSING",
-    "top" : "double",
-    "left" : "single",
-    "bottom" : "flat",
-    "right" : "single",
-
-    "color" : "brown"
-  },
-  {
-    "id" : "135",
-    "type" : "ALIEN_HOUSING",
-    "top" : "flat",
-    "left" : "triple",
-    "bottom" : "flat",
-    "right" : "flat",
-
-    "color" : "brown"
-  },
-  {
-    "id" : "136",
-    "type" : "ALIEN_HOUSING",
-    "top" : "flat",
-    "left" : "triple",
-    "bottom" : "single",
-    "right" : "flat",
-
-    "color" : "brown"
-  },
-  {
-    "id" : "137",
-    "type" : "ALIEN_HOUSING",
-    "top" : "flat",
-    "left" : "triple",
-    "bottom" : "flat",
-    "right" : "double",
 
     "color" : "brown"
   },
   {
     "id" : "138",
     "type" : "ALIEN_HOUSING",
-    "top" : "single",
+    "top" : "double",
+    "left" : "single",
+    "bottom" : "flat",
+    "right" : "single",
+
+    "color" : "brown"
+  },
+  {
+    "id" : "139",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
     "left" : "triple",
     "bottom" : "flat",
     "right" : "flat",
@@ -1289,24 +1259,14 @@
     "color" : "brown"
   },
   {
-    "id" : "139",
-    "type" : "ALIEN_HOUSING",
-    "top" : "single",
-    "left" : "double",
-    "bottom" : "flat",
-    "right" : "double",
-
-    "color" : "purple"
-  },
-  {
     "id" : "140",
     "type" : "ALIEN_HOUSING",
-    "top" : "double",
-    "left" : "double",
-    "bottom" : "flat",
-    "right" : "double",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "single",
+    "right" : "flat",
 
-    "color" : "purple"
+    "color" : "brown"
   },
   {
     "id" : "141",
@@ -1314,27 +1274,27 @@
     "top" : "flat",
     "left" : "triple",
     "bottom" : "flat",
-    "right" : "flat",
+    "right" : "double",
 
-    "color" : "purple"
+    "color" : "brown"
   },
   {
     "id" : "142",
     "type" : "ALIEN_HOUSING",
-    "top" : "flat",
+    "top" : "single",
     "left" : "triple",
-    "bottom" : "double",
+    "bottom" : "flat",
     "right" : "flat",
 
-    "color" : "purple"
+    "color" : "brown"
   },
   {
     "id" : "143",
     "type" : "ALIEN_HOUSING",
-    "top" : "flat",
-    "left" : "triple",
+    "top" : "single",
+    "left" : "double",
     "bottom" : "flat",
-    "right" : "single",
+    "right" : "double",
 
     "color" : "purple"
   },
@@ -1342,6 +1302,16 @@
     "id" : "144",
     "type" : "ALIEN_HOUSING",
     "top" : "double",
+    "left" : "double",
+    "bottom" : "flat",
+    "right" : "double",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "145",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
     "left" : "triple",
     "bottom" : "flat",
     "right" : "flat",
@@ -1349,7 +1319,37 @@
     "color" : "purple"
   },
   {
-    "id" : "145",
+    "id" : "146",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "double",
+    "right" : "flat",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "147",
+    "type" : "ALIEN_HOUSING",
+    "top" : "flat",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "single",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "148",
+    "type" : "ALIEN_HOUSING",
+    "top" : "double",
+    "left" : "triple",
+    "bottom" : "flat",
+    "right" : "flat",
+
+    "color" : "purple"
+  },
+  {
+    "id" : "149",
     "type" : "SHIELD",
     "top" : "flat",
     "right" : "single",
@@ -1357,7 +1357,7 @@
     "left" : "single"
   },
   {
-    "id" : "146",
+    "id" : "150",
     "type" : "SHIELD",
     "top" : "single",
     "right" : "flat",
@@ -1365,7 +1365,7 @@
     "left" : "single"
   },
   {
-    "id" : "147",
+    "id" : "151",
     "type" : "SHIELD",
     "top" : "double",
     "right" : "single",
@@ -1373,7 +1373,7 @@
     "left" : "single"
   },
   {
-    "id" : "148",
+    "id" : "152",
     "type" : "SHIELD",
     "top" : "flat",
     "right" : "flat",
@@ -1381,7 +1381,7 @@
     "left" : "double"
   },
   {
-    "id" : "149",
+    "id" : "153",
     "type" : "SHIELD",
     "top" : "flat",
     "right" : "double",
@@ -1389,7 +1389,7 @@
     "left" : "double"
   },
   {
-    "id" : "150",
+    "id" : "154",
     "type" : "SHIELD",
     "top" : "single",
     "right" : "double",
@@ -1397,7 +1397,7 @@
     "left" : "double"
   },
   {
-    "id" : "151",
+    "id" : "155",
     "type" : "SHIELD",
     "top" : "flat",
     "right" : "flat",
@@ -1405,7 +1405,7 @@
     "left" : "triple"
   },
   {
-    "id" : "152",
+    "id" : "156",
     "type" : "SHIELD",
     "top" : "flat",
     "right" : "double",
