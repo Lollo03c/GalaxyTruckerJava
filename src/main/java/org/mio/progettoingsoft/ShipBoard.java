@@ -65,6 +65,9 @@ public class ShipBoard {
         baseFirePower = 0;
         baseEnginePower = 0;
     }
+    public void setQuantBatteries(int quant) {
+        this.availableEnergy = quant;
+    }
     public ShipBoard(){
         rows = 5;
         columns = 7;
@@ -178,8 +181,8 @@ public class ShipBoard {
             comp.addAlienType(component.getColorAlien());
         }
 
-        baseFirePower += component.getFirePower();
-        baseEnginePower += component.getEnginePower();
+        baseFirePower +=  component.getFirePower();
+        baseEnginePower += component.getEnginePower()== 2 ? 0 : component.getEnginePower();
 
         getComponentsList();
     }
@@ -204,7 +207,7 @@ public class ShipBoard {
         shipComponents[row][column] = Optional.empty();
 
         availableEnergy -= toRemove.getEnergyQuantity();
-        baseEnginePower -= toRemove.getEnginePower();
+        baseEnginePower -= toRemove.getEnginePower() == 2 ? 0 : toRemove.getEnginePower();
         baseFirePower -= toRemove.getFirePower();
     }
 
@@ -219,7 +222,7 @@ public class ShipBoard {
                 .toList();
     }
 
-    private Stream<Component> getComponentsStream(){
+    public Stream<Component> getComponentsStream(){
         return getStreamOptComponents()
                 .filter(optComp -> optComp.isPresent())
                 .map(optComp -> optComp.get());
