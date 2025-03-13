@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.advCards;
 
+import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.components.GoodType;
 
@@ -10,7 +11,7 @@ public class Smugglers extends AdvancedEnemy {
     private final List<GoodType> goods;
 
     public Smugglers(int id, int level, int strength, int daysLost, int stolenGoods, List<GoodType> goods) {
-        super(id, level, strength, daysLost);
+        super(id, level, strength, daysLost, AdvCardType.SMUGGLERS);
         this.stolenGoods = stolenGoods;
         this.goods = goods;
     }

@@ -14,6 +14,7 @@ class ShipBoardTest {
 
     private Connector flat = Connector.FLAT;
 /*
+    QUESTO TEST NON GIRA: devo ancora capire se ho scritto male il test o se bisogna sistemare le classi
     @Test
     void should_create_basic_ship_board(){
         ShipBoard ship = new ShipBoard(HousingColor.BLUE);

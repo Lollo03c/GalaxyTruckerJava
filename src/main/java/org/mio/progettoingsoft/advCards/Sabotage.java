@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.AdventureCard;
 
 public class Sabotage extends AdventureCard {
     protected Sabotage(int id,int level) {
-        super(id, level);
+        super(id, level, null);
     }
+    //ATTENZIONE: questa carta è di livello 3, perciò non viene utilizzata nel gioco
 }

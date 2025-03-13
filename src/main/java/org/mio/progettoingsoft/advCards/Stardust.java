@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.advCards;
 
+import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class Stardust extends AdventureCard {
     public Stardust(int id, int level) {
-        super(id,level);
+        super(id,level, AdvCardType.STARDUST);
     }
 
     @Override
@@ -21,5 +22,11 @@ public class Stardust extends AdventureCard {
             int daysLost = p.getShipBoard().getExposedConnectors();
             flyboard.moveDays(p, -daysLost);
         }
+    }
+
+    @Override
+    public void startTest(FlyBoard flyBoard, Player player){
+        int daysLost = player.getShipBoard().getExposedConnectors();
+        flyBoard.moveDays(player, -daysLost);
     }
 }

@@ -363,4 +363,17 @@ public class FlyBoard {
             e.printStackTrace();
         }
     }
+
+    public void shuffleDeck(){
+        Collections.shuffle(deck);
+    }
+
+    public AdventureCard drawAdventureCard(){
+        AdventureCard card = deck.remove(0);
+        return card;
+    }
+
+    public boolean isDeckEmpty() {
+        return deck.isEmpty();
+    }
 }

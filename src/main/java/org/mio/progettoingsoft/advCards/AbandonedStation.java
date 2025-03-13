@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.advCards;
 
+import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.components.GoodType;
 
@@ -11,7 +12,7 @@ public class AbandonedStation extends AdventureCard {
     private List<GoodType> goods;
 
     public AbandonedStation(int id, int level, List<GoodType> goods) {
-        super(id, level);
+        super(id, level, AdvCardType.ABANDONED_STATION);
         this.goods = goods;
     }
 }

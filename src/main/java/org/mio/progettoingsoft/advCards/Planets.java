@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.advCards;
 
+import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public class Planets extends AdventureCard {
 
 
     public Planets(int id, int level, int daysLost, List<Planet> planets) {
-        super(id, level);
+        super(id, level, AdvCardType.PLANETS);
         this.daysLost = daysLost;
         this.planets = planets;
     }
