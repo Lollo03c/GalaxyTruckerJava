@@ -37,18 +37,20 @@ public class FlyBoard {
         this.remainingGoods = new HashMap<>();
 
         loadComponents();
-        loadAdventureCard();
+        loadAdventureCards();
 
         this.circuit = new ArrayList<>(24);
 
         for (int i = 0; i < 24; i++)
             circuit.add(Optional.empty());
     }
-    public void drawAcard(){
+
+    public void drawCard(){
         AdventureCard card = deck.getFirst();
         deck.removeFirst();
         card.start(FlyBoard.this);
     }
+
     public void addPlayer(Player player){
         scoreBoard.add(player);
     }
@@ -99,9 +101,8 @@ public class FlyBoard {
 
         try {
             JsonNode rootNode = mapper.readTree(new File("src/main/resources/components.json"));
-            final int nComponents = rootNode.size();
 
-            for (int i = 0; i < nComponents; i++) {
+            for (int i = 0; i < rootNode.size(); i++) {
                 String type = rootNode.get(i).path("type").asText();
                 int id = rootNode.get(i).path("id").asInt();
                 Connector top = Connector.stringToConnector(rootNode.get(i).path("top").asText());
@@ -156,14 +157,11 @@ public class FlyBoard {
                 Collections.shuffle(coveredComponents);
             }
 
-            //System.out.println("First type : " + type);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
+
     //    private  List<Optional<Player>> circuit;
     //    list da 24 celle
     public void moveDays(Player player, int days){
@@ -178,7 +176,8 @@ public class FlyBoard {
                 retreatOne(player);
         }
     }
-//advance one step and if necessary update the scoryboard
+
+    //advance one step and if necessary update the scoreboard
     private void advanceOne(Player player){
         int start = circuit.indexOf(Optional.of(player));
         int index = start;
@@ -235,127 +234,60 @@ public class FlyBoard {
 
     public List<AdventureCard> getAdventureCards(){return deck;}
 
-    public void loadAdventureCard(){
+    public void loadAdventureCards(){
 
         ObjectMapper mapper = new ObjectMapper();
 
         try{
             JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
-            final int nCards = rootNode.size();
 
-            for (int i = 0; i < nCards; i++) {
-                int id = rootNode.get(i).path("id").asInt();
-                int level = rootNode.get(i).path("level").asInt();
+            for (int i = 0; i < rootNode.size(); i++) {
                 String type = rootNode.get(i).path("type").asText();
 
                 switch (type) {
-                    case "SLAVERS": {
-                        int strength = rootNode.get(i).path("strength").asInt();
-                        int daysLost = rootNode.get(i).path("daysLost").asInt();
-                        int reward = rootNode.get(i).path("reward").asInt();
-                        int crewLost = rootNode.get(i).path("crewLost").asInt();
-                        this.deck.add(new Slaver(id, level, strength, daysLost, reward, crewLost));
-                    }
+                    case "SLAVERS":
+                        this.deck.add(Slaver.loadSlaver(rootNode.get(i)));
                     break;
 
-                    case "SMUGGLERS": {
-                        int strength = rootNode.get(i).path("strength").asInt();
-                        int daysLost = rootNode.get(i).path("daysLost").asInt();
-                        List<GoodType> rewards = new ArrayList<>();
-                        JsonNode rewardNode = rootNode.get(i).path("reward");
-                        for (JsonNode reward : rewardNode) {
-                            rewards.add(GoodType.stringToGoodType(reward.asText()));
-                        }
-                        int goodsLost = rootNode.get(i).path("goodsLost").asInt();
-                        this.deck.add(new Smugglers(id, level, strength, daysLost, goodsLost, rewards));
-                    }
+                    case "SMUGGLERS":
+                        this.deck.add(Smugglers.loadSmugglers(rootNode.get(i)));
                     break;
 
-                    case "PIRATE": {
-                        int strength = rootNode.get(i).path("strength").asInt();
-                        int daysLost = rootNode.get(i).path("daysLost").asInt();
-                        List<CannonPenalty> cannons = new ArrayList<>();
-                        JsonNode cannonsNode = rootNode.get(i).path("cannons");
-                        for (JsonNode cannon : cannonsNode) {
-                            cannons.add(CannonPenalty.stringToCannonPenalty(cannon.get(1).asText(),cannon.get(0).asText()));
-                        }
-                        int reward = rootNode.get(i).path("reward").asInt();
-                        this.deck.add(new Pirate(id, level, strength, daysLost, cannons, reward));
-                    }
+                    case "PIRATE":
+                        this.deck.add(Pirate.loadPirate(rootNode.get(i)));
                     break;
 
                     case "STARDUST":
-                        this.deck.add(new Stardust(id, level));
-                        break;
+                        this.deck.add(Stardust.loadStardust(rootNode.get(i)));
+                    break;
 
                     case "EPIDEMIC":
-                        this.deck.add(new Stardust(id, level));
-                        break;
+                        this.deck.add(Epidemic.loadEpidemic(rootNode.get(i)));
+                    break;
 
                     case "OPENSPACE":
-                        this.deck.add(new OpenSpace(id, level));
-                        break;
-
-                    case "METEORSWARM": {
-                        List<Meteor> meteors = new ArrayList<>();
-                        JsonNode meteorsNode = rootNode.get(i).path("meteors");
-                        for(JsonNode meteor : meteorsNode) {
-                            meteors.add(Meteor.stringToMeteor(meteor.get(1).asText(),meteor.get(0).asText()));
-                        }
-                        this.deck.add(new MeteorSwarm(id, level, meteors));
-                    }
+                        this.deck.add(OpenSpace.loadOpenSpace(rootNode.get(i)));
                     break;
 
-                    case "PLANETS": {
-                        int daysLost = rootNode.get(i).path("daysLost").asInt();
-                        List<Planet> planets = new ArrayList<>();
-                        JsonNode planetsNode = rootNode.get(i).path("planets");
-                        for(JsonNode planet : planetsNode) {
-                            planets.add(Planet.stringToPlanet(planet));
-                        }
-                        this.deck.add(new Planets(id, level, daysLost, planets));
-                    }
+                    case "METEORSWARM":
+                        this.deck.add(MeteorSwarm.loadMeteorSwarm(rootNode.get(i)));
                     break;
 
-                    case "COMBATZONE": {
-                        List<CombatLine> combatLines = new ArrayList<>();
-                        List<Penalty> cannonPenalties = new ArrayList<>();
-                        JsonNode criterionsNode = rootNode.get(i).path("criterion");
-                        JsonNode penaltyNode = rootNode.get(i).path("penalty");
-                        for (int j = 0; j < criterionsNode.size(); j++) {
-                            if (penaltyNode.get(j).get(0).asText().equals("cannonsPenalty")) {
-                                for (JsonNode cannonsPenalty : penaltyNode.get(j).get(1)) {
-                                    cannonPenalties.add(CannonPenalty.stringToCannonPenalty(cannonsPenalty.get(1).asText(), cannonsPenalty.get(0).asText()));
-                                }
-                                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), cannonPenalties));
-                            } else {
-                                List<Penalty> penaltyList = new ArrayList<>();
-                                penaltyList.add(LoseSomethingPenalty.stringToPenalty(penaltyNode.get(j).get(0).asText(), penaltyNode.get(j).get(1).asInt()));
-                                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), penaltyList));
-                            }
-                        }
-                        this.deck.add(new CombatZone(id, level, combatLines));
-                    }
+                    case "PLANETS":
+                        this.deck.add(Planets.loadPlanets(rootNode.get(i)));
                     break;
 
-                    case "ABANDONEDSHIP": {
-                        int daysLost = rootNode.get(i).path("daysLost").asInt();
-                        int credits = rootNode.get(i).path("credits").asInt();
-                        int crewLost = rootNode.get(i).path("crewLost").asInt();
-                        this.deck.add(new AbandonedShip(id, level, daysLost, credits, crewLost));
-                    }
+                    case "COMBATZONE":
+                        this.deck.add(CombatZone.loadCombatZone(rootNode.get(i)));
                     break;
 
-                    case "ABANDONEDSTATION": {
-                        int daysLost = rootNode.get(i).path("daysLost").asInt();
-                        int crewNeeded = rootNode.get(i).path("crewNeeded").asInt();
-                        List<GoodType> goods = new ArrayList<>();
-                        JsonNode goodsNode = rootNode.get(i).path("goods");
-                        for (JsonNode good : goodsNode) {
-                            goods.add(GoodType.stringToGoodType(good.asText()));
-                        }
-                        this.deck.add(new AbandonedStation(id, level, goods));
-                    }
+                    case "ABANDONEDSHIP":
+                        this.deck.add(AbandonedShip.loadAbandonedShip(rootNode.get(i)));
+                    break;
+
+                    case "ABANDONEDSTATION":
+                        this.deck.add(AbandonedStation.loadAbandonedStation(rootNode.get(i)));
+                    break;
                 }
             }
         }

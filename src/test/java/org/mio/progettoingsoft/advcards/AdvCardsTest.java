@@ -72,7 +72,7 @@ public class AdvCardsTest {
                             p.getShipBoard().addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.SINGLE, Connector.FLAT, Connector.SINGLE), 4, 2);
                         }
                 );
-        fly.loadAdventureCard();
+        fly.loadAdventureCards();
         fly.shuffleDeck();
     }
 

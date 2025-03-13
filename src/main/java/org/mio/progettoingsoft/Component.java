@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
@@ -7,18 +8,17 @@ import java.util.Collections;
 import java.util.Map;
 
 public abstract class Component {
+    private final int id;
     private Connector topConnector, bottomConnector, rightConnector, leftConnector;
     private final ComponentType type;
-    
-    private final int id;
 
-    protected Component(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+    public Component(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
+        this.id = id;
         topConnector = topConn;
         bottomConnector = bottomConn;
         rightConnector = rightConn;
         leftConnector = leftConn;
-        this.id = id;
-//togliamo il type, lo usiamo solo per fare lo switch per leggere il json, dopo non ci interessa tenerlo
+        // togliamo il type, lo usiamo solo per fare lo switch per leggere il json, dopo non ci interessa tenerlo
         this.type = type;
     }
 
