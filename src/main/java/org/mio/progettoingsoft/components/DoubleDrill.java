@@ -10,6 +10,6 @@ public class DoubleDrill extends Drill{
 
     @Override
     public Float getFirePower(){
-        return 0f;
+        return 2f;
     }
 }

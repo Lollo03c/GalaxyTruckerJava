@@ -1,10 +1,11 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.advCards.OpenSpace;
 import java.util.Scanner;
-
+import org.mio.progettoingsoft.advCards.*;
 public class AdvCardController {
 
-    public void OpenSpaceController(FlyBoard board){
+    public void ControllerCards(OpenSpace card ,FlyBoard board){
         for (Player player : board.getScoreBoard()){
             int maxAllowedDoubleEngines = Integer.min(
                     player.getShipBoard().getQuantBatteries(),(int) player.getShipBoard().getComponentsStream()

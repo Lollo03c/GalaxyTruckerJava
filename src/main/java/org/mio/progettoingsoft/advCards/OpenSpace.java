@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.advCards;
 
+import org.mio.progettoingsoft.AdvCardController;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
@@ -11,7 +12,6 @@ public class OpenSpace extends AdventureCard {
 
     @Override
     public void start(FlyBoard board){
-
-
+        this.controller.ControllerCards(this, board);
     }
 }

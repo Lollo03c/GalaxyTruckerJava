@@ -181,7 +181,7 @@ public class ShipBoard {
             comp.addAlienType(component.getColorAlien());
         }
 
-        baseFirePower +=  component.getFirePower();
+        baseFirePower += component.getFirePower() == 2f ? 0 :  component.getFirePower();
         baseEnginePower += component.getEnginePower()== 2 ? 0 : component.getEnginePower();
 
         getComponentsList();
@@ -208,7 +208,7 @@ public class ShipBoard {
 
         availableEnergy -= toRemove.getEnergyQuantity();
         baseEnginePower -= toRemove.getEnginePower() == 2 ? 0 : toRemove.getEnginePower();
-        baseFirePower -= toRemove.getFirePower();
+        baseFirePower -= toRemove.getFirePower() == 2f ? 0 : toRemove.getFirePower();
     }
 
     private Stream<Optional<Component>> getStreamOptComponents(){

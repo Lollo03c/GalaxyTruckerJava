@@ -44,7 +44,11 @@ public class FlyBoard {
         for (int i = 0; i < 24; i++)
             circuit.add(Optional.empty());
     }
-
+    public void drawAcard(){
+        AdventureCard card = deck.getFirst();
+        deck.removeFirst();
+        card.start(FlyBoard.this);
+    }
     public void addPlayer(Player player){
         scoreBoard.add(player);
     }
