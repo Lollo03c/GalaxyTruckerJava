@@ -10,7 +10,7 @@ public class BigMeteor extends Meteor {
     }
 
     @Override
-    public void hit(Player player) {
+    public void hit(Player player, int row, int column) {
 
     }
 }

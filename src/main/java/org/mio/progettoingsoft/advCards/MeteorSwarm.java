@@ -12,4 +12,8 @@ public class MeteorSwarm extends AdventureCard {
         super(id, level);
         this.meteors = meteors;
     }
+
+    public List<Meteor> getMeteors(){
+        return this.meteors;
+    }
 }

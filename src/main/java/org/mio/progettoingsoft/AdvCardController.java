@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.advCards.OpenSpace;
+import java.util.Map;
 import java.util.Scanner;
 import org.mio.progettoingsoft.advCards.*;
 public class AdvCardController {
@@ -20,4 +20,16 @@ public class AdvCardController {
             player.getShipBoard().setQuantBatteries(player.getShipBoard().getQuantBatteries()-choice);
         }
     }
+    public void ControllerCards(MeteorSwarm card, FlyBoard board){
+            for(Meteor m : card.getMeteors()){
+                int row = board.getScoreBoard().getFirst().roll2Dices();
+                int col = board.getScoreBoard().getFirst().roll2Dices();
+                // bisogna shiftare le coordinate come quelle che sono rappresentate nella plancia nave
+                for(Player player : board.getScoreBoard()){
+                    m.hit(player, row, col);
+                }
+
+            }
+    }
+
 }

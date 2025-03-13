@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import java.util.Random;
 import org.mio.progettoingsoft.exceptions.*;
 
 public class Player {
@@ -42,6 +43,12 @@ public class Player {
 
     public void bookComponent() {
 
+    }
+    public int roll2Dices() {
+        Random random = new Random();
+        int num1 = random.nextInt(6) + 1;
+        int num2 = random.nextInt(6) + 1;
+        return num1 + num2;
     }
 
     public Integer getCredits() {

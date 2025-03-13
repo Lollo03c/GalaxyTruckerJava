@@ -4,7 +4,7 @@ import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.Player;
 
 public abstract class Meteor {
-    private final Direction direction;
+    protected final Direction direction;
 
     public Meteor(Direction direction) {
         this.direction = direction;
@@ -18,5 +18,5 @@ public abstract class Meteor {
         }
     }
 
-    public abstract void hit(Player player);
+    public abstract void hit(Player player, int row, int col);
 }

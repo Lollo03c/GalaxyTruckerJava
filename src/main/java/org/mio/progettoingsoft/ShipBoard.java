@@ -477,7 +477,7 @@ public class ShipBoard {
         return numExposedConnectors;
     }
 
-    private boolean isExposed(Component comp, Map<Direction, Component> adj, Direction dir){
+    public boolean isExposed(Component comp, Map<Direction, Component> adj, Direction dir){
         if(!comp.getConnector(dir).equals(Connector.FLAT)){
             return !adj.containsKey(dir);
         }
