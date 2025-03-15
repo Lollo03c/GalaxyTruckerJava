@@ -15,7 +15,7 @@ class HousingTest {
         Component house = new Housing(1, flat, flat, flat, flat);
         house.addHumanMember();
 
-        assertEquals(1, house.getQuantityMembers());
+        assertEquals(1, house.getNumHumanMembers());
     }
 
     @Test
@@ -24,7 +24,7 @@ class HousingTest {
         house.addHumanMember();
         house.addHumanMember();
 
-        assertEquals(2, house.getQuantityMembers());
+        assertEquals(2, house.getNumHumanMembers());
     }
 
     @Test
@@ -33,9 +33,9 @@ class HousingTest {
         house.addHumanMember();
         house.addHumanMember();
 
-        assertEquals(2, house.getQuantityMembers());
+        assertEquals(2, house.getNumHumanMembers());
         assertFalse(house.addHumanMember());
-        assertEquals(2, house.getQuantityMembers());
+        assertEquals(2, house.getNumHumanMembers());
     }
 
     @Test
@@ -44,13 +44,13 @@ class HousingTest {
         house.addHumanMember();
         house.addHumanMember();
 
-        assertEquals(2, house.getQuantityMembers());
+        assertEquals(2, house.getNumHumanMembers());
 
         house.removeHumanMember();
-        assertEquals(1, house.getQuantityMembers());
+        assertEquals(1, house.getNumHumanMembers());
 
         house.removeHumanMember();
-        assertEquals(0, house.getQuantityMembers());
+        assertEquals(0, house.getNumHumanMembers());
     }
 
     @Test
@@ -88,7 +88,7 @@ class HousingTest {
         assertTrue(house.containsAlien(AlienType.BROWN));
 
         assertFalse(house.addHumanMember());
-        assertEquals(0, house.getQuantityMembers());
+        assertEquals(0, house.getNumHumanMembers());
     }
 
     @Test
@@ -97,7 +97,7 @@ class HousingTest {
         house.addAlienType(AlienType.BROWN);
 
         assertTrue(house.addHumanMember());
-        assertEquals(1, house.getQuantityMembers());
+        assertEquals(1, house.getNumHumanMembers());
 
         assertFalse(house.addAlien(AlienType.BROWN));
         assertFalse(house.containsAlien(AlienType.BROWN));

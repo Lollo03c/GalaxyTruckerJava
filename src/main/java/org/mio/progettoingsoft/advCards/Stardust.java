@@ -23,10 +23,10 @@ public class Stardust extends AdventureCard {
 
     @Override
     public void start(FlyBoard flyboard){
-        List<Player> scoryBoard = flyboard.getScoreBoard();
-        Collections.reverse(scoryBoard);
+        List<Player> scoreBoard = flyboard.getScoreBoard();
+        Collections.reverse(scoreBoard);
 
-        for(Player p : scoryBoard){
+        for(Player p : scoreBoard){
             int daysLost = p.getShipBoard().getExposedConnectors();
             flyboard.moveDays(p, -daysLost);
         }

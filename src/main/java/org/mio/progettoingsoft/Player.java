@@ -118,4 +118,8 @@ public class Player {
     public void addAlien() throws NotEnoughHousingException {
 
     }
+
+    public boolean equals(Player other) {
+        return this.username.equals(other.getUsername());
+    }
 }

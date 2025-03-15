@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft.components;
 
-import javafx.scene.control.Alert;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
@@ -58,7 +57,7 @@ public class Housing extends Component {
     }
 
     @Override
-    public Integer getQuantityMembers(){
+    public Integer getNumHumanMembers(){
         return guestedHuman;
     }
 

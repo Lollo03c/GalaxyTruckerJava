@@ -173,7 +173,13 @@ public class ShipBoard {
 //        if (!added)
 //            throw new IncorrectPlacement(row, column, component);
 
+        // Added by stef: it's useful to store the cordinates of the component in the component itself, in this way it's
+        // possible to get the adjacents components (for example from the stream of components)
+        component.setRow(row);
+        component.setColumn(column);
+
         shipComponents[row][column] = Optional.of(component);
+
         availableEnergy += component.getEnergyQuantity();
 
         for (Component comp : getAdjacent(row, column).values()) {
@@ -483,6 +489,27 @@ public class ShipBoard {
         }
         return false;
     }
+
+    public int getHumanNumber(){
+        return this.getComponentsStream().filter(c -> c.getType().equals(ComponentType.HOUSING))
+                .map(c -> c.getNumHumanMembers()).reduce(0, Integer::sum);
+    }
+
+    /*
+    public int getAlienNumber(){
+        int sum = 0;
+        sum += (int) this.getComponentsStream().filter(c -> (
+                c.getType().equals(ComponentType.HOUSING) &&
+                        c.canContainsAlien(AlienType.PURPLE) &&
+                        c.getGuestedAlien().get(AlienType.PURPLE)))
+                .count();
+        sum += (int) this.getComponentsStream().filter(c -> (
+                        c.getType().equals(ComponentType.HOUSING) &&
+                                c.canContainsAlien(AlienType.BROWN) &&
+                                c.getGuestedAlien().get(AlienType.BROWN)))
+                .count();
+        return sum;
+    }*/
 }
 
 

@@ -216,7 +216,7 @@ public class FlyBoard {
             Optional<Player> player2 =circuit.get(index);
             if(player2.isPresent()){
                 int position1 = scoreBoard.indexOf(player);
-                int position2 = scoreBoard.indexOf(player2);
+                int position2 = scoreBoard.indexOf(player2.get());
                 if(position1 < position2){
                     scoreBoard.set(position1, player2.orElse(player));
                     scoreBoard.set(position2, player);

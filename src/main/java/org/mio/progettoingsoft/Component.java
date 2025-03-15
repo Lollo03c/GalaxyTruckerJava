@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
@@ -11,6 +10,8 @@ public abstract class Component {
     private final int id;
     private Connector topConnector, bottomConnector, rightConnector, leftConnector;
     private final ComponentType type;
+    private int row;
+    private int column;
 
     public Component(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         this.id = id;
@@ -18,8 +19,22 @@ public abstract class Component {
         bottomConnector = bottomConn;
         rightConnector = rightConn;
         leftConnector = leftConn;
-        // togliamo il type, lo usiamo solo per fare lo switch per leggere il json, dopo non ci interessa tenerlo
         this.type = type;
+        this.row = -1;
+        this.column = -1;
+    }
+
+    public int getRow() {
+        return row;
+    }
+    public int getColumn() {
+        return column;
+    }
+    public void setRow(int row){
+        this.row = row;
+    }
+    public void setColumn(int column){
+        this.column = column;
     }
 
     public ComponentType getType(){
@@ -100,7 +115,7 @@ public abstract class Component {
         return false;
     }
 
-    public Integer getQuantityMembers(){
+    public Integer getNumHumanMembers(){
         return 0;
     }
 
@@ -152,6 +167,7 @@ public abstract class Component {
     public Boolean containsGuest(){
         return false;
     }
+
 
     public Boolean isFirstHousing(){return false;}
 }

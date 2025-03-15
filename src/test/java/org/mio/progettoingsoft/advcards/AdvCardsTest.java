@@ -6,14 +6,18 @@ import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.Connector;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.advCards.Epidemic;
+import org.mio.progettoingsoft.advCards.Stardust;
 import org.mio.progettoingsoft.components.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AdvCardsTest {
     FlyBoard fly;
@@ -39,8 +43,12 @@ public class AdvCardsTest {
 
         for (int i = 0; i < 4; i++) {
             fly.addPlayer(players.get(i));
-            fly.getCircuit().set(3 - i, Optional.of(players.get(i)));
         }
+
+        fly.getCircuit().set(6, Optional.of(fly.getScoreBoard().get(0)));
+        fly.getCircuit().set(3, Optional.of(fly.getScoreBoard().get(1)));
+        fly.getCircuit().set(1, Optional.of(fly.getScoreBoard().get(2)));
+        fly.getCircuit().set(0, Optional.of(fly.getScoreBoard().get(3)));
 
         for (Player p : players) {
             assertTrue(fly.getScoreBoard().contains(p));
@@ -60,20 +68,36 @@ public class AdvCardsTest {
                             p.getShipBoard().addComponentToPosition(new Pipe(5, Connector.DOUBLE, Connector.SINGLE, Connector.DOUBLE, Connector.DOUBLE), 1, 4);
                         }
                 );
+        // Stefano has 9 exposed connectors
         fly.getScoreBoard().stream()
                 .filter(p -> p.getUsername().equals("Lorenzo"))
                 .findFirst().ifPresent(p -> {
                             p.getShipBoard().addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.FLAT, Connector.SINGLE, Connector.DOUBLE), 3, 4);
                         }
                 );
+        // Lorenzo has 6 exposed connectors
         fly.getScoreBoard().stream()
                 .filter(p -> p.getUsername().equals("Andrea"))
                 .findFirst().ifPresent(p -> {
                             p.getShipBoard().addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.SINGLE, Connector.FLAT, Connector.SINGLE), 4, 2);
                         }
                 );
+        // Andrea has 8 exposed connectors
+        // Antonio has 7 exposed connectors
+        int stefExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get().getShipBoard().getExposedConnectors();
+        assertEquals(9, stefExp);
+        int lorExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get().getShipBoard().getExposedConnectors();
+        assertEquals(6, lorExp);
+        int andExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get().getShipBoard().getExposedConnectors();
+        assertEquals(8, andExp);
+        int antExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get().getShipBoard().getExposedConnectors();
+        assertEquals(7, antExp);
         fly.loadAdventureCards();
         fly.shuffleDeck();
+    }
+
+    @Test
+    public void should_do_nothing() {
     }
 
     @Test
@@ -121,12 +145,75 @@ public class AdvCardsTest {
         System.out.println("Planets");
     }
 
-    public void play_epidemic(AdventureCard card){
-        System.out.println("Epidemic");
+    @Test
+    public void should_play_epidemic(){
+        AdventureCard card = new Epidemic(1, 2);
+        fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().ifPresent(p -> {
+            p.getShipBoard().addComponentToPosition(new Housing(5, Connector.TRIPLE, Connector.SINGLE, Connector.FLAT, Connector.SINGLE), 1,3);
+            p.addHumanGuest(4);
+        });
+        // prosegui e inserisci gli assert di verifica
+        play_epidemic(card);
     }
 
+    public void play_epidemic(AdventureCard card){
+        for(Player player : fly.getScoreBoard()){
+            card.startTest(fly, player);
+        }
+    }
+
+    @Test
+    public void should_play_stardust(){
+        AdventureCard c = new Stardust(1, 2);
+        play_stardust(c);
+        assertEquals(16, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get())));
+        assertEquals(19, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get())));
+        assertEquals(20, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get())));
+        assertEquals(21, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get())));
+        assertEquals(3, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get()));
+        assertEquals(2, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get()));
+        assertEquals(1, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get()));
+        assertEquals(0, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get()));
+
+    }
+
+    @Test
+    public void should_play_stardust_twice(){
+        AdventureCard c = new Stardust(1, 2);
+        play_stardust(c);
+        play_stardust(c);
+        assertEquals(8, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get())));
+        assertEquals(13, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get())));
+        assertEquals(12, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get())));
+        assertEquals(10, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get())));
+        assertEquals(3, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get()));
+        assertEquals(0, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get()));
+        assertEquals(1, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get()));
+        assertEquals(2, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get()));
+    }
+
+    @Test
+    public void should_play_stardust_three_times() {
+        AdventureCard c = new Stardust(1, 2);
+        play_stardust(c);
+        play_stardust(c);
+        play_stardust(c);
+        assertEquals(0, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get())));
+        assertEquals(7, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get())));
+        assertEquals(5, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get())));
+        assertEquals(1, fly.getCircuit().indexOf(Optional.of(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get())));
+        assertEquals(3, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get()));
+        assertEquals(0, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get()));
+        assertEquals(1, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get()));
+        assertEquals(2, fly.getScoreBoard().indexOf(fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get()));
+
+    }
+
+    // this method will be implemented as it is (and with the view modifying part) in the controller
     public void play_stardust(AdventureCard card){
-        for (Player p : players) {
+        List<Player> playersReverse = new ArrayList<>(fly.getScoreBoard());
+        Collections.reverse(playersReverse);
+        for (Player p : playersReverse) {
             card.startTest(fly, p);
             // after each modification, it will be necessary to update the view one player at once
         }
