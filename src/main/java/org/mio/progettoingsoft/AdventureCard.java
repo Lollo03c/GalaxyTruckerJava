@@ -6,7 +6,7 @@ public abstract class AdventureCard {
 
     private final int level;
     private final int id;
-    private AdvCardType type;
+    protected AdvCardType type;
     protected static AdvCardController controller = new AdvCardController();
 
     public AdventureCard(int id, int level, AdvCardType type) {

@@ -23,6 +23,8 @@ public class Epidemic extends AdventureCard {
 
     // still to be implemented: can a player choose which member to remove? alien o human?
     // as it is the method removes the human, if it doesn't find humans, it removes the alien (if present)
+
+    // Antonio -> ho toleto removeHuman and removeAlien e sostituiti con removeGuest (+ generico)
     public void startTest(FlyBoard fly, Player player){
         player.getShipBoard().getComponentsStream()
                 .filter(c -> c.getType().equals(ComponentType.HOUSING))
@@ -30,12 +32,14 @@ public class Epidemic extends AdventureCard {
                     Map<Direction, Component> adj = player.getShipBoard().getAdjacent(c.getRow(), c.getColumn());
                     adj.forEach((direction, component) -> {
                         if(component.getType().equals(ComponentType.HOUSING)){
-                            if(!component.removeHumanMember()){
-                                if(component.canContainsAlien(AlienType.BROWN))
-                                    component.removeAlien(AlienType.BROWN);
-                                else if(component.canContainsAlien(AlienType.PURPLE))
-                                    component.removeAlien(AlienType.PURPLE);
-                            }
+                            component.removeGuest();
+//                            if(!component.removeHumanMember()){
+//                            if (!component.removeGuest())
+//                                if(component.canContainsAlien(AlienType.BROWN))
+//                                    component.removeAlien(AlienType.BROWN);
+//                                else if(component.canContainsAlien(AlienType.PURPLE))
+//                                    component.removeAlien(AlienType.PURPLE);
+//                            }
                         }
                     });
                 });

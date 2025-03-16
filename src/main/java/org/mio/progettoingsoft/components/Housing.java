@@ -61,14 +61,14 @@ public class Housing extends Component {
         return guestedHuman;
     }
 
-    @Override
-    public Boolean removeHumanMember(){
-        if (guestedHuman > 0){
-            guestedHuman--;
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public Boolean removeHumanMember(){
+//        if (guestedHuman > 0){
+//            guestedHuman--;
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public Boolean addAlien(AlienType type){
@@ -79,11 +79,11 @@ public class Housing extends Component {
 
         return false;
     }
-
-    @Override
-    public Boolean removeAlien(AlienType type){
-        return guestedAlien.replace(type, true, false);
-    }
+//
+//    @Override
+//    public Boolean removeAlien(AlienType type){
+//        return guestedAlien.replace(type, true, false);
+//    }
 
     @Override
     public Boolean containsAlien(AlienType type){
@@ -114,6 +114,35 @@ public class Housing extends Component {
     @Override
     public Boolean isFirstHousing(){
         return this.isFirst;
+    }
+
+    @Override
+    public int getQuantityGuests(){
+        if (guestedHuman > 0)
+            return  guestedHuman;
+
+        for (AlienType type : guestedAlien.keySet())
+            if (guestedAlien.get(type))
+                return 1;
+
+        return 0;
+    }
+
+    @Override
+    public boolean removeGuest(){
+        if (guestedHuman > 0){
+            guestedHuman--;
+            return true;
+        }
+
+        for (AlienType type : guestedAlien.keySet()){
+            if (guestedAlien.get(type)){
+                guestedAlien.put(type, false);
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

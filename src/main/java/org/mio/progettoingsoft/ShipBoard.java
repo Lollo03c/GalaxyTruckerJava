@@ -24,8 +24,6 @@ public class ShipBoard {
     private float baseFirePower;
     private int baseEnginePower;
 
-    private Map<GoodType, Integer> goods;
-
 
     private  int exposedConnectors;
     private  int maxEnergy;
@@ -57,10 +55,6 @@ public class ShipBoard {
         bannedCoordinates.add(new Cordinate(1, 6));
         bannedCoordinates.add(new Cordinate(4, 3));
 
-        goods = new HashMap<>();
-        for (GoodType type : GoodType.values()){
-            goods.put(type, 0);
-        }
 
         baseFirePower = 0;
         baseEnginePower = 0;
@@ -84,11 +78,6 @@ public class ShipBoard {
         bannedCoordinates.add(new Cordinate(1, 0));
         bannedCoordinates.add(new Cordinate(1, 6));
         bannedCoordinates.add(new Cordinate(4, 3));
-
-        goods = new HashMap<>();
-        for (GoodType type : GoodType.values()){
-            goods.put(type, 0);
-        }
 
         baseFirePower = 0;
         baseEnginePower = 0;
@@ -250,20 +239,18 @@ public class ShipBoard {
         availableEnergy--;
     }
 
+    public void removeEnergy(int quant) throws NotEnoughBatteriesException{
+        for (int i = 0; i < quant; i++)
+            removeEnergy();
+    }
+
+
     private boolean validRow(int row){
         return row >= 0 && row < rows;
     }
 
     private boolean validColumn(int column){
         return column >= 0 && column < columns;
-    }
-
-    private Map<GoodType, Integer> getStoredGoods() {
-        return goods;
-    }
-
-    public Integer getStoredQuantityGoods(GoodType type){
-        return goods.getOrDefault(type, 0);
     }
 
     /*public void addGood(GoodType type) throws FullGoodDepot {
@@ -490,10 +477,10 @@ public class ShipBoard {
         return false;
     }
 
-    public int getHumanNumber(){
-        return this.getComponentsStream().filter(c -> c.getType().equals(ComponentType.HOUSING))
-                .map(c -> c.getNumHumanMembers()).reduce(0, Integer::sum);
-    }
+//    public int getHumanNumber(){
+//        return this.getComponentsStream().filter(c -> c.getType().equals(ComponentType.HOUSING))
+//                .map(c -> c.getNumHumanMembers()).reduce(0, Integer::sum);
+//    }
 
     /*
     public int getAlienNumber(){
@@ -510,6 +497,63 @@ public class ShipBoard {
                 .count();
         return sum;
     }*/
+
+    public int getQuantityGuests(){
+        return getComponentsStream().
+                mapToInt(comp -> comp.getQuantityGuests())
+                .sum();
+    }
+
+    public String printPosition(Component comp){
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j <columns; j++){
+                if (shipComponents[i][j].isPresent()){
+                    if (shipComponents[i][j].get() == comp)
+                        return "(" + i + ", " + j + ")";
+                }
+            }
+        }
+        return "";
+    }
+
+    public void stoleGood(){
+        Map<GoodType, Integer> storedGoods = new HashMap<>();
+
+        List<Component> components = getComponentsStream().toList();
+        for (Component comp : components){
+            storedGoods.putAll(comp.getStoredGoods());
+        }
+
+        GoodType toRemove = GoodType.RED;
+        boolean chosen = false;
+        if (storedGoods.containsKey(GoodType.RED) && storedGoods.get(GoodType.RED) > 0) {
+            toRemove = GoodType.RED;
+            chosen = true;
+        }
+        else if (storedGoods.containsKey(GoodType.YELLOW) && storedGoods.get(GoodType.YELLOW) > 0) {
+            toRemove = GoodType.YELLOW;
+            chosen = true;
+        }
+        else if (storedGoods.containsKey(GoodType.GREEN) && storedGoods.get(GoodType.GREEN) > 0) {
+            toRemove = GoodType.GREEN;
+            chosen = true;
+        }
+        else if (storedGoods.containsKey(GoodType.BLUE) && storedGoods.get(GoodType.BLUE) > 0) {
+            toRemove = GoodType.BLUE;
+            chosen = true;
+        }
+
+        if (chosen){
+            for (Component comp : components){
+                if (comp.removeGood(toRemove)){
+                    break;
+                }
+            }
+        }
+        else{
+            removeEnergy();
+        }
+    }
 }
 
 

@@ -75,10 +75,6 @@ public class FlyBoard {
         return  circuit;
     }
 
-    public void moveRocket(Player player, int nPos){
-
-    }
-
     public Player getPosition(int position){
         return new Player("");
     }
@@ -196,6 +192,7 @@ public class FlyBoard {
                 }
                 else{
                     //player2 viene doppiato e quindi eliminato(?)
+                    //no player2 viene doppiato e quindi rimane fermo dove si trova, semplicemente viene superata da player
                 }
             }
         }

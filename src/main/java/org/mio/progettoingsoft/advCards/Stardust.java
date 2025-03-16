@@ -6,6 +6,8 @@ import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,9 +26,10 @@ public class Stardust extends AdventureCard {
     @Override
     public void start(FlyBoard flyboard){
         List<Player> scoreBoard = flyboard.getScoreBoard();
-        Collections.reverse(scoreBoard);
+        List<Player> inverse = new ArrayList<>(scoreBoard);
+        Collections.reverse(inverse);
 
-        for(Player p : scoreBoard){
+        for(Player p : inverse){
             int daysLost = p.getShipBoard().getExposedConnectors();
             flyboard.moveDays(p, -daysLost);
         }

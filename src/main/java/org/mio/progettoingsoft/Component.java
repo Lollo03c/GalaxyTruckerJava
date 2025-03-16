@@ -111,9 +111,9 @@ public abstract class Component {
         return false;
     }
 
-    public Boolean removeHumanMember(){
-        return false;
-    }
+//    public Boolean removeHumanMember(){
+//        return false;
+//    }
 
     public Integer getNumHumanMembers(){
         return 0;
@@ -123,9 +123,9 @@ public abstract class Component {
         return false;
     }
 
-    public Boolean removeAlien(AlienType type){
-        return false;
-    }
+//    public Boolean removeAlien(AlienType type){
+//        return false;
+//    }
 
     public Boolean containsAlien(AlienType type) {
         return false;
@@ -170,4 +170,12 @@ public abstract class Component {
 
 
     public Boolean isFirstHousing(){return false;}
+
+    public int getQuantityGuests(){
+        return 0;
+    }
+
+    public boolean removeGuest(){
+        return false;
+    }
 }

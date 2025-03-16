@@ -1,8 +1,7 @@
 package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.AdvCardType;
-import org.mio.progettoingsoft.AdventureCard;
+import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.GoodType;
 
 import java.util.ArrayList;
@@ -30,5 +29,27 @@ public class AbandonedStation extends AdventureCard {
         }
         
         return new AbandonedStation(id, level, goods);
+    }
+
+    @Override
+    public void start(FlyBoard board){
+        List<Player> playerList = new ArrayList<>(board.getScoreBoard());
+        for (Player player : playerList){
+            if (player.getShipBoard().getQuantityGuests() >= crewNeeded){
+                boolean answer = player.getView().askForEffect(type);
+
+                if (answer){
+                    board.moveDays(player, -1 * daysLost);
+
+                    for (GoodType type : goods){
+                        Component depot = player.getView().askForDepotToAdd(type);
+
+                        depot.addGood(type);
+                    }
+
+                    return;
+                }
+            }
+        }
     }
 }

@@ -2,10 +2,8 @@ package org.mio.progettoingsoft.advcards;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.AdventureCard;
-import org.mio.progettoingsoft.Connector;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.AbandonedShip;
 import org.mio.progettoingsoft.advCards.Epidemic;
 import org.mio.progettoingsoft.advCards.Stardust;
 import org.mio.progettoingsoft.components.*;
@@ -20,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AdvCardsTest {
-    FlyBoard fly;
+    static FlyBoard fly;
     List<Player> players;
     Player playerStefano;
     Player playerAntonio;
@@ -150,7 +148,10 @@ public class AdvCardsTest {
         AdventureCard card = new Epidemic(1, 2);
         fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().ifPresent(p -> {
             p.getShipBoard().addComponentToPosition(new Housing(5, Connector.TRIPLE, Connector.SINGLE, Connector.FLAT, Connector.SINGLE), 1,3);
-            p.addHumanGuest(4);
+//            p.addHumanGuest(4);
+            for (int i = 0; i < 4; i++){
+                p.getShipBoard().addHumanGuest();
+            }
         });
         // prosegui e inserisci gli assert di verifica
         play_epidemic(card);
@@ -235,11 +236,44 @@ public class AdvCardsTest {
         System.out.println("Meteor swarm");
     }
 
+    @Test
+    public void setUpAbandondShip(){
+        Component firstHousing = new Housing(4, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE);
+        Component secondHousing = new Housing(5, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE);
+
+        playerStefano.getShipBoard().addComponentToPosition(firstHousing, 3, 5);
+        playerStefano.getShipBoard().addComponentToPosition(secondHousing, 1, 5);
+
+        playerAntonio.getShipBoard().addComponentToPosition(firstHousing, 3, 5);
+
+        firstHousing.addHumanMember();
+        firstHousing.addHumanMember();
+
+        secondHousing.addHumanMember();
+        secondHousing.addHumanMember();
+
+        assertEquals(2, firstHousing.getQuantityGuests());
+        assertEquals(2, secondHousing.getQuantityGuests());
+    }
+
     public void play_abandoned_ship(AdventureCard card){
-        System.out.println("Abandoned ship");
+        card.start(fly);
     }
 
     public void play_abandoned_station(AdventureCard card){
         System.out.println("Abandoned station");
     }
+
+    public static void main(String[] args) {
+        AdvCardsTest provaTest = new AdvCardsTest();
+        provaTest.setUp();
+        provaTest.setUpAbandondShip();
+
+        AdventureCard abandShip = new AbandonedShip(1, 1, 2, 2, 3);
+
+        abandShip.start(fly);
+
+    }
+
+
 }

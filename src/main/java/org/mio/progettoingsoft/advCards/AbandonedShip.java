@@ -1,9 +1,10 @@
 package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.AdvCardType;
-import org.mio.progettoingsoft.AdventureCard;
-import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AbandonedShip extends AdventureCard {
     private int daysLost;
@@ -16,7 +17,7 @@ public class AbandonedShip extends AdventureCard {
         this.credits = credits;
         this.crewLost = crewLost;
     }
-    
+
     public static AbandonedShip loadAbandonedShip(JsonNode node){
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
@@ -29,6 +30,25 @@ public class AbandonedShip extends AdventureCard {
 
     @Override
     public void start(FlyBoard board){
+        List<Player> playerList = new ArrayList<>(board.getScoreBoard());
+        for (Player player : playerList){
+            if (player.getShipBoard().getQuantityGuests() >= crewLost){
+                boolean answer = player.getView().askForEffect(type);
 
+                if (answer){
+                    player.addCredits(credits);
+                    board.moveDays(player, -1 * daysLost);
+
+                    for (int i = 0; i < crewLost; i++){
+                        String mess = "\nSelect the housing from which remove a crew member .";
+                        Component housing = player.getView().askForHousingToRemoveGuest("");
+                        housing.removeGuest();
+                    }
+
+                    return;
+                }
+
+            }
+        }
     }
 }

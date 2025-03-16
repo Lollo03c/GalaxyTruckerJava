@@ -6,19 +6,22 @@ import org.mio.progettoingsoft.exceptions.*;
 public class Player {
 
     private final String username;
-    private Integer credits;
+    private int credits;
 
     private ShipBoard shipBoard;
 
-    private Integer discardedComponents;
+    private int discardedComponents;
 
     private Component inHand;
+    private final View view;
 
     public Player(String username) {
         this.username = username;
         shipBoard = new ShipBoard();
 // bisogna aggiungere i colori della cabina principale: avevamo deciso di rimuoverli dal json dato che
 //non sono carte che si possono pescare e posizionare. Mettiamo un attr in ShipBoard?
+
+        view = new View(this);
     }
 
     public String getUsername() {
@@ -77,14 +80,6 @@ public class Player {
 //            shipBoard.removeGood(type);
 //    }
 
-    public Integer getPower(){
-        return 0;
-    }
-
-    public Integer getSpeed(){
-        return 0;
-    }
-
     public void rotateHourGlass(){
 
     }
@@ -102,24 +97,28 @@ public class Player {
 
     }
 
-    public Integer getQuantBatteries(){
-        return shipBoard.getQuantBatteries();
-    }
-
-    public void removeEnergy() throws NotEnoughBatteriesException {
-        shipBoard.removeEnergy();
-    }
-
-    public void addHumanGuest(int quantity) throws NotEnoughHousingException {
-        for (int i = 0; i < quantity; i++)
-            shipBoard.addHumanGuest();
-    }
-
-    public void addAlien() throws NotEnoughHousingException {
-
-    }
+//    public Integer getQuantBatteries(){
+//        return shipBoard.getQuantBatteries();
+//    }
+//
+//    public void removeEnergy() throws NotEnoughBatteriesException {
+//        shipBoard.removeEnergy();
+//    }
+//
+//    public void addHumanGuest(int quantity) throws NotEnoughHousingException {
+//        for (int i = 0; i < quantity; i++)
+//            shipBoard.addHumanGuest();
+//    }
+//
+//    public void addAlien() throws NotEnoughHousingException {
+//
+//    }
 
     public boolean equals(Player other) {
         return this.username.equals(other.getUsername());
+    }
+
+    public View getView(){
+        return view;
     }
 }
