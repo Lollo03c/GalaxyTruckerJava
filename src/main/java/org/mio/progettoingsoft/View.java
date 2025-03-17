@@ -157,16 +157,19 @@ public class View {
                 .filter(component -> component.getShieldDirections().contains(direction))
                 .toList();
 
+        if (shields.isEmpty())
+            return false;
+
         String ans;
-        boolean valid = !(shipBoard.getQuantBatteries() > 0 && !shields.isEmpty());
+        boolean toContinue = shipBoard.getQuantBatteries() > 0;
         boolean answer = false;
 
-        while (!valid) {
+        while (toContinue) {
             System.out.print(player.getUsername() + "activate a shield (y/n) : ");
             ans = scanner.nextLine().toLowerCase();
 
             if (ans.equals("y") || ans.equals("n")){
-                valid = true;
+                toContinue = false;
 
                 answer = ans.equals("y");
             }
