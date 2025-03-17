@@ -1,8 +1,7 @@
 package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.AdvCardType;
-import org.mio.progettoingsoft.AdventureCard;
+import org.mio.progettoingsoft.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +28,26 @@ public class MeteorSwarm extends AdventureCard {
 
     public List<Meteor> getMeteors(){
         return this.meteors;
+    }
+
+    @Override
+    public void start(FlyBoard board){
+        List<Player> score = new ArrayList<>(board.getScoreBoard());
+        int offsetRow = score.getFirst().getShipBoard().getOffsetRow();
+        int offsetCol = score.getFirst().getShipBoard().getOffsetCol();
+
+        for (Meteor meteor : meteors){
+            int row = score.getFirst().getView().rollDicesAndSum() - offsetRow;
+            int col = score.getFirst().getView().rollDicesAndSum() - offsetCol;
+
+            for (Player player : score){
+                if (meteor.getDirection().equals(Direction.BACK) || meteor.getDirection().equals(Direction.FRONT))
+                    meteor.hit(player, col);
+                else
+                    meteor.hit(player, row);
+            }
+        }
+
+
     }
 }

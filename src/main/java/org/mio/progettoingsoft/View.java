@@ -4,10 +4,7 @@ import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadInputException;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class View {
 
@@ -143,6 +140,66 @@ public class View {
         }
 
         return activated;
+    }
 
+    public int rollDicesAndSum(){
+        Random random = new Random();
+
+        int a = 1 + random.nextInt(6);
+        int b = 1 + random.nextInt(6);
+
+        return a + b;
+    }
+
+    public boolean askShield(Direction direction){
+        List<Component> shields = shipBoard.getComponentsStream()
+                .filter(component -> component.getShieldDirections() != null)
+                .filter(component -> component.getShieldDirections().contains(direction))
+                .toList();
+
+        if (shields.isEmpty())
+            return false;
+
+        String ans;
+        boolean toContinue = shipBoard.getQuantBatteries() > 0;
+        boolean answer = false;
+
+        while (toContinue) {
+            System.out.print(player.getUsername() + "activate a shield (y/n) : ");
+            ans = scanner.nextLine().toLowerCase();
+
+            if (ans.equals("y") || ans.equals("n")){
+                toContinue = false;
+
+                answer = ans.equals("y");
+            }
+            else{
+                System.out.println("Answer not valid. Try again.");
+            }
+        }
+
+        return answer;
+    }
+
+    public boolean askOneDoubleDrill(){
+        String ans;
+        boolean valid = !(shipBoard.getQuantBatteries() > 0);
+        boolean answer = false;
+
+        while (!valid) {
+            System.out.print(player.getUsername() + "activate a shield (y/n) : ");
+            ans = scanner.nextLine().toLowerCase();
+
+            if (ans.equals("y") || ans.equals("n")){
+                valid = true;
+
+                answer = ans.equals("y");
+            }
+            else{
+                System.out.println("Answer not valid. Try again.");
+            }
+        }
+
+        return answer;
     }
 }

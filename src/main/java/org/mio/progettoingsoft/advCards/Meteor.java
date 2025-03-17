@@ -1,7 +1,11 @@
 package org.mio.progettoingsoft.advCards;
 
+import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.ShipBoard;
+
+import java.util.Optional;
 
 public abstract class Meteor {
     protected final Direction direction;
@@ -18,5 +22,61 @@ public abstract class Meteor {
         }
     }
 
-    public abstract void hit(Player player, int row, int col);
+    public Direction getDirection(){
+        return direction;
+    }
+
+    public abstract void hit(Player player, int value);
+
+    protected Optional<Component> findHit(Player player, int value){
+        ShipBoard board = player.getShipBoard();
+        int rows = board.getRows();
+        int columns = board.getColumns();
+        Optional<Component>[][] shipComponents = board.getComponentsList();
+
+        int maxValue = direction.equals(Direction.FRONT) || direction.equals(Direction.BACK) ? board.getColumns() : board.getRows();
+        Optional<Component> isHit = Optional.empty();
+
+        if (value < 0 || value >= maxValue)
+            Optional.empty();
+
+        if (direction.equals(Direction.FRONT)){
+            int row = 0;
+            while (row < rows && shipComponents[row][value].isEmpty())
+                row++;
+
+            if (row < rows){
+                isHit = Optional.of(shipComponents[row][value].get());
+            }
+        }
+        else if (direction.equals(Direction.BACK)){
+            int row = rows;
+            while (row >= 0 && shipComponents[row][value].isEmpty())
+                row--;
+
+            if (row >= rows){
+                isHit = Optional.of(shipComponents[row][value].get());
+            }
+        }
+        else if (direction.equals(Direction.RIGHT)){
+            int col = columns;
+            while (col >= 0 && shipComponents[value][col].isEmpty())
+                col--;
+
+            if (col >= columns){
+                isHit = Optional.of(shipComponents[value][col].get());
+            }
+        }
+        else if (direction.equals(Direction.LEFT)){
+            int col = 0;
+            while (col < columns && shipComponents[value][col].isEmpty())
+                col--;
+
+            if (col < columns){
+                isHit = Optional.of(shipComponents[value][col].get());
+            }
+        }
+
+        return isHit;
+    }
 }
