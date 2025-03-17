@@ -26,12 +26,5 @@ public class Slaver extends AdvancedEnemy{
         return new Slaver(id, level, strength, daysLost, reward, crewLost);
     }
 
-    public void startTest(FlyBoard fly, Player player){
-        if(canBeDefeatedBy(player)){
-            player.addCredits(this.reward);
-        }else{
-
-        }
-    }
-
+    public
 }

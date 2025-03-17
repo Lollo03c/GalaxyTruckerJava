@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,11 @@ public class Planets extends AdventureCard {
     }
     @Override
     public void start(FlyBoard board){
-w
+        List<Player> score = board.getScoreBoard();
+        int choice = 0;
+        for(Player player : score){
+            choice = player.getView().askForPlanet(planets);
+        }
     }
 
 

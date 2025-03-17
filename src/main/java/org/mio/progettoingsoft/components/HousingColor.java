@@ -19,7 +19,6 @@ public enum HousingColor {
             case "yellow" -> HousingColor.YELLOW;
             case "green" -> HousingColor.GREEN;
             default -> HousingColor.BLUE;
-
         };
     }
 }

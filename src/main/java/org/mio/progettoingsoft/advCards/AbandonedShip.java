@@ -29,6 +29,21 @@ public class AbandonedShip extends AdventureCard {
     }
 
     @Override
+    public int getDaysLost(){
+        return  daysLost;
+    }
+
+    @Override
+    public int getCredits(){
+        return credits;
+    }
+
+    @Override
+    public int getCrewLost(){
+        return crewLost;
+    }
+
+    @Override
     public void start(FlyBoard board){
         List<Player> playerList = new ArrayList<>(board.getScoreBoard());
         for (Player player : playerList){

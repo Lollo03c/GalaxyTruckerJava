@@ -6,8 +6,8 @@ import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Player;
 
 public abstract class AdvancedEnemy extends AdventureCard {
-    private final int strength;
-    private final int daysLost;
+    protected final int strength;
+    protected final int daysLost;
 
     public AdvancedEnemy(int id, int level, int strength, int daysLost, AdvCardType advCardType) {
         super(id, level, advCardType);

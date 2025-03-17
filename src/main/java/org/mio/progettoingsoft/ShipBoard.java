@@ -13,27 +13,25 @@ public class ShipBoard {
     private final Optional<Component>[][] shipComponents;
     private List<Component> componentList;
 
-    private  Component[] bookedComponents;
+    private Component[] bookedComponents;
 
     private final List<Cordinate> bannedCoordinates;
 
     private final int rows;
     private final int columns;
 
-    private  int availableEnergy;
+    private int availableEnergy;
     private float baseFirePower;
     private int baseEnginePower;
-
-
-    private  int exposedConnectors;
-    private  int maxEnergy;
-    private  int maxSpecialGoods;
-    private  int numSpecialGoods;
-    private  int maxNormalGoods;
-    private  int numNormalGoods;
-    private  int numAliens;
-    private  int numAstronauts;
-    private  boolean completedBuild;
+    private int exposedConnectors;
+    private int maxEnergy;
+    private int maxSpecialGoods;
+    private int numSpecialGoods;
+    private int maxNormalGoods;
+    private int numNormalGoods;
+    private int numAliens;
+    private int numAstronauts;
+    private boolean completedBuild;
 
     private final int offsetCol;
     private final int offsetRow;
@@ -46,15 +44,16 @@ public class ShipBoard {
         offsetCol = 4;
 
         shipComponents = new Optional[rows][columns];
-        bannedCoordinates = new ArrayList<>(6);
 
         for (int i = 0; i < rows; i++)
-            for(int j = 0; j <columns; j++)
+            for(int j = 0; j < columns; j++)
                 shipComponents[i][j] = Optional.empty();
 
+        // Add the starting cabin to the ship
         shipComponents[2][3] = Optional.of(new Housing(1, true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
 
-
+        // Add to bannedCoordinates all the cells where components cannot be placed
+        bannedCoordinates = new ArrayList<>(6);
         bannedCoordinates.add(new Cordinate(0, 0));
         bannedCoordinates.add(new Cordinate(0, 1));
         bannedCoordinates.add(new Cordinate(0, 3));
@@ -62,13 +61,24 @@ public class ShipBoard {
         bannedCoordinates.add(new Cordinate(1, 6));
         bannedCoordinates.add(new Cordinate(4, 3));
 
-
+        availableEnergy = 0;
         baseFirePower = 0;
         baseEnginePower = 0;
+        exposedConnectors = 0;
+        maxEnergy = 0;
+        maxSpecialGoods = 0;
+        numSpecialGoods = 0;
+        maxNormalGoods = 0;
+        numNormalGoods = 0;
+        numAliens = 0;
+        numAstronauts = 0;
+        completedBuild = false;
     }
+
     public void setQuantBatteries(int quant) {
         this.availableEnergy = quant;
     }
+
     public ShipBoard(){
         rows = 5;
         columns = 7;

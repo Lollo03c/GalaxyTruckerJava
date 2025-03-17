@@ -1,6 +1,9 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
+import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.exceptions.BadParameterException;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,11 +38,40 @@ public abstract class AdventureCard {
         return false;
     }
 
-    public List<Meteor> getMeteors(){
-        return Collections.emptyList();
+    public List<Meteor> getMeteors() throws BadParameterException{
+        throw new BadParameterException("");
     }
 
-    public int getDaysLost(){
+    public int getDaysLost() throws BadParameterException {
+        throw new BadParameterException("");
 
+    }
+
+    public int getStrength() throws BadParameterException {
+        throw new BadParameterException("");
+    }
+
+    public List<GoodType> getGoods() throws BadParameterException {
+        throw new BadParameterException("");
+    }
+
+    public int getStolenGoods() throws BadParameterException {
+        throw new BadParameterException("");
+    }
+
+    public int getCrewLost() throws BadParameterException{
+        throw new BadParameterException("");
+    }
+
+    public int getCrewNeeded() throws BadParameterException{
+        throw new BadParameterException("");
+    }
+
+    public int getCredits() throws BadParameterException{
+        throw new BadParameterException("");
+    }
+
+    public List<CannonPenalty> getCannonPenalty() throws BadParameterException{
+        throw new BadParameterException("");
     }
 }

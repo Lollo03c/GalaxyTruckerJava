@@ -16,7 +16,27 @@ public class Pirate extends AdvancedEnemy{
         this.cannons = cannons;
         this.reward = reward;
     }
-    
+
+    @Override
+    public int getCredits(){
+        return  reward;
+    }
+
+    @Override
+    public int getDaysLost(){
+        return daysLost;
+    }
+
+    @Override
+    public int getStrength(){
+        return strength;
+    }
+
+    @Override
+    public List<CannonPenalty> getCannonPenalty(){
+        return cannons;
+    }
+
     public static Pirate loadPirate(JsonNode node){
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();

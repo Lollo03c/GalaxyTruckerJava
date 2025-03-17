@@ -1,9 +1,13 @@
 package org.mio.progettoingsoft;
 
+import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
+import org.mio.progettoingsoft.advCards.Planet;
+import org.mio.progettoingsoft.advCards.Planets;
 import org.mio.progettoingsoft.components.DoubleDrill;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadInputException;
 
+import javax.sound.midi.Soundbank;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -35,7 +39,7 @@ public class View {
         );
 
         boolean ended = false;
-        int number;
+        int number = 0;
         while (!ended) {
             System.out.println("How many double engine to activate (max " + maxAvailable + ")? : ");
             try {
@@ -105,6 +109,29 @@ public class View {
                 .toList();
 
         return askForComponentFromList(housingAvailable);
+    }
+
+    public int askForPlanet(List<Planet> planets){
+        System.out.println("Player : " + player.getUsername() + " do you want to land somewhere (y/n) : ");
+        String ans = scanner.nextLine().toLowerCase();
+
+        while (!(ans.equals("y") || ans.equals("n"))){
+            System.out.println(ans + "in not accepted. Only 'y' or 'n'");
+            System.out.println("");
+            System.out.println("do you want to land somewhere  (y/n) : ");
+            ans = scanner.nextLine().toLowerCase();
+        }
+
+        if (ans.equals("y")) {
+            System.out.println("Select the planet (index from 1))");
+            int choice = scanner.nextInt();
+            while (choice <= 0 || choice > planets.size()) {
+                System.out.println("invalid number, insert a correct number");
+                choice = scanner.nextInt();
+            }
+            return choice;
+        }
+        return 0;
     }
 
     public Component askForDepotToAdd(GoodType type){

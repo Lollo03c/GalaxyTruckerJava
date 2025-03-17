@@ -31,6 +31,18 @@ public class AbandonedStation extends AdventureCard {
         return new AbandonedStation(id, level, goods);
     }
 
+    public int getCrewNeeded(){
+        return crewNeeded;
+    }
+
+    public int getDaysLost(){
+        return daysLost;
+    }
+
+    public List<GoodType> getGoods(){
+        return goods;
+    }
+
     @Override
     public void start(FlyBoard board){
         List<Player> playerList = new ArrayList<>(board.getScoreBoard());
