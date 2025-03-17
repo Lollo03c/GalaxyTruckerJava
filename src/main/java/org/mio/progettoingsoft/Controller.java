@@ -132,8 +132,11 @@ public class Controller {
                 if (answer) {
                     flyBoard.moveDays(player, -daysLost);
                     for (GoodType type : goods) {
-                        Component depot = player.getView().askForDepotToAdd(type);
-                        depot.addGood(type);
+                        Optional<Component> depot = player.getView().askForDepotToAdd(type);
+                        if(depot.isPresent()) {
+                            depot.get().addGood(type);
+                        }
+                        //altrimenti devo dare la possibilità di scartare le merci e posizionare quelle nuove
                     }
                 }
                 break;
@@ -228,9 +231,13 @@ public class Controller {
                     flyBoard.moveDays(player, -daysLost);
 
                     for (GoodType type : goods){
-                        Component depot = player.getView().askForDepotToAdd(type);
-
-                        depot.addGood(type);
+                        Optional<Component> depot = player.getView().askForDepotToAdd(type);
+                        if(depot.isPresent()){
+                            depot.get().addGood(type);
+                        }
+                        //altrimenti devo dare la possibilità di cambiare le merci già caricate
+                        //con quelle che potrei caricare in seguito alla ricezione del bottino
+                        //aggiungere anche riposizionamento generale delle merci
                     }
 
                     return;
@@ -279,11 +286,27 @@ public class Controller {
     }
 
     private void play_planets(AdventureCard card) throws BadParameterException {
+        List<Player> landedPlayers = new LinkedList<>() ;
         List<Player> score = flyBoard.getScoreBoard();
-        List<Planet> planets = card.getPlanets();
         int choice = 0;
         for(Player player : score){
-            choice = player.getView().askForPlanet(planets);
+            choice = player.getView().askForPlanet(card.getPlanets());
+            if (choice != 0){
+                landedPlayers.addFirst(player);
+                card.getPlanets().get(choice - 1).land(player);
+                for (GoodType type : card.getPlanets().get(choice-1).getGoods()) {
+                    Optional<Component> depot = player.getView().askForDepotToAdd(type);
+                    depot.ifPresent(component -> component.addGood(type));
+                    //da implementare possibilità di riposizionamento merci
+                }
+            }
+            if(landedPlayers.size() == card.getPlanets().size() ){
+                break;
+            }
+        }
+        for(Player p : landedPlayers){
+            flyBoard.moveDays(p, -card.getDaysLost());
+
         }
     }
 

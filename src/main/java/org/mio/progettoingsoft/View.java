@@ -155,14 +155,16 @@ public class View {
         return 0;
     }
 
-    public Component askForDepotToAdd(GoodType type){
+    public Optional<Component> askForDepotToAdd(GoodType type){
         System.out.println("Select the depot in which add the " + type + " good.");
 
         List<Component> availableDepot = shipBoard.getComponentsStream()
                 .filter(comp -> comp.canContainsGood(type))
                 .toList();
-
-        return askForComponentFromList(availableDepot);
+        if(availableDepot.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.of(askForComponentFromList(availableDepot));
     }
 
     public List<Component> askDoubleDrill(){

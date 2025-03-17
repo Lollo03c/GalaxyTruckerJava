@@ -44,7 +44,7 @@ public class Planets extends AdventureCard {
         return new Planets(id, level, daysLost, planets);
     }
 
-    public void start(FlyBoard board){
+    /*public void start(FlyBoard board){
         List<Player> landedPlayers = new LinkedList<>() ;
         List<Player> score = board.getScoreBoard();
         int choice = 0;
@@ -64,7 +64,7 @@ public class Planets extends AdventureCard {
             board.moveDays(p, daysLost);
 
         }
-    }
+    }*/
 
 
 }
