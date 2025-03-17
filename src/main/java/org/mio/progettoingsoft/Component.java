@@ -187,4 +187,13 @@ public abstract class Component {
     public int getId() {
         return id;
     }
+
+    public String toString(){
+        return this.type +
+                " Top: " + topConnector.toString() +
+                " Bottom: " + bottomConnector.toString() +
+                " Right: " + rightConnector.toString() +
+                " Left: " + leftConnector.toString() +
+                " Row: " + row + " Column: " + column;
+    }
 }

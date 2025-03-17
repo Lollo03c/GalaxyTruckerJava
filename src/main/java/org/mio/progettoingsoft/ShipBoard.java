@@ -395,7 +395,7 @@ public class ShipBoard {
         List<Component> incorrect = new ArrayList<>();
 
         for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++)
+            for (int j = 0; j < columns; j++){
                 if (shipComponents[i][j].isPresent()) {
                     Component comp = shipComponents[i][j].get();
                     if (comp.getEnginePower() > 0) {
@@ -404,11 +404,9 @@ public class ShipBoard {
                         } else if (validRow(i + 1) && shipComponents[i + 1][j].isPresent()) {
                             incorrect.add(shipComponents[i][j].get());
                         }
-
-
                     }
-
                 }
+            }
         }
         return incorrect;
     }
@@ -443,8 +441,9 @@ public class ShipBoard {
         return incorrect;
     }
 
+    /*
     // checks if the ALIEN_HOUSING components are connected to at least one HOUSING
-    // necessary (?) ask the profs
+    // not necessary
     public Set<Component> getIncorrectAlienHousings() {
         Set<Component> incorrect = new HashSet<>();
         for (int i = 0; i < rows; i++) {
@@ -468,8 +467,9 @@ public class ShipBoard {
         }
         return incorrect;
     }
+     */
 
-    //This method check the correct positioning of the component, except for the direction and nearby placement of drills
+    // This method check the correct positioning of the component, except for the direction and nearby placement of drills/engines
     // the method insert in the set both component in case of connector mismatch
     public Set<Component> getIncorrectComponents() {
         Set<Component> incorrect = new HashSet<>();
@@ -482,6 +482,8 @@ public class ShipBoard {
                     //
                     Map<Direction, Component> adjacent = getAdjacent(i, j);
                     boolean correct = true;
+
+                    /* this part is now made by the getMultiplePieces method
                     // Modified by Stefano to check if a component is flying (not connected to any other):
                     if (adjacent.isEmpty()) {
                         correct = false;
@@ -489,8 +491,11 @@ public class ShipBoard {
                         for (Direction dir : adjacent.keySet()) {
                             correct = correct && comp.isCompatible(adjacent.get(dir), dir);
                         }
-                    }
+                    }*/
 
+                    for (Direction dir : adjacent.keySet()) {
+                        correct = correct && comp.isCompatible(adjacent.get(dir), dir);
+                    }
 
                     if (!correct) {
                         incorrect.add(shipComponents[i][j].get());
@@ -501,6 +506,47 @@ public class ShipBoard {
         }
 
         return incorrect;
+    }
+
+    // this method returns the disconnected pieces (not only single components but group of them not interconnected)
+    // this method uses an algorithm of Breadth-First Search (a big thanks to API)
+    public List<Set<Component>> getMultiplePieces(){
+        List<Set<Component>> multiple = new ArrayList<>();
+        if(this.getComponentsStream().findAny().isPresent()){
+            int[][] visited = new int[rows][columns];
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < columns; j++) {
+                    visited[i][j] = -1;
+                }
+            }
+
+            while(this.getComponentsStream().anyMatch(comp -> visited[comp.getRow()][comp.getColumn()] == -1)){
+                Component c = this.getComponentsStream().filter(comp -> visited[comp.getRow()][comp.getColumn()] == -1).findFirst().get();
+
+                Queue<Component> queue = new LinkedList<>();
+                queue.add(c);
+                visited[c.getRow()][c.getColumn()] = 0;
+
+                Set<Component> part = new HashSet<>();
+
+                while (!queue.isEmpty()) {
+                    Component comp = queue.remove();
+                    part.add(comp);
+                    Map<Direction, Component> adj = getAdjacent(comp.getRow(), comp.getColumn());
+                    for(Component component : adj.values()){
+                        if(visited[component.getRow()][component.getColumn()] == -1){
+                            visited[component.getRow()][component.getColumn()] = 0;
+                            queue.add(component);
+                        }
+                    }
+                    visited[comp.getRow()][comp.getColumn()] = 1;
+                }
+
+                multiple.add(part);
+
+            }
+        }
+        return multiple;
     }
 
     //this method count the number of exposed connectors
