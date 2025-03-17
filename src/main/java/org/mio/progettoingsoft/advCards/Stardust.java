@@ -36,7 +36,7 @@ public class Stardust extends AdventureCard {
     }
 
     @Override
-    public void startTest(FlyBoard flyBoard, Player player){
+    public void startTest(FlyBoard flyBoard, Player player, int cod){
         int daysLost = player.getShipBoard().getExposedConnectors();
         flyBoard.moveDays(player, -daysLost);
     }

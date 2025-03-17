@@ -178,4 +178,16 @@ public abstract class Component {
     public boolean removeGuest(){
         return false;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public boolean isActive() {
+        return false;
+    }
+
+    public void setActive(boolean active) {
+        return;
+    }
 }

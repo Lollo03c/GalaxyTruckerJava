@@ -26,5 +26,9 @@ public abstract class AdventureCard {
     }
 
     //(under-testing method) apply the effect of the card on the passed player
-    public void startTest(FlyBoard flyBoard, Player player){}
+    public void startTest(FlyBoard flyBoard, Player player, int cod){}
+
+    public boolean canBeDefeatedBy(Player player, int cod){
+        return false;
+    }
 }

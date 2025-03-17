@@ -2,6 +2,8 @@ package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.AdvCardType;
+import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.Player;
 
 public class Slaver extends AdvancedEnemy{
     private final int crewLost;
@@ -9,8 +11,8 @@ public class Slaver extends AdvancedEnemy{
 
     public Slaver(int id, int level, int strength, int daysLost, int reward, int crewLost) {
         super(id, level, strength, daysLost, AdvCardType.SLAVER);
-        this.reward = reward;
         this.crewLost = crewLost;
+        this.reward = reward;
     }
     
     public static Slaver loadSlaver(JsonNode node){
@@ -23,4 +25,11 @@ public class Slaver extends AdvancedEnemy{
 
         return new Slaver(id, level, strength, daysLost, reward, crewLost);
     }
+
+    public void startTest(FlyBoard fly, Player player){
+        if(canBeDefeatedBy(player, -1)){
+            player.addCredits();
+        }
+    }
+
 }
