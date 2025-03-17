@@ -16,8 +16,12 @@ public class Planet {
         this.goods = goods;
     }
 
-    public void land(Player player){
 
+    public void land(Player player){
+        this.player = Optional.of(player);
+    }
+    public Optional<Player> getPlayer() {
+        return player;
     }
 
     public static Planet stringToPlanet(JsonNode goodsNode){

@@ -7,6 +7,8 @@ import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Planets extends AdventureCard {
@@ -33,10 +35,24 @@ public class Planets extends AdventureCard {
     }
     @Override
     public void start(FlyBoard board){
+        List<Player> landedPlayers = new LinkedList<>() ;
         List<Player> score = board.getScoreBoard();
         int choice = 0;
         for(Player player : score){
             choice = player.getView().askForPlanet(planets);
+            if (choice!= 0){
+               landedPlayers.addFirst(player);
+               planets.get(choice - 1).land(player);
+            }
+            //ottieni e ridistribuisci merci
+
+            if(landedPlayers.size() == planets.size() ){
+                break;
+            }
+        }
+        for(Player p : landedPlayers){
+            board.moveDays(p, daysLost);
+
         }
     }
 
