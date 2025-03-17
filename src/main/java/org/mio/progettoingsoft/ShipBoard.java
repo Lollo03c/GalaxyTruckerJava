@@ -357,13 +357,13 @@ public class ShipBoard {
 
     public List<Component> getDoubleEngine(){
         return getComponentsStream()
-                .filter(comp -> comp.getType().equals(ComponentType.DOUBLE_ENGINE))
+                .filter(comp->comp.getEnginePower() == 2)
                 .toList();
     }
 
     public List<Component> getDoubleDrill(Direction dir){
         return getComponentsStream()
-                .filter(comp -> comp.getType().equals(ComponentType.DOUBLE_DRILL))
+                .filter(comp -> comp.getFirePower() == 2)
                 .filter(comp -> comp.getDirection() != null)
                 .filter(comp -> comp.getDirection().equals(dir))
                 .toList();
@@ -376,7 +376,7 @@ public class ShipBoard {
             for (int j = 0; j < columns; j++)
                 if (shipComponents[i][j].isPresent()){
                     Component comp = shipComponents[i][j].get();
-                    if (comp.getType().equals(ComponentType.ENGINE) || comp.getType().equals(ComponentType.DOUBLE_ENGINE)){
+                    if (comp.getEnginePower() > 0 ){
                         if (! comp.getDirection().equals(Direction.BACK)){
                             incorrect.add(comp);
                         }
@@ -400,7 +400,7 @@ public class ShipBoard {
                 if (shipComponents[i][j].isPresent()) {
                     Component comp = shipComponents[i][j].get();
 
-                    if (comp.getType().equals(ComponentType.DRILL) || comp.getType().equals(ComponentType.DOUBLE_DRILL)) {
+                    if (comp.getFirePower() > 0){
                         int row = i;
                         int col = j;
 

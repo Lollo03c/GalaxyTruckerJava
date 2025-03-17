@@ -39,7 +39,7 @@ public abstract class Meteor {
 
         if (value < 0 || value >= maxValue)
             Optional.empty();
-
+//a cosa serve l'if qui sopra ?
         if (direction.equals(Direction.FRONT)){
             int row = 0;
             while (row < rows && shipComponents[row][value].isEmpty())

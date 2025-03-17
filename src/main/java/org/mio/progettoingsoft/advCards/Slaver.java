@@ -27,8 +27,10 @@ public class Slaver extends AdvancedEnemy{
     }
 
     public void startTest(FlyBoard fly, Player player){
-        if(canBeDefeatedBy(player, -1)){
-            player.addCredits();
+        if(canBeDefeatedBy(player)){
+            player.addCredits(this.reward);
+        }else{
+
         }
     }
 

@@ -1,5 +1,8 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.advCards.Meteor;
+
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AdventureCard {
@@ -28,7 +31,15 @@ public abstract class AdventureCard {
     //(under-testing method) apply the effect of the card on the passed player
     public void startTest(FlyBoard flyBoard, Player player, int cod){}
 
-    public boolean canBeDefeatedBy(Player player, int cod){
+    public boolean canBeDefeatedBy(Player player){
         return false;
+    }
+
+    public List<Meteor> getMeteors(){
+        return Collections.emptyList();
+    }
+
+    public int getDaysLost(){
+
     }
 }

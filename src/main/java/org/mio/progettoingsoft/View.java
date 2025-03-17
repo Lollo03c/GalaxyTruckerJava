@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.DoubleDrill;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadInputException;
 
@@ -33,8 +34,26 @@ public class View {
                 player.getShipBoard().getDoubleEngine().size()
         );
 
-        System.out.println("How many double engine to activate (max " + maxAvailable + ")? : " );
-        return scanner.nextInt();
+        boolean ended = false;
+        int number;
+        while (!ended) {
+            System.out.println("How many double engine to activate (max " + maxAvailable + ")? : ");
+            try {
+                number = scanner.nextInt();
+
+                if (number > maxAvailable || number < 0) {
+                    throw  new BadInputException("");
+                }
+                ended = true;
+            } catch (InputMismatchException e) {
+
+            }
+            catch (BadInputException e){
+
+            }
+        }
+        return number;
+
     }
 
     public boolean askForEffect(AdvCardType card) {
@@ -104,7 +123,7 @@ public class View {
         List<Component> activated = new ArrayList<>();
 
         List<Component> possible = shipBoard.getComponentsStream()
-                .filter(comp -> comp.getFirePower() == 2.0f)
+                .filter(comp -> comp.getType().equals(ComponentType.DOUBLE_DRILL))
                 .toList();
 
         boolean ended = shipBoard.getQuantBatteries() <= 0;

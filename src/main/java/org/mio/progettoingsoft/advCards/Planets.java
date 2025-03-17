@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.advCards;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
+import org.mio.progettoingsoft.FlyBoard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,4 +30,10 @@ public class Planets extends AdventureCard {
 
         return new Planets(id, level, daysLost, planets);
     }
+    @Override
+    public void start(FlyBoard board){
+w
+    }
+
+
 }

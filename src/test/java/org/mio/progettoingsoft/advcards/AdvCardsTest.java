@@ -135,12 +135,12 @@ public class AdvCardsTest {
     }
 
     public void play_slaver(AdventureCard card) {
-        // DEVONO ESSERE APPLICATE UNO ALLA VOLTAAAAA
+        // DEVONO ESSERE APPLICATE UNO ALLA VOLTA
         /*
         (Player p : fly.getScoreBoard()) {
             int numDoubleDrills = (int) p.getShipBoard().getComponentsStream().filter(c -> c.getType().equals(ComponentType.DOUBLE_DRILL)).count();
             int numBatteries = p.getShipBoard().getQuantBatteries();
-            if (!card.canBeDefeatedBy(p, -1)) {
+            if (!card.canBeDefeatedBy(p)) {
                 System.out.println(p.getUsername() + " la tua potenza di base (" + p.getShipBoard().getBaseFirePower() + " non è sufficiente per sconfiggere gli schiavisti");
                 if (numDoubleDrills > 0 || numBatteries <= 0) {
                     System.out.println("Hai " + numDoubleDrills + " cannoni doppi e " + numBatteries + " batterie:");
@@ -171,6 +171,13 @@ public class AdvCardsTest {
                 }
             }
         }*/System.out.println("Slaver");
+
+        boolean defeated = false;
+        for(int i = 0; i < fly.getScoreBoard().size() && !defeated; i++){
+            int numDoubleDrills = (int) fly.getScoreBoard().get(0).getShipBoard().getComponentsStream().filter(c -> c.getType().equals(ComponentType.DOUBLE_DRILL)).count();
+            int numBatteries = fly.getScoreBoard().get(0).getShipBoard().getQuantBatteries();
+
+        }
     }
 
     public void play_planets(AdventureCard card) {

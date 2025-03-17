@@ -29,4 +29,7 @@ public class Planet {
 
         return new Planet(goods);
     }
+    public List<GoodType> getGoods() {
+        return goods;
+    }
 }
