@@ -7,10 +7,13 @@ import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Planets extends AdventureCard {
     private final int daysLost;
+    private final List<Planet> planets;
 
     @Override
     public List<Planet> getPlanets() {
@@ -21,8 +24,6 @@ public class Planets extends AdventureCard {
     public int getDaysLost() {
         return daysLost;
     }
-
-    private final List<Planet> planets;
 
     public Planets(int id, int level, int daysLost, List<Planet> planets) {
         super(id, level, AdvCardType.PLANETS);
@@ -43,6 +44,27 @@ public class Planets extends AdventureCard {
         return new Planets(id, level, daysLost, planets);
     }
 
-    // THE START METHOD HAS BEEN REMOVED: use the controller class and implement the "play_planets" method
+    public void start(FlyBoard board){
+        List<Player> landedPlayers = new LinkedList<>() ;
+        List<Player> score = board.getScoreBoard();
+        int choice = 0;
+        for(Player player : score){
+            choice = player.getView().askForPlanet(planets);
+            if (choice!= 0){
+               landedPlayers.addFirst(player);
+               planets.get(choice - 1).land(player);
+            }
+            //ottieni e ridistribuisci merci
+
+            if(landedPlayers.size() == planets.size() ){
+                break;
+            }
+        }
+        for(Player p : landedPlayers){
+            board.moveDays(p, daysLost);
+
+        }
+    }
+
 
 }

@@ -18,16 +18,4 @@ public class OpenSpace extends AdventureCard {
 
         return new OpenSpace(id, level);
     }
-
-    @Override
-    public void start(FlyBoard board){
-        List<Player> playerList = new ArrayList<>(board.getScoreBoard());
-        for (Player player : playerList){
-            int activated = player.getView().askDoubleEngine();
-            player.getShipBoard().removeEnergy(activated);
-
-            board.moveDays(player, player.getShipBoard().getBaseEnginePower() + 2 * activated);
-        }
-    }
-
 }

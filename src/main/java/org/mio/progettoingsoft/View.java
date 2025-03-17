@@ -117,24 +117,39 @@ public class View {
         return askForComponentFromList(housingAvailable);
     }
 
-    public int askForPlanet(List<Planet> planets){
+    public int askForPlanet(List<Planet> planets) {
         System.out.println("Player : " + player.getUsername() + " do you want to land somewhere (y/n) : ");
-        String ans = scanner.nextLine().toLowerCase();
+        String ans = scanner.nextLine().trim().toLowerCase();
 
-        while (!(ans.equals("y") || ans.equals("n"))){
+        while (!(ans.equals("y") || ans.equals("n"))) {
             System.out.println(ans + "in not accepted. Only 'y' or 'n'");
             System.out.println("");
             System.out.println("do you want to land somewhere  (y/n) : ");
-            ans = scanner.nextLine().toLowerCase();
+            ans = scanner.nextLine().trim().toLowerCase();
         }
-
         if (ans.equals("y")) {
-            System.out.println("Select the planet (index from 1))");
-            int choice = scanner.nextInt();
-            while (choice <= 0 || choice > planets.size()) {
-                System.out.println("invalid number, insert a correct number");
-                choice = scanner.nextInt();
+            System.out.println("Select the planet (index from 1 to " + planets.size() + "): ");
+            int choice = -1;
+
+            while (true) {
+                String input = scanner.nextLine().trim();
+                try {
+                    choice = Integer.parseInt(input);
+                    if (choice >= 1 && choice <= planets.size()) {
+                        if(planets.get(choice-1).getPlayer().isPresent()){
+                            System.out.println("planet already taken, please choose another one");
+                        }
+                        else{
+                            break;
+                        }
+                    } else {
+                        System.out.println("Invalid number, insert a number between 1 and " + planets.size());
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a valid number.");
+                }
             }
+
             return choice;
         }
         return 0;
