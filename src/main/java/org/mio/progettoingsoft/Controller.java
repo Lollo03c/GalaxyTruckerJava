@@ -278,12 +278,29 @@ public class Controller {
         }
     }
 
+    // still to be finished
     private void play_planets(AdventureCard card) throws BadParameterException {
-        List<Player> score = flyBoard.getScoreBoard();
+        int daysLost = card.getDaysLost();
         List<Planet> planets = card.getPlanets();
+        List<Player> landedPlayers = new LinkedList<>() ;
+        List<Player> score = flyBoard.getScoreBoard();
         int choice = 0;
         for(Player player : score){
             choice = player.getView().askForPlanet(planets);
+            if (choice!= 0){
+                landedPlayers.addFirst(player);
+                planets.get(choice - 1).land(player);
+            }
+
+            //ottieni e ridistribuisci merci (still to be implemented)
+
+            if(landedPlayers.size() == planets.size() ){
+                break;
+            }
+        }
+        for(Player p : landedPlayers){
+            flyBoard.moveDays(p, -daysLost);
+
         }
     }
 

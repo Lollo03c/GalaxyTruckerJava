@@ -6,7 +6,9 @@ import org.mio.progettoingsoft.exceptions.EmptyComponentException;
 import org.mio.progettoingsoft.exceptions.IncorrectPlacementException;
 
 import java.io.PipedOutputStream;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -317,12 +319,46 @@ class ShipBoardTest {
     }
 
     @Test
-    void should_fail_due_to_flying_components(){
+    void should_find_two_blocks(){
         ShipBoard ship = new ShipBoard();
         init(ship);
-        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(1, ship.getMultiplePieces().size());
         ship.addComponentToPosition(new Depot(3, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 0, 2);
-        assertEquals(1, ship.getIncorrectComponents().size());
+        assertEquals(2, ship.getMultiplePieces().size());
+        for(Set<Component> comps : ship.getMultiplePieces()){
+            System.out.println(ship.getMultiplePieces().indexOf(comps));
+            for(Component comp : comps){
+                System.out.println(comp);
+            }
+        }
+    }
+
+    @Test
+    void should_find_three_blocks_then_only_two(){
+        ShipBoard ship = new ShipBoard();
+        init(ship);
+        assertEquals(1, ship.getMultiplePieces().size());
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Depot(5, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 0, 2);
+        ship.addComponentToPosition(new Depot(6, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 1, 2);
+        ship.addComponentToPosition(new Depot(7, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 4, 0);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(3, ship.getMultiplePieces().size());
+        for(Set<Component> comps : ship.getMultiplePieces()){
+            System.out.println(ship.getMultiplePieces().indexOf(comps));
+            for(Component comp : comps){
+                System.out.println(comp);
+            }
+        }
+        ship.addComponentToPosition(new Depot(8, false, false, Connector.TRIPLE, Connector.FLAT, Connector.TRIPLE, Connector.TRIPLE), 2, 2);
+        assertEquals(0, ship.getIncorrectComponents().size());
+        assertEquals(2, ship.getMultiplePieces().size());
+        for(Set<Component> comps : ship.getMultiplePieces()){
+            System.out.println(ship.getMultiplePieces().indexOf(comps));
+            for(Component comp : comps){
+                System.out.println(comp);
+            }
+        }
     }
 
     @Test
@@ -344,6 +380,7 @@ class ShipBoardTest {
         assertEquals(0, ship.getIncorrectComponents().size());
     }
 
+    /* Useless: in the rule book is not specified what to do with alien supports not connected to housings (they are like pipes)
         //alien housing positioning test
     @Test
     void should_fail_due_to_alien_housing_not_connected_to_housing(){
@@ -375,6 +412,7 @@ class ShipBoardTest {
         assertEquals(0, ship.getIncorrectComponents().size());
         assertEquals(0, ship.getIncorrectAlienHousings().size());
     }
+     */
 
         // drill positioning tests
     @Test
