@@ -35,9 +35,16 @@ public class ShipBoard {
     private  int numAstronauts;
     private  boolean completedBuild;
 
+    private final int offsetCol;
+    private final int offsetRow;
+
     public ShipBoard(HousingColor color){
         rows = 5;
         columns = 7;
+
+        offsetRow = 5;
+        offsetCol = 4;
+
         shipComponents = new Optional[rows][columns];
         bannedCoordinates = new ArrayList<>(6);
 
@@ -65,6 +72,10 @@ public class ShipBoard {
     public ShipBoard(){
         rows = 5;
         columns = 7;
+
+        offsetRow = 5;
+        offsetCol = 4;
+
         shipComponents = new Optional[rows][columns];
         bannedCoordinates = new ArrayList<>(6);
 
@@ -94,6 +105,14 @@ public class ShipBoard {
 
     public int getColumns(){
         return columns;
+    }
+
+    public int getOffsetCol(){
+        return offsetCol;
+    }
+
+    public int getOffsetRow(){
+        return offsetRow;
     }
 
     public int getBaseEnginePower(){
@@ -178,8 +197,6 @@ public class ShipBoard {
 
         baseFirePower += component.getFirePower() == 2f ? 0 :  component.getFirePower();
         baseEnginePower += component.getEnginePower()== 2 ? 0 : component.getEnginePower();
-
-        getComponentsList();
     }
 
     public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacementException, InvalidPositionException {
@@ -190,6 +207,8 @@ public class ShipBoard {
         addComponentToPosition(comp, row, column);
     }
 
+    //non basta
+    //bisogna controllare l'eliminazione a cascata
     public void removeComponent(int row, int column) throws EmptyComponentException {
         if (!validRow(row) || !validColumn(column)){
             throw new InvalidPositionException(row, column);
@@ -206,15 +225,28 @@ public class ShipBoard {
         baseFirePower -= toRemove.getFirePower() == 2f ? 0 : toRemove.getFirePower();
     }
 
+    //non basta
+    //bisogna controllare l'eliminazione a cascata
+    public void removeComponent(Component component){
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < columns; j++){
+                if (shipComponents[i][j].isPresent() && shipComponents[i][j].get().equals(component))
+                    shipComponents[i][j] = Optional.empty();
+
+            }
+        }
+
+        availableEnergy -= component.getEnergyQuantity();
+        baseEnginePower -= component.getEnginePower() == 2 ? 0 : component.getEnginePower();
+        baseFirePower -= component.getFirePower() == 2.0f ? 0 : component.getFirePower();
+    }
+
     private Stream<Optional<Component>> getStreamOptComponents(){
         return Arrays.stream(shipComponents).flatMap(Arrays::stream);
     }
 
-    private void getComponentsList(){
-        componentList =  getStreamOptComponents()
-                .filter(optComp -> optComp.isPresent())
-                .map(optComp -> optComp.get())
-                .toList();
+    public Optional<Component>[][] getComponentsList(){
+        return shipComponents;
     }
 
     public Stream<Component> getComponentsStream(){
@@ -553,6 +585,16 @@ public class ShipBoard {
         else{
             removeEnergy();
         }
+    }
+
+    public int getColumnComponent(Component comp){
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < columns; j++){
+                if (shipComponents[i][j].isPresent() && shipComponents[i][j].get() == comp)
+                    return j;
+            }
+        }
+        return -1;
     }
 }
 

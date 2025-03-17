@@ -50,7 +50,9 @@ public class Shield extends Component {
             case LEFT -> Direction.BACK;
         });
     }
-    public Boolean isCovered(Direction dir){
-        return directions.contains(dir);
+
+    @Override
+    public List<Direction> getShieldDirections(){
+        return directions;
     }
 }

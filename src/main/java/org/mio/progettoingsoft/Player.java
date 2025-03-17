@@ -39,19 +39,12 @@ public class Player {
     public void refuseComponent(Component component) { //when not added it joins the heap as uncovered
     }
 
-    public void discardComponent(int row, int column) {
-//        shipBoard.get
-        discardedComponents++;
+    public void addDiscardComponent(int quantity) {
+        discardedComponents += quantity;
     }
 
     public void bookComponent() {
 
-    }
-    public int roll2Dices() {
-        Random random = new Random();
-        int num1 = random.nextInt(6) + 1;
-        int num2 = random.nextInt(6) + 1;
-        return num1 + num2;
     }
 
     public Integer getCredits() {

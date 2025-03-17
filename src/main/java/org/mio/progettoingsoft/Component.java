@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Component {
@@ -140,6 +141,10 @@ public abstract class Component {
     }
 
     public Direction getDirection(){
+        return null;
+    }
+
+    public List<Direction> getShieldDirections(){
         return null;
     }
 
