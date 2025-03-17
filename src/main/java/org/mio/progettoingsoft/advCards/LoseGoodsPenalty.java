@@ -8,7 +8,7 @@ public class LoseGoodsPenalty extends LoseSomethingPenalty{
     }
 
     @Override
-    public void apply(Player player) {
+    public void apply(Player player, int value) {
 
     }
 }

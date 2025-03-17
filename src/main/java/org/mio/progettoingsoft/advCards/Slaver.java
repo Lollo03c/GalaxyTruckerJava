@@ -7,6 +7,16 @@ import org.mio.progettoingsoft.Player;
 
 public class Slaver extends AdvancedEnemy{
     private final int crewLost;
+
+    @Override
+    public int getCrewLost() {
+        return crewLost;
+    }
+
+    public int getCredits() {
+        return reward;
+    }
+
     private final int reward;
 
     public Slaver(int id, int level, int strength, int daysLost, int reward, int crewLost) {
@@ -26,5 +36,5 @@ public class Slaver extends AdvancedEnemy{
         return new Slaver(id, level, strength, daysLost, reward, crewLost);
     }
 
-    public
+
 }

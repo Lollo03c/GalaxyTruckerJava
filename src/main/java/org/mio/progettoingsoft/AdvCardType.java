@@ -10,7 +10,7 @@ public enum AdvCardType {
     PIRATE("Pirate"),
     PLANETS("Planets"),
     SLAVER("Slaver"),
-    SMUGGLERS("Smagglers"),
+    SMUGGLERS("Smugglers"),
     STARDUST("Stardust");
 
     private String value;

@@ -43,27 +43,4 @@ public class AbandonedShip extends AdventureCard {
         return crewLost;
     }
 
-    @Override
-    public void start(FlyBoard board){
-        List<Player> playerList = new ArrayList<>(board.getScoreBoard());
-        for (Player player : playerList){
-            if (player.getShipBoard().getQuantityGuests() >= crewLost){
-                boolean answer = player.getView().askForEffect(type);
-
-                if (answer){
-                    player.addCredits(credits);
-                    board.moveDays(player, -1 * daysLost);
-
-                    for (int i = 0; i < crewLost; i++){
-                        String mess = "\nSelect the housing from which remove a crew member .";
-                        Component housing = player.getView().askForHousingToRemoveGuest("");
-                        housing.removeGuest();
-                    }
-
-                    return;
-                }
-
-            }
-        }
-    }
 }

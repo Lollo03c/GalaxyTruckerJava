@@ -15,13 +15,4 @@ public abstract class AdvancedEnemy extends AdventureCard {
         this.daysLost = daysLost;
     }
 
-    @Override
-    public boolean canBeDefeatedBy(Player player) {
-        double base = player.getShipBoard().getBaseFirePower();
-        double power = base + player.getShipBoard().getComponentsStream()
-                .filter(c -> c.getType().equals(ComponentType.DOUBLE_DRILL) && c.isActive())
-                .mapToDouble(c -> c.getFirePower())
-                .sum();
-        return power > strength;
-    }
 }

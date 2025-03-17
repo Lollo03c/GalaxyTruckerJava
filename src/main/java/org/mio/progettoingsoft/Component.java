@@ -187,12 +187,4 @@ public abstract class Component {
     public int getId() {
         return id;
     }
-
-    public boolean isActive() {
-        return false;
-    }
-
-    public void setActive(boolean active) {
-        return;
-    }
 }

@@ -68,6 +68,7 @@ class ConnectorTest {
     }
     //END SINGLE
 
+    @Test
     void should_not_connect_flat_with_triple(){
         assertFalse(Connector.FLAT.isCompatible(Connector.TRIPLE));
     }

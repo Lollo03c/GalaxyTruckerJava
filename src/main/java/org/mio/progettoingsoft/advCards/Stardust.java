@@ -23,21 +23,4 @@ public class Stardust extends AdventureCard {
         return new Stardust(id, level);
     }
 
-    @Override
-    public void start(FlyBoard flyboard){
-        List<Player> scoreBoard = flyboard.getScoreBoard();
-        List<Player> inverse = new ArrayList<>(scoreBoard);
-        Collections.reverse(inverse);
-
-        for(Player p : inverse){
-            int daysLost = p.getShipBoard().getExposedConnectors();
-            flyboard.moveDays(p, -daysLost);
-        }
-    }
-
-    @Override
-    public void startTest(FlyBoard flyBoard, Player player, int cod){
-        int daysLost = player.getShipBoard().getExposedConnectors();
-        flyBoard.moveDays(player, -daysLost);
-    }
 }

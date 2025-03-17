@@ -6,6 +6,8 @@ import org.mio.progettoingsoft.advCards.Planets;
 import org.mio.progettoingsoft.components.DoubleDrill;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadInputException;
+import org.mio.progettoingsoft.exceptions.NotEnoughCrewException;
+import org.mio.progettoingsoft.exceptions.NotEnoughHousingException;
 
 import javax.sound.midi.Soundbank;
 import java.nio.charset.StandardCharsets;
@@ -107,6 +109,10 @@ public class View {
         List<Component> housingAvailable = shipBoard.getComponentsStream()
                 .filter(comp -> comp.getQuantityGuests() > 0)
                 .toList();
+
+        if(housingAvailable.isEmpty()){
+            throw new NotEnoughCrewException();  //still to be managed: the player must be removed
+        }
 
         return askForComponentFromList(housingAvailable);
     }

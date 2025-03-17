@@ -23,6 +23,8 @@ public class ShipBoard {
     private int availableEnergy;
     private float baseFirePower;
     private int baseEnginePower;
+    private float activatedFirePower;
+    private int activatedEnginePower;
     private int exposedConnectors;
     private int maxEnergy;
     private int maxSpecialGoods;
@@ -36,7 +38,7 @@ public class ShipBoard {
     private final int offsetCol;
     private final int offsetRow;
 
-    public ShipBoard(HousingColor color){
+    public ShipBoard(HousingColor color) {
         rows = 5;
         columns = 7;
 
@@ -46,7 +48,7 @@ public class ShipBoard {
         shipComponents = new Optional[rows][columns];
 
         for (int i = 0; i < rows; i++)
-            for(int j = 0; j < columns; j++)
+            for (int j = 0; j < columns; j++)
                 shipComponents[i][j] = Optional.empty();
 
         // Add the starting cabin to the ship
@@ -79,7 +81,7 @@ public class ShipBoard {
         this.availableEnergy = quant;
     }
 
-    public ShipBoard(){
+    public ShipBoard() {
         rows = 5;
         columns = 7;
 
@@ -90,7 +92,7 @@ public class ShipBoard {
         bannedCoordinates = new ArrayList<>(6);
 
         for (int i = 0; i < rows; i++)
-            for(int j = 0; j <columns; j++)
+            for (int j = 0; j < columns; j++)
                 shipComponents[i][j] = Optional.empty();
 
         bannedCoordinates.add(new Cordinate(0, 0));
@@ -104,32 +106,43 @@ public class ShipBoard {
         baseEnginePower = 0;
     }
 
-    public boolean isValidPosition(int row, int column){
-        Cordinate coord = new Cordinate(0,0);
+
+    // activated firepower: tmp property to store the firepower after activating double drills.
+    // How to use: askDoubleDrill, set activFP = base + activated, do whatever you need, then set activated = base
+    public float getActivatedFirePower() {
+        return activatedFirePower;
+    }
+
+    public void setActivatedFirePower(float activatedFirePower) {
+        this.activatedFirePower = activatedFirePower;
+    }
+
+    public boolean isValidPosition(int row, int column) {
+        Cordinate coord = new Cordinate(0, 0);
         return validRow(row) && validColumn(column) && !bannedCoordinates.contains(coord);
     }
 
-    public int getRows(){
+    public int getRows() {
         return rows;
     }
 
-    public int getColumns(){
+    public int getColumns() {
         return columns;
     }
 
-    public int getOffsetCol(){
+    public int getOffsetCol() {
         return offsetCol;
     }
 
-    public int getOffsetRow(){
+    public int getOffsetRow() {
         return offsetRow;
     }
 
-    public int getBaseEnginePower(){
+    public int getBaseEnginePower() {
         return baseEnginePower;
     }
 
-    public float getBaseFirePower(){
+    public float getBaseFirePower() {
         return baseFirePower;
     }
 
@@ -151,20 +164,20 @@ public class ShipBoard {
         return shipComponents[row][column].isEmpty();
     }
 
-    public Map<Direction, Component> getAdjacent(int row, int column){
+    public Map<Direction, Component> getAdjacent(int row, int column) {
         Map<Direction, Component> adjacents = new HashMap();
 
-        if (validRow(row-1) && shipComponents[row-1][column].isPresent() ){
-            adjacents.put(Direction.FRONT, shipComponents[row-1][column].get());
+        if (validRow(row - 1) && shipComponents[row - 1][column].isPresent()) {
+            adjacents.put(Direction.FRONT, shipComponents[row - 1][column].get());
         }
-        if (validRow(row+1) && shipComponents[row+1][column].isPresent() ){
-            adjacents.put(Direction.BACK, shipComponents[row+1][column].get());
+        if (validRow(row + 1) && shipComponents[row + 1][column].isPresent()) {
+            adjacents.put(Direction.BACK, shipComponents[row + 1][column].get());
         }
-        if (validColumn(column + 1) && shipComponents[row][column+1].isPresent() ){
-            adjacents.put(Direction.RIGHT, shipComponents[row][column+1].get());
+        if (validColumn(column + 1) && shipComponents[row][column + 1].isPresent()) {
+            adjacents.put(Direction.RIGHT, shipComponents[row][column + 1].get());
         }
-        if (validColumn(column - 1) && shipComponents[row][column-1].isPresent() ){
-            adjacents.put(Direction.LEFT, shipComponents[row][column-1].get());
+        if (validColumn(column - 1) && shipComponents[row][column - 1].isPresent()) {
+            adjacents.put(Direction.LEFT, shipComponents[row][column - 1].get());
         }
 
         return adjacents;
@@ -177,7 +190,7 @@ public class ShipBoard {
         if (!validRow(row) || !validColumn(column))
             throw new InvalidPositionException(row, column);
 
-        if (shipComponents[row][column].isPresent()){
+        if (shipComponents[row][column].isPresent()) {
             throw new IncorrectPlacementException(row, column, component);
         }
 
@@ -205,12 +218,12 @@ public class ShipBoard {
             comp.addAlienType(component.getColorAlien());
         }
 
-        baseFirePower += component.getFirePower() == 2f ? 0 :  component.getFirePower();
-        baseEnginePower += component.getEnginePower()== 2 ? 0 : component.getEnginePower();
+        baseFirePower += component.getFirePower() == 2f ? 0 : component.getFirePower();
+        baseEnginePower += component.getEnginePower() == 2 ? 0 : component.getEnginePower();
     }
 
     public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacementException, InvalidPositionException {
-        while(angle > 0) {
+        while (angle > 0) {
             comp.rotateClockwise();
             angle--;
         }
@@ -220,7 +233,7 @@ public class ShipBoard {
     //non basta
     //bisogna controllare l'eliminazione a cascata
     public void removeComponent(int row, int column) throws EmptyComponentException {
-        if (!validRow(row) || !validColumn(column)){
+        if (!validRow(row) || !validColumn(column)) {
             throw new InvalidPositionException(row, column);
         }
 
@@ -237,9 +250,9 @@ public class ShipBoard {
 
     //non basta
     //bisogna controllare l'eliminazione a cascata
-    public void removeComponent(Component component){
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j < columns; j++){
+    public void removeComponent(Component component) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 if (shipComponents[i][j].isPresent() && shipComponents[i][j].get().equals(component))
                     shipComponents[i][j] = Optional.empty();
 
@@ -251,21 +264,21 @@ public class ShipBoard {
         baseFirePower -= component.getFirePower() == 2.0f ? 0 : component.getFirePower();
     }
 
-    private Stream<Optional<Component>> getStreamOptComponents(){
+    private Stream<Optional<Component>> getStreamOptComponents() {
         return Arrays.stream(shipComponents).flatMap(Arrays::stream);
     }
 
-    public Optional<Component>[][] getComponentsList(){
+    public Optional<Component>[][] getComponentsList() {
         return shipComponents;
     }
 
-    public Stream<Component> getComponentsStream(){
+    public Stream<Component> getComponentsStream() {
         return getStreamOptComponents()
                 .filter(optComp -> optComp.isPresent())
                 .map(optComp -> optComp.get());
     }
 
-    public int getQuantBatteries(){
+    public int getQuantBatteries() {
         return availableEnergy;
     }
 
@@ -276,22 +289,22 @@ public class ShipBoard {
             removed = componentList.get(i).removeOneEnergy();
 
         if (!removed)
-            throw  new NotEnoughBatteriesException();
+            throw new NotEnoughBatteriesException();
 
         availableEnergy--;
     }
 
-    public void removeEnergy(int quant) throws NotEnoughBatteriesException{
+    public void removeEnergy(int quant) throws NotEnoughBatteriesException {
         for (int i = 0; i < quant; i++)
             removeEnergy();
     }
 
 
-    private boolean validRow(int row){
+    private boolean validRow(int row) {
         return row >= 0 && row < rows;
     }
 
-    private boolean validColumn(int column){
+    private boolean validColumn(int column) {
         return column >= 0 && column < columns;
     }
 
@@ -321,13 +334,13 @@ public class ShipBoard {
         goods.put(type, goods.get(type) - 1);
     }*/
 
-    public List<Component> canContainGood(GoodType type){
+    public List<Component> canContainGood(GoodType type) {
         return getComponentsStream()
                 .filter(comp -> comp.canContainsGood(type))
                 .toList();
     }
 
-    public List<Component> canRemoveGoods(){
+    public List<Component> canRemoveGoods() {
         return getComponentsStream()
                 .filter(comp -> comp.getStoredGoods().values().stream()
                         .anyMatch(val -> val > 0))
@@ -351,27 +364,26 @@ public class ShipBoard {
                 .toList();
     }
 
-    public List<Component> canContainsAlienGuest(AlienType type){
+    public List<Component> canContainsAlienGuest(AlienType type) {
         return getComponentsStream()
                 .filter(comp -> comp.canContainsAlien(type))
                 .toList();
     }
 
-    public List<Component> canRemoveGuest(){
+    public List<Component> canRemoveGuest() {
         return getComponentsStream()
                 .filter(comp -> comp.containsGuest())
                 .toList();
     }
 
 
-
-    public List<Component> getDoubleEngine(){
+    public List<Component> getDoubleEngine() {
         return getComponentsStream()
-                .filter(comp->comp.getEnginePower() == 2)
+                .filter(comp -> comp.getEnginePower() == 2)
                 .toList();
     }
 
-    public List<Component> getDoubleDrill(Direction dir){
+    public List<Component> getDoubleDrill(Direction dir) {
         return getComponentsStream()
                 .filter(comp -> comp.getFirePower() == 2)
                 .filter(comp -> comp.getDirection() != null)
@@ -384,13 +396,12 @@ public class ShipBoard {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++)
-                if (shipComponents[i][j].isPresent()){
+                if (shipComponents[i][j].isPresent()) {
                     Component comp = shipComponents[i][j].get();
-                    if (comp.getEnginePower() > 0 ){
-                        if (! comp.getDirection().equals(Direction.BACK)){
+                    if (comp.getEnginePower() > 0) {
+                        if (!comp.getDirection().equals(Direction.BACK)) {
                             incorrect.add(comp);
-                        }
-                        else if (validRow(i+1) && shipComponents[i + 1][j].isPresent()){
+                        } else if (validRow(i + 1) && shipComponents[i + 1][j].isPresent()) {
                             incorrect.add(shipComponents[i][j].get());
                         }
 
@@ -405,16 +416,16 @@ public class ShipBoard {
     public List<Component> getIncorrectDrills() {
         List<Component> incorrect = new ArrayList<>();
 
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j < columns; j++){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 if (shipComponents[i][j].isPresent()) {
                     Component comp = shipComponents[i][j].get();
 
-                    if (comp.getFirePower() > 0){
+                    if (comp.getFirePower() > 0) {
                         int row = i;
                         int col = j;
 
-                        switch (comp.getDirection()){
+                        switch (comp.getDirection()) {
                             case FRONT -> row--;
                             case BACK -> row++;
                             case LEFT -> col--;
@@ -423,8 +434,6 @@ public class ShipBoard {
 
                         if (validRow(row) && validColumn(col) && shipComponents[row][col].isPresent())
                             incorrect.add(shipComponents[row][col].get());
-
-
                     }
                 }
 
@@ -436,21 +445,21 @@ public class ShipBoard {
 
     // checks if the ALIEN_HOUSING components are connected to at least one HOUSING
     // necessary (?) ask the profs
-    public Set<Component> getIncorrectAlienHousings(){
+    public Set<Component> getIncorrectAlienHousings() {
         Set<Component> incorrect = new HashSet<>();
-        for(int i = 0; i < rows; i++){
-            for(int j = 0; j < columns; j++){
-                if(shipComponents[i][j].isPresent()){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (shipComponents[i][j].isPresent()) {
                     Component comp = shipComponents[i][j].get();
-                    if(comp.getType().equals(ComponentType.ALIEN_HOUSING)){
+                    if (comp.getType().equals(ComponentType.ALIEN_HOUSING)) {
                         boolean correct = false;
                         Map<Direction, Component> adjacents = getAdjacent(i, j);
-                        for(Component component : adjacents.values()){
+                        for (Component component : adjacents.values()) {
                             correct = correct ||
                                     (component.getType().equals(ComponentType.HOUSING) &&
                                             !component.isFirstHousing());
                         }
-                        if(!correct){
+                        if (!correct) {
                             incorrect.add(comp);
                         }
                     }
@@ -462,11 +471,11 @@ public class ShipBoard {
 
     //This method check the correct positioning of the component, except for the direction and nearby placement of drills
     // the method insert in the set both component in case of connector mismatch
-    public Set<Component> getIncorrectComponents(){
+    public Set<Component> getIncorrectComponents() {
         Set<Component> incorrect = new HashSet<>();
 
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j < columns; j++){
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 if (shipComponents[i][j].isPresent()) {
                     Component comp = shipComponents[i][j].get();
 
@@ -474,9 +483,9 @@ public class ShipBoard {
                     Map<Direction, Component> adjacent = getAdjacent(i, j);
                     boolean correct = true;
                     // Modified by Stefano to check if a component is flying (not connected to any other):
-                    if(adjacent.isEmpty()){
+                    if (adjacent.isEmpty()) {
                         correct = false;
-                    }else{
+                    } else {
                         for (Direction dir : adjacent.keySet()) {
                             correct = correct && comp.isCompatible(adjacent.get(dir), dir);
                         }
@@ -495,25 +504,25 @@ public class ShipBoard {
     }
 
     //this method count the number of exposed connectors
-    public int getExposedConnectors(){
+    public int getExposedConnectors() {
         int numExposedConnectors = 0;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (shipComponents[i][j].isPresent()) {
                     Component comp = shipComponents[i][j].get();
                     Map<Direction, Component> adjacent = getAdjacent(i, j);
-                    if(isExposed(comp, adjacent, Direction.FRONT)) numExposedConnectors++;
-                    if(isExposed(comp, adjacent, Direction.BACK)) numExposedConnectors++;
-                    if(isExposed(comp, adjacent, Direction.LEFT)) numExposedConnectors++;
-                    if(isExposed(comp, adjacent, Direction.RIGHT)) numExposedConnectors++;
+                    if (isExposed(comp, adjacent, Direction.FRONT)) numExposedConnectors++;
+                    if (isExposed(comp, adjacent, Direction.BACK)) numExposedConnectors++;
+                    if (isExposed(comp, adjacent, Direction.LEFT)) numExposedConnectors++;
+                    if (isExposed(comp, adjacent, Direction.RIGHT)) numExposedConnectors++;
                 }
             }
         }
         return numExposedConnectors;
     }
 
-    public boolean isExposed(Component comp, Map<Direction, Component> adj, Direction dir){
-        if(!comp.getConnector(dir).equals(Connector.FLAT)){
+    public boolean isExposed(Component comp, Map<Direction, Component> adj, Direction dir) {
+        if (!comp.getConnector(dir).equals(Connector.FLAT)) {
             return !adj.containsKey(dir);
         }
         return false;
@@ -540,16 +549,16 @@ public class ShipBoard {
         return sum;
     }*/
 
-    public int getQuantityGuests(){
+    public int getQuantityGuests() {
         return getComponentsStream().
                 mapToInt(comp -> comp.getQuantityGuests())
                 .sum();
     }
 
-    public String printPosition(Component comp){
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j <columns; j++){
-                if (shipComponents[i][j].isPresent()){
+    public String printPosition(Component comp) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (shipComponents[i][j].isPresent()) {
                     if (shipComponents[i][j].get() == comp)
                         return "(" + i + ", " + j + ")";
                 }
@@ -558,11 +567,11 @@ public class ShipBoard {
         return "";
     }
 
-    public void stoleGood(){
+    public void stoleGood() {
         Map<GoodType, Integer> storedGoods = new HashMap<>();
 
         List<Component> components = getComponentsStream().toList();
-        for (Component comp : components){
+        for (Component comp : components) {
             storedGoods.putAll(comp.getStoredGoods());
         }
 
@@ -571,40 +580,72 @@ public class ShipBoard {
         if (storedGoods.containsKey(GoodType.RED) && storedGoods.get(GoodType.RED) > 0) {
             toRemove = GoodType.RED;
             chosen = true;
-        }
-        else if (storedGoods.containsKey(GoodType.YELLOW) && storedGoods.get(GoodType.YELLOW) > 0) {
+        } else if (storedGoods.containsKey(GoodType.YELLOW) && storedGoods.get(GoodType.YELLOW) > 0) {
             toRemove = GoodType.YELLOW;
             chosen = true;
-        }
-        else if (storedGoods.containsKey(GoodType.GREEN) && storedGoods.get(GoodType.GREEN) > 0) {
+        } else if (storedGoods.containsKey(GoodType.GREEN) && storedGoods.get(GoodType.GREEN) > 0) {
             toRemove = GoodType.GREEN;
             chosen = true;
-        }
-        else if (storedGoods.containsKey(GoodType.BLUE) && storedGoods.get(GoodType.BLUE) > 0) {
+        } else if (storedGoods.containsKey(GoodType.BLUE) && storedGoods.get(GoodType.BLUE) > 0) {
             toRemove = GoodType.BLUE;
             chosen = true;
         }
 
-        if (chosen){
-            for (Component comp : components){
-                if (comp.removeGood(toRemove)){
+        if (chosen) {
+            for (Component comp : components) {
+                if (comp.removeGood(toRemove)) {
                     break;
                 }
             }
-        }
-        else{
+        } else {
             removeEnergy();
         }
     }
 
-    public int getColumnComponent(Component comp){
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j < columns; j++){
+    public int getColumnComponent(Component comp) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 if (shipComponents[i][j].isPresent() && shipComponents[i][j].get() == comp)
                     return j;
             }
         }
         return -1;
+    }
+
+    // activated engine power: tmp property to store the engine power after activating double engines.
+    // How to use: askDoubleEngine, set activEP = base + activated, do whatever you need, then set activated = base
+    public void setActivatedEnginePower(int activatedEnginePower) {
+        this.activatedEnginePower = activatedEnginePower;
+    }
+
+    public int getActivatedEnginePower() {
+        return activatedEnginePower;
+    }
+
+    // theese three methods compare a shipboard to another based on the numeber of crew members, the firepower and the
+    // engine power, they're useful for the combat zone adv card
+    public int compareCrew(ShipBoard other) {
+        if (this.getQuantityGuests() > other.getQuantityGuests())
+            return 1;
+        else if (this.getQuantityGuests() < other.getQuantityGuests())
+            return -1;
+        return 0;
+    }
+
+    public int compareActivatedFirePower(ShipBoard other) {
+        if (this.getActivatedFirePower() > other.getActivatedFirePower())
+            return 1;
+        else if (this.getActivatedFirePower() < other.getActivatedFirePower())
+            return -1;
+        return 0;
+    }
+
+    public int compareActivatedEnginePower(ShipBoard other) {
+        if (this.getActivatedEnginePower() > other.getActivatedEnginePower())
+            return 1;
+        else if (this.getActivatedEnginePower() < other.getActivatedEnginePower())
+            return -1;
+        return 0;
     }
 }
 

@@ -5,15 +5,6 @@ import org.mio.progettoingsoft.Connector;
 import org.mio.progettoingsoft.Direction;
 
 public class DoubleDrill extends Drill{
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
-
-    private boolean isActive;
     public DoubleDrill(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         super(id, ComponentType.DOUBLE_DRILL, topConn, bottomConn, rightConn, leftConn);
     }

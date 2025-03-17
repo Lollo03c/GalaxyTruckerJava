@@ -43,25 +43,4 @@ public class AbandonedStation extends AdventureCard {
         return goods;
     }
 
-    @Override
-    public void start(FlyBoard board){
-        List<Player> playerList = new ArrayList<>(board.getScoreBoard());
-        for (Player player : playerList){
-            if (player.getShipBoard().getQuantityGuests() >= crewNeeded){
-                boolean answer = player.getView().askForEffect(type);
-
-                if (answer){
-                    board.moveDays(player, -1 * daysLost);
-
-                    for (GoodType type : goods){
-                        Component depot = player.getView().askForDepotToAdd(type);
-
-                        depot.addGood(type);
-                    }
-
-                    return;
-                }
-            }
-        }
-    }
 }

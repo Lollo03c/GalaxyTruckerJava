@@ -11,6 +11,17 @@ import java.util.List;
 
 public class Planets extends AdventureCard {
     private final int daysLost;
+
+    @Override
+    public List<Planet> getPlanets() {
+        return planets;
+    }
+
+    @Override
+    public int getDaysLost() {
+        return daysLost;
+    }
+
     private final List<Planet> planets;
 
     public Planets(int id, int level, int daysLost, List<Planet> planets) {
@@ -31,14 +42,7 @@ public class Planets extends AdventureCard {
 
         return new Planets(id, level, daysLost, planets);
     }
-    @Override
-    public void start(FlyBoard board){
-        List<Player> score = board.getScoreBoard();
-        int choice = 0;
-        for(Player player : score){
-            choice = player.getView().askForPlanet(planets);
-        }
-    }
 
+    // THE START METHOD HAS BEEN REMOVED: use the controller class and implement the "play_planets" method
 
 }

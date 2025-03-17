@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CombatZone extends AdventureCard {
+    public List<CombatLine> getLines() {
+        return lines;
+    }
+
     private final List<CombatLine> lines;
 
     public CombatZone(int id, int level, List<CombatLine> lines) {

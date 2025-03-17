@@ -56,35 +56,4 @@ public class Smugglers extends AdvancedEnemy {
         return stolenGoods;
     }
 
-    @Override
-    public void start(FlyBoard board){
-        boolean ended = false;
-
-        List<Player> playerList = new ArrayList<>(board.getScoreBoard());
-        for(Player player : playerList){
-            List<Component> doubleDrills = player.getView().askDoubleDrill();
-
-            float power = player.getShipBoard().getBaseEnginePower();
-            for (Component drill : doubleDrills){
-                power += drill.getFirePower();
-            }
-            player.getShipBoard().removeEnergy(doubleDrills.size());
-
-            if (power > strength){
-                boolean answer = player.getView().askForEffect(type);
-
-                if (answer){
-                    board.moveDays(player, -daysLost);
-                    for (GoodType type : goods){
-                        Component depot = player.getView().askForDepotToAdd(type);
-                        depot.addGood(type);
-                    }
-                }
-                break;
-            }
-            else if(power < strength){
-                player.getShipBoard().stoleGood();
-            }
-        }
-    }
 }
