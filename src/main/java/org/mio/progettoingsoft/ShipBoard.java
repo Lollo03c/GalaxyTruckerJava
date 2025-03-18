@@ -1,9 +1,6 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.components.AlienType;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.Housing;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.*;
 
 import java.util.*;
@@ -319,6 +316,18 @@ public class ShipBoard {
                 .filter(comp -> comp.getStoredGoods().values().stream()
                         .anyMatch(val -> val > 0))
                 .toList();
+    }
+    //return true if the good has been moved correctly, false otherwise
+    //the various controls are inside the methods addGood
+    public boolean changeDepot(GoodType good, Depot oldDepot, Depot newDepot) {
+        if(newDepot.addGood(good)){
+            return oldDepot.removeGood(good);
+        }
+        return false;
+    }
+
+    public boolean discardGood(GoodType good, Depot depot) {
+        return depot.removeGood(good);
     }
 
     public void addHumanGuest() throws NotEnoughHousingException {

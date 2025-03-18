@@ -285,8 +285,8 @@ public class Controller {
         }
     }
 
-    private void play_planets(AdventureCard card) throws BadParameterException {
-        List<Player> landedPlayers = new LinkedList<>() ;
+    public void play_planets(AdventureCard card) throws BadParameterException {
+                List<Player> landedPlayers = new LinkedList<>() ;
         List<Player> score = flyBoard.getScoreBoard();
         int choice = 0;
         for(Player player : score){
@@ -298,6 +298,7 @@ public class Controller {
                     Optional<Component> depot = player.getView().askForDepotToAdd(type);
                     depot.ifPresent(component -> component.addGood(type));
                     //da implementare possibilità di riposizionamento merci
+                    //da implementare possibilità di scartare merci
                 }
             }
             if(landedPlayers.size() == card.getPlanets().size() ){
