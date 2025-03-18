@@ -1,7 +1,5 @@
 package org.mio.progettoingsoft;
 
-import java.util.Random;
-
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
 
@@ -50,22 +48,39 @@ public class Player {
         return view;
     }
 
-
-
-    public void takeCoveredComponent(Component component) {
-
+    public Component getInHand() {
+        return inHand;
     }
 
-    public void refuseComponent(Component component) { //when not added it joins the heap as uncovered
+
+
+    public void setInHand(Component inHand) {
+        this.inHand = inHand;
     }
+
+    public Component refuseComponentInHand() {
+        if( inHand == null)
+            throw new NoComponentInHandException("No component in hand!");
+
+        Component temp = inHand;
+        inHand = null;
+        return temp;
+    }
+
+    public void bookComponentInHand() throws NotEnoughSpaceForBookedComponentException {
+        if( inHand == null)
+            throw new NoComponentInHandException("No component in hand!");
+        shipBoard.addBookedComponent(inHand);
+        inHand = null;
+    }
+
+
 
     public void addDiscardComponent(int quantity) {
         discardedComponents += quantity;
     }
 
-    public void bookComponent() {
 
-    }
 
     public void addCredits(int quantity) {
         credits += quantity;

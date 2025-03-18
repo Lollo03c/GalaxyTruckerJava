@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.components.*;
+import org.mio.progettoingsoft.exceptions.NoMoreComponentsException;
 
 
 import java.io.File;
 import java.io.IOException;
-import java.net.ConnectException;
+
 import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
 import java.util.*;
 
@@ -23,16 +24,15 @@ public class FlyBoard {
     private final List<Optional<Player>> circuit;
 
     private final List<Player> scoreBoard;
-    private final List<Component> coveredComponents;
-    private final List<Component> uncoverdeComponents;
-
+    private final Stack<Component> coveredComponents;
+    private final List<Component> uncoveredComponents;
     private final Map<GoodType, Integer> remainingGoods;
 
     private HourGlass hourGlass;
 
     public FlyBoard() {
         this.coveredComponents = new Stack<>();
-        this.uncoverdeComponents = new ArrayList<>();
+        this.uncoveredComponents = new ArrayList<>();
         this.scoreBoard = new ArrayList<>();
         this.deck = new ArrayList<>();
         this.remainingGoods = new HashMap<>();
@@ -61,6 +61,27 @@ public class FlyBoard {
 
     public List<Component> getCoveredComponents() {
         return coveredComponents;
+    }
+
+    public List<Component> getUncoveredComponents() {
+        return uncoveredComponents;
+    }
+
+    public Component drawComponent() throws NoMoreComponentsException {
+        if(coveredComponents.isEmpty())
+            throw new NoMoreComponentsException("Covered components are not enough");
+        return coveredComponents.pop();
+    }
+
+    public void addUncoveredComponent(Component c) {
+        this.uncoveredComponents.add(c);
+    }
+
+    public Component chooseComponentFromUncovered(int index) throws NoMoreComponentsException{
+        if(uncoveredComponents.isEmpty())
+            throw new NoMoreComponentsException("No more uncovered components.");
+
+        return uncoveredComponents.remove(index);
     }
 
     public List<AdventureCard> getAdventureCards() {
@@ -167,7 +188,6 @@ public class FlyBoard {
     public boolean isDeckEmpty() {
         return deck.isEmpty();
     }
-
 
     public void loadComponents() {
 
@@ -296,4 +316,5 @@ public class FlyBoard {
             e.printStackTrace();
         }
     }
+
 }

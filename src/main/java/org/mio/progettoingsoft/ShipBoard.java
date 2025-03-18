@@ -43,6 +43,7 @@ public class ShipBoard {
         offsetCol = 4;
 
         shipComponents = new Optional[rows][columns];
+        bookedComponents = new Component[2];
 
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
@@ -74,6 +75,20 @@ public class ShipBoard {
         completedBuild = false;
     }
 
+
+    public void addBookedComponent(Component bookedComponent) throws NotEnoughSpaceForBookedComponentException{
+        if(bookedComponents[0] == null){
+            bookedComponents[0] = bookedComponent;
+        }else if(bookedComponents[1] == null){
+            bookedComponents[1] = bookedComponent;
+        }else{
+            throw new NotEnoughSpaceForBookedComponentException("ShipBoard: Too many booked components");
+        }
+    }
+
+    public Component[] getBookedComponents() {
+        return bookedComponents;
+    }
     public void setQuantBatteries(int quant) {
         this.availableEnergy = quant;
     }
