@@ -20,7 +20,7 @@ class PlayerTest {
         Component c2 = new EnergyDepot(1, false, top, bottom, right, left);
         Component c3 = new Housing(1, top, bottom, right, left);
 
-        Player player = new Player("test");
+        Player player = new Player("test", HousingColor.BLUE);
         player.addCompoment(c1, 1, 1, 0);
         player.addCompoment(c2, 2, 2, 0);
         player.addCompoment(c3, 3, 3, 0);
@@ -33,7 +33,7 @@ class PlayerTest {
         Component c1 = new EnergyDepot(1, false, top, bottom, right, left);
         Component c3 = new Housing(1, top, bottom, right, left);
 
-        Player player = new Player("test");
+        Player player = new Player("test", HousingColor.BLUE);
         player.addCompoment(c1, 1, 1, 0);
         player.addCompoment(c3, 2, 2, 0);
 
@@ -52,7 +52,7 @@ class PlayerTest {
         Component c2 = new EnergyDepot(1, true, top, bottom, right, left);
         Component c3 = new Housing(1, top, bottom, right, left);
 
-        Player player = new Player("test");
+        Player player = new Player("test", HousingColor.BLUE);
         player.addCompoment(c1, 1, 1, 0);
         player.addCompoment(c3, 2, 2, 0);
         player.addCompoment(c2, 3, 3, 0);

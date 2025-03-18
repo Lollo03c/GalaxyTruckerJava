@@ -3,8 +3,12 @@ package org.mio.progettoingsoft;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.Depot;
+import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
 
@@ -231,100 +235,100 @@ class FlyBoardTest {
     }
 
     @Test
-    void should_create_4_players(){
-        List<String> users = new ArrayList<>(4);
-        users.add("Antonio");
-        users.add("Lorenzo");
-        users.add("Andrea");
-        users.add("Stefano");
+    void should_create_4_players() throws CannotAddPlayerException{
+        Map<String, HousingColor> users = new HashMap<>(4);
+        users.put("Antonio", HousingColor.BLUE);
+        users.put("Lorenzo", HousingColor.RED);
+        users.put("Andrea", HousingColor.GREEN);
+        //users.put("Stefano", HousingColor.YELLOW);
 
         FlyBoard fly = new FlyBoard();
 
-        fly.addPlayer(users.get(0));
-        fly.addPlayer(users.get(0));
-        fly.addPlayer(users.get(1));
-        fly.addPlayer(users.get(2));
-        fly.addPlayer(users.get(3));
-        fly.addPlayer(users.get(3));
-        fly.addPlayer("Sbagliato");
+        for(String user : users.keySet()){
+            fly.addPlayer(user, users.get(user));
+        }
 
+        assertThrows(CannotAddPlayerException.class,
+                ()->  fly.addPlayer("Antonio", HousingColor.YELLOW));
+        assertFalse(fly.getScoreBoard().stream()
+                .anyMatch(player -> player.getColor().equals(HousingColor.YELLOW))
+        );
+
+        assertThrows(CannotAddPlayerException.class, () -> fly.addPlayer("Test", HousingColor.BLUE));
+        assertFalse(fly.getScoreBoard().stream()
+                .anyMatch(player -> player.getUsername().equals("Test"))
+        );
+
+        fly.addPlayer("Stefano", HousingColor.YELLOW);
         assertEquals(4, fly.getScoreBoard().size());
-        for (String user : users){
+
+        assertThrows(CannotAddPlayerException.class, () -> fly.addPlayer("Test", HousingColor.BLUE));
+        assertFalse(fly.getScoreBoard().stream()
+                .anyMatch(player -> player.getUsername().equals("Test"))
+        );
+
+        for (String user : users.keySet()){
             assertTrue(fly.getScoreBoard().stream().anyMatch(
                     player -> player.getUsername().equals(user)
             ));
         }
-        assertFalse(fly.getScoreBoard().stream()
-                .anyMatch(player -> player.getUsername().equals("Sbagliato"))
-        );
+
     }
 
     @Test
-    void shuold_advance_one(){
+    void should_advance_one() throws CannotAddPlayerException{
         FlyBoard board = new FlyBoard();
+        board.addPlayer("test", HousingColor.BLUE);
 
-        Player player = new Player("test");
-        board.addPlayer(player);
+        board.getCircuit().set(23, board.getPlayerByUsername("test"));
+        board.moveDays(board.getPlayerByUsername("test").get(), 2);
 
-        board.getCircuit().set(23, Optional.of(player));
-        board.moveDays(player, 2);
-
-        assertEquals(1, board.getCircuit().indexOf(Optional.of(player)));
+        assertEquals(1, board.getCircuit().indexOf(board.getPlayerByUsername("test")));
     }
 
     @Test
-    void shuold_advance_advance_with_other_player_between(){
+    void should_advance_advance_with_other_player_between() throws CannotAddPlayerException{
         FlyBoard board = new FlyBoard();
+        board.addPlayer("test", HousingColor.BLUE);
+        board.addPlayer("t", HousingColor.GREEN);
 
-        Player first = new Player("test");
-        board.addPlayer(first);
+        board.getCircuit().set(23, board.getPlayerByUsername("test"));
+        board.getCircuit().set(0, board.getPlayerByUsername("t"));
+        board.moveDays(board.getPlayerByUsername("test").get(), 2);
 
-        Player second = new Player("t");
-        board.addPlayer(second);
-
-        board.getCircuit().set(23, Optional.of(first));
-        board.getCircuit().set(0, Optional.of(second));
-        board.moveDays(first, 2);
-
-        assertEquals(2, board.getCircuit().indexOf(Optional.of(first)));
-        assertEquals(0, board.getCircuit().indexOf(Optional.of(second)));
+        assertEquals(2, board.getCircuit().indexOf(board.getPlayerByUsername("test")));
+        assertEquals(0, board.getCircuit().indexOf(board.getPlayerByUsername("t")));
     }
 
     @Test
-    void shuold_advance_retrat_with_other_player_between(){
+    void should_advance_retrat_with_other_player_between()throws CannotAddPlayerException{
         FlyBoard board = new FlyBoard();
+        board.addPlayer("test", HousingColor.BLUE);
+        board.addPlayer("t", HousingColor.GREEN);
 
-        Player first = new Player("test");
-        board.addPlayer(first);
+        board.getCircuit().set(23, board.getPlayerByUsername("test"));
+        board.getCircuit().set(0, board.getPlayerByUsername("t"));
+        board.moveDays(board.getPlayerByUsername("t").get(), -2);
 
-        Player second = new Player("t");
-        board.addPlayer(second);
-
-        board.getCircuit().set(23, Optional.of(first));
-        board.getCircuit().set(0, Optional.of(second));
-        board.moveDays(second, -2);
-
-        assertEquals(23, board.getCircuit().indexOf(Optional.of(first)));
-        assertEquals(21, board.getCircuit().indexOf(Optional.of(second)));
+        assertEquals(23, board.getCircuit().indexOf(board.getPlayerByUsername("test")));
+        assertEquals(21, board.getCircuit().indexOf(board.getPlayerByUsername("t")));
     }
 
     @Test
-    void should_change_ScoreBoard(){
+    void should_change_ScoreBoard() throws CannotAddPlayerException{
         FlyBoard board = new FlyBoard();
-        Player player1 = new Player("test");
-        board.addPlayer(player1);
-        Player player2 = new Player("t");
-        board.addPlayer(player2);
-        board.getCircuit().set(3,Optional.of(player1));
-        board.getCircuit().set(1,Optional.of(player2));
-        assertEquals(0, board.getScoreBoard().indexOf(player1));
-        assertEquals(1, board.getScoreBoard().indexOf(player2));
-        board.moveDays(player2,3);
-        assertEquals(player2,board.getScoreBoard().get(0));
-        assertEquals(player1,board.getScoreBoard().get(1));
-        board.moveDays(player1,5);
-        assertEquals(9,board.getCircuit().indexOf(Optional.of(player1)));
-        assertEquals(0, board.getScoreBoard().indexOf(player1));
+        board.addPlayer("test", HousingColor.BLUE);
+        board.addPlayer("t", HousingColor.GREEN);
+        board.getCircuit().set(3, board.getPlayerByUsername("test"));
+        board.getCircuit().set(1, board.getPlayerByUsername("t"));
+        assertEquals(0, board.getScoreBoard().indexOf(board.getPlayerByUsername("test").get()));
+        assertEquals(1, board.getScoreBoard().indexOf(board.getPlayerByUsername("t").get()));
+        board.moveDays(board.getPlayerByUsername("t").get(),3);
+        assertEquals(board.getPlayerByUsername("t").get(),board.getScoreBoard().get(0));
+        assertEquals(board.getPlayerByUsername("test").get(),board.getScoreBoard().get(1));
+        board.moveDays(board.getPlayerByUsername("test").get(),5);
+        assertEquals(9,board.getCircuit().indexOf(board.getPlayerByUsername("test")));
+        assertEquals(0, board.getScoreBoard().indexOf(board.getPlayerByUsername("test").get()));
     }
 
 

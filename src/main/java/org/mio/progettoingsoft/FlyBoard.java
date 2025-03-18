@@ -9,13 +9,14 @@ import org.mio.progettoingsoft.components.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
+import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
 import java.util.*;
 
 public class FlyBoard {
-    private  List<AdventureCard> selectionDeckPrivate;
-    private  List<AdventureCard> selectionDeck1;
-    private  List<AdventureCard> selectionDeck2;
-    private  List<AdventureCard> selectionDeck3;
+    private List<AdventureCard> selectionDeckPrivate;
+    private List<AdventureCard> selectionDeck1;
+    private List<AdventureCard> selectionDeck2;
+    private List<AdventureCard> selectionDeck3;
 
     private final List<AdventureCard> deck;
 
@@ -29,8 +30,8 @@ public class FlyBoard {
 
     private HourGlass hourGlass;
 
-    public FlyBoard(){
-        this.coveredComponents = new ArrayList<>();
+    public FlyBoard() {
+        this.coveredComponents = new Stack<>();
         this.uncoverdeComponents = new ArrayList<>();
         this.scoreBoard = new ArrayList<>();
         this.deck = new ArrayList<>();
@@ -45,45 +46,128 @@ public class FlyBoard {
             circuit.add(Optional.empty());
     }
 
-    public void addPlayer(Player player){
-        scoreBoard.add(player);
+    /** GETTER */
+    public Optional<Player> getPlayerByUsername(String username) {
+        return scoreBoard.stream().filter(p -> p.getUsername().equals(username)).findFirst();
     }
 
-    public Boolean addPlayer(String username){
-        boolean toAdd = scoreBoard.stream().noneMatch(player -> player.getUsername().equals(username))
-                && scoreBoard.size() < 4;
-
-        if (toAdd){
-            scoreBoard.add(new Player(username));
-            return true;
-        }
-
-        return false;
+    public List<Optional<Player>> getCircuit() {
+        return circuit;
     }
 
-    public void StartGame(){
-
-    }
-
-    public List<Optional<Player>> getCircuit(){
-        return  circuit;
-    }
-
-    public Player getPosition(int position){
-        return new Player("");
-    }
-
-    public List<Player> getScoreBoard(){
+    public List<Player> getScoreBoard() {
         return scoreBoard;
     }
 
-    public void playAdventureCard(){
-
-    }
-
-    public List<Component> getCoveredComponents(){
+    public List<Component> getCoveredComponents() {
         return coveredComponents;
     }
+
+    public List<AdventureCard> getAdventureCards() {
+        return deck;
+    }
+
+    // adds a player with the passed user and color (for the main housing), throws an exc if necessary
+    public void addPlayer(String username, HousingColor color) throws CannotAddPlayerException{
+        if (scoreBoard.stream().anyMatch(player -> player.getUsername().equals(username)))
+            throw new CannotAddPlayerException("Cannot add player with username " + username + ". Username already in use");
+        if (scoreBoard.stream().anyMatch(player -> player.getColor().equals(color)))
+            throw new CannotAddPlayerException("Cannot add player with color " + color + ". Color already in use");
+        if (scoreBoard.size() == 4)
+            throw new CannotAddPlayerException("Cannot add player. The game is full");
+
+        scoreBoard.add(new Player(username, color));
+    }
+
+    public void StartGame() {
+
+    }
+
+    public void playAdventureCard() {
+
+    }
+
+    //    private  List<Optional<Player>> circuit;
+    //    list da 24 celle
+    public void moveDays(Player player, int days) {
+        boolean advance = days > 0 ? true : false;
+
+        if (advance) {
+            for (int i = 0; i < days; i++)
+                advanceOne(player);
+        } else {
+            for (int i = days; i < 0; i++)
+                retreatOne(player);
+        }
+    }
+
+    //advance one step and if necessary update the scoreboard
+    private void advanceOne(Player player) {
+        int start = circuit.indexOf(Optional.of(player));
+        int index = start;
+
+        do {
+            index++;
+            if (index == 24)
+                index = 0;
+            Optional<Player> player2 = circuit.get(index);
+            if (player2.isPresent()) {
+                int position1 = scoreBoard.indexOf(player);
+                int position2 = scoreBoard.indexOf(player2.get());
+                if (position1 > position2) {
+                    scoreBoard.set(position1, player2.orElse(player));
+                    scoreBoard.set(position2, player);
+                } else {
+                    //player2 viene doppiato e quindi eliminato(?)
+                    //no player2 viene doppiato e quindi rimane fermo dove si trova, semplicemente viene superata da player
+                }
+            }
+        }
+        while (circuit.get(index).isPresent());
+
+        circuit.set(start, Optional.empty());
+        circuit.set(index, Optional.of(player));
+    }
+
+    private void retreatOne(Player player) {
+        int start = circuit.indexOf(Optional.of(player));
+        int index = start;
+
+        do {
+            index--;
+            if (index == -1)
+                index = 23;
+            Optional<Player> player2 = circuit.get(index);
+            if (player2.isPresent()) {
+                int position1 = scoreBoard.indexOf(player);
+                int position2 = scoreBoard.indexOf(player2.get());
+                if (position1 < position2) {
+                    scoreBoard.set(position1, player2.orElse(player));
+                    scoreBoard.set(position2, player);
+                } else {
+                    //player viene doppiato da player2 e quindi player viene eliminato
+                }
+            }
+        }
+        while (circuit.get(index).isPresent());
+
+        circuit.set(start, Optional.empty());
+        circuit.set(index, Optional.of(player));
+    }
+
+    public void shuffleDeck() {
+        Collections.shuffle(deck);
+    }
+
+    public AdventureCard drawAdventureCard() {
+        AdventureCard card = deck.remove(0);
+        return card;
+    }
+
+    public boolean isDeckEmpty() {
+        return deck.isEmpty();
+    }
+
 
     public void loadComponents() {
 
@@ -116,7 +200,7 @@ public class FlyBoard {
 
                     case "HOUSING":
                         this.coveredComponents.add(new Housing(id, top, bottom, right, left));
-                    break;
+                        break;
 
                     case "PIPE":
                         this.coveredComponents.add(new Pipe(id, top, bottom, right, left));
@@ -152,84 +236,11 @@ public class FlyBoard {
         }
     }
 
-    //    private  List<Optional<Player>> circuit;
-    //    list da 24 celle
-    public void moveDays(Player player, int days){
-        boolean advance = days > 0 ? true : false;
-
-        if (advance){
-            for(int i = 0; i<days; i++)
-                advanceOne(player);
-        }
-        else{
-            for(int i = days; i < 0; i++)
-                retreatOne(player);
-        }
-    }
-
-    //advance one step and if necessary update the scoreboard
-    private void advanceOne(Player player){
-        int start = circuit.indexOf(Optional.of(player));
-        int index = start;
-
-        do {
-            index++;
-            if (index == 24)
-                index = 0;
-            Optional<Player> player2 =circuit.get(index);
-            if(player2.isPresent()){
-                int position1 = scoreBoard.indexOf(player);
-                int position2 = scoreBoard.indexOf(player2.get());
-                if(position1 > position2) {
-                    scoreBoard.set(position1, player2.orElse(player));
-                    scoreBoard.set(position2, player);
-                }
-                else{
-                    //player2 viene doppiato e quindi eliminato(?)
-                    //no player2 viene doppiato e quindi rimane fermo dove si trova, semplicemente viene superata da player
-                }
-            }
-        }
-        while (circuit.get(index).isPresent());
-
-        circuit.set(start, Optional.empty());
-        circuit.set(index, Optional.of(player));
-    }
-
-    private void retreatOne(Player player){
-        int start = circuit.indexOf(Optional.of(player));
-        int index = start;
-
-        do {
-            index--;
-            if (index == -1)
-                index = 23;
-            Optional<Player> player2 =circuit.get(index);
-            if(player2.isPresent()){
-                int position1 = scoreBoard.indexOf(player);
-                int position2 = scoreBoard.indexOf(player2.get());
-                if(position1 < position2){
-                    scoreBoard.set(position1, player2.orElse(player));
-                    scoreBoard.set(position2, player);
-                }
-                else{
-                    //player viene doppiato da player2 e quindi player viene eliminato
-                }
-            }
-        }
-        while (circuit.get(index).isPresent());
-
-        circuit.set(start, Optional.empty());
-        circuit.set(index, Optional.of(player));
-    }
-
-    public List<AdventureCard> getAdventureCards(){return deck;}
-
-    public void loadAdventureCards(){
+    public void loadAdventureCards() {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        try{
+        try {
             JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
 
             for (int i = 0; i < rootNode.size(); i++) {
@@ -238,65 +249,51 @@ public class FlyBoard {
                 switch (type) {
                     case "SLAVERS":
                         this.deck.add(Slaver.loadSlaver(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "SMUGGLERS":
                         this.deck.add(Smugglers.loadSmugglers(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "PIRATE":
                         this.deck.add(Pirate.loadPirate(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "STARDUST":
                         this.deck.add(Stardust.loadStardust(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "EPIDEMIC":
                         this.deck.add(Epidemic.loadEpidemic(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "OPENSPACE":
                         this.deck.add(OpenSpace.loadOpenSpace(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "METEORSWARM":
                         this.deck.add(MeteorSwarm.loadMeteorSwarm(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "PLANETS":
                         this.deck.add(Planets.loadPlanets(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "COMBATZONE":
                         this.deck.add(CombatZone.loadCombatZone(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "ABANDONEDSHIP":
                         this.deck.add(AbandonedShip.loadAbandonedShip(rootNode.get(i)));
-                    break;
+                        break;
 
                     case "ABANDONEDSTATION":
                         this.deck.add(AbandonedStation.loadAbandonedStation(rootNode.get(i)));
-                    break;
+                        break;
                 }
             }
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void shuffleDeck(){
-        Collections.shuffle(deck);
-    }
-
-    public AdventureCard drawAdventureCard(){
-        AdventureCard card = deck.remove(0);
-        return card;
-    }
-
-    public boolean isDeckEmpty() {
-        return deck.isEmpty();
     }
 }

@@ -1,29 +1,35 @@
 package org.mio.progettoingsoft;
 
 import java.util.Random;
+
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
 
 public class Player {
 
     private final String username;
     private int credits;
-
+    private HousingColor color;
     private ShipBoard shipBoard;
-
     private int discardedComponents;
-
     private Component inHand;
+
     private final View view;
 
-    public Player(String username) {
+
+    public Player(String username, HousingColor color) {
         this.username = username;
-        shipBoard = new ShipBoard();
-// bisogna aggiungere i colori della cabina principale: avevamo deciso di rimuoverli dal json dato che
-//non sono carte che si possono pescare e posizionare. Mettiamo un attr in ShipBoard?
+        credits = 0;
+        this.color = color;
+        shipBoard = new ShipBoard(color);
+        discardedComponents = 0;
+        inHand = null;
 
         view = new View(this);
     }
 
+
+    /** GETTER */
     public String getUsername() {
         return username;
     }
@@ -31,6 +37,20 @@ public class Player {
     public ShipBoard getShipBoard() {
         return shipBoard;
     }
+
+    public Integer getCredits() {
+        return credits;
+    }
+
+    public HousingColor getColor() {
+        return this.color;
+    }
+
+    public View getView(){
+        return view;
+    }
+
+
 
     public void takeCoveredComponent(Component component) {
 
@@ -45,10 +65,6 @@ public class Player {
 
     public void bookComponent() {
 
-    }
-
-    public Integer getCredits() {
-        return credits;
     }
 
     public void addCredits(int quantity) {
@@ -107,11 +123,13 @@ public class Player {
 //
 //    }
 
-    public boolean equals(Player other) {
-        return this.username.equals(other.getUsername());
-    }
 
-    public View getView(){
-        return view;
+    public boolean equals(Object other) {
+        if(other == null)
+            return false;
+        if( !(other instanceof Player))
+            return false;
+        Player tmp = (Player) other;
+        return this.username.equals(tmp.getUsername());
     }
 }

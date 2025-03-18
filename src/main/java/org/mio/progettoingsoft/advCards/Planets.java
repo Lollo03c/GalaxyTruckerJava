@@ -44,7 +44,7 @@ public class Planets extends AdventureCard {
         return new Planets(id, level, daysLost, planets);
     }
 
-<<<<<<< HEAD
+
     /*public void start(FlyBoard board){
         List<Player> landedPlayers = new LinkedList<>() ;
         List<Player> score = board.getScoreBoard();
@@ -67,8 +67,6 @@ public class Planets extends AdventureCard {
         }
     }*/
 
-=======
     // Il metodo start è stato spostato nel controller come tutte le altre carte
->>>>>>> f910b5c775e3851b6b0fe5bed0931009ab9b99b9
 
 }

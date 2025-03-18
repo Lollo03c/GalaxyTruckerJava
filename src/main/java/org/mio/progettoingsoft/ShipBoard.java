@@ -51,8 +51,8 @@ public class ShipBoard {
             for (int j = 0; j < columns; j++)
                 shipComponents[i][j] = Optional.empty();
 
-        // Add the starting cabin to the ship
-        shipComponents[2][3] = Optional.of(new Housing(1, true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
+        // Add the starting cabin to the ship, the id identifies the correct tile image, so it's related with the color
+        shipComponents[2][3] = Optional.of(new Housing(HousingColor.getIdByColor(color), true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
 
         // Add to bannedCoordinates all the cells where components cannot be placed
         bannedCoordinates = new ArrayList<>(6);
@@ -80,32 +80,6 @@ public class ShipBoard {
     public void setQuantBatteries(int quant) {
         this.availableEnergy = quant;
     }
-
-    public ShipBoard() {
-        rows = 5;
-        columns = 7;
-
-        offsetRow = 5;
-        offsetCol = 4;
-
-        shipComponents = new Optional[rows][columns];
-        bannedCoordinates = new ArrayList<>(6);
-
-        for (int i = 0; i < rows; i++)
-            for (int j = 0; j < columns; j++)
-                shipComponents[i][j] = Optional.empty();
-
-        bannedCoordinates.add(new Cordinate(0, 0));
-        bannedCoordinates.add(new Cordinate(0, 1));
-        bannedCoordinates.add(new Cordinate(0, 3));
-        bannedCoordinates.add(new Cordinate(1, 0));
-        bannedCoordinates.add(new Cordinate(1, 6));
-        bannedCoordinates.add(new Cordinate(4, 3));
-
-        baseFirePower = 0;
-        baseEnginePower = 0;
-    }
-
 
     // activated firepower: tmp property to store the firepower after activating double drills.
     // How to use: askDoubleDrill, set activFP = base + activated, do whatever you need, then set activated = base

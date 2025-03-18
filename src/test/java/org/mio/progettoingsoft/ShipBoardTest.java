@@ -19,7 +19,7 @@ class ShipBoardTest {
     QUESTO TEST NON GIRA: devo ancora capire se ho scritto male il test o se bisogna sistemare le classi
     @Test
     void should_create_basic_ship_board(){
-        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);;
         for(int i = 0; i < ship.getRows(); i++){
             for(int j = 0; j < ship.getColumns(); j++){
                 if(i == 2 && j == 3) {
@@ -36,7 +36,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_a_component(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);;
         Component comp = new Housing(1, flat, flat, flat, flat);
 
         ship.addComponentToPosition(comp, 2, 2);
@@ -47,7 +47,7 @@ class ShipBoardTest {
 
     @Test
     void should_remove_component(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         Component comp = new Housing(1, flat, flat, flat, flat);
 
         ship.addComponentToPosition(comp, 2, 2);
@@ -59,7 +59,7 @@ class ShipBoardTest {
 
     @Test
     void shoud_not_add_two_component_in_the_same_place(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         Component comp = new Housing(1, flat, flat, flat, flat);
         Component comp2 = new Housing(1, flat, flat, flat, flat);
 
@@ -71,7 +71,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_some_batteries(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         Component energy1 = new EnergyDepot(1, false, flat, flat, flat, flat);
         Component energy2 = new EnergyDepot(2, true, flat, flat, flat, flat);
 
@@ -85,7 +85,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_some_drills(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         Component drill1 = new Drill(1, flat, flat, flat, flat);
         Component drill2 = new Drill(2,  flat, flat, flat, flat);
         Component drill3 = new DoubleDrill(3,  flat, flat, flat, flat);
@@ -101,7 +101,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_some_rotated_drills(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         Component drill1 = new Drill(1, flat, flat, flat, flat);
         Component drill2 = new Drill(2,  flat, flat, flat, flat);
         Component drill3 = new DoubleDrill(3,  flat, flat, flat, flat);
@@ -117,7 +117,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_some_engine(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         Component engine1 = new Engine(1, flat, flat, flat, flat);
         Component engine2 = new Engine(1, flat, flat, flat, flat);
         Component engine3 = new DoubleEngine(1, flat, flat, flat, flat);
@@ -133,7 +133,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_some_components(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component engine = new Engine(1, flat, flat, flat, flat);
         Component doubleEngine = new DoubleEngine(1, flat, flat, flat, flat);
@@ -156,7 +156,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_housing_with_bottom_alien(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component housing = new Housing(1, flat, flat, flat, flat);
         Component alienHousing = new AlienHousing(1, AlienType.PURPLE, flat, flat, flat, flat);
@@ -170,7 +170,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_housing_with_top_alien(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component housing = new Housing(1, flat, flat, flat, flat);
         Component alienHousing = new AlienHousing(1, AlienType.PURPLE, flat, flat, flat, flat);
@@ -184,7 +184,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_housing_with_right_alien(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component housing = new Housing(1, flat, flat, flat, flat);
         Component alienHousing = new AlienHousing(1, AlienType.PURPLE, flat, flat, flat, flat);
@@ -198,7 +198,7 @@ class ShipBoardTest {
 
     @Test
     void should_add_housing_with_left_alien(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component housing = new Housing(1, flat, flat, flat, flat);
         Component alienHousing = new AlienHousing(1, AlienType.PURPLE, flat, flat, flat, flat);
@@ -212,7 +212,7 @@ class ShipBoardTest {
 
     @Test
     void shoudl_add_alien_first(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component housing = new Housing(1, flat, flat, flat, flat);
         Component alienHousing = new AlienHousing(1, AlienType.PURPLE, flat, flat, flat, flat);
@@ -226,7 +226,7 @@ class ShipBoardTest {
 
     @Test
     void should_not_alien_if_not_adjacent(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component housing = new Housing(1, flat, flat, flat, flat);
         Component alienHousing = new AlienHousing(1, AlienType.PURPLE, flat, flat, flat, flat);
@@ -240,7 +240,7 @@ class ShipBoardTest {
 
     @Test
     void should_be_not_able_to_load_red(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component depot = new Depot(1, false, false, flat, flat, flat, flat);
 
@@ -257,7 +257,7 @@ class ShipBoardTest {
 
     @Test
     void should_find_not_empty_depot(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component empty = new Depot(1, false, false, flat, flat, flat, flat);
         Component notEmpty = new Depot(2, false, false, flat, flat, flat, flat);
@@ -276,7 +276,7 @@ class ShipBoardTest {
 
     @Test
     void should_find_not_empty_housing(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
         Component empty = new Housing(1, flat, flat, flat, flat);
         Component notEmpty = new Housing(2, flat, flat, flat, flat);
@@ -303,14 +303,14 @@ class ShipBoardTest {
         // generic positioning tests
     @Test
     void should_pass_with_no_drills_or_engines(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
     }
 
     @Test
     void should_fail_due_to_mismatching_connectors(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         ship.addComponentToPosition(new Housing(1, true, HousingColor.BLUE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 2, 3);
         ship.addComponentToPosition(new Depot(2, false, false, flat, flat, flat, flat), 2, 4);
         int size = 0;
@@ -320,7 +320,7 @@ class ShipBoardTest {
 
     @Test
     void should_find_two_blocks(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(1, ship.getMultiplePieces().size());
         ship.addComponentToPosition(new Depot(3, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 0, 2);
@@ -335,7 +335,7 @@ class ShipBoardTest {
 
     @Test
     void should_find_three_blocks_then_only_two(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(1, ship.getMultiplePieces().size());
         assertEquals(0, ship.getIncorrectComponents().size());
@@ -363,7 +363,7 @@ class ShipBoardTest {
 
     @Test
     void should_fail_due_to_flat_to_double(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Depot(5, false, false, flat, flat, flat, Connector.DOUBLE), 3, 4);
@@ -372,7 +372,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_flat_to_flat(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 4);
@@ -384,7 +384,7 @@ class ShipBoardTest {
         //alien housing positioning test
     @Test
     void should_fail_due_to_alien_housing_not_connected_to_housing(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new AlienHousing(5, AlienType.BROWN, Connector.FLAT, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 1);
@@ -394,7 +394,7 @@ class ShipBoardTest {
 
     @Test
     void should_fail_due_to_alien_housing_connected_to_first_housing(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new AlienHousing(5, AlienType.BROWN, Connector.FLAT, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 2, 2);
@@ -404,7 +404,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_alien_housing_connected_to_housing(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new AlienHousing(5, AlienType.BROWN, Connector.SINGLE, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 1);
@@ -417,7 +417,7 @@ class ShipBoardTest {
         // drill positioning tests
     @Test
     void should_pass_with_front_drill(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Drill(5, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 3);
@@ -427,7 +427,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_rotated_drill(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addRotatedComponentToPosition(new Drill(5, Connector.FLAT, Connector.FLAT, Connector.TRIPLE, Connector.FLAT), 1, 3, 1);
@@ -437,7 +437,7 @@ class ShipBoardTest {
 
     @Test
     void should_fail_due_to_rotated_drill_directed_to_comp(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addRotatedComponentToPosition(new Drill(5, Connector.FLAT, Connector.FLAT, Connector.FLAT, Connector.TRIPLE), 2, 2, 2);
@@ -447,7 +447,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_rotated_drill_directed_to_comp_and_space(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 3, 1);
@@ -459,7 +459,7 @@ class ShipBoardTest {
         // double drill positioning test
     @Test
     void should_pass_with_front_double_drill(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new DoubleDrill(5, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 3);
@@ -469,7 +469,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_rotated_double_drill(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addRotatedComponentToPosition(new DoubleDrill(5, Connector.FLAT, Connector.FLAT, Connector.TRIPLE, Connector.FLAT), 1, 3, 1);
@@ -479,7 +479,7 @@ class ShipBoardTest {
 
     @Test
     void should_fail_due_to_rotated_double_drill_directed_to_comp(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addRotatedComponentToPosition(new DoubleDrill(5, Connector.FLAT, Connector.FLAT, Connector.FLAT, Connector.TRIPLE), 2, 2, 2);
@@ -489,7 +489,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_rotated_double_drill_directed_to_comp_and_space(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 3, 1);
@@ -500,7 +500,7 @@ class ShipBoardTest {
         // engine positioning test
     @Test
     void should_fail_due_to_rotated_engine(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addRotatedComponentToPosition(new Engine(5, Connector.DOUBLE, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 4, 3);
@@ -510,7 +510,7 @@ class ShipBoardTest {
 
     @Test
     void should_fail_due_to_engine_directed_to_comp(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Engine(5, flat, flat, Connector.SINGLE, flat), 2, 2);
@@ -520,7 +520,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_engine_directed_to_comp_with_space(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.SINGLE, Connector.FLAT, Connector.TRIPLE), 1, 3);
@@ -531,7 +531,7 @@ class ShipBoardTest {
     // double engine positioning test
     @Test
     void should_fail_due_to_rotated_double_engine(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addRotatedComponentToPosition(new DoubleEngine(5, Connector.DOUBLE, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 4, 3);
@@ -541,7 +541,7 @@ class ShipBoardTest {
 
     @Test
     void should_fail_due_to_double_engine_directed_to_comp(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new DoubleEngine(5, flat, flat, Connector.SINGLE, flat), 2, 2);
@@ -551,7 +551,7 @@ class ShipBoardTest {
 
     @Test
     void should_pass_with_double_engine_directed_to_comp_with_space(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.SINGLE, Connector.FLAT, Connector.TRIPLE), 1, 3);
@@ -563,7 +563,7 @@ class ShipBoardTest {
     // exposed connector tests
     @Test
     void should_init_ship_and_count_seven_exposed_connectors(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         assertEquals(7, ship.getExposedConnectors());
@@ -571,7 +571,7 @@ class ShipBoardTest {
 
     @Test
     void should_init_ship_and_count_eight_exposed_connectors_with_border_components(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Pipe(5, Connector.SINGLE, Connector.SINGLE, Connector.SINGLE, Connector.FLAT), 4, 2);
@@ -581,7 +581,7 @@ class ShipBoardTest {
 
     @Test
     void should_init_ship_and_count_seven_exposed_connectors_with_spaces(){
-        ShipBoard ship = new ShipBoard();
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
         init(ship);
         assertEquals(0, ship.getIncorrectComponents().size());
         ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.TRIPLE, Connector.TRIPLE, Connector.FLAT), 2, 1);
