@@ -16,4 +16,8 @@ public class DoubleEngine extends Engine {
     public int getEnginePower(){
         return baseEnginePower;
     }
+
+    public String toString(){
+        return super.toString() + " Direction: " + getDirection();
+    }
 }

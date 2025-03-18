@@ -15,4 +15,8 @@ public class DoubleDrill extends Drill{
             return 2f;
         return 1f;
     }
+
+    public String toString(){
+        return super.toString() + " Direction: " + getDirection();
+    }
 }

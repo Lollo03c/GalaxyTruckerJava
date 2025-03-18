@@ -49,8 +49,6 @@ public class ShipBoard {
             for (int j = 0; j < columns; j++)
                 shipComponents[i][j] = Optional.empty();
 
-        // Add the starting cabin to the ship, the id identifies the correct tile image, so it's related with the color
-        shipComponents[2][3] = Optional.of(new Housing(HousingColor.getIdByColor(color), true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
 
         // Add to bannedCoordinates all the cells where components cannot be placed
         bannedCoordinates = new ArrayList<>(6);
@@ -73,6 +71,9 @@ public class ShipBoard {
         numAliens = 0;
         numAstronauts = 0;
         completedBuild = false;
+        // Add the starting cabin to the ship, the id identifies the correct tile image, so it's related with the color
+        this.addComponentToPosition(new Housing(HousingColor.getIdByColor(color), true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 2, 3);
+
     }
 
 
@@ -530,6 +531,7 @@ public class ShipBoard {
                 while (!queue.isEmpty()) {
                     Component comp = queue.remove();
                     part.add(comp);
+                    // QUESTO METODO USA UN GET ADJACENT CHE NON VA BENE: dovrebbe considerare non adiacenti i
                     Map<Direction, Component> adj = getAdjacent(comp.getRow(), comp.getColumn());
                     for(Component component : adj.values()){
                         if(visited[component.getRow()][component.getColumn()] == -1){
@@ -690,6 +692,14 @@ public class ShipBoard {
         else if (this.getActivatedEnginePower() < other.getActivatedEnginePower())
             return -1;
         return 0;
+    }
+
+    public String toString() {
+        String out = "";
+        for(Component c : getComponentsStream().toList()){
+            out += c.toString() + "\n";
+        }
+        return out;
     }
 }
 

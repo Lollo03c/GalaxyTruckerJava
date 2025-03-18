@@ -57,4 +57,8 @@ public class Drill extends Component {
 
         return 0.5f;
     }
+
+    public String toString(){
+        return super.toString() + " Direction: " + getDirection();
+    }
 }

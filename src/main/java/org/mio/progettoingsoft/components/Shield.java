@@ -55,4 +55,8 @@ public class Shield extends Component {
     public List<Direction> getShieldDirections(){
         return directions;
     }
+
+    public String toString(){
+        return super.toString() + " Direction: " + getShieldDirections();
+    }
 }

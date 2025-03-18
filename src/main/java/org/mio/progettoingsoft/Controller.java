@@ -67,7 +67,8 @@ public class Controller {
     }
 
     private void play_open_space(AdventureCard card) {
-        for (Player player : flyBoard.getScoreBoard()) {
+        for (int i = 0; i < flyBoard.getScoreBoard().size(); i++) {
+            Player player = flyBoard.getScoreBoard().get(i);
             // asks the player how many double engine to activate
             int toActivate = player.getView().askDoubleEngine();
             player.getShipBoard().removeEnergy(toActivate);
@@ -114,7 +115,6 @@ public class Controller {
         int strength = card.getStrength();
         int stolenGoods = card.getStolenGoods();
         List<GoodType> goods = card.getGoods();
-
 
         List<Player> playerList = new ArrayList<>(flyBoard.getScoreBoard());
         for (Player player : playerList) {

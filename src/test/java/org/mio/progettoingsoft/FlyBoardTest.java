@@ -450,7 +450,7 @@ class FlyBoardTest {
         assertTrue(board.getUncoveredComponents().contains(refusedComponent));
 
         //input utente: sceglie componente scartato
-        c = board.chooseComponentFromUncovered(0);
+        c = board.chooseComponentFromUncoveredByIndex(0);
         board.getPlayerByUsername("Stefano").get().setInHand(c);
 
         assertNotNull(board.getPlayerByUsername("Stefano").get().getInHand());

@@ -57,4 +57,8 @@ public class Engine extends Component {
     public int getEnginePower(){
         return enginePower;
     }
+
+    public String toString(){
+        return super.toString() + " Direction: " + getDirection();
+    }
 }

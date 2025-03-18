@@ -282,9 +282,9 @@
   {
     "id" : "28",
     "type" : "DEPOT",
-    "top" : "flat",
-    "left" : "single",
-    "bottom" : "flat",
+    "top" : "single",
+    "left" : "flat",
+    "bottom" : "single",
     "right" :  "flat",
 
     "isBig" : "true",
@@ -854,7 +854,7 @@
     "id" : "95",
     "type" : "DOUBLE_ENGINE",
     "top" : "triple",
-    "right" : "triple",
+    "right" : "single",
     "bottom" : "flat",
     "left" : "flat",
     "kind" : ""

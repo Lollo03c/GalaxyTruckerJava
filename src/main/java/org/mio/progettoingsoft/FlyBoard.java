@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
+
 import java.util.*;
 
 public class FlyBoard {
@@ -46,7 +47,9 @@ public class FlyBoard {
             circuit.add(Optional.empty());
     }
 
-    /** GETTER */
+    /**
+     * GETTER
+     */
     public Optional<Player> getPlayerByUsername(String username) {
         return scoreBoard.stream().filter(p -> p.getUsername().equals(username)).findFirst();
     }
@@ -68,7 +71,7 @@ public class FlyBoard {
     }
 
     public Component drawComponent() throws NoMoreComponentsException {
-        if(coveredComponents.isEmpty())
+        if (coveredComponents.isEmpty())
             throw new NoMoreComponentsException("Covered components are not enough");
         return coveredComponents.pop();
     }
@@ -77,11 +80,22 @@ public class FlyBoard {
         this.uncoveredComponents.add(c);
     }
 
-    public Component chooseComponentFromUncovered(int index) throws NoMoreComponentsException{
-        if(uncoveredComponents.isEmpty())
+    public Component chooseComponentFromUncoveredByIndex(int index) throws NoMoreComponentsException {
+        if (uncoveredComponents.isEmpty())
             throw new NoMoreComponentsException("No more uncovered components.");
 
         return uncoveredComponents.remove(index);
+    }
+
+    public Component chooseComponentFromUncoveredById(int id) throws NoMoreComponentsException {
+        if (uncoveredComponents.isEmpty())
+            throw new NoMoreComponentsException("No more uncovered components.");
+
+        Component comp = uncoveredComponents.stream().filter(c -> c.getId() == id).findFirst().get();
+        boolean removed = uncoveredComponents.remove(comp);
+        if (removed)
+            return comp;
+        throw new NoMoreComponentsException("It's not possible to remove the component.");
     }
 
     public List<AdventureCard> getAdventureCards() {
@@ -89,7 +103,7 @@ public class FlyBoard {
     }
 
     // adds a player with the passed user and color (for the main housing), throws an exc if necessary
-    public void addPlayer(String username, HousingColor color) throws CannotAddPlayerException{
+    public void addPlayer(String username, HousingColor color) throws CannotAddPlayerException {
         if (scoreBoard.stream().anyMatch(player -> player.getUsername().equals(username)))
             throw new CannotAddPlayerException("Cannot add player with username " + username + ". Username already in use");
         if (scoreBoard.stream().anyMatch(player -> player.getColor().equals(color)))
