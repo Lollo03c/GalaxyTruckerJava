@@ -71,4 +71,8 @@ public abstract class AdventureCard {
     public List<CombatLine> getLines() throws BadParameterException {
         throw new BadParameterException("La carta selezionata non contiene linee di combattimento: " + this.getType());
     }
+    public void start(){}
+
+    public void applyEffect(){}
+
 }

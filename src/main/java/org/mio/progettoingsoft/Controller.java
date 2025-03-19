@@ -286,7 +286,7 @@ public class Controller {
     }
 
     public void play_planets(AdventureCard card) throws BadParameterException {
-                List<Player> landedPlayers = new LinkedList<>() ;
+        List<Player> landedPlayers = new LinkedList<>() ;
         List<Player> score = flyBoard.getScoreBoard();
         int choice = 0;
         for(Player player : score){

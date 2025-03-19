@@ -18,4 +18,11 @@ public class OpenSpace extends AdventureCard {
 
         return new OpenSpace(id, level);
     }
+
+    public void applyEffect(List<Integer> numberOfDoubleDrill) {
+            
+    }
+
+
+
 }

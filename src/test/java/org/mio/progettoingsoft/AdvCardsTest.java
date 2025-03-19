@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AdvCardsTest {
+public class    AdvCardsTest {
     static FlyBoard fly;
     List<Player> players;
     Player playerStefano;
