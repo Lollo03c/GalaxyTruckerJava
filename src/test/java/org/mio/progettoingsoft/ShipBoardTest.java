@@ -295,7 +295,6 @@ class ShipBoardTest {
 
     // starting section: shipboard-check test
     void init(ShipBoard ship){
-        ship.addComponentToPosition(new Housing(1, true, HousingColor.BLUE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 2, 3);
         ship.addComponentToPosition(new Depot(2, false, false, Connector.TRIPLE, Connector.DOUBLE, flat, Connector.SINGLE), 2 ,4);
         ship.addComponentToPosition(new Pipe(3, Connector.TRIPLE, Connector.FLAT, Connector.DOUBLE, Connector.SINGLE), 3, 3);
         ship.addComponentToPosition(new EnergyDepot(4, false, Connector.FLAT, Connector.TRIPLE, Connector.SINGLE, Connector.DOUBLE), 3, 2);
@@ -359,6 +358,19 @@ class ShipBoardTest {
                 System.out.println(comp);
             }
         }
+    }
+
+    @Test
+    public void should_find_two_blocks_but_adjacent(){
+        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
+        ship.addComponentToPosition(new Pipe(1, Connector.TRIPLE, Connector.SINGLE, Connector.FLAT, Connector.FLAT), 3, 3);
+        ship.addComponentToPosition(new Pipe(2, Connector.FLAT, Connector.FLAT, Connector.FLAT, Connector.TRIPLE), 2, 4);
+        assertEquals(1, ship.getMultiplePieces().size());
+        assertEquals(0, ship.getIncorrectComponents().size());
+        ship.addComponentToPosition(new Pipe(3, Connector.FLAT, Connector.SINGLE, Connector.FLAT, Connector.FLAT), 3, 4);
+        ship.addComponentToPosition(new Pipe(3, Connector.SINGLE, Connector.FLAT, Connector.FLAT, Connector.FLAT), 4, 4);
+        assertEquals(2, ship.getMultiplePieces().size());
+        assertEquals(0, ship.getIncorrectComponents().size());
     }
 
     @Test

@@ -170,6 +170,28 @@ public class ShipBoard {
         return adjacents;
     }
 
+    public Map<Direction, Component> getAdjacentConnected(int row, int column) {
+        if(shipComponents[row][column].isEmpty()){
+            throw new EmptyComponentException(row, column);
+        }
+        Map<Direction, Component> adjacents = new HashMap();
+
+        if (validRow(row - 1) && shipComponents[row - 1][column].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row - 1][column].get(), Direction.FRONT)) {
+            adjacents.put(Direction.FRONT, shipComponents[row - 1][column].get());
+        }
+        if (validRow(row + 1) && shipComponents[row + 1][column].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row + 1][column].get(), Direction.BACK)) {
+            adjacents.put(Direction.BACK, shipComponents[row + 1][column].get());
+        }
+        if (validColumn(column + 1) && shipComponents[row][column + 1].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row][column + 1].get(), Direction.RIGHT)) {
+            adjacents.put(Direction.RIGHT, shipComponents[row][column + 1].get());
+        }
+        if (validColumn(column - 1) && shipComponents[row][column - 1].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row][column - 1].get(), Direction.LEFT)) {
+            adjacents.put(Direction.LEFT, shipComponents[row][column - 1].get());
+        }
+
+        return adjacents;
+    }
+
     public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacementException, InvalidPositionException {
         if (bannedCoordinates.contains(new Cordinate(row, column)))
             throw new InvalidPositionException(row, column);
@@ -531,8 +553,7 @@ public class ShipBoard {
                 while (!queue.isEmpty()) {
                     Component comp = queue.remove();
                     part.add(comp);
-                    // QUESTO METODO USA UN GET ADJACENT CHE NON VA BENE: dovrebbe considerare non adiacenti i
-                    Map<Direction, Component> adj = getAdjacent(comp.getRow(), comp.getColumn());
+                    Map<Direction, Component> adj = getAdjacentConnected(comp.getRow(), comp.getColumn());
                     for(Component component : adj.values()){
                         if(visited[component.getRow()][component.getColumn()] == -1){
                             visited[component.getRow()][component.getColumn()] = 0;

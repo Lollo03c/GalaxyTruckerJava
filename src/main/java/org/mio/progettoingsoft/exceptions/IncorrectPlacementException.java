@@ -7,6 +7,6 @@ public class IncorrectPlacementException extends RuntimeException {
         super(message);
     }
     public IncorrectPlacementException(int row, int column, Component component){
-        super("Cannot place + " + component + " in position (" + row + ", " + column + ")\n" );
+        super("Cannot place " + component + " in position (" + row + ", " + column + ")\n" );
     }
 }

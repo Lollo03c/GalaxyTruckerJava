@@ -109,6 +109,15 @@ public abstract class Component {
         };
     }
 
+    public Boolean isConnected(Component other, Direction direction){
+        return switch (direction){
+            case FRONT -> topConnector.isConnected(other.bottomConnector);
+            case BACK -> bottomConnector.isConnected(other.topConnector);
+            case RIGHT -> rightConnector.isConnected(other.leftConnector);
+            case LEFT -> leftConnector.isConnected(other.rightConnector);
+        };
+    }
+
     public Boolean addHumanMember(){
         return false;
     }
