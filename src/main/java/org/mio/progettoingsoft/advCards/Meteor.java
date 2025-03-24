@@ -32,7 +32,7 @@ public abstract class Meteor {
         ShipBoard board = player.getShipBoard();
         int rows = board.getRows();
         int columns = board.getColumns();
-        Optional<Component>[][] shipComponents = board.getComponentsList();
+        Optional<Component>[][] shipComponents = board.getComponentsMatrix();
 
         int maxValue = direction.equals(Direction.FRONT) || direction.equals(Direction.BACK) ? board.getColumns() : board.getRows();
         Optional<Component> isHit = Optional.empty();

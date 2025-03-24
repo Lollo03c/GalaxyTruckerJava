@@ -24,7 +24,7 @@ public abstract class CannonPenalty extends Penalty {
 
     protected Optional<Component> findHit(Player player, int value){
         ShipBoard board = player.getShipBoard();
-        Optional<Component>[][] shipComponents = board.getComponentsList();
+        Optional<Component>[][] shipComponents = board.getComponentsMatrix();
 
         switch (direction){
             case LEFT -> value -= board.getOffsetCol();

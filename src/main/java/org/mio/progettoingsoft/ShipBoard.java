@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 public class ShipBoard {
     private final Optional<Component>[][] shipComponents;
-    private List<Component> componentList;
 
     private Component[] bookedComponents;
 
@@ -28,8 +27,6 @@ public class ShipBoard {
     private int numSpecialGoods;
     private int maxNormalGoods;
     private int numNormalGoods;
-    private int numAliens;
-    private int numAstronauts;
     private boolean completedBuild;
 
     private final int offsetCol;
@@ -68,8 +65,6 @@ public class ShipBoard {
         numSpecialGoods = 0;
         maxNormalGoods = 0;
         numNormalGoods = 0;
-        numAliens = 0;
-        numAstronauts = 0;
         completedBuild = false;
         // Add the starting cabin to the ship, the id identifies the correct tile image, so it's related with the color
         this.addComponentToPosition(new Housing(HousingColor.getIdByColor(color), true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 2, 3);
@@ -203,18 +198,6 @@ public class ShipBoard {
             throw new IncorrectPlacementException(row, column, component);
         }
 
-
-//        Map<Direction, Component> adjacent = getAdjacent(row, column);
-//        boolean added = false;
-//        for (Direction dir : adjacent.keySet()){
-//            added = added || component.isCompatible(adjacent.get(dir), dir);
-//        }
-//
-//        if (!added)
-//            throw new IncorrectPlacement(row, column, component);
-
-        // Added by stef: it's useful to store the cordinates of the component in the component itself, in this way it's
-        // possible to get the adjacents components (for example from the stream of components)
         component.setRow(row);
         component.setColumn(column);
 
@@ -277,7 +260,7 @@ public class ShipBoard {
         return Arrays.stream(shipComponents).flatMap(Arrays::stream);
     }
 
-    public Optional<Component>[][] getComponentsList() {
+    public Optional<Component>[][] getComponentsMatrix() {
         return shipComponents;
     }
 
@@ -287,12 +270,17 @@ public class ShipBoard {
                 .map(optComp -> optComp.get());
     }
 
+    public List<Component> getComponentsList() {
+        return this.getComponentsStream().toList();
+    }
+
     public int getQuantBatteries() {
         return availableEnergy;
     }
 
     public void removeEnergy() throws NotEnoughBatteriesException {
         boolean removed = false;
+        List<Component> componentList = this.getComponentsList();
 
         for (int i = 0; !removed && i < componentList.size(); i++)
             removed = componentList.get(i).removeOneEnergy();
@@ -370,6 +358,7 @@ public class ShipBoard {
 
     public void addHumanGuest() throws NotEnoughHousingException {
         boolean added = false;
+        List<Component> componentList = this.getComponentsList();
 
         for (int i = 0; !added && i < componentList.size(); i++)
             added = componentList.get(i).addHumanMember();
