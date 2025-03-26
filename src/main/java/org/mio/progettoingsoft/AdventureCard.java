@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
+import org.mio.progettoingsoft.responses.Response;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +16,10 @@ public abstract class AdventureCard {
     private final int level;
     private final int id;
     protected AdvCardType type;
+
+    protected FlyBoard flyBoard;
+    protected List<Player> playersToPlay;
+    protected int iter;
 
     public AdventureCard(int id, int level, AdvCardType type) {
         this.id = id;
@@ -73,6 +78,7 @@ public abstract class AdventureCard {
     }
     public void start(){}
 
-    public void applyEffect(){}
+    public /*abstract*/ void applyEffect(Response res){
 
+    }
 }

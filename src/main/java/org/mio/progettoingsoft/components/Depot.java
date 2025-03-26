@@ -23,7 +23,7 @@ public class Depot extends Component {
     private final Boolean isHazard;
     private int storedQuantity;
     private final int maxQuantity;
-    private final Map<GoodType, Integer> storedGoods;
+    private Map<GoodType, Integer> storedGoods;
 
 
     public Depot(int id, boolean isBig, boolean isHazard, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn) {
@@ -99,5 +99,10 @@ public class Depot extends Component {
             return true;
 
         return false;
+    }
+
+    @Override
+    public void setGoodsDepot(Map<GoodType, Integer> goods){
+        storedGoods = goods;
     }
 }

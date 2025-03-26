@@ -15,6 +15,10 @@ import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
 import java.util.*;
 
 public class FlyBoard {
+    StateEnum state;
+    private String messageToSend;
+    private Set<Player> playerToAction;
+
     private List<AdventureCard> selectionDeckPrivate;
     private List<AdventureCard> selectionDeck1;
     private List<AdventureCard> selectionDeck2;
@@ -45,6 +49,8 @@ public class FlyBoard {
 
         for (int i = 0; i < 24; i++)
             circuit.add(Optional.empty());
+
+        state = StateEnum.WAITING_PLAYERS;
     }
 
     /**
@@ -52,6 +58,12 @@ public class FlyBoard {
      */
     public Optional<Player> getPlayerByUsername(String username) {
         return scoreBoard.stream().filter(p -> p.getUsername().equals(username)).findFirst();
+    }
+
+    public Optional<Player> getPlayerByColor(HousingColor colorPlayerEnum){
+        return scoreBoard.stream()
+                .filter(p -> p.getColor().equals(colorPlayerEnum))
+                .findFirst();
     }
 
     public List<Optional<Player>> getCircuit() {
@@ -112,6 +124,12 @@ public class FlyBoard {
             throw new CannotAddPlayerException("Cannot add player. The game is full");
 
         scoreBoard.add(new Player(username, color));
+
+        if (scoreBoard.size() == 4){
+            state = StateEnum.BUILDING_SHIP;
+
+            playerToAction.addAll(scoreBoard);
+        }
     }
 
     public void StartGame() {

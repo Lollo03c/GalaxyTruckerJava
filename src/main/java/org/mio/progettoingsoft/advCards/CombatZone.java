@@ -3,6 +3,11 @@ package org.mio.progettoingsoft.advCards;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
+import org.mio.progettoingsoft.ShipBoard;
+import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.BadParameterException;
+import org.mio.progettoingsoft.responses.CombatZoneResponse;
+import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,5 +45,25 @@ public class CombatZone extends AdventureCard {
         }
 
         return new CombatZone(id, level, combatLines);
+    }
+
+    @Override
+    public void applyEffect(Response r) {
+        CombatZoneResponse res = (CombatZoneResponse) r;
+
+        ShipBoard shipBoard = flyBoard.getPlayerByColor(r.getColorPlayer()).get().getShipBoard();
+
+        if (res.getCriterion().equals(Criterion.ENGINE_POWER)){
+            for (int pos : res.getPositions()){
+                int[] cord = shipBoard.getCordinate(pos);
+                shipBoard.getComponent(cord[0], cord[1]).removeGuest();
+            }
+        }
+        else if (res.getCriterion().equals(Criterion.FIRE_POWER)){
+            for (int pos : res.getPositions()){
+                int[] cord = shipBoard.getCordinate(pos);
+                shipBoard.removeComponent(cord[0], cord[1]);
+            }
+        }
     }
 }

@@ -3,6 +3,8 @@ package org.mio.progettoingsoft.advCards;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.responses.Response;
+import org.mio.progettoingsoft.responses.SmugglersResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,20 @@ public class Smugglers extends AdvancedEnemy {
     @Override
     public int getStolenGoods(){
         return stolenGoods;
+    }
+
+    public void applyEffect(Response res){
+        SmugglersResponse response = (SmugglersResponse) res;
+
+        if (response.isAcceptEffect()){
+            ShipBoard shipBoard = flyBoard.getPlayerByColor(res.getColorPlayer()).get().getShipBoard();
+
+            for (int iter : response.getDepos().keySet()){
+                int[] cord = shipBoard.getCordinate(iter);
+
+                shipBoard.getComponent(cord[0], cord[1]).setGoodsDepot(response.getDepos().get(iter));
+            }
+        }
     }
 
 }

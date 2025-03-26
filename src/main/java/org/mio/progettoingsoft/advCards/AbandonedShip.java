@@ -2,6 +2,8 @@ package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.responses.AbandonedShipResponse;
+import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,4 +45,17 @@ public class AbandonedShip extends AdventureCard {
         return crewLost;
     }
 
+    public void applyEffect(Response res){
+        AbandonedShipResponse response = (AbandonedShipResponse) res;
+
+        ShipBoard shipBoard = flyBoard.getPlayerByColor(res.getColorPlayer()).get().getShipBoard();
+
+        if (response.isAcceptEffect()) {
+            for (int i : response.getCrewDeleted()) {
+                int[] cord = shipBoard.getCordinate(i);
+                shipBoard.getComponent(cord[0], cord[1]).removeGuest();
+            }
+        }
+
+    }
 }

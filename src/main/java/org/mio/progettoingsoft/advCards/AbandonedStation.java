@@ -3,6 +3,8 @@ package org.mio.progettoingsoft.advCards;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.responses.AbandonedStatationResponse;
+import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,20 @@ public class AbandonedStation extends AdventureCard {
 
     public List<GoodType> getGoods(){
         return goods;
+    }
+
+    public void applyEffect(Response res){
+        AbandonedStatationResponse response = (AbandonedStatationResponse) res;
+
+        if (response.isAcceptEffect()){
+            ShipBoard shipBoard = flyBoard.getPlayerByColor(response.getColorPlayer()).get().getShipBoard();
+
+            for (int i : response.getDepos().keySet()){
+                int[] pos = shipBoard.getCordinate(i);
+
+                shipBoard.getComponent(pos[0], pos[1]).setGoodsDepot(response.getDepos().get(i));
+            }
+        }
     }
 
 }

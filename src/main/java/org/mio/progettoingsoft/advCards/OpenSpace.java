@@ -2,10 +2,12 @@ package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.exceptions.NoPowerException;
+import org.mio.progettoingsoft.exceptions.BadCardException;
+import org.mio.progettoingsoft.exceptions.BadParameterException;
+import org.mio.progettoingsoft.responses.OpenSpaceResponse;
+import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class OpenSpace extends AdventureCard {
     public OpenSpace(int id, int level) {
@@ -19,10 +21,13 @@ public class OpenSpace extends AdventureCard {
         return new OpenSpace(id, level);
     }
 
-    public void applyEffect(List<Integer> numberOfDoubleDrill) {
-            
-    }
+    @Override
+    public void applyEffect(Response res){
+        OpenSpaceResponse response = (OpenSpaceResponse) res;
 
+        Player player = flyBoard.getPlayerByColor(res.getColorPlayer()).get();
+        flyBoard.moveDays(player, -response.getTotalEnginPower());
+    }
 
 
 }

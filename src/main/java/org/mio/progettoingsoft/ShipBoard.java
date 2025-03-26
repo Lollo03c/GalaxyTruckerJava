@@ -711,6 +711,15 @@ public class ShipBoard {
         }
         return out;
     }
+
+    public int[] getCordinate(int pos){
+        int[] cord = new int[2];
+
+        cord[0] = pos / columns;
+        cord[1] = pos % columns;
+
+        return cord;
+    }
 }
 
 

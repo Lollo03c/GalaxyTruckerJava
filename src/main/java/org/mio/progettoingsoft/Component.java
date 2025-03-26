@@ -206,4 +206,8 @@ public abstract class Component {
                 " Left: " + leftConnector.toString() +
                 " Row: " + row + " Column: " + column;
     }
+
+    public void setGoodsDepot(Map<GoodType, Integer> goods){
+        return ;
+    }
 }

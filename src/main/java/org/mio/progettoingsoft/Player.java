@@ -138,6 +138,18 @@ public class Player {
 //
 //    }
 
+    //set the shipboard to the player
+    //return true whether the shipboard is valid; false otherwise
+    public boolean setShipBoard(ShipBoard shipBoard){
+        if (shipBoard.getIncorrectComponents().isEmpty()){
+            this.shipBoard = shipBoard;
+            return true;
+        }
+
+        return false;
+
+
+    }
 
     public boolean equals(Object other) {
         if(other == null)

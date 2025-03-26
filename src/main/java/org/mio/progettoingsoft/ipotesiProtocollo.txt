@@ -1,0 +1,151 @@
+il Client(un nuovo giocatore) si connette al server
+    il server verifica che il giocatore si posso unire
+
+raggiunti i 4 giocatori neccessari alla partita inizia la fase di costruzione della neva
+    -il client chiede quali componenti sono disponibili (divisi fra coperti e scoperti)
+    -ne pesca uno e comunica al server quale, che lo blocca cosi che gli altri giocatori non lo possano prendere
+
+    -se lo aggiunge alla sua shipboard, lo sa nella giusta posizione in locale
+    -se lo salva nell'angolo, sempre in locale per il client
+    -se lo scarta comunica al server che cosi lo sposta nei componenti scoperti
+
+    -si ripete: il cliente chiede al server i componenti disponibili, fino a quando scade il timer
+    -in qualsiasi momento un client può girare la clessidra
+
+    -alla scadenza del timer il client verifica se la configurazione dei componenti è valida e in caso affermativo la
+        invia al server che procede a salvarla in locale
+    -il client decide di quali componenti sbarazzarsi, e se la configurazione è giusta la invia al serve, con il numero
+        di componenti scartati + il numero dei componenti prenotati ma non usati
+    -si procede quando il server le configurazione delle shipBoard di tutti e 4 i giocatori
+
+-inizia la partita
+    -il server chiede al leader di pescare la prossima carta
+    -il leader pesca la carta e il server manda a tutti i giocatori la carta pescata, con i campi che si aspetta di ritorno
+    -da qui in poi ogni messaggio che il server invia al client ha questa forma
+        -AdvCardType : tipo carta avventura in gioco
+        -Player: il player che deve eseguire la scelta
+        -la FlyBoard <dove ogni casella o è libera o a associata a qualche ColorPlayer>
+
+    -da qui in poi ogni messaggio che il client invia al server dipende dalla carta avventura, ma hanno tutti in comune
+        advCardType e Player
+
+    -alla fine dell'effetto di ogni carta avventura il server comunica sempre a tutti i client la nuova FlyBoard e le 4
+        shipBoard
+
+DA SERVER A CLIENT
+    -PIANETS
+       -una mappa <Planet, ColorPlayer>, se per il Planet planet, il relativo ColorPlayer è null vuol dire che il pianeta
+            e' ancora libero e puo essere selezionato
+
+    -ABANDONED_SHIP
+        -lo stato della carta(equipaggio perso, crediti guadagnati, giorni persi)
+
+    -ABANDONED_STATION
+        -lo stato della carta (equipaggio richiesto, crediti guadagnati, giorni persi)
+
+    -Contrabbandieri
+        -lo stato della carta(potenza richiesta per sconfiggerli, merci rubate, merci guadagnate se vittoria, giorni persi)
+
+    -OPEN_SPACE
+        -e' stata giocata open_spaces
+
+    -MeteorSwarm
+        -lo stato della carta(i diversi meteoriti)
+
+        -per ogni meteorite si chiede al leader di lanciare i dadi
+        -se il meteorite e' piccolo
+            -si chiede l'eventuale attivazione dello scudo (il controllo dell'esistenza di un scudo valido e' fatta dal controller)
+
+        -se il meteorite e' grosso
+            -si chiede l'eventuale attivazione di una doppia trivella
+
+    -COMBAT_ZONE
+        -si comunica quale giocatore ha meno equipaggio (perde 3 giorni di volo)
+
+        -si chiede ad ogni player di decidere quali doppi cannoni attivare
+        -si comunica quale giocatore perde 2 membri dell'equipaggio
+            -si chiede a lui quali membri vuole perdere
+
+        -si chiede ad ogni player quali doppi motori attivare
+        -si comunica quale giocatore ha meno forza motrice
+            -si comunica a lui quali cannonate riceve
+            -per ogni cannote si chiede di tirare i dadi
+
+    -STARDUST
+        -ad ogni giocatore si comunica il numero di connettori esposti e la nuova plancia di volo
+
+    -SLAVER
+        -lo stato della carta (potenza di fuoco, equipaggio perso in caso di sconfitta, crediti guadagati in caso di vittoria,
+            giorni persi in caso di vittoria)
+
+    -PIRATES
+        -lo stato della carta(potenza di fuoco, cannone in caso di scofitta, crediti guadagnati e giorni persi in caso di vittoria
+
+        -se perde per ogni cannonata piccola si chide se vuole attivare lo scudo
+
+    -EPIDEMIC
+
+
+DA CLIENT A SERVER
+    -PLANETS
+        -se decide di atterra su quale pianeta
+
+        -una volta che tutti i giocatori hanno scelto o sono finiti i pianeti
+            -la disposizione dei nuovi magazzini
+
+    -ABANDONED_SHIP
+        -se il giocatore accetta l'effetto comunica da quali cabine togliere l'equipaggio
+
+    -ABANDONED_STATION
+        -se il giocatore accetta l'effetto la disposizione dei depositi
+
+    -SMUGGLERS
+        -se il giocatore accetta l'effetto l adisposizione dei depositi
+
+    -OPEN_SPACE
+        -la potenza motrice totale (di quante caselle avanzare)
+
+    -METEOR_SWARM
+        -per ogni meteorite il leader comunica la somma dei dadi
+
+        -se il meteorite e' piccolo
+            -se si intende attivare lo scudo (se possibile)
+
+        -se il meteorite e' grande
+            -se si intende attivare il doppio cannone (se possibile)
+
+    -CAMBAT_ZONE
+        -quali doppi cannoni attivare
+            -se perde quali membri dell'equipaggio perde
+
+        -quali doppi motori attivare
+            -se perde e le cannonate sono leggere, se attivare lo scudo
+
+    -STARDUST
+
+
+    -SLAVER
+         -chiedere quali doppi cannoni attivare
+
+         -se perde: quali membri dell'equipaggio perde
+         -se vince: se attivare l'effetto
+
+    -PIRATES
+        -chiedere quali doppi cannoni attivare
+
+        -se perde
+            -quali componenti sono persi
+        -se vince
+            -se attiva l'effetto
+
+    -EPIDEMIC
+        -quali membri dell'equipaggio perdere
+
+
+
+
+
+
+
+
+
