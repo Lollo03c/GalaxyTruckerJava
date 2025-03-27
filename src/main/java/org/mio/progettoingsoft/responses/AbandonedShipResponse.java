@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AbandonedShipResponse extends Response{
     final boolean acceptEffect;
-    final List<Integer  > crewDeleted;
+    final List<Integer> crewDeleted;
 
     public AbandonedShipResponse(HousingColor colorPlayer, boolean acceptEffect, List<Integer> crewDeleted){
         super(AdvCardType.ABANDONED_SHIP, colorPlayer);

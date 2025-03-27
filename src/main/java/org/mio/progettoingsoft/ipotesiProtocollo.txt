@@ -2,23 +2,25 @@ il Client(un nuovo giocatore) si connette al server
     il server verifica che il giocatore si posso unire
 
 raggiunti i 4 giocatori neccessari alla partita inizia la fase di costruzione della neva
+COSTRUZIONE DELLA NAVE
     -il client chiede quali componenti sono disponibili (divisi fra coperti e scoperti)
-    -ne pesca uno e comunica al server quale, che lo blocca cosi che gli altri giocatori non lo possano prendere
+    -ne pesca uno e comunica al server (controller) quale, che lo blocca cosi che gli altri giocatori non lo possano prendere
 
-    -se lo aggiunge alla sua shipboard, lo sa nella giusta posizione in locale
-    -se lo salva nell'angolo, sempre in locale per il client
+    -se lo aggiunge alla sua shipboard, comunica la posizione in cui è stato salvato al controller che modifica il model
+    -se lo salva nell'angolo, comunica al controller
     -se lo scarta comunica al server che cosi lo sposta nei componenti scoperti
 
     -si ripete: il cliente chiede al server i componenti disponibili, fino a quando scade il timer
     -in qualsiasi momento un client può girare la clessidra
 
-    -alla scadenza del timer il client verifica se la configurazione dei componenti è valida e in caso affermativo la
-        invia al server che procede a salvarla in locale
-    -il client decide di quali componenti sbarazzarsi, e se la configurazione è giusta la invia al serve, con il numero
-        di componenti scartati + il numero dei componenti prenotati ma non usati
-    -si procede quando il server le configurazione delle shipBoard di tutti e 4 i giocatori
+VERIFICA DELLE NAVI
+    -alla scadenza del timer il server (controller) verifica se la configurazione dei componenti è valida e in caso negativo
+        il server comunica al client che è sbagliata e gli manda le scelte possibili
+    -il client decide di quali componenti sbarazzarsi e la invia al server, se la configurazione è giusta il server lo comunica
+        al client e salva il numero di componenti scartati + il numero dei componenti prenotati ma non usati
+    -si procede quando il server valida le configurazione delle shipBoard di tutti e 4 i giocatori
 
--inizia la partita
+INIZIA LA PARTITA
     -il server chiede al leader di pescare la prossima carta
     -il leader pesca la carta e il server manda a tutti i giocatori la carta pescata, con i campi che si aspetta di ritorno
     -da qui in poi ogni messaggio che il server invia al client ha questa forma
