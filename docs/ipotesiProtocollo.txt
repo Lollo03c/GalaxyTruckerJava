@@ -144,8 +144,60 @@ DA CLIENT A SERVER
         -quali membri dell'equipaggio perdere
 
 
+CREAZIONE PARTITTA
+    -connectionRequest(nickname) -> il client si presenta con un nickname
+    -se il nickname non e' valido (lo richiede in loop)
+        -invalidNickame()
+        -connectionRequest(nickname)
+    -se non esiste la partita
+        -askGameSettings () -> chiede i settaggi della partita
+        -setGameSettings (GameType, numPlayers) -> che tipo di partita creare (volo di prova o volo normale) e con quanti giocatori
+    -setColor(HousingColor) -> il server conferma la creazione della partita e assegna il colore al client
+
+BUILDING SHIP PHASE
+    updateStatus -> il server comunica a tutti i client che e' iniziata la fase di costruzione della nave
+    -inizia il loop per la costruzione della nava
+        -il client ha due scelte
+                1) drawComponent() -> se sceglie un componente coperto
+                2) bookComponent(Component c) -> il client comunica al server cha ha preso in mano c, il modo da non farlo prendere agli altri giocatori
+
+        -returnComponent() -> segnale di ack dal server al client per sapere il compoenente scelto e' disponibile
+        -getComponents() -> il server comunica agli altri client i nuovi componenti disponibili (quelli di prima meno quello scelto)
+
+        -client ha 3 scelte
+            1)addToShipComponent(Component c, int x, int y, int rotations) -> il client comunica che ha aggiungo il
+                component scelto alla sua shipboard in una specifica posizione, con una rotazione
+            2)reserveComponent(Component) -> il component e' riservato per quel client e non accessabile agli altri giocatori
+            3)unlockComponent(Component) -> il component e' di nuovo disponibile per tutti come scoperto
+
+        -updateView() -> dal server al client
+        -getComponents()
+
+    -rotateHourGlass() -> in ogni momento puo esserci un segnale asincrono dal client al server per la rotazione della clessidra
+    -il server risponde a tutti i client notificando la rotazione della clessidra
 
 
+VALIDATE SHIP
+    -updateStatus() -> il server cominica a tutti i client che e' cambia la fase di gioco
+
+    -getIncorrectComponent() -> il server comunica ai client i component sbagliati della shipboard()
+    -removeComponents() -> il client risponde quali componenti togliere affinche la configurazione sia valida.
+        -questo e' il loop finche la configurazione e' valida
+
+    -se la nave non e' un unico pezzo (ci sono due o piu' monconi)
+        -getFragments() -> il server fornisce i fragraments disponibili al client
+        -chooseFragment() -> il client dice al server quale fragments ha scelto
+
+    -ACK correctShip() -> il server notifa al client che la configurazione scelta e' valida
+
+DRAW_ADV_CARD
+    -updateStatus() -> il server comunica al server che e' cambiata fase di gioco
+
+    -si entra in loop fino al termine della partita
+        -drawCard() -> il leader estrae la carta avventura in cima al mazzo
+        -getCardStart() -> server notifica tutti i client la carta uscita
+
+        -in base alla carta si fanno cose diverse (vedere le singolo carte per sapere i cambi del relativo json)
 
 
 

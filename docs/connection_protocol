@@ -152,7 +152,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="f_e5scZqNtzMB9Os3JFi-16" value="bookComponent(Component)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=horizontal;curved=0;rounded=0;" edge="1" parent="1">
+        <mxCell id="f_e5scZqNtzMB9Os3JFi-16" value="reserveComponent(Component)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=horizontal;curved=0;rounded=0;" edge="1" parent="1">
           <mxGeometry x="-0.0062" relative="1" as="geometry">
             <mxPoint x="301.0866666666666" y="509.58" as="sourcePoint" />
             <Array as="points">
