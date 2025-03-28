@@ -23,4 +23,21 @@ public class Stardust extends AdventureCard {
         return new Stardust(id, level);
     }
 
+    @Override
+    public void start(){
+        playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
+        Collections.reverse(playersToPlay);
+
+        iterator = playersToPlay.iterator();
+        chooseNextPlayerState();
+    }
+
+    public void applyEffect(String json){
+        int daysLost = playerState.getShipBoard().getExposedConnectors();
+        flyBoard.moveDays(playerState, -daysLost);
+
+        chooseNextPlayerState();
+    }
+
+
 }

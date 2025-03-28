@@ -1,13 +1,17 @@
 package org.mio.progettoingsoft.advCards;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.responses.AbandonedShipResponse;
 import org.mio.progettoingsoft.responses.AbandonedStatationResponse;
 import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class AbandonedStation extends AdventureCard {
     private int daysLost;
@@ -45,16 +49,39 @@ public class AbandonedStation extends AdventureCard {
         return goods;
     }
 
-    public void applyEffect(Response res){
-        AbandonedStatationResponse response = (AbandonedStatationResponse) res;
+    @Override
+    public void start(){
+        playersToPlay = flyBoard.getScoreBoard().stream()
+                .filter(player -> player.getShipBoard().getQuantityGuests() >= crewNeeded)
+                .toList();
 
-        if (response.isAcceptEffect()){
-            ShipBoard shipBoard = flyBoard.getPlayerByColor(response.getColorPlayer()).get().getShipBoard();
+        iterator = playersToPlay.iterator();
 
-            for (int i : response.getDepos().keySet()){
-                int[] pos = shipBoard.getCordinate(i);
+        chooseNextPlayerState();
+    }
 
-                shipBoard.getComponent(pos[0], pos[1]).setGoodsDepot(response.getDepos().get(i));
+    @Override
+    public void applyEffect(String json) throws JsonProcessingException {
+        playerState = iterator.next();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        AbandonedStatationResponse response = objectMapper.readValue(json, AbandonedStatationResponse.class);
+
+        if (response.getColorPlayer().equals(playerState.getColor())) {
+            if (response.isAcceptEffect()) {
+                ShipBoard shipBoard = playerState.getShipBoard();
+
+                for (int i : response.getDepos().keySet()) {
+                    int[] pos = shipBoard.getCordinate(i);
+
+                    shipBoard.getComponent(pos[0], pos[1]).setGoodsDepot(response.getDepos().get(i));
+                }
+                flyBoard.moveDays(playerState, -daysLost);
+
+                flyBoard.drawAdventureCard();
+            }
+            else{
+                chooseNextPlayerState();
             }
         }
     }

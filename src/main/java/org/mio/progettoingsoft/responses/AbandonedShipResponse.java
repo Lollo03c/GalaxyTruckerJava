@@ -1,20 +1,31 @@
 package org.mio.progettoingsoft.responses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.HourGlass;
+import org.mio.progettoingsoft.advCards.AbandonedShip;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 
 import java.util.List;
 
-public class AbandonedShipResponse extends Response{
-    final boolean acceptEffect;
-    final List<Integer> crewDeleted;
+/*
+{
+    "advCard" : "ABANDONED_SHIP"
+    "color" : " "
+    "acceptEffect" : "true" o "false"
+    "crewDeleted" [1, 2, ...]
+}
+ */
 
-    public AbandonedShipResponse(HousingColor colorPlayer, boolean acceptEffect, List<Integer> crewDeleted){
-        super(AdvCardType.ABANDONED_SHIP, colorPlayer);
-        this.acceptEffect = acceptEffect;
-        this.crewDeleted = crewDeleted;
+public class AbandonedShipResponse extends Response{
+    @JsonProperty("acceptEffect")
+    private boolean acceptEffect;
+
+    @JsonProperty("crewDeleted")
+    private List<Integer> crewDeleted;
+
+    public AbandonedShipResponse(){
     }
 
     public boolean isAcceptEffect() {

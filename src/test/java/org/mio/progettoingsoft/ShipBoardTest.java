@@ -267,7 +267,7 @@ class ShipBoardTest {
 
         notEmpty.addGood(GoodType.YELLOW);
 
-        List<Component> notEmptyList = ship.canRemoveGoods();
+        List<Component> notEmptyList = ship.canRemoveGoods(GoodType.YELLOW);
 
         assertTrue(notEmptyList.contains(notEmpty));
         assertFalse(notEmptyList.contains(empty));

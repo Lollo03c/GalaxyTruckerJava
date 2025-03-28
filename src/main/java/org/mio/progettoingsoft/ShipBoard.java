@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.*;
 
 import java.util.*;
+import java.util.function.DoubleBinaryOperator;
 import java.util.stream.Stream;
 
 public class ShipBoard {
@@ -136,7 +137,11 @@ public class ShipBoard {
             throw new EmptyComponentException(row, col);
 
         return shipComponents[row][col].get();
+    }
 
+    public Component getComponent(int position){
+        int[] cord = getCordinate(position);
+        return getComponent(cord[0], cord[1]);
     }
 
     public boolean isEmptyComponent(int row, int column) throws InvalidPositionException {
@@ -337,10 +342,9 @@ public class ShipBoard {
                 .toList();
     }
 
-    public List<Component> canRemoveGoods() {
+    public List<Component> canRemoveGoods(GoodType type){
         return getComponentsStream()
-                .filter(comp -> comp.getStoredGoods().values().stream()
-                        .anyMatch(val -> val > 0))
+                .filter(comp -> comp.getStoredGoods().getOrDefault(type, 0) > 0)
                 .toList();
     }
     //return true if the good has been moved correctly, false otherwise
@@ -623,38 +627,25 @@ public class ShipBoard {
         return "";
     }
 
-    public void stoleGood() {
-        Map<GoodType, Integer> storedGoods = new HashMap<>();
+    //TODO : va testata
+    public void stoleGood(int quantity) {
 
-        List<Component> components = getComponentsStream().toList();
-        for (Component comp : components) {
-            storedGoods.putAll(comp.getStoredGoods());
-        }
+        Iterator<GoodType> iter = GoodType.sortedList.iterator();
 
-        GoodType toRemove = GoodType.RED;
-        boolean chosen = false;
-        if (storedGoods.containsKey(GoodType.RED) && storedGoods.get(GoodType.RED) > 0) {
-            toRemove = GoodType.RED;
-            chosen = true;
-        } else if (storedGoods.containsKey(GoodType.YELLOW) && storedGoods.get(GoodType.YELLOW) > 0) {
-            toRemove = GoodType.YELLOW;
-            chosen = true;
-        } else if (storedGoods.containsKey(GoodType.GREEN) && storedGoods.get(GoodType.GREEN) > 0) {
-            toRemove = GoodType.GREEN;
-            chosen = true;
-        } else if (storedGoods.containsKey(GoodType.BLUE) && storedGoods.get(GoodType.BLUE) > 0) {
-            toRemove = GoodType.BLUE;
-            chosen = true;
-        }
+        while (quantity > 0 && iter.hasNext()){
+            GoodType type = iter.next();
+            List<Component> depos = canRemoveGoods(type);
 
-        if (chosen) {
-            for (Component comp : components) {
-                if (comp.removeGood(toRemove)) {
-                    break;
-                }
+            for (int i = 0; quantity > 0 && i < depos.size(); i++){
+                int toRemove = Integer.min(quantity, depos.get(i).getStoredGoods().get(type));
+
+                quantity = quantity -= toRemove;
+                depos.get(i).setGoodsDepot(type, depos.get(i).getStoredGoods().get(type) - toRemove);
             }
-        } else {
-            removeEnergy();
+        }
+
+        if (quantity > 0){
+            removeEnergy(Integer.min(quantity, availableEnergy));
         }
     }
 
@@ -719,6 +710,12 @@ public class ShipBoard {
         cord[1] = pos % columns;
 
         return cord;
+    }
+
+    public float getMaximumFirePower(){
+        return (float) getComponentsStream()
+                .mapToDouble(component-> component.getFirePower())
+                .sum();
     }
 }
 

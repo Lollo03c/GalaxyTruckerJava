@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.responses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.advCards.Smugglers;
 import org.mio.progettoingsoft.components.GoodType;
@@ -8,13 +9,19 @@ import org.mio.progettoingsoft.components.HousingColor;
 import java.util.Map;
 
 public class SmugglersResponse extends Response{
-    private final Map<Integer, Map<GoodType, Integer>> depos;
-    private final boolean acceptEffect;
+    @JsonProperty("depos")
+    private Map<Integer, Map<GoodType, Integer>> depos;
 
-    public SmugglersResponse(HousingColor color, boolean acceptEffect, Map<Integer, Map<GoodType, Integer>> depos){
+    @JsonProperty("result")
+    private int streght;
+
+    public SmugglersResponse(){
+
+    }
+    public SmugglersResponse(HousingColor color, int streght, Map<Integer, Map<GoodType, Integer>> depos){
         super(AdvCardType.SMUGGLERS, color);
 
-        this.acceptEffect = acceptEffect;
+        this.streght = streght;
         this.depos = depos;
     }
 
@@ -22,7 +29,7 @@ public class SmugglersResponse extends Response{
         return depos;
     }
 
-    public boolean isAcceptEffect() {
-        return acceptEffect;
+    public int getStreght() {
+        return streght;
     }
 }

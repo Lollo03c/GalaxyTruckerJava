@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 public class Planets extends AdventureCard {
     private final int daysLost;
     private final List<Planet> planets;
-    private Player playerState;
     private List<Player> landedPlayers;
 
 

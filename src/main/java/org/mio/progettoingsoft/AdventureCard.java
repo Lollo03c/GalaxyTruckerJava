@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.CombatLine;
 import org.mio.progettoingsoft.advCards.Meteor;
@@ -9,19 +10,26 @@ import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.responses.Response;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class AdventureCard {
+    protected Player playerState;
 
     private final int level;
     private final int id;
     protected AdvCardType type;
 
+    protected final ObjectMapper objectMapper;
+
     protected FlyBoard flyBoard;
     protected List<Player> playersToPlay;
-    protected int iter;
+    protected Iterator<Player> iterator;
 
     public AdventureCard(int id, int level, AdvCardType type) {
+        objectMapper = new ObjectMapper();
+
         this.id = id;
         this.level = level;
         this.type = type;
@@ -78,7 +86,16 @@ public abstract class AdventureCard {
     }
     public void start(){}
 
-    public /*abstract*/ void applyEffect(Response res){
+    public /*abstract*/ void applyEffect(String json) throws Exception{
 
+    }
+
+    public void chooseNextPlayerState(){
+        if (iterator.hasNext()){
+            playerState = iterator.next();
+        }
+        else{
+            flyBoard.drawAdventureCard();
+        }
     }
 }

@@ -1,12 +1,14 @@
 package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.responses.AbandonedShipResponse;
 import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class AbandonedShip extends AdventureCard {
     private int daysLost;
@@ -45,17 +47,39 @@ public class AbandonedShip extends AdventureCard {
         return crewLost;
     }
 
-    public void applyEffect(Response res){
-        AbandonedShipResponse response = (AbandonedShipResponse) res;
+    @Override
+    public void start(){
+        playersToPlay = flyBoard.getScoreBoard().stream()
+                .filter(player -> player.getShipBoard().getQuantityGuests() >= crewLost)
+                .toList();
 
-        ShipBoard shipBoard = flyBoard.getPlayerByColor(res.getColorPlayer()).get().getShipBoard();
+        iterator = playersToPlay.iterator();
 
-        if (response.isAcceptEffect()) {
-            for (int i : response.getCrewDeleted()) {
-                int[] cord = shipBoard.getCordinate(i);
-                shipBoard.getComponent(cord[0], cord[1]).removeGuest();
+        chooseNextPlayerState();
+    }
+
+    @Override
+    public void applyEffect(String json) throws Exception{
+        ObjectMapper objectMapper = new ObjectMapper();
+        AbandonedShipResponse response = objectMapper.readValue(json, AbandonedShipResponse.class);
+
+        ShipBoard shipBoard = flyBoard.getPlayerByColor(response.getColorPlayer()).get().getShipBoard();
+
+        if (response.getColorPlayer().equals(playerState.getColor())) {
+            if (response.isAcceptEffect()) {
+                for (int i : response.getCrewDeleted()) {
+                    int[] cord = shipBoard.getCordinate(i);
+                    shipBoard.getComponent(cord[0], cord[1]).removeGuest();
+
+                    flyBoard.moveDays(playerState, -daysLost);
+                    playerState.addCredits(credits);
+                }
+
+                flyBoard.drawAdventureCard();
+            }
+            else{
+                chooseNextPlayerState();
             }
         }
-
     }
 }

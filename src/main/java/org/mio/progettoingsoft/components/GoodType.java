@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft.components;
 
+import java.util.List;
+
 public enum GoodType {
     BLUE(1), GREEN(2), YELLOW(3), RED(4);
 
@@ -12,6 +14,8 @@ public enum GoodType {
     public int getValue(){
         return value;
     }
+
+    public static List<GoodType> sortedList = List.of(RED, YELLOW, GREEN, BLUE);
 
     @Override
     public String toString(){

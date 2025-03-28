@@ -214,8 +214,9 @@ public class Controller {
                 }
                 break;
             } else if (power < strength) {
-                for (int i = 0; i < stolenGoods; i++)
-                    player.getShipBoard().stoleGood();
+                player.getShipBoard().stoleGood(stolenGoods);
+//                for (int i = 0; i < stolenGoods; i++)
+//                    player.getShipBoard().stoleGood(1);
             }
         }
     }

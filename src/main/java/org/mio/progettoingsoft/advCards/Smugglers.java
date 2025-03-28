@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.advCards;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.responses.Response;
@@ -58,16 +60,32 @@ public class Smugglers extends AdvancedEnemy {
         return stolenGoods;
     }
 
-    public void applyEffect(Response res){
-        SmugglersResponse response = (SmugglersResponse) res;
+    @Override
+    public void start(){
+        playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
 
-        if (response.isAcceptEffect()){
-            ShipBoard shipBoard = flyBoard.getPlayerByColor(res.getColorPlayer()).get().getShipBoard();
+        iterator = playersToPlay.iterator();
+        chooseNextPlayerState();
+    }
 
-            for (int iter : response.getDepos().keySet()){
-                int[] cord = shipBoard.getCordinate(iter);
+    @Override
+    public void applyEffect(String json) throws JsonProcessingException {
+        SmugglersResponse response = objectMapper.readValue(json, SmugglersResponse.class);
 
-                shipBoard.getComponent(cord[0], cord[1]).setGoodsDepot(response.getDepos().get(iter));
+        if (response.getColorPlayer().equals(playerState)){
+            if (response.getStreght() > strength){
+                ShipBoard shipBoard = playerState.getShipBoard();
+                for (Integer position : response.getDepos().keySet()){
+                    shipBoard.getComponent(position).setGoodsDepot(response.getDepos().get(position));
+                }
+                flyBoard.moveDays(playerState, -daysLost);
+            }
+            else if (response.getStreght() < strength){
+                playerState.getShipBoard().stoleGood(stolenGoods);
+                chooseNextPlayerState();
+            }
+            else{
+                chooseNextPlayerState();
             }
         }
     }

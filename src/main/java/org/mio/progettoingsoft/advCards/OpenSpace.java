@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.advCards;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.exceptions.BadCardException;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
@@ -22,11 +24,22 @@ public class OpenSpace extends AdventureCard {
     }
 
     @Override
-    public void applyEffect(Response res){
-        OpenSpaceResponse response = (OpenSpaceResponse) res;
+    public void start(){
+        playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
 
-        Player player = flyBoard.getPlayerByColor(res.getColorPlayer()).get();
-        flyBoard.moveDays(player, -response.getTotalEnginPower());
+        iterator = playersToPlay.iterator();
+
+        chooseNextPlayerState();
+    }
+
+    @Override
+    public void applyEffect(String json) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        OpenSpaceResponse response = objectMapper.readValue(json, OpenSpaceResponse.class);
+
+        if (response.getColorPlayer().equals(playerState.getColor())){
+            flyBoard.moveDays(playerState, response.getTotalEnginPower());
+        }
     }
 
 

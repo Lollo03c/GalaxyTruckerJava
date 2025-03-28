@@ -105,4 +105,9 @@ public class Depot extends Component {
     public void setGoodsDepot(Map<GoodType, Integer> goods){
         storedGoods = goods;
     }
+
+    @Override
+    public void setGoodsDepot(GoodType type, int quantity){
+        storedGoods.put(type, quantity);
+    }
 }

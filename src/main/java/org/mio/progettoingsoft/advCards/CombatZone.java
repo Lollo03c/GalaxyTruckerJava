@@ -48,8 +48,8 @@ public class CombatZone extends AdventureCard {
     }
 
     @Override
-    public void applyEffect(Response r) {
-        CombatZoneResponse res = (CombatZoneResponse) r;
+    public void applyEffect(String json) {
+        /*CombatZoneResponse res = (CombatZoneResponse) r;
 
         ShipBoard shipBoard = flyBoard.getPlayerByColor(r.getColorPlayer()).get().getShipBoard();
 
@@ -64,6 +64,6 @@ public class CombatZone extends AdventureCard {
                 int[] cord = shipBoard.getCordinate(pos);
                 shipBoard.removeComponent(cord[0], cord[1]);
             }
-        }
+        }*/
     }
 }

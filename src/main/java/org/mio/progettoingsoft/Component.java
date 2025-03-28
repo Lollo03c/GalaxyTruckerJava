@@ -142,7 +142,7 @@ public abstract class Component {
         return false;
     }
 
-    public Float getFirePower(){
+    public float getFirePower(){
         return 0f;
     }
 
@@ -208,6 +208,10 @@ public abstract class Component {
     }
 
     public void setGoodsDepot(Map<GoodType, Integer> goods){
+        return ;
+    }
+
+    public void setGoodsDepot(GoodType type, int quantity){
         return ;
     }
 }

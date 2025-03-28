@@ -10,7 +10,7 @@ public class DoubleDrill extends Drill{
     }
 
     @Override
-    public Float getFirePower(){
+    public float getFirePower(){
         if(getDirection() == Direction.FRONT)
             return 2f;
         return 1f;

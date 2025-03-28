@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.responses;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
@@ -9,8 +10,15 @@ import org.mio.progettoingsoft.exceptions.BadParameterException;
 import java.io.Serializable;
 
 public abstract class Response implements Serializable {
-    private final AdvCardType advCard;
-    private final HousingColor colorPlayer;
+    @JsonProperty("advCard")
+    private AdvCardType advCard;
+
+    @JsonProperty("color")
+    private HousingColor colorPlayer;
+
+    public Response(){
+
+    }
 
     protected Response(AdvCardType advCard, HousingColor colorPlayer){
         this.advCard = advCard;
@@ -24,4 +32,5 @@ public abstract class Response implements Serializable {
     public HousingColor getColorPlayer() {
         return colorPlayer;
     }
+
 }
