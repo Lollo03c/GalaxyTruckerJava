@@ -1,10 +1,7 @@
 package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.AdvCardType;
-import org.mio.progettoingsoft.AdventureCard;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,14 +26,12 @@ public class Stardust extends AdventureCard {
         Collections.reverse(playersToPlay);
 
         iterator = playersToPlay.iterator();
-        chooseNextPlayerState();
+        flyBoard.setState(StateEnum.CARD_EFFECT);
     }
 
     public void applyEffect(String json){
         int daysLost = playerState.getShipBoard().getExposedConnectors();
         flyBoard.moveDays(playerState, -daysLost);
-
-        chooseNextPlayerState();
     }
 
 

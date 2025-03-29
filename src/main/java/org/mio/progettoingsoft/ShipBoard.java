@@ -261,6 +261,13 @@ public class ShipBoard {
         baseFirePower -= component.getFirePower() == 2.0f ? 0 : component.getFirePower();
     }
 
+    public void removeComponent(int componentPosition){
+        int row = componentPosition / columns;
+        int col = componentPosition % columns;
+
+        removeComponent(row, col);
+    }
+
     private Stream<Optional<Component>> getStreamOptComponents() {
         return Arrays.stream(shipComponents).flatMap(Arrays::stream);
     }

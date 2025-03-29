@@ -65,7 +65,7 @@ public class Smugglers extends AdvancedEnemy {
         playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
 
         iterator = playersToPlay.iterator();
-        chooseNextPlayerState();
+        flyBoard.setState(StateEnum.CARD_EFFECT);
     }
 
     @Override
@@ -73,20 +73,19 @@ public class Smugglers extends AdvancedEnemy {
         SmugglersResponse response = objectMapper.readValue(json, SmugglersResponse.class);
 
         if (response.getColorPlayer().equals(playerState)){
-            if (response.getStreght() > strength){
+            if (response.getStregth() > strength){
                 ShipBoard shipBoard = playerState.getShipBoard();
                 for (Integer position : response.getDepos().keySet()){
                     shipBoard.getComponent(position).setGoodsDepot(response.getDepos().get(position));
                 }
                 flyBoard.moveDays(playerState, -daysLost);
+
+                flyBoard.setState(StateEnum.DRAW_CARD);
             }
-            else if (response.getStreght() < strength){
+            else if (response.getStregth() < strength){
                 playerState.getShipBoard().stoleGood(stolenGoods);
-                chooseNextPlayerState();
             }
-            else{
-                chooseNextPlayerState();
-            }
+
         }
     }
 

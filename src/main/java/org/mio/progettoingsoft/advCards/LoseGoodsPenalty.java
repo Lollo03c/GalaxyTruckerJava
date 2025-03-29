@@ -6,9 +6,9 @@ public class LoseGoodsPenalty extends LoseSomethingPenalty{
     public LoseGoodsPenalty(int amount) {
         super(amount);
     }
-
-    @Override
-    public void apply(Player player, int value) {
-
-    }
+//
+//    @Override
+//    public void apply(Player player, int value) {
+//
+//    }
 }

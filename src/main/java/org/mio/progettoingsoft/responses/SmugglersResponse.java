@@ -13,7 +13,7 @@ public class SmugglersResponse extends Response{
     private Map<Integer, Map<GoodType, Integer>> depos;
 
     @JsonProperty("result")
-    private int streght;
+    private float stregth;
 
     public SmugglersResponse(){
 
@@ -21,7 +21,7 @@ public class SmugglersResponse extends Response{
     public SmugglersResponse(HousingColor color, int streght, Map<Integer, Map<GoodType, Integer>> depos){
         super(AdvCardType.SMUGGLERS, color);
 
-        this.streght = streght;
+        this.stregth = streght;
         this.depos = depos;
     }
 
@@ -29,7 +29,7 @@ public class SmugglersResponse extends Response{
         return depos;
     }
 
-    public int getStreght() {
-        return streght;
+    public float getStregth() {
+        return stregth;
     }
 }

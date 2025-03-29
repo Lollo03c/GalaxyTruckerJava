@@ -54,8 +54,7 @@ public class AbandonedShip extends AdventureCard {
                 .toList();
 
         iterator = playersToPlay.iterator();
-
-        chooseNextPlayerState();
+        flyBoard.setState(StateEnum.CARD_EFFECT);
     }
 
     @Override
@@ -63,10 +62,10 @@ public class AbandonedShip extends AdventureCard {
         ObjectMapper objectMapper = new ObjectMapper();
         AbandonedShipResponse response = objectMapper.readValue(json, AbandonedShipResponse.class);
 
-        ShipBoard shipBoard = flyBoard.getPlayerByColor(response.getColorPlayer()).get().getShipBoard();
-
         if (response.getColorPlayer().equals(playerState.getColor())) {
             if (response.isAcceptEffect()) {
+                ShipBoard shipBoard = flyBoard.getPlayerByColor(response.getColorPlayer()).get().getShipBoard();
+
                 for (int i : response.getCrewDeleted()) {
                     int[] cord = shipBoard.getCordinate(i);
                     shipBoard.getComponent(cord[0], cord[1]).removeGuest();
@@ -75,11 +74,9 @@ public class AbandonedShip extends AdventureCard {
                     playerState.addCredits(credits);
                 }
 
-                flyBoard.drawAdventureCard();
+                flyBoard.setState(StateEnum.DRAW_CARD);
             }
-            else{
-                chooseNextPlayerState();
-            }
+
         }
     }
 }

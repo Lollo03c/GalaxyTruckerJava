@@ -1,8 +1,11 @@
 package org.mio.progettoingsoft.advCards;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.AdvCardType;
+import org.mio.progettoingsoft.StateEnum;
 import org.mio.progettoingsoft.advCards.AdvancedEnemy;
+import org.mio.progettoingsoft.responses.PirateResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,5 +53,29 @@ public class Pirate extends AdvancedEnemy{
         int reward = node.path("reward").asInt();
 
         return new Pirate(id, level, strength, daysLost, cannons, reward);
+    }
+
+    @Override
+    public void start(){
+        playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
+        iterator = playersToPlay.iterator();
+        flyBoard.setState(StateEnum.CARD_EFFECT);
+    }
+
+    @Override
+    public void applyEffect(String json) throws JsonProcessingException {
+        PirateResponse response = objectMapper.readValue(json, PirateResponse.class);
+
+        if (response.getColorPlayer().equals(playerState.getColor())){
+            if (response.getStrength() > strength){
+                playerState.getShipBoard().removeEnergy(response.getEnergyUsed());
+
+                playerState.addCredits(reward);
+                flyBoard.moveDays(playerState, -daysLost);
+            }
+            else if (response.getStrength() < strength){
+                flyBoard.setState(StateEnum.CANNONS);
+            }
+        }
     }
 }

@@ -186,11 +186,11 @@ class ShipBoardTest {
     void should_add_housing_with_right_alien(){
         ShipBoard ship = new ShipBoard(HousingColor.BLUE);
 
-        Component housing = new Housing(1, flat, flat, flat, flat);
-        Component alienHousing = new AlienHousing(1, AlienType.PURPLE, flat, flat, flat, flat);
+        Component housing = new Housing(1, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE);
+        Component alienHousing = new AlienHousing(1, AlienType.PURPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE);
 
         ship.addComponentToPosition(housing, 2, 2);
-        ship.addComponentToPosition(alienHousing, 2, 3);
+        ship.addComponentToPosition(alienHousing, 1, 2);
 
         assertTrue(housing.canContainsAlien(AlienType.PURPLE));
         assertFalse(housing.canContainsAlien(AlienType.BROWN));

@@ -56,8 +56,7 @@ public class AbandonedStation extends AdventureCard {
                 .toList();
 
         iterator = playersToPlay.iterator();
-
-        chooseNextPlayerState();
+        flyBoard.setState(StateEnum.CARD_EFFECT);
     }
 
     @Override
@@ -78,10 +77,7 @@ public class AbandonedStation extends AdventureCard {
                 }
                 flyBoard.moveDays(playerState, -daysLost);
 
-                flyBoard.drawAdventureCard();
-            }
-            else{
-                chooseNextPlayerState();
+                flyBoard.setState(StateEnum.DRAW_CARD);
             }
         }
     }

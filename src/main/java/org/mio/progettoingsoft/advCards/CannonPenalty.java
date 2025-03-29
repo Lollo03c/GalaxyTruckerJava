@@ -1,9 +1,11 @@
 package org.mio.progettoingsoft.advCards;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.ShipBoard;
+import org.mio.progettoingsoft.responses.CannonResponse;
 
 import java.util.Optional;
 
@@ -15,18 +17,21 @@ public abstract class CannonPenalty extends Penalty {
     }
 
     public static CannonPenalty stringToCannonPenalty(String type, String direction) {
-        if(type.equals("LIGHT")) {
+        if (type.equals("LIGHT")) {
             return new LightCannon(Direction.stringToDirection(direction));
-        }else{
+        } else {
             return new HeavyCannon(Direction.stringToDirection(direction));
         }
     }
 
-    protected Optional<Component> findHit(Player player, int value){
+    @Override
+    public abstract void apply(String json, Player player) throws Exception;
+
+    public Optional<Component> findHit(Player player, int value) {
         ShipBoard board = player.getShipBoard();
         Optional<Component>[][] shipComponents = board.getComponentsMatrix();
 
-        switch (direction){
+        switch (direction) {
             case LEFT -> value -= board.getOffsetCol();
             case RIGHT -> value -= board.getOffsetCol();
             case FRONT -> value -= board.getOffsetRow();
@@ -34,28 +39,28 @@ public abstract class CannonPenalty extends Penalty {
         }
 
         Optional<Component> hitComponent = Optional.empty();
-        if (direction.equals(Direction.FRONT)){
+        if (direction.equals(Direction.FRONT)) {
             int row = 0;
             while (row < board.getRows() && shipComponents[row][value].isEmpty())
                 row++;
             if (row < board.getRows())
                 hitComponent = shipComponents[row][value];
         }
-        if (direction.equals(Direction.BACK)){
+        if (direction.equals(Direction.BACK)) {
             int row = board.getRows();
             while (row >= 0 && shipComponents[row][value].isEmpty())
                 row--;
             if (row >= 0)
                 hitComponent = shipComponents[row][value];
         }
-        if (direction.equals(Direction.LEFT)){
+        if (direction.equals(Direction.LEFT)) {
             int col = 0;
             while (col < board.getRows() && shipComponents[value][col].isEmpty())
                 col++;
             if (col < board.getColumns())
                 hitComponent = shipComponents[value][col];
         }
-        if (direction.equals(Direction.RIGHT)){
+        if (direction.equals(Direction.RIGHT)) {
             int col = board.getColumns();
             while (col >= 0 && shipComponents[value][col].isEmpty())
                 col--;
@@ -65,3 +70,4 @@ public abstract class CannonPenalty extends Penalty {
         return hitComponent;
     }
 }
+

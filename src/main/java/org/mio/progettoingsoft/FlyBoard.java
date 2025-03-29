@@ -17,7 +17,6 @@ import java.util.*;
 public class FlyBoard {
     StateEnum state;
     private String messageToSend;
-    private Set<Player> playerToAction;
 
     private List<AdventureCard> selectionDeckPrivate;
     private List<AdventureCard> selectionDeck1;
@@ -127,8 +126,6 @@ public class FlyBoard {
 
         if (scoreBoard.size() == 4){
             state = StateEnum.BUILDING_SHIP;
-
-            playerToAction.addAll(scoreBoard);
         }
     }
 
@@ -347,6 +344,10 @@ public class FlyBoard {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setState(StateEnum state){
+        this.state = state;
     }
 
 }

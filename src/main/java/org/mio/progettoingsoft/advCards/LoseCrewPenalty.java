@@ -7,8 +7,8 @@ public class LoseCrewPenalty extends LoseSomethingPenalty{
         super(amount);
     }
 
-    @Override
-    public void apply(Player player, int value) {
-
-    }
+//    @Override
+//    public void apply(Player player, int value) {
+//
+//    }
 }

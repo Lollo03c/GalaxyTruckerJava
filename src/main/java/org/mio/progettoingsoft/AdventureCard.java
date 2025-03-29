@@ -90,12 +90,12 @@ public abstract class AdventureCard {
 
     }
 
-    public void chooseNextPlayerState(){
-        if (iterator.hasNext()){
-            playerState = iterator.next();
-        }
-        else{
-            flyBoard.drawAdventureCard();
-        }
-    }
+//    public void chooseNextPlayerState(){
+//        if (iterator.hasNext()){
+//            playerState = iterator.next();
+//        }
+//        else{
+//            flyBoard.drawAdventureCard();
+//        }
+//    }
 }

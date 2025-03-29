@@ -353,7 +353,7 @@ public class Controller {
 
             for (CannonPenalty shot : shots) {
                 for (Player player : defeated) {
-                    shot.apply(player, value);
+//                    shot.apply(player, value);
                 }
             }
         }
@@ -436,7 +436,7 @@ public class Controller {
                 // apply di penalty presenta lo stesso problema di start delle carte avventura: devo chiedere qualcosa
                 // all'utente prima di applicare la penalità: o lo faccio nel metodo apply ("rompe" il design pattern MVC)
                 // oppure devo trovare un'alternativa, il che vorrebbe dire rendere senza metodi la classe penalty
-                penalty.apply(toApplyPenalty, 0);
+//                penalty.apply(toApplyPenalty, 0);
             }
         }
     }
