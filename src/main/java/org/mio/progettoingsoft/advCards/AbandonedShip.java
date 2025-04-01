@@ -70,9 +70,10 @@ public class AbandonedShip extends AdventureCard {
                     int[] cord = shipBoard.getCordinate(i);
                     shipBoard.getComponent(cord[0], cord[1]).removeGuest();
 
-                    flyBoard.moveDays(playerState, -daysLost);
-                    playerState.addCredits(credits);
+
                 }
+                flyBoard.moveDays(playerState, -daysLost);
+                playerState.addCredits(credits);
 
                 flyBoard.setState(StateEnum.DRAW_CARD);
             }

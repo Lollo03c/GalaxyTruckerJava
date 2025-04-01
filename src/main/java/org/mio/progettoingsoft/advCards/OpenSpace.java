@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.exceptions.BadCardException;
-import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.responses.OpenSpaceResponse;
-import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
 
@@ -37,7 +34,7 @@ public class OpenSpace extends AdventureCard {
         OpenSpaceResponse response = objectMapper.readValue(json, OpenSpaceResponse.class);
 
         if (response.getColorPlayer().equals(playerState.getColor())){
-            flyBoard.moveDays(playerState, response.getTotalEnginPower());
+            flyBoard.moveDays(playerState, response.getTotalEnginePower());
         }
     }
 
