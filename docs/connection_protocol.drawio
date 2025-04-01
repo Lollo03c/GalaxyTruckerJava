@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15" version="26.1.3" pages="4">
   <diagram name="Client Connection" id="2YBvvXClWsGukQMizWep">
-    <mxGraphModel dx="954" dy="647" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="770" dy="622" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -30,13 +30,13 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-2" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;" vertex="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-2" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;" parent="1" vertex="1">
           <mxGeometry x="140" y="290" width="360" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-6" value="&lt;font style=&quot;font-size: 9px;&quot;&gt;[first player]&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-6" value="&lt;font style=&quot;font-size: 9px;&quot;&gt;[first player]&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="140" y="325" width="70" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-8" value="setGameSettings(GameType, numPlayer)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-8" value="setGameSettings(GameType, numPlayer)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
           <mxGeometry x="0.0028" relative="1" as="geometry">
             <mxPoint x="214.81034482758616" y="344.76" as="sourcePoint" />
             <Array as="points">
@@ -46,7 +46,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-11" value="setColor(HousingColor)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-11" value="setColor(HousingColor)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
           <mxGeometry x="-0.0014" relative="1" as="geometry">
             <mxPoint x="470" y="400" as="sourcePoint" />
             <Array as="points">
@@ -56,7 +56,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-12" value="[on error] invalidNickname()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-12" value="[on error] invalidNickname()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
           <mxGeometry x="-0.0014" relative="1" as="geometry">
             <mxPoint x="470" y="220.00000000000003" as="sourcePoint" />
             <Array as="points">
@@ -66,7 +66,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-14" value="connectionRequest(nickname)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" edge="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-14" value="connectionRequest(nickname)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;" parent="1" edge="1">
           <mxGeometry x="0.0028" relative="1" as="geometry">
             <mxPoint x="220" y="250" as="sourcePoint" />
             <Array as="points">
@@ -76,13 +76,13 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-15" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;" vertex="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-15" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;" parent="1" vertex="1">
           <mxGeometry x="140" y="190" width="360" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-19" value="Client Connection" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-19" value="Client Connection" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="290" y="20" width="110" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="xBakSngQ0B0OOECogv-m-20" value="BuildingShip Phase" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="xBakSngQ0B0OOECogv-m-20" value="BuildingShip Phase" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="290" y="450" width="110" height="50" as="geometry" />
         </mxCell>
       </root>
@@ -152,7 +152,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="f_e5scZqNtzMB9Os3JFi-16" value="reserveComponent(Component)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=horizontal;curved=0;rounded=0;" edge="1" parent="1">
+        <mxCell id="f_e5scZqNtzMB9Os3JFi-16" value="bookComponent(Component)" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=horizontal;curved=0;rounded=0;" edge="1" parent="1">
           <mxGeometry x="-0.0062" relative="1" as="geometry">
             <mxPoint x="301.0866666666666" y="509.58" as="sourcePoint" />
             <Array as="points">
