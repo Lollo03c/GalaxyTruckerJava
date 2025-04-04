@@ -73,6 +73,10 @@ public class FlyBoard {
         return scoreBoard;
     }
 
+    public StateEnum getState(){
+        return state;
+    }
+
     public List<Component> getCoveredComponents() {
         return coveredComponents;
     }
