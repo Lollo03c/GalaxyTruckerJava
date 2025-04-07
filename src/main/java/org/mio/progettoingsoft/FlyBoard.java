@@ -119,6 +119,7 @@ public class FlyBoard {
             throw new CannotAddPlayerException("Cannot add player with username " + username + ". Username already in use");
         if (scoreBoard.stream().anyMatch(player -> player.getColor().equals(color)))
             throw new CannotAddPlayerException("Cannot add player with color " + color + ". Color already in use");
+        // da modificare il numPlayers
         if (scoreBoard.size() == 4)
             throw new CannotAddPlayerException("Cannot add player. The game is full");
 
@@ -127,14 +128,6 @@ public class FlyBoard {
         if (scoreBoard.size() == 4){
             state = StateEnum.BUILDING_SHIP;
         }
-    }
-
-    public void StartGame() {
-
-    }
-
-    public void playAdventureCard() {
-
     }
 
     //    private  List<Optional<Player>> circuit;

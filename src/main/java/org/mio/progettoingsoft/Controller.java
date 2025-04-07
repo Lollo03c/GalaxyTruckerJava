@@ -9,6 +9,15 @@ import org.mio.progettoingsoft.exceptions.NoPowerException;
 import java.util.*;
 
 public class Controller {
+
+    public Controller() {
+    }
+
+    public void addPlayer(Game game, String nickname){
+
+    }
+
+    /*
     private final FlyBoard flyBoard;
 
     public static void main(String[] args) {
@@ -440,5 +449,5 @@ public class Controller {
             }
         }
     }
-
+*/
 }
