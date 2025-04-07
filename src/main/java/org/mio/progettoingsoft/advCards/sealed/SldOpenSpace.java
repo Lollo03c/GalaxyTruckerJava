@@ -21,6 +21,9 @@ public final class SldOpenSpace extends SldAdvCard{
         return "Open Space";
     }
 
+    // identifies all the players with no power (only the ones with no engines and no double engines/no batteries to
+    // activate them), they will be removed by the finish method (still to be implemented)
+    // sets the card state to ENGINE_CHOICE (to accept calls by the players)
     public void init(FlyBoard board) {
         if(board.getState() != StateEnum.DRAW_CARD){
             throw new IllegalStateException("Illegal state: " + board.getState());
@@ -28,8 +31,10 @@ public final class SldOpenSpace extends SldAdvCard{
         noPowerPlayers = board.getScoreBoard().stream()
                 .filter(player ->
                         player.getShipBoard().getBaseEnginePower() == 0 &&
-                        player.getShipBoard().getDoubleEngine().isEmpty()
+                                (player.getShipBoard().getDoubleEngine().isEmpty() ||
+                                        player.getShipBoard().getQuantBatteries() <= 0)
                 ).toList();
+        // allowedPlayers is a new list because the score board will be modified by the applyEffect
         this.allowedPlayers = new ArrayList<>(board.getScoreBoard());
         allowedPlayers.removeAll(noPowerPlayers);
         this.playerIterator = allowedPlayers.iterator();
@@ -37,6 +42,10 @@ public final class SldOpenSpace extends SldAdvCard{
         this.state = CardState.ENGINE_CHOICE;
     }
 
+    // must be called right after init with the right player
+    // starting from the leader, it activates the double engines (if possible) and moves the player
+    // if the player is the last, it sets the card state to FINALIZED (to accept only finish calls)
+    // else, it sets the card state to ENGINE_CHOICE to accept other calls with next players
     public void applyEffect(FlyBoard board, Player player, int numDoubleEngines) {
         if(this.state != CardState.ENGINE_CHOICE) {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
@@ -68,14 +77,14 @@ public final class SldOpenSpace extends SldAdvCard{
                 throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't play " + this.getCardName() + " at the moment");
             }
         }
-
         if(playerIterator.hasNext()) {
-            this.state = CardState.APPLYING;
+            this.state = CardState.ENGINE_CHOICE;
         }else{
             this.state = CardState.FINALIZED;
         }
     }
 
+    // removes the players with no power
     public void finish(FlyBoard board) {
         if(this.state != CardState.FINALIZED){
             throw new IllegalStateException("Illegal state for 'finish': " + this.state);

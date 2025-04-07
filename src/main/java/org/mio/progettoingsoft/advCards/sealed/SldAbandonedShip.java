@@ -24,6 +24,7 @@ public final class SldAbandonedShip extends SldAdvCard {
         this.crewLost = crewLost;
     }
 
+    // it initializes the list of players that can play the card (crew > crewLost) and set the card state CREW_REMOVE_CHOICE
     public void init(FlyBoard board) {
         if(board.getState() != StateEnum.DRAW_CARD){
             throw new IllegalStateException("Illegal state: " + board.getState());
@@ -36,6 +37,9 @@ public final class SldAbandonedShip extends SldAdvCard {
         this.playerIterator = allowedPlayers.iterator();
     }
 
+    // must be called after the init with the right player
+    // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
+    // else, it does nothing, and it's ready for another call with the next player
     public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Integer[]> housingCordinatesList) {
         if(this.state != CardState.CREW_REMOVE_CHOICE) {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);

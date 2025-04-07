@@ -15,6 +15,7 @@ public final class SldEpidemic extends SldAdvCard {
         return "Epidemic";
     }
 
+    // all players have to play the card, so all of them are added to the list
     public void init(FlyBoard board){
         if(board.getState() != StateEnum.DRAW_CARD){
             throw new IllegalStateException("Illegal state: " + board.getState());
@@ -23,6 +24,7 @@ public final class SldEpidemic extends SldAdvCard {
         this.state = CardState.APPLYING;
     }
 
+    // apply the effect of the card on all players (this card doesn't need player interaction)
     public void applyEffect(FlyBoard board){
         for (Player player : this.allowedPlayers) {
             Set<Component> toDoRemove = new HashSet<>();
