@@ -11,7 +11,7 @@ public class Player {
     private ShipBoard shipBoard;
     private int discardedComponents;
     private Component inHand;
-
+    private boolean isRunning;
     private final View view;
 
 
@@ -22,6 +22,7 @@ public class Player {
         shipBoard = new ShipBoard(color);
         discardedComponents = 0;
         inHand = null;
+        this.isRunning = false;
 
         view = new View(this);
     }
@@ -51,8 +52,6 @@ public class Player {
     public Component getInHand() {
         return inHand;
     }
-
-
 
     public void setInHand(Component inHand) {
         this.inHand = inHand;
@@ -158,5 +157,13 @@ public class Player {
             return false;
         Player tmp = (Player) other;
         return this.username.equals(tmp.getUsername());
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        this.isRunning = running;
     }
 }

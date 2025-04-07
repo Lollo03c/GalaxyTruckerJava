@@ -19,6 +19,8 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     public abstract void init(FlyBoard board);
     // this method must be called right after applying the effect of the card on ALL the available players, it sets the game state DRAW_CARD
     public abstract void finish(FlyBoard board);
+    public CardState getState() {return state;}
+    public Player getActualPlayer() {return actualPlayer;}
 
     public SldAdvCard(int id, int level){
         this.id = id;

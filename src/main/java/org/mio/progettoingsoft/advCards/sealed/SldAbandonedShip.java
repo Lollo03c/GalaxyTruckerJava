@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.advCards.sealed;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.StateEnum;
+import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 
 import javax.swing.plaf.nimbus.State;
@@ -41,13 +42,18 @@ public final class SldAbandonedShip extends SldAdvCard {
     // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
     // else, it does nothing, and it's ready for another call with the next player
     public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Integer[]> housingCordinatesList) {
-        if(this.state != CardState.CREW_REMOVE_CHOICE) {
+        if(this.state != CardState.CREW_REMOVE_CHOICE || board.getState() != StateEnum.CARD_EFFECT) {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
         }
         if(!board.getScoreBoard().contains(player)) {
             throw new BadPlayerException("The player " + player.getUsername() + " is not in the board");
         }
-
+        if(housingCordinatesList == null){
+            throw new BadParameterException("List is null");
+        }
+        if(housingCordinatesList.isEmpty() && wantsToActivate){
+            throw new BadParameterException("List is empty");
+        }
         this.state = CardState.APPLYING;
 
         if(playerIterator.hasNext()){
@@ -68,6 +74,8 @@ public final class SldAbandonedShip extends SldAdvCard {
             }else{
                 throw new BadPlayerException(this.getCardName());
             }
+        }else{
+            this.state = CardState.FINALIZED;
         }
     }
 
