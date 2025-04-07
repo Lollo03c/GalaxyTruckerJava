@@ -1,7 +1,12 @@
 il Client(un nuovo giocatore) si connette al server
-    il server verifica che il giocatore si posso unire
+    il server comunica al client se ci sono partite in fase di avvio o meno
+    se non ci sono partite in fase di avvio :
+    - il client crea una nuova partita -> createNewGame(numPlayers, ilSuoNickname)
+    altrimenti :
+    - il client si aggiunge ad una nuova partita -> logInGame(ilSuoNickname)
 
-raggiunti i 4 giocatori neccessari alla partita inizia la fase di costruzione della neva
+
+raggiunti i 4 giocatori neccessari alla  partita inizia la fase di costruzione della neva
 COSTRUZIONE DELLA NAVE
     -il client chiede quali componenti sono disponibili (divisi fra coperti e scoperti)
     -ne pesca uno e comunica al server (controller) quale, che lo blocca cosi che gli altri giocatori non lo possano prendere
