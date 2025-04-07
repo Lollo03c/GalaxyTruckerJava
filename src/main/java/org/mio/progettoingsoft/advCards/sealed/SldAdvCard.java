@@ -6,7 +6,7 @@ import org.mio.progettoingsoft.Player;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, SldOpenSpace, SldSlavers{
+public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, SldOpenSpace, SldSlavers, SldAbandonedStation, SldCombatZone{
     private final int level;
     private final int id;
     protected List<Player> allowedPlayers;
@@ -25,6 +25,7 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     public SldAdvCard(int id, int level){
         this.id = id;
         this.level = level;
+        this.state = CardState.IDLE;
     }
 }
 
