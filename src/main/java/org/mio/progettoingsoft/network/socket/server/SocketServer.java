@@ -57,7 +57,11 @@ public class SocketServer {
     public void broadcastError() {
         synchronized (this.clients) {
             for (VirtualViewSocket client : clients) {
-                client.reportError("already reset");
+                try {
+                    client.reportError("already reset");
+                } catch (java.rmi.RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

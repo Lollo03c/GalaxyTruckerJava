@@ -13,10 +13,6 @@ public class Controller {
     public Controller() {
     }
 
-    public void addPlayer(Game game, String nickname){
-
-    }
-
     /*
     private final FlyBoard flyBoard;
 

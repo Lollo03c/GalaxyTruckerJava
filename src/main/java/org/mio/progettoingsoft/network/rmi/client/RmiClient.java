@@ -29,20 +29,48 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
     }
 
     private void run() throws RemoteException {
+        // Richiesta di connessione del client al server
         this.server.connect(this);
 
-        this.runCli();
+        // Richiesta di entrare nel gioco: il client viene messo in una partita nuova o in una in attesa
+        this.server.join(this);
     }
 
-    private void runCli() throws RemoteException {
-        System.out.println("Connesso al server.");
-
+    @Override
+    public void requestGameSetup() throws RemoteException {
         Scanner scan = new Scanner(System.in);
 
-        while (true) {
-            System.out.print("Inserisci nickname: ");
-            String nickname = scan.nextLine();
-            server.join(nickname, this);
-        }
+        System.out.print("Non ci sono partite esistenti.\nCreazione di una partita in corso ...\nInserisci nickname: ");
+        String nickname = scan.nextLine();
+
+        System.out.print("Quanti giocatori partecipano alla partita? ");
+        int numPlayers = scan.nextInt();
+
+        server.createGame(this, nickname, numPlayers);
+    }
+
+    @Override
+    public void requestNickname() throws RemoteException {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.print("Inserisci nickname: ");
+        String nickname = scan.nextLine();
+
+        server.joinGame(this, nickname);
+    }
+
+    @Override
+    public void notify(String message) throws RemoteException {
+        System.out.print(message + "\n");
+    }
+
+    @Override
+    public void showUpdate(Integer number) {
+
+    }
+
+    @Override
+    public void reportError(String details) throws RemoteException {
+
     }
 }

@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.network.socket.server.VirtualViewSocket;
 
 import java.io.*;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class SocketClient implements VirtualViewSocket {
@@ -68,7 +69,7 @@ public class SocketClient implements VirtualViewSocket {
     }
 
 
-    public void reportError(String details) {
+    public void reportError(String details) throws RemoteException {
         synchronized(screenLock) {
             // TODO. Attenzione, questo può causare data race con il thread dell'interfaccia o un altro thread!
             System.err.print("\n[ERROR] " + details + "\n> ");
@@ -85,5 +86,20 @@ public class SocketClient implements VirtualViewSocket {
         OutputStreamWriter socketTx = new OutputStreamWriter(serverSocket.getOutputStream());
 
         new SocketClient(new BufferedReader(socketRx), new BufferedWriter(socketTx)).run();
+    }
+
+    @Override
+    public void requestGameSetup() throws RemoteException {
+
+    }
+
+    @Override
+    public void requestNickname() throws RemoteException {
+
+    }
+
+    @Override
+    public void notify(String message) throws RemoteException {
+
     }
 }

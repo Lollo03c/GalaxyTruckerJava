@@ -1,11 +1,11 @@
 package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.Controller;
-import org.mio.progettoingsoft.Game;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 public class SocketClientHandler implements VirtualViewSocket {
 
@@ -34,7 +34,7 @@ public class SocketClientHandler implements VirtualViewSocket {
                 case "newPlayer" -> {
                     String nickname = input.readLine();
                     System.err.print("New player: " + nickname );
-                    this.controller.addPlayer(new Game(4,nickname), nickname);
+                    //this.controller.addPlayer(new Game(4,nickname), nickname);
                 }
                 case "add" -> {
                     System.err.println("add request received");
@@ -67,9 +67,24 @@ public class SocketClientHandler implements VirtualViewSocket {
     }
 
     @Override
-    public void reportError(String details) {
+    public void reportError(String details) throws RemoteException {
         this.output.println("error");
         this.output.println(details);
         this.output.flush();
+    }
+
+    @Override
+    public void requestGameSetup() throws RemoteException {
+
+    }
+
+    @Override
+    public void requestNickname() throws RemoteException {
+
+    }
+
+    @Override
+    public void notify(String message) throws RemoteException {
+
     }
 }

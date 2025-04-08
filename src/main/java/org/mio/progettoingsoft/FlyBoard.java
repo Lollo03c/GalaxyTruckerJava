@@ -115,6 +115,7 @@ public class FlyBoard {
 
     // adds a player with the passed user and color (for the main housing), throws an exc if necessary
     public void addPlayer(String username, HousingColor color) throws CannotAddPlayerException {
+        /*
         if (scoreBoard.stream().anyMatch(player -> player.getUsername().equals(username)))
             throw new CannotAddPlayerException("Cannot add player with username " + username + ". Username already in use");
         if (scoreBoard.stream().anyMatch(player -> player.getColor().equals(color)))
@@ -122,7 +123,7 @@ public class FlyBoard {
         // da modificare il numPlayers
         if (scoreBoard.size() == 4)
             throw new CannotAddPlayerException("Cannot add player. The game is full");
-
+        */
         scoreBoard.add(new Player(username, color));
 
         if (scoreBoard.size() == 4){

@@ -41,15 +41,27 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     public void connect(VirtualViewRmi client) throws RemoteException {
         synchronized (this.clients) {
             this.clients.add(client);
+            client.notify("Connesso al server.");
+            System.out.println("Client connesso: " + client.toString());
         }
     }
 
     @Override
-    public void join(String nickname, VirtualView client) throws RemoteException {
-        if(lobby.checkAvailableGames().isPresent()) {
-            lobby.createGame(nickname, 4);
+    public void join(VirtualViewRmi client) throws RemoteException {
+        if(lobby.getWaitingGame() == null) {
+            client.requestGameSetup();
         } else {
-            this.controller.addPlayer(.getFirst(), nickname);
+            client.requestNickname();
         }
+    }
+
+    @Override
+    public void createGame(VirtualView client, String nickname, int numPlayers) throws RemoteException {
+        lobby.createGame(client, nickname, numPlayers);
+    }
+
+    @Override
+    public void joinGame(VirtualView client, String nickname) throws RemoteException {
+        lobby.joinGame(client, nickname);
     }
 }
