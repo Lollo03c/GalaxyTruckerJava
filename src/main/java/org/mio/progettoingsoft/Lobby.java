@@ -17,10 +17,11 @@ public class Lobby {
 
     //return the first game with free spots, null otherwise
     public Optional<Game> checkAvailableGames(){
+        return Optional.empty();
     }
 
     public void createGame(String nickname, int numPlayers){
         Game g = new Game(numPlayers, nickname);
-        ongoingGames.put(g,)
+        //ongoingGames.put(g,)
     }
 }
