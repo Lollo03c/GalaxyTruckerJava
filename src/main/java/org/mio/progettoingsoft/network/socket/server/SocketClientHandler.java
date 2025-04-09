@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.Controller;
+import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,9 +61,9 @@ public class SocketClientHandler implements VirtualViewSocket {
 
     // comunicazione dal server al client
     @Override
-    public void showUpdate(Integer number)  {
+    public void update(Message message)  {
         this.output.println("update");
-        this.output.println(number);
+        this.output.println(message);
         this.output.flush();
     }
 
@@ -71,16 +72,6 @@ public class SocketClientHandler implements VirtualViewSocket {
         this.output.println("error");
         this.output.println(details);
         this.output.flush();
-    }
-
-    @Override
-    public void requestGameSetup() throws RemoteException {
-
-    }
-
-    @Override
-    public void requestNickname() throws RemoteException {
-
     }
 
     @Override

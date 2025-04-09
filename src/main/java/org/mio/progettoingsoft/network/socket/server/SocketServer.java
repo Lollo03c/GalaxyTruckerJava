@@ -49,7 +49,7 @@ public class SocketServer {
     public void broadcastUpdate(Integer value) {
         synchronized (this.clients) {
             for (var client : this.clients) {
-                client.showUpdate(value);
+                //client.update(value);
             }
         }
     }

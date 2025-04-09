@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network.socket.client;
 
+import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.socket.server.VirtualViewSocket;
 
 import java.io.*;
@@ -34,7 +35,7 @@ public class SocketClient implements VirtualViewSocket {
         while ((line = input.readLine()) != null) {
             // Da notare che i metodi sono chiamati nello stesso modo del server
             switch (line) {
-                case "update" -> this.showUpdate(Integer.parseInt(input.readLine()));
+                //case "update" -> this.update(Integer.parseInt(input.readLine()));
                 case "error" -> this.reportError(input.readLine());
                 default -> System.err.println("[INVALID MESSAGE]");
             }
@@ -59,12 +60,12 @@ public class SocketClient implements VirtualViewSocket {
         }
     }
 
-    public void showUpdate(Integer number) {
+    public void update(Message message) {
         // TODO. Attenzione, questo può causare data race con il thread dell'interfaccia o un altro thread!
         //per evitare data race faccio lock su screenLock un oggetto creato appositamente per non avere problemi
         //quando vado a mostrare gli aggiornamenti nella finestra di interazione con l'utente
         synchronized(screenLock) {
-            System.out.print("\n= " + number + "\n> ");
+            System.out.print("\n= " + message + "\n> ");
         }
     }
 
@@ -86,16 +87,6 @@ public class SocketClient implements VirtualViewSocket {
         OutputStreamWriter socketTx = new OutputStreamWriter(serverSocket.getOutputStream());
 
         new SocketClient(new BufferedReader(socketRx), new BufferedWriter(socketTx)).run();
-    }
-
-    @Override
-    public void requestGameSetup() throws RemoteException {
-
-    }
-
-    @Override
-    public void requestNickname() throws RemoteException {
-
     }
 
     @Override

@@ -1,5 +1,8 @@
 package org.mio.progettoingsoft.network.rmi.client;
 
+import org.mio.progettoingsoft.network.ClientController;
+import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.network.message.RequestSetupMessage;
 import org.mio.progettoingsoft.network.rmi.server.VirtualViewRmi;
 
 import java.rmi.NotBoundException;
@@ -7,14 +10,20 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
     final VirtualServerRmi server;
+    final ClientController clientController;
+    private Queue<Message> serverMessageQueue;
 
     public  RmiClient(VirtualServerRmi server) throws RemoteException {
         super();
         this.server = server;
+        this.clientController = new ClientController(server);
+        this.serverMessageQueue = new ConcurrentLinkedQueue<>();
     }
 
     public static void main(String[] args) throws RemoteException, NotBoundException {
@@ -29,48 +38,54 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
     }
 
     private void run() throws RemoteException {
-        // Richiesta di connessione del client al server
-        this.server.connect(this);
-
-        // Richiesta di entrare nel gioco: il client viene messo in una partita nuova o in una in attesa
-        this.server.join(this);
-    }
-
-    @Override
-    public void requestGameSetup() throws RemoteException {
         Scanner scan = new Scanner(System.in);
 
-        System.out.print("Non ci sono partite esistenti.\nCreazione di una partita in corso ...\nInserisci nickname: ");
+        System.out.print("Per poterti connettere al server inserisci un nickname: ");
         String nickname = scan.nextLine();
 
-        System.out.print("Quanti giocatori partecipano alla partita? ");
-        int numPlayers = scan.nextInt();
+        this.server.connect(this, nickname);
 
-        server.createGame(this, nickname, numPlayers);
+        startMessageProcessor();
     }
 
-    @Override
-    public void requestNickname() throws RemoteException {
-        Scanner scan = new Scanner(System.in);
+    private void startMessageProcessor() {
+        Thread processor = new Thread(() -> {
+            while (true) {
+                Message message = serverMessageQueue.poll();
 
-        System.out.print("Inserisci nickname: ");
-        String nickname = scan.nextLine();
+                if (message != null) {
+                    try {
+                        clientController.handleMessage(message);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 
-        server.joinGame(this, nickname);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+        processor.setDaemon(true); // Imposta il thread come daemon, così verrà terminato quando il programma finisce
+        processor.start();
     }
 
-    @Override
-    public void notify(String message) throws RemoteException {
-        System.out.print(message + "\n");
-    }
 
     @Override
-    public void showUpdate(Integer number) {
-
+    public void update(Message message) {
+        serverMessageQueue.add(message);
     }
 
     @Override
     public void reportError(String details) throws RemoteException {
 
+    }
+
+    @Override
+    public void notify(String message) throws RemoteException {
+        System.out.print(message + "\n");
     }
 }

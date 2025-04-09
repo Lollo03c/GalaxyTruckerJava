@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.socket.client;
 
 import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.server.VirtualViewRmi;
 
 import java.io.BufferedWriter;
@@ -36,17 +37,17 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
+    public void sendInput(Message message) throws RemoteException {
+
+    }
+
+    @Override
     public void createGame(VirtualView client, String nickname, int numPlayers) throws RemoteException {
 
     }
 
     @Override
     public void joinGame(VirtualView client, String nickname) throws RemoteException {
-
-    }
-
-    @Override
-    public void join(VirtualViewRmi client) throws RemoteException {
 
     }
 }

@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.message.Message;
 
 import java.rmi.RemoteException;
 
@@ -9,7 +10,7 @@ import java.rmi.RemoteException;
  */
 public interface VirtualViewSocket extends VirtualView {
     @Override
-    public void showUpdate(Integer number);
+    public void update(Message message);
     @Override
     public void reportError(String details) throws RemoteException;
 }
