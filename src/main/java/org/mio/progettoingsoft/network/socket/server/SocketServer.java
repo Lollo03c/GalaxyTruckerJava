@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.network.socket.server;
 
-import org.mio.progettoingsoft.Controller;
+import org.mio.progettoingsoft.GameController;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -11,12 +11,12 @@ import java.util.List;
 public class SocketServer {
 
     final ServerSocket listenSocket;
-    final Controller controller;
+    final GameController controller;
     final List<SocketClientHandler> clients = new ArrayList<>();
 
     public SocketServer(ServerSocket listenSocket) {
         this.listenSocket = listenSocket;
-        this.controller = new Controller();
+        this.controller = new GameController();
     }
 
     private void runServer() throws IOException {

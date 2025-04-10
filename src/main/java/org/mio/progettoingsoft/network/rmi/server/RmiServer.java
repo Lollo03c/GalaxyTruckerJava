@@ -1,12 +1,9 @@
 package org.mio.progettoingsoft.network.rmi.server;
 
-import org.mio.progettoingsoft.Controller;
-import org.mio.progettoingsoft.Lobby;
+import org.mio.progettoingsoft.GameController;
+import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.VirtualView;
-import org.mio.progettoingsoft.network.message.GameSetupInput;
-import org.mio.progettoingsoft.network.message.JoinedGameMessage;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.RequestSetupMessage;
 import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
 
 import java.rmi.RemoteException;
@@ -19,13 +16,13 @@ import java.util.Map;
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     final Map<VirtualViewRmi, String> clients = new HashMap<>();
 
-    final Controller controller;
-    final Lobby lobby;
+    final GameController gameController;
+    final ServerController serverController;
 
     public RmiServer() throws RemoteException {
         super();
-        this.controller = new Controller();
-        this.lobby = new Lobby();
+        this.gameController = new GameController();
+        this.serverController = new ServerController();
     }
 
     public static void main(String[] args) throws RemoteException {
@@ -62,35 +59,12 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
             * creare solo le partite realmente necessarie.
             */
             // Player is ready to join a game
-            if(lobby.getWaitingGame() == null) {
-                client.update(new RequestSetupMessage(client, nickname));
-            } else {
-                lobby.joinGame(client, nickname);
-                client.update(new JoinedGameMessage(client, nickname));
-            }
+            serverController.addPlayerToGame(client, nickname);
         }
     }
 
     @Override
     public void sendInput(Message message) throws RemoteException {
-        switch (message) {
-            case GameSetupInput gsi -> {
-                GameSetupInput input = (GameSetupInput) message;
-                lobby.createGame(input.getClient(), input.getNickname(), input.getNumPlayers());
-
-                System.out.print("Partita creata da " + input.getNickname() + "\n");
-            }
-            default -> throw new RemoteException();
-        }
-    }
-
-    @Override
-    public void createGame(VirtualView client, String nickname, int numPlayers) throws RemoteException {
-        lobby.createGame(client, nickname, numPlayers);
-    }
-
-    @Override
-    public void joinGame(VirtualView client, String nickname) throws RemoteException {
-        lobby.joinGame(client, nickname);
+        serverController.handleInput(message);
     }
 }

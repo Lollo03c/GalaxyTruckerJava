@@ -13,11 +13,4 @@ public interface VirtualServerRmi extends Remote, VirtualServer {
 
     @Override
     void sendInput(Message message) throws RemoteException;
-
-    // DA ELIMINARE
-    @Override
-    public void createGame(VirtualView client, String nickname, int numPlayers) throws RemoteException;
-
-    @Override
-    void joinGame(VirtualView client, String nickname) throws RemoteException;
 }

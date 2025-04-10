@@ -40,14 +40,4 @@ public class SocketServerHandler implements VirtualServerSocket {
     public void sendInput(Message message) throws RemoteException {
 
     }
-
-    @Override
-    public void createGame(VirtualView client, String nickname, int numPlayers) throws RemoteException {
-
-    }
-
-    @Override
-    public void joinGame(VirtualView client, String nickname) throws RemoteException {
-
-    }
 }

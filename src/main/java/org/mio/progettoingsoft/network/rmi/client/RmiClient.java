@@ -2,7 +2,6 @@ package org.mio.progettoingsoft.network.rmi.client;
 
 import org.mio.progettoingsoft.network.ClientController;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.RequestSetupMessage;
 import org.mio.progettoingsoft.network.rmi.server.VirtualViewRmi;
 
 import java.rmi.NotBoundException;

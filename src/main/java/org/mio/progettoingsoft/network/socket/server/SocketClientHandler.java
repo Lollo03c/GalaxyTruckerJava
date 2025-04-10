@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.network.socket.server;
 
-import org.mio.progettoingsoft.Controller;
+import org.mio.progettoingsoft.GameController;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.BufferedReader;
@@ -10,12 +10,12 @@ import java.rmi.RemoteException;
 
 public class SocketClientHandler implements VirtualViewSocket {
 
-    final Controller controller;
+    final GameController controller;
     final SocketServer server;
     final BufferedReader input; //canale da cui leggo ciò che mi invia il client
     final PrintWriter output; //canale da cui scrivo ciò che voglio inviare al client
 
-    public SocketClientHandler(Controller controller, SocketServer server, BufferedReader input, PrintWriter output) {
+    public SocketClientHandler(GameController controller, SocketServer server, BufferedReader input, PrintWriter output) {
         this.controller = controller;
         this.server = server;
         this.input = input;
