@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.GameController;
+import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.BufferedReader;
@@ -10,19 +11,21 @@ import java.rmi.RemoteException;
 
 public class SocketClientHandler implements VirtualViewSocket {
 
-    final GameController controller;
+    final ServerController serverController;
     final SocketServer server;
     final BufferedReader input; //canale da cui leggo ciò che mi invia il client
     final PrintWriter output; //canale da cui scrivo ciò che voglio inviare al client
 
-    public SocketClientHandler(GameController controller, SocketServer server, BufferedReader input, PrintWriter output) {
-        this.controller = controller;
+    public SocketClientHandler(ServerController controller, SocketServer server, BufferedReader input, PrintWriter output) {
+        this.serverController = controller;
         this.server = server;
         this.input = input;
         this.output = output;
     }
 
     //comunicazione dal client al server
+    //chiamata dal server nel momento della connessione
+
     public void runVirtualView() throws IOException {
         String line;
 
@@ -35,6 +38,8 @@ public class SocketClientHandler implements VirtualViewSocket {
                 case "newPlayer" -> {
                     String nickname = input.readLine();
                     System.err.print("New player: " + nickname );
+                    serverController.addPlayerToGame(this, nickname);
+
                     //this.controller.addPlayer(new Game(4,nickname), nickname);
                 }
                 case "add" -> {

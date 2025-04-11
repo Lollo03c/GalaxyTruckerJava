@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.GameController;
+import org.mio.progettoingsoft.network.ServerController;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -11,12 +12,12 @@ import java.util.List;
 public class SocketServer {
 
     final ServerSocket listenSocket;
-    final GameController controller;
+    final ServerController controller;
     final List<SocketClientHandler> clients = new ArrayList<>();
 
     public SocketServer(ServerSocket listenSocket) {
         this.listenSocket = listenSocket;
-        this.controller = new GameController();
+        this.controller = new ServerController();
     }
 
     private void runServer() throws IOException {
@@ -35,7 +36,7 @@ public class SocketServer {
             synchronized (this.clients){
                 clients.add(handler);
             }
-
+            //thread che mi resta sempre attivo e che legge i messaggi dal server al client
             new Thread(() -> {
                 try {
                     handler.runVirtualView();
@@ -43,6 +44,7 @@ public class SocketServer {
                     throw new RuntimeException(e);
                 }
             }).start();
+
         }
     }
 

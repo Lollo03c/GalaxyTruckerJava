@@ -1,21 +1,30 @@
 package org.mio.progettoingsoft.network.socket.client;
 
+import org.mio.progettoingsoft.network.ClientController;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.socket.server.VirtualViewSocket;
 
 import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SocketClient implements VirtualViewSocket {
     final BufferedReader input;
     final SocketServerHandler output;
     final Object screenLock = new Object();
+    private Queue<Message> serverMessageQueue;
+    final ClientController clientController;
+
+
 
     protected SocketClient(BufferedReader input, BufferedWriter output) {
         this.input = input;
         this.output = new SocketServerHandler(output);
+        this.serverMessageQueue = new ConcurrentLinkedQueue<>();
+        this.clientController = new ClientController(this.output);
     }
 
     private void run() {
@@ -29,19 +38,44 @@ public class SocketClient implements VirtualViewSocket {
         runCli();
     }
 
+    private void runVirtualServer() {
+        while (true) {
+            Message message = serverMessageQueue.poll();
+
+            if (message != null) {
+                try {
+                    clientController.handleMessage(message);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
+/*
     // comunicazione dal server al client
     private void runVirtualServer() throws IOException {
         String line;
         while ((line = input.readLine()) != null) {
             // Da notare che i metodi sono chiamati nello stesso modo del server
+
             switch (line) {
                 //case "update" -> this.update(Integer.parseInt(input.readLine()));
                 case "error" -> this.reportError(input.readLine());
                 default -> System.err.println("[INVALID MESSAGE]");
             }
         }
-    }
+    }*/
 
+
+    //thread che rimane in ascolto della CLI del client
     private void runCli()  {
         Scanner scan = new Scanner(System.in);
         //aspetto che inserisca il nome per loggarlo nella partita
