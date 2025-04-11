@@ -39,7 +39,7 @@ public class Lobby {
         newGame.addPlayer(nickname, HousingColor.BLUE);
 
         int remaining = newGame.leftPlayers();
-        client.notify("Partita creata. In attesa di " + remaining + " giocator" + (remaining == 1 ? "e." : "i."));
+        client.notify("Waiting for " + remaining + " player" + (remaining != 1 ? "s." : "."));
     }
 
     public void joinGame(VirtualView client, String nickname) throws RemoteException {
@@ -54,24 +54,24 @@ public class Lobby {
             case 3 -> assignedColor = HousingColor.GREEN;
             case 4 -> assignedColor = HousingColor.YELLOW;
             default -> {
-                client.notify("Errore nell'assegnazione del colore.");
+                client.notify("Error in color assignment.");
                 return;
             }
         }
 
         waitingGame.addPlayer(nickname, assignedColor);
-        client.notify("Sei stato aggiunto alla partita!");
+        client.notify("You joined the game!");
 
         int remaining;
         if (players.size() < waitingGame.getNumPlayers()) {
             remaining = waitingGame.leftPlayers();
             for (VirtualView v : players) {
-                v.notify("In attesa di " + remaining + " giocator" + (remaining == 1 ? "e." : "i."));
+                v.notify("Waiting for " + remaining + " player" + (remaining != 1 ? "s." : "."));
             }
         } else {
             for (VirtualView v : players) {
                 waitingGame = null;
-                v.notify("La partita è al completo. Il gioco inizierà a breve.");
+                v.notify("The game is full. The will start shortly.");
             }
         }
     }

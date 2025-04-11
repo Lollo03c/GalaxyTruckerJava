@@ -30,7 +30,7 @@ public class ServerController {
                 GameSetupInput input = (GameSetupInput) message;
                 lobby.createGame(input.getClient(), input.getNickname(), input.getNumPlayers());
 
-                System.out.print("Partita creata da " + input.getNickname() + "\n");
+                System.out.print("Game created " + input.getNickname() + "\n");
             }
             default -> throw new RemoteException();
         }

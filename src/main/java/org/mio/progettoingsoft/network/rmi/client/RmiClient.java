@@ -39,12 +39,12 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
     private void run() throws RemoteException {
         Scanner scan = new Scanner(System.in);
 
-        System.out.print("Per poterti connettere al server inserisci un nickname: ");
+        System.out.print("To be able to connect to the server, enter a nickname: ");
         String nickname = scan.nextLine();
 
-        this.server.connect(this, nickname);
-
         startMessageProcessor();
+
+        this.server.connect(this, nickname);
     }
 
     private void startMessageProcessor() {

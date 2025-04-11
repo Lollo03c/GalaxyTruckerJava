@@ -44,15 +44,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
             this.clients.put(client, nickname);
 
             // Debugging purpose
-            client.notify("Connesso al server.");
+            client.notify("Connected to the server.");
 
-            System.out.println("Client connesso: " + nickname);
-
-            for (VirtualView c : clients.keySet()) {
-                if (c != client) {
-                    c.notify(nickname + " si è connesso al server.");
-                }
-            }
+            System.out.println(nickname + " connected.");
 
             /*
             * Dovremmo aggiungere una queue per gestire l'accesso di più client e gestirli sequenzialmente in modo da
