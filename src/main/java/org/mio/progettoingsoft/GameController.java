@@ -1,20 +1,8 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.advCards.*;
-import org.mio.progettoingsoft.components.*;
-import org.mio.progettoingsoft.exceptions.BadCardException;
-import org.mio.progettoingsoft.exceptions.BadParameterException;
-import org.mio.progettoingsoft.exceptions.NoPowerException;
+public class GameController {
 
-import java.util.*;
-
-public class Controller {
-
-    public Controller() {
-    }
-
-    public void addPlayer(Game game, String nickname){
-
+    public GameController() {
     }
 
     /*

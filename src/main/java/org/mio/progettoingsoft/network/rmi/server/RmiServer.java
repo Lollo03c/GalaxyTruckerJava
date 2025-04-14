@@ -1,27 +1,28 @@
 package org.mio.progettoingsoft.network.rmi.server;
 
-import org.mio.progettoingsoft.Controller;
-import org.mio.progettoingsoft.Lobby;
+import org.mio.progettoingsoft.GameController;
+import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
-    final List<VirtualViewRmi> clients = new ArrayList<>();
+    final Map<VirtualViewRmi, String> clients = new HashMap<>();
 
-    final Controller controller;
-    final Lobby lobby;
+    final GameController gameController;
+    final ServerController serverController;
 
     public RmiServer() throws RemoteException {
         super();
-        this.controller = new Controller();
-        this.lobby = new Lobby();
+        this.gameController = new GameController();
+        this.serverController = new ServerController();
     }
 
     public static void main(String[] args) throws RemoteException {
@@ -38,18 +39,26 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void connect(VirtualViewRmi client) throws RemoteException {
+    public void connect(VirtualViewRmi client, String nickname) throws RemoteException {
         synchronized (this.clients) {
-            this.clients.add(client);
+            this.clients.put(client, nickname);
+
+            // Debugging purpose
+            client.notify("Connected to the server.");
+
+            System.out.println(nickname + " connected.");
+
+            /*
+            * Dovremmo aggiungere una queue per gestire l'accesso di più client e gestirli sequenzialmente in modo da
+            * creare solo le partite realmente necessarie.
+            */
+            // Player is ready to join a game
+            serverController.addPlayerToGame(client, nickname);
         }
     }
 
     @Override
-    public void join(String nickname, VirtualView client) throws RemoteException {
-        if(lobby.checkAvailableGames().isPresent()) {
-            lobby.createGame(nickname, 4);
-        } else {
-            this.controller.addPlayer(.getFirst(), nickname);
-        }
+    public void sendInput(Message message) throws RemoteException {
+        serverController.handleInput(message);
     }
 }

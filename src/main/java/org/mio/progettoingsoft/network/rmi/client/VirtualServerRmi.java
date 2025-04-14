@@ -2,14 +2,15 @@ package org.mio.progettoingsoft.network.rmi.client;
 
 import org.mio.progettoingsoft.network.VirtualServer;
 import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.server.VirtualViewRmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface VirtualServerRmi extends Remote, VirtualServer {
-    void connect(VirtualViewRmi client) throws RemoteException;
+    void connect(VirtualViewRmi client, String nickname) throws RemoteException;
 
     @Override
-    public void join(String nickname , VirtualView client ) throws RemoteException;
+    void sendInput(Message message) throws RemoteException;
 }
