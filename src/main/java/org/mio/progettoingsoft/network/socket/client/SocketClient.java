@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.socket.client;
 
 import org.mio.progettoingsoft.network.ClientController;
+import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.socket.server.VirtualViewSocket;
 
@@ -12,19 +13,20 @@ import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SocketClient implements VirtualViewSocket {
-    final BufferedReader input;
     final SocketServerHandler output;
     final Object screenLock = new Object();
-    private Queue<Message> serverMessageQueue;
+    final private Queue<SerMessage> serverMessageQueue2;
     final ClientController clientController;
+    ObjectInputStream inputObject;
 
 
 
-    protected SocketClient(BufferedReader input, BufferedWriter output) {
-        this.input = input;
-        this.output = new SocketServerHandler(output);
-        this.serverMessageQueue = new ConcurrentLinkedQueue<>();
+
+    protected SocketClient(Socket socket) throws IOException {
+        this.output = new SocketServerHandler(new ObjectOutputStream(socket.getOutputStream()));
+        this.serverMessageQueue2 = new ConcurrentLinkedQueue<>();
         this.clientController = new ClientController(this.output);
+        inputObject = new ObjectInputStream(socket.getInputStream());
     }
 
     private void run() {
@@ -39,17 +41,21 @@ public class SocketClient implements VirtualViewSocket {
     }
 
     private void runVirtualServer() {
-        while (true) {
-            Message message = serverMessageQueue.poll();
-
-            if (message != null) {
-                try {
-                    clientController.handleMessage(message);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+        String line;
+        while (true){
+            try{
+                SerMessage message = (SerMessage) inputObject.readObject();
+                if(message != null ){
+                    synchronized (screenLock){
+                        //serverMessageQueue.add(SerMessage);
+                        clientController.handleMessage2(this,message);
+                    }
                 }
             }
-
+            catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+                break;
+            }
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -59,22 +65,6 @@ public class SocketClient implements VirtualViewSocket {
         }
     }
 
-/*
-    // comunicazione dal server al client
-    private void runVirtualServer() throws IOException {
-        String line;
-        while ((line = input.readLine()) != null) {
-            // Da notare che i metodi sono chiamati nello stesso modo del server
-
-            switch (line) {
-                //case "update" -> this.update(Integer.parseInt(input.readLine()));
-                case "error" -> this.reportError(input.readLine());
-                default -> System.err.println("[INVALID MESSAGE]");
-            }
-        }
-    }*/
-
-
     //thread che rimane in ascolto della CLI del client
     private void runCli()  {
         Scanner scan = new Scanner(System.in);
@@ -82,6 +72,7 @@ public class SocketClient implements VirtualViewSocket {
         System.out.println("Insert nickname");
         String nickname = scan.next();
         this.output.newPlayer(nickname);
+        //da modificare questa parte !!!!
         while (true) {
             System.out.print("> ");
             int command = scan.nextInt();
@@ -95,11 +86,8 @@ public class SocketClient implements VirtualViewSocket {
     }
 
     public void update(Message message) {
-        // TODO. Attenzione, questo può causare data race con il thread dell'interfaccia o un altro thread!
-        //per evitare data race faccio lock su screenLock un oggetto creato appositamente per non avere problemi
-        //quando vado a mostrare gli aggiornamenti nella finestra di interazione con l'utente
-        synchronized(screenLock) {
-            System.out.print("\n= " + message + "\n> ");
+        synchronized (screenLock) {
+            //serverMessageQueue.add(message);
         }
     }
 
@@ -111,16 +99,16 @@ public class SocketClient implements VirtualViewSocket {
         }
     }
 
+    @Override
+    public void update2(SerMessage message) throws RemoteException {
+
+    }
+
     public static void main(String[] args) throws IOException {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
-
         Socket serverSocket = new Socket(host, port);
-
-        InputStreamReader socketRx = new InputStreamReader(serverSocket.getInputStream());
-        OutputStreamWriter socketTx = new OutputStreamWriter(serverSocket.getOutputStream());
-
-        new SocketClient(new BufferedReader(socketRx), new BufferedWriter(socketTx)).run();
+        new SocketClient(serverSocket).run();
     }
 
     @Override

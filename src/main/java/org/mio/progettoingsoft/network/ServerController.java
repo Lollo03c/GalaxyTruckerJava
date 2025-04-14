@@ -45,6 +45,7 @@ public class ServerController {
         switch (message) {
             case NewPlayerMessage npm -> {
                 addPlayerToGame2(client, npm.getNickname());
+                System.out.println("New player added" + message.getNickname() + "\n");
             }
             case GameSetupInput2 gsi2 -> {
                 GameSetupInput2 input = (GameSetupInput2) message;
