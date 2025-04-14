@@ -15,4 +15,9 @@ public abstract class LoseSomethingPenalty extends Penalty{
             default -> null;
         };
     }
+
+    @Override
+    public int getAmount() {
+        return amount;
+    }
 }

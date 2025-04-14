@@ -721,8 +721,80 @@ public class ShipBoard {
 
     public float getMaximumFirePower(){
         return (float) getComponentsStream()
-                .mapToDouble(component-> component.getFirePower())
+                .mapToDouble(Component::getFirePower)
                 .sum();
+    }
+
+    public void keepPart(int row, int col){
+        List<Set<Component>> multiple = getMultiplePieces();
+        int partToKeep = -1;
+        for(int i = 0; i < multiple.size(); i++){
+            Set<Component> set = multiple.get(i);
+            for(Component c : set){
+                if(c.getRow() == row && c.getColumn() == col){
+                    partToKeep = i;
+                    break;
+                }
+            }
+            if(partToKeep != -1){
+                break;
+            }
+        }
+        if(partToKeep == -1){
+            throw new BadParameterException("No components at row " + row + " and column " + col);
+        }
+        for(int i = 0; i < multiple.size(); i++){
+            if(i != partToKeep){
+                Set<Component> set = multiple.get(i);
+                for(Component c : set){
+                    this.removeComponent(c.getRow(), c.getColumn());
+                }
+            }
+        }
+    }
+
+    public void removeGoods(int amount){
+        GoodType nowRemoving = GoodType.RED;
+        int i = amount;
+        List<Component> depots = this.getComponentsStream()
+                .filter(c -> c.getType() == ComponentType.DEPOT)
+                .toList();
+        for (Component component : depots) {
+            while (i > 0) {
+                if (component.removeGood(nowRemoving)) i--;
+                else break;
+            }
+        }
+        if (i > 0) {
+            nowRemoving = GoodType.YELLOW;
+            for (Component component : depots) {
+                while (i > 0) {
+                    if (component.removeGood(nowRemoving)) i--;
+                    else break;
+                }
+            }
+            if (i > 0) {
+                nowRemoving = GoodType.GREEN;
+                for (Component component : depots) {
+                    while (i > 0) {
+                        if (component.removeGood(nowRemoving)) i--;
+                        else break;
+                    }
+                }
+                if (i > 0) {
+                    nowRemoving = GoodType.BLUE;
+                    for (Component component : depots) {
+                        while (i > 0) {
+                            if (component.removeGood(nowRemoving)) i--;
+                            else break;
+                        }
+                    }
+                    if (i > 0) {
+                        this.removeEnergy(i);
+                    }
+                }
+            }
+        }
     }
 }
 

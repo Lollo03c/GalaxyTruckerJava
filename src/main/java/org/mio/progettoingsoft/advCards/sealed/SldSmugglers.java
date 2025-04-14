@@ -1,34 +1,39 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
-import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.StateEnum;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public final class SldSlavers extends SldAdvCard {
+public final class SldSmugglers extends SldAdvCard {
+    private final int stolenGoods;
+    private final List<GoodType> goods;
     private final int strength;
-    private final int credits;
     private final int daysLost;
 
-    @Override
-    public String getCardName() {
-        return "Slavers";
-    }
-
-    public SldSlavers(int id, int level, int strength, int credits, int daysLost) {
+    public SldSmugglers(int id, int level, int stolenGoods, List<GoodType> goods, int strength, int daysLost) {
         super(id, level);
+        this.stolenGoods = stolenGoods;
+        this.goods = goods;
         this.strength = strength;
-        this.credits = credits;
         this.daysLost = daysLost;
     }
 
+    @Override
+    public String getCardName() {
+        return "Smugglers";
+    }
+
+    @Override
     public void init(FlyBoard board) {
         if (board.getState() != StateEnum.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
-        this.allowedPlayers = board.getScoreBoard();
+        allowedPlayers = board.getScoreBoard();
         this.playerIterator = allowedPlayers.iterator();
         if (this.playerIterator.hasNext()) {
             this.actualPlayer = this.playerIterator.next();
@@ -37,18 +42,6 @@ public final class SldSlavers extends SldAdvCard {
         }
         this.state = CardState.COMPARING;
     }
-
-    /* !!! Card workflow after init !!! */
-    /*
-    - for each player, while the card is not defeated:
-        - comparePlayer:
-            - if >0 the card can be defeated with no extra power: the next state is directly APPLYING
-            - if <=0 the card is not defeated, the player will choose if activate double drills to defeat: the next state is DRILL_CHOICE
-        - applyEffect:
-            - if (with or without activation) the power is > strength the card is defeated, gives rewards and skip to finish (FINALIZED)
-            - if (with or without activation) the power is = strength the card is not defeated but the player has no penalties (COMPARING for next player)
-            - if (with or without activation) the power is < strength the player is defeated (CREW_REMOVE_CHOICE and removeCrew method, then COMPARING for next player)
-     */
 
     public int comparePower(FlyBoard board, Player player) {
         if (this.state != CardState.COMPARING) {
@@ -82,9 +75,9 @@ public final class SldSlavers extends SldAdvCard {
                 if (coordinatesDoubleToActivate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
                     throw new NotEnoughBatteriesException();
                 }
-                for (int i = 0; i < coordinatesDoubleToActivate.size(); i++) {
-                    int row = coordinatesDoubleToActivate.get(i)[0];
-                    int col = coordinatesDoubleToActivate.get(i)[1];
+                for (Integer[] integers : coordinatesDoubleToActivate) {
+                    int row = integers[0];
+                    int col = integers[1];
                     power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
                 }
                 this.state = CardState.APPLYING;
@@ -92,38 +85,21 @@ public final class SldSlavers extends SldAdvCard {
             if (power > this.strength) {
                 if (wantsToActivate) {
                     board.moveDays(actualPlayer, -this.daysLost);
-                    actualPlayer.addCredits(this.credits);
+                    actualPlayer.giveGoods(goods);
+                    this.state = CardState.GOODS_PLACEMENT;
+                }else{
+                    this.state = CardState.FINALIZED;
                 }
-                this.state = CardState.FINALIZED;
+
             } else if (power < this.strength) {
-                this.state = CardState.CREW_REMOVE_CHOICE;
+                actualPlayer.getShipBoard().removeGoods(this.stolenGoods);
+                this.nextPlayer();
             } else {
                 this.nextPlayer();
             }
         }else{
             throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
         }
-    }
-
-    public void removeCrew(FlyBoard board, Player player, List<Integer[]> housingCordinatesList) {
-        if(this.state != CardState.CREW_REMOVE_CHOICE){
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (player.equals(this.actualPlayer)) {
-            if(!housingCordinatesList.isEmpty()){
-                for(int i = 0; i < housingCordinatesList.size(); i++){
-                    int row = housingCordinatesList.get(i)[0];
-                    int col = housingCordinatesList.get(i)[1];
-                    board.getPlayerByUsername(actualPlayer.getUsername()).get().getShipBoard().getComponent(row, col).removeGuest();
-                }
-                this.nextPlayer();
-            }else{
-                throw new BadPlayerException("Empty list");
-            }
-        }else{
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
-        }
-
     }
 
     private void nextPlayer(){
@@ -135,23 +111,11 @@ public final class SldSlavers extends SldAdvCard {
         }
     }
 
-    // removes players with no crew remaining
+    @Override
     public void finish(FlyBoard board) {
-        if (this.state != CardState.FINALIZED) {
-            throw new IllegalStateException("Illegal state for 'finish': " + this.state);
-        }
-        List<Player> noCrewPlayers = new ArrayList<Player>();
-        for(Player p : board.getScoreBoard()){
-            if(p.getShipBoard().getQuantityGuests() == 0){
-                noCrewPlayers.add(p);
-            }
-        }
-        if(!noCrewPlayers.isEmpty()){
-            // here the method should call a procedure or throw an exception to remove the players with no power
-            throw new RuntimeException("There's at least a player with no crew, not implemented yet");
-
+        if(this.state != CardState.FINALIZED){
+            throw new IllegalStateException("Illegal state: " + this.state);
         }
         board.setState(StateEnum.DRAW_CARD);
     }
-
 }

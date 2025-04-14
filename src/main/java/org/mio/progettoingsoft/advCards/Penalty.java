@@ -10,11 +10,11 @@ public abstract class Penalty {
     private PenaltyType type;
     public abstract PenaltyType getType();
 
-    public void apply(String json, Player player) throws Exception{
-
-    }
+    public void apply(String json, Player player) throws Exception{}
 
     public void apply(FlyBoard board, Player player){}
 
-    public void apply(FlyBoard board, Player player, List<Integer[]> housingtoRemoveCrew){}
+    public void apply(FlyBoard board, Player player, List<Integer[]> housingToRemoveCrew){}
+
+    public abstract int getAmount();
 }

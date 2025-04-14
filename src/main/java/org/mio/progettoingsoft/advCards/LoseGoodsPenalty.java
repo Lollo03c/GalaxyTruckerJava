@@ -19,49 +19,7 @@ public class LoseGoodsPenalty extends LoseSomethingPenalty {
     }
 
     public void apply(FlyBoard board, Player player) {
-        GoodType nowRemoving = GoodType.RED;
-        int i = amount;
-        List<Component> depots = player.getShipBoard().getComponentsStream()
-                .filter(c -> c.getType() == ComponentType.DEPOT)
-                .toList();
-        for (Component component : depots) {
-            while (i > 0) {
-                if (component.removeGood(nowRemoving)) i--;
-                else break;
-            }
-        }
-        if (i > 0) {
-            nowRemoving = GoodType.YELLOW;
-            for (Component component : depots) {
-                while (i > 0) {
-                    if (component.removeGood(nowRemoving)) i--;
-                    else break;
-                }
-            }
-            if (i > 0) {
-                nowRemoving = GoodType.GREEN;
-                for (Component component : depots) {
-                    while (i > 0) {
-                        if (component.removeGood(nowRemoving)) i--;
-                        else break;
-                    }
-                }
-                if (i > 0) {
-                    nowRemoving = GoodType.BLUE;
-                    for (Component component : depots) {
-                        while (i > 0) {
-                            if (component.removeGood(nowRemoving)) i--;
-                            else break;
-                        }
-                    }
-                    if (i > 0) {
-                        while (i > 0) {
-                            player.getShipBoard().removeEnergy(i);
-                        }
-                    }
-                }
-            }
-        }
+        player.getShipBoard().removeGoods(amount);
     }
 
 }

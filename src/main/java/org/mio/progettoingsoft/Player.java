@@ -1,7 +1,10 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
+
+import java.util.List;
 
 public class Player {
 
@@ -13,6 +16,7 @@ public class Player {
     private Component inHand;
     private boolean isRunning;
     private final View view;
+    private List<GoodType> tmpGoods;
 
 
     public Player(String username, HousingColor color) {
@@ -83,6 +87,10 @@ public class Player {
 
     public void addCredits(int quantity) {
         credits += quantity;
+    }
+
+    public void giveGoods(List<GoodType> goods) {
+        this.tmpGoods = goods;
     }
 
     public void removeCredits(int quantity) {

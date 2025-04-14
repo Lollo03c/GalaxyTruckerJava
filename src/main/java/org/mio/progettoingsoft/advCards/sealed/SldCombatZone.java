@@ -12,11 +12,14 @@ import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class SldCombatZone extends SldAdvCard{
     private final List<CombatLine> lines;
     private int actualLineIndex;
+    private Penalty tempPenalty;
+    private Iterator<Penalty> penaltyIterator;
     public SldCombatZone(int id, int level, List<CombatLine> lines) {
         super(id, level);
         this.lines = new ArrayList<>(lines);
@@ -68,8 +71,6 @@ public final class SldCombatZone extends SldAdvCard{
         }else{
             this.state = CardState.APPLYING;
         }
-
-
     }
 
     public void prepareDrills(FlyBoard board, Player player, List<Integer[]> drillsToActivate) {
@@ -120,19 +121,132 @@ public final class SldCombatZone extends SldAdvCard{
             default -> toApplyPenalty = null;
         }
         if(lines.get(actualLineIndex).getPenalties().size() == 1){
-            Penalty penalty = lines.get(actualLineIndex).getPenalties().getFirst();
-            if(penalty.getType() == PenaltyType.CREW){
+            tempPenalty =  lines.get(actualLineIndex).getPenalties().getFirst();
+            if(tempPenalty.getType() == PenaltyType.CREW){
+                actualPlayer = toApplyPenalty;
                 this.state = CardState.CREW_REMOVE_CHOICE;
             }else{
-                penalty.apply(board, toApplyPenalty);
+                tempPenalty.apply(board, toApplyPenalty);
+                nextLine(board);
             }
         }else{
-            throw new RuntimeException("Still to be implemented");
+            penaltyIterator = lines.get(actualLineIndex).getPenalties().iterator();
+            tempPenalty = penaltyIterator.next();
+            actualPlayer = toApplyPenalty;
+            if(tempPenalty.getType() == PenaltyType.LIGHT_CANNON){
+                this.state = CardState.APPLY_LIGHT_CANNON;
+            }else{
+                this.state = CardState.APPLY_HEAVY_CANNON;
+            }
+        }
+    }
+
+    public void applyRemoveCrew(FlyBoard board, Player player, List<Integer[]> housingToRemoveCrew){
+        if(this.state != CardState.CREW_REMOVE_CHOICE){
+            throw new IllegalStateException("Illegal state: " + this.state);
+        }
+        if(housingToRemoveCrew == null){
+            throw new BadParameterException("List is null");
+        }
+        if(housingToRemoveCrew.isEmpty()){
+            throw new BadParameterException("List is empty");
+        }
+        if(housingToRemoveCrew.size() != tempPenalty.getAmount()){
+            throw new BadParameterException("List has wrong size");
+        }
+        if(player.equals(actualPlayer)){
+            tempPenalty.apply(board, player, housingToRemoveCrew);
+            nextLine(board);
+        }else{
+            throw new BadPlayerException("The player " + player.getUsername() + " cannot play " + this.getCardName() + " at the moment");
+        }
+    }
+
+    public void applyCannon(FlyBoard board, Player player, List<Integer[]> shieldsToActivate){
+        if(this.state != CardState.APPLY_LIGHT_CANNON){
+            throw new IllegalStateException("Illegal state: " + this.state);
+        }
+        if(shieldsToActivate == null){
+            throw new BadParameterException("List is null");
+        }
+        if(shieldsToActivate.isEmpty()){
+            throw new BadParameterException("List is empty");
+        }
+
+
+        // still to be implemented, activating shields and applying the cannon
+
+
+        if(player.getShipBoard().getMultiplePieces().size() > 1){
+            this.state = CardState.PART_CHOICE;
+        }else{
+            this.nextCannon(board);
+        }
+    }
+
+    public void applyCannon(FlyBoard board, Player player){
+        if(this.state != CardState.APPLY_HEAVY_CANNON){
+            throw new IllegalStateException("Illegal state: " + this.state);
+        }
+
+
+        // still to be implemented, applying the cannon
+
+
+        if(player.getShipBoard().getMultiplePieces().size() > 1){
+            this.state = CardState.PART_CHOICE;
+        }else{
+            this.nextCannon(board);
+        }
+    }
+
+    private void nextCannon(FlyBoard board){
+        if(penaltyIterator.hasNext()){
+            tempPenalty = penaltyIterator.next();
+            if(tempPenalty.getType() == PenaltyType.LIGHT_CANNON){
+                this.state = CardState.APPLY_LIGHT_CANNON;
+            }else{
+                this.state = CardState.APPLY_HEAVY_CANNON;
+            }
+        }else{
+            nextLine(board);
+        }
+    }
+
+    private void nextLine(FlyBoard board){
+        List<Player> noPowerPlayers = board.getScoreBoard().stream()
+                .filter(player ->
+                        player.getShipBoard().getBaseEnginePower() == 0 &&
+                                (player.getShipBoard().getDoubleEngine().isEmpty() ||
+                                        player.getShipBoard().getQuantBatteries() <= 0)
+                ).toList();
+        if(!noPowerPlayers.isEmpty()){
+            // here the method should call a procedure or throw an exception to remove the players with no power
+            throw new RuntimeException("There's at least a player with no power, not implemented yet");
+        }
+        List<Player> noCrewPlayers = new ArrayList<Player>();
+        for(Player p : board.getScoreBoard()){
+            if(p.getShipBoard().getQuantityGuests() == 0){
+                noCrewPlayers.add(p);
+            }
+        }
+        if(!noCrewPlayers.isEmpty()){
+            // here the method should call a procedure or throw an exception to remove the players with no power
+            throw new RuntimeException("There's at least a player with no crew, not implemented yet");
+        }
+        if(actualLineIndex < lines.size() - 1){
+            actualLineIndex++;
+            this.state = CardState.APPLYING;
+        }else{
+            this.state = CardState.FINALIZED;
         }
     }
 
     @Override
-    public void finish(FlyBoard board) {
-
+    public void finish(FlyBoard board){
+        if(this.state != CardState.FINALIZED){
+            throw new IllegalStateException("Illegal state: " + this.state);
+        }
+        board.setState(StateEnum.DRAW_CARD);
     }
 }

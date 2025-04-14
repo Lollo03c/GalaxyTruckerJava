@@ -54,6 +54,10 @@ public final class SldAbandonedShip extends SldAdvCard {
         if(housingCordinatesList.isEmpty() && wantsToActivate){
             throw new BadParameterException("List is empty");
         }
+        if(housingCordinatesList.size() != this.crewLost && wantsToActivate){
+            throw new BadParameterException("List has wrong size");
+        }
+
         this.state = CardState.APPLYING;
 
         if(playerIterator.hasNext()){
