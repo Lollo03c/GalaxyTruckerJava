@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.rmi.client;
 
 import org.mio.progettoingsoft.network.ClientController;
+import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.server.VirtualViewRmi;
 
@@ -72,7 +73,10 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
         processor.start();
     }
 
+    @Override
+    public void update2(SerMessage message) throws RemoteException{
 
+    }
     @Override
     public void update(Message message) {
         serverMessageQueue.add(message);

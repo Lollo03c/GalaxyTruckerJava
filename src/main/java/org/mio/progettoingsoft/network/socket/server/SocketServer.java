@@ -23,14 +23,12 @@ public class SocketServer {
     private void runServer() throws IOException {
         Socket clientSocket = null;
         while ((clientSocket = this.listenSocket.accept()) != null) {
-            InputStreamReader socketRx = new InputStreamReader(clientSocket.getInputStream());
-            OutputStreamWriter socketTx = new OutputStreamWriter(clientSocket.getOutputStream());
+
 
             SocketClientHandler handler = new SocketClientHandler(
                     this.controller,
                     this,
-                    new BufferedReader(socketRx),
-                    new PrintWriter(socketTx)
+                    clientSocket
             );
 
             synchronized (this.clients){
@@ -76,6 +74,5 @@ public class SocketServer {
         ServerSocket listenSocket = new ServerSocket(port);
         System.out.println("Listening on " + host + " : " + port);
         new SocketServer(listenSocket).runServer();
-        System.out.println("ciao");
     }
 }

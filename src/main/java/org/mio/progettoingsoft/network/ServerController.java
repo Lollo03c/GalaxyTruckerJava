@@ -1,10 +1,8 @@
 package org.mio.progettoingsoft.network;
 
 import org.mio.progettoingsoft.Lobby;
-import org.mio.progettoingsoft.network.message.GameSetupInput;
-import org.mio.progettoingsoft.network.message.JoinedGameMessage;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.RequestSetupMessage;
+import org.mio.progettoingsoft.network.SerMessage.*;
+import org.mio.progettoingsoft.network.message.*;
 
 import java.rmi.RemoteException;
 
@@ -17,10 +15,10 @@ public class ServerController {
 
     public void addPlayerToGame(VirtualView client, String nickname) throws RemoteException {
         if(lobby.getWaitingGame() == null) {
-            client.update(new RequestSetupMessage(client, nickname));
+            client.update(new RequestSetupMessage( client, nickname));
         } else {
             lobby.joinGame(client, nickname);
-            client.update(new JoinedGameMessage(client, nickname));
+            client.update(new JoinedGameMessage(client , nickname));
         }
     }
 
@@ -28,8 +26,29 @@ public class ServerController {
         switch (message) {
             case GameSetupInput gsi -> {
                 GameSetupInput input = (GameSetupInput) message;
-                lobby.createGame(input.getClient(), input.getNickname(), input.getNumPlayers());
+                lobby.createGame(message.getClient(), input.getNickname(), input.getNumPlayers());
+                System.out.print("Game created " + input.getNickname() + "\n");
+            }
+            default -> throw new RemoteException();
+        }
+    }
 
+    public void addPlayerToGame2(VirtualView client, String nickname) throws RemoteException {
+        if(lobby.getWaitingGame() == null) {
+            client.update2(new RequestSetupMessage2(nickname));
+        } else {
+            lobby.joinGame(client, nickname);
+            client.update2(new JoinedGameMessage2(nickname));
+        }
+    }
+    public void handleInput2(VirtualView client, SerMessage message) throws RemoteException  {
+        switch (message) {
+            case NewPlayerMessage npm -> {
+                addPlayerToGame2(client, npm.getNickname());
+            }
+            case GameSetupInput2 gsi2 -> {
+                GameSetupInput2 input = (GameSetupInput2) message;
+                lobby.createGame(client, message.getNickname(), input.getNumPlayers());
                 System.out.print("Game created " + input.getNickname() + "\n");
             }
             default -> throw new RemoteException();

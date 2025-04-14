@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.network.rmi.server;
 
 import org.mio.progettoingsoft.GameController;
+import org.mio.progettoingsoft.network.SerMessage.GameSetupInput2;
+import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.VirtualView;
 import org.mio.progettoingsoft.network.message.Message;
@@ -61,4 +63,10 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     public void sendInput(Message message) throws RemoteException {
         serverController.handleInput(message);
     }
+
+    @Override
+    public void sendInput2(SerMessage gameSetupInput2) throws RemoteException{
+
+    }
+
 }
