@@ -36,6 +36,7 @@ public class ServerController {
     public void addPlayerToGame2(VirtualView client, String nickname) throws RemoteException {
         if(lobby.getWaitingGame() == null) {
             client.update2(new RequestSetupMessage2(nickname));
+
         } else {
             lobby.joinGame(client, nickname);
             client.update2(new JoinedGameMessage2(nickname));
@@ -45,7 +46,7 @@ public class ServerController {
         switch (message) {
             case NewPlayerMessage npm -> {
                 addPlayerToGame2(client, npm.getNickname());
-                System.out.println("New player added" + message.getNickname() + "\n");
+                System.out.println("New player added " + message.getNickname() + "\n");
             }
             case GameSetupInput2 gsi2 -> {
                 GameSetupInput2 input = (GameSetupInput2) message;

@@ -40,7 +40,7 @@ public class SocketClient implements VirtualViewSocket {
         runCli();
     }
 
-    private void runVirtualServer() {
+    private void    runVirtualServer() {
         String line;
         while (true){
             try{
@@ -73,16 +73,16 @@ public class SocketClient implements VirtualViewSocket {
         String nickname = scan.next();
         this.output.newPlayer(nickname);
         //da modificare questa parte !!!!
-        while (true) {
+        /*while (true) {
             System.out.print("> ");
             int command = scan.nextInt();
-
+            System.out.println("il comando è dentro command in runCli");
             if (command == 0) {
                 this.output.reset();
             } else {
                 this.output.add(command);
             }
-        }
+        }*/
     }
 
     public void update(Message message) {

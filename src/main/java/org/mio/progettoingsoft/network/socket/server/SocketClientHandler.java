@@ -40,7 +40,6 @@ public class SocketClientHandler implements VirtualViewSocket {
         while (true) {
             try {
                 SerMessage mex = (SerMessage) input.readObject();
-                System.out.println("messaggio di np ricevuto");
                 serverController.handleInput2(this,mex);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
