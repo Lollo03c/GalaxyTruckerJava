@@ -29,57 +29,62 @@ public final class SldAbandonedStation extends SldAdvCard {
 
     @Override
     public void init(FlyBoard board) {
-        if(board.getState() != StateEnum.DRAW_CARD){
+        if (board.getState() != StateEnum.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         allowedPlayers = board.getScoreBoard().stream()
                 .filter(player -> player.getShipBoard().getQuantityGuests() >= crewNeeded)
                 .toList();
         playerIterator = allowedPlayers.iterator();
+        if (playerIterator.hasNext()) {
+            actualPlayer = playerIterator.next();
+        } else {
+            throw new RuntimeException("No allowed players");
+        }
         board.setState(StateEnum.CARD_EFFECT);
         this.state = CardState.ACCEPTATION_CHOICE;
     }
 
-    public List<GoodType> applyEffect(FlyBoard board, Player player, boolean wantsToApply){
-        if(this.state != CardState.ACCEPTATION_CHOICE){
+    public List<GoodType> applyEffect(FlyBoard board, Player player, boolean wantsToApply) {
+        if (this.state != CardState.ACCEPTATION_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
         this.state = CardState.APPLYING;
-        if(playerIterator.hasNext()){
-            actualPlayer = playerIterator.next();
-            if(actualPlayer.equals(player)){
-                if(wantsToApply){
-                    board.moveDays(actualPlayer, -daysLost);
-                    this.state = CardState.GOODS_PLACEMENT;
-                    return new ArrayList<>(goods);
-                }else{
+        if (actualPlayer.equals(player)) {
+            if (wantsToApply) {
+                board.moveDays(actualPlayer, -daysLost);
+                this.state = CardState.GOODS_PLACEMENT;
+                return new ArrayList<>(goods);
+            } else {
+                if (playerIterator.hasNext()) {
+                    actualPlayer = playerIterator.next();
+
                     this.state = CardState.ACCEPTATION_CHOICE;
-                    return new ArrayList<>(Collections.emptyList());
+
+                } else {
+                    this.state = CardState.FINALIZED;
                 }
-            }else{
-                throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't play " + this.getCardName() + " at the moment");
+                return new ArrayList<>(Collections.emptyList());
             }
-        }else{
-            this.state = CardState.FINALIZED;
-            return new ArrayList<>(Collections.emptyList());
+        } else {
+            throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't play " + this.getCardName() + " at the moment");
         }
     }
 
-    public void goodsPlaced(Player player){
-        if(this.state != CardState.GOODS_PLACEMENT){
+    public void goodsPlaced(Player player) {
+        if (this.state != CardState.GOODS_PLACEMENT) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        if(player.equals(actualPlayer)){
+        if (player.equals(actualPlayer)) {
             this.state = CardState.FINALIZED;
-        }else{
+        } else {
             throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't confirm goods placement");
-
         }
     }
 
     @Override
     public void finish(FlyBoard board) {
-        if(this.state != CardState.FINALIZED){
+        if (this.state != CardState.FINALIZED) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
         board.setState(StateEnum.DRAW_CARD);

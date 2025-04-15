@@ -7,7 +7,7 @@ import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, SldOpenSpace, SldSlavers, SldAbandonedStation, SldCombatZone, SldStardust, SldSmugglers, SldPlanets{
+public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, SldOpenSpace, SldSlavers, SldAbandonedStation, SldCombatZone, SldStardust, SldSmugglers, SldPlanets, SldPirates, SldMeteorSwarm{
     private final int level;
     private final int id;
     protected List<Player> allowedPlayers;

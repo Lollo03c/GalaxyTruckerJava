@@ -38,7 +38,7 @@ public final class SldSmugglers extends SldAdvCard {
         if (this.playerIterator.hasNext()) {
             this.actualPlayer = this.playerIterator.next();
         } else {
-            throw new BadPlayerException("No players");
+            throw new RuntimeException("No allowed players");
         }
         this.state = CardState.COMPARING;
     }
