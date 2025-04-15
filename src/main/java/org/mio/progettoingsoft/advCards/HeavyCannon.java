@@ -15,6 +15,10 @@ public class HeavyCannon extends CannonPenalty {
         super(direction);
     }
 
+    public PenaltyType getType(){
+        return PenaltyType.HEAVY_CANNON;
+    }
+
     @Override
     public void apply(String json, Player player) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();

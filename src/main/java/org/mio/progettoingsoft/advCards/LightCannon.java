@@ -16,6 +16,10 @@ public class LightCannon extends CannonPenalty {
         super(direction);
     }
 
+    public PenaltyType getType(){
+        return PenaltyType.LIGHT_CANNON;
+    }
+
 //    @Override
 //    public void apply(Player player, int value) {
 //        ShipBoard board = player.getShipBoard();

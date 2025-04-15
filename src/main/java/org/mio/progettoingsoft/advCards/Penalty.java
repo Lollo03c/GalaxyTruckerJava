@@ -16,5 +16,7 @@ public abstract class Penalty {
 
     public void apply(FlyBoard board, Player player, List<Integer[]> housingToRemoveCrew){}
 
-    public abstract int getAmount();
+    public int getAmount(){
+        throw new RuntimeException("This penalty has no amount");
+    }
 }
