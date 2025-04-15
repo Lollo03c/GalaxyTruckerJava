@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.advCards;
 
+import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 
 public class LoseDaysPenalty extends LoseSomethingPenalty{
@@ -7,8 +8,12 @@ public class LoseDaysPenalty extends LoseSomethingPenalty{
         super(amount);
     }
 
-//    @Override
-//    public void apply(Player player, int value) {
-//
-//    }
+    @Override
+    public PenaltyType getType() {
+        return PenaltyType.DAYS;
+    }
+
+    public void apply(FlyBoard board, Player player) {
+        board.moveDays(player, -amount);
+    }
 }

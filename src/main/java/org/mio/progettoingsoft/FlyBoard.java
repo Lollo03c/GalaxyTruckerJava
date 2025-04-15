@@ -74,6 +74,10 @@ public class FlyBoard {
         return scoreBoard;
     }
 
+    public StateEnum getState(){
+        return state;
+    }
+
     public List<Component> getCoveredComponents() {
         return coveredComponents;
     }
@@ -158,7 +162,6 @@ public class FlyBoard {
         this.getScoreBoard().add(numPlayersAhead, p);
         this.getPlayerByUsername(username).get().setRunning(true);
     }
-
 
     //    private  List<Optional<Player>> circuit;
     //    list da 24 celle
