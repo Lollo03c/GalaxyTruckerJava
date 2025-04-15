@@ -82,9 +82,9 @@ public final class SldSlavers extends SldAdvCard {
                 if (coordinatesDoubleToActivate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
                     throw new NotEnoughBatteriesException();
                 }
-                for (int i = 0; i < coordinatesDoubleToActivate.size(); i++) {
-                    int row = coordinatesDoubleToActivate.get(i)[0];
-                    int col = coordinatesDoubleToActivate.get(i)[1];
+                for (Integer[] integers : coordinatesDoubleToActivate) {
+                    int row = integers[0];
+                    int col = integers[1];
                     power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
                 }
                 this.state = CardState.APPLYING;

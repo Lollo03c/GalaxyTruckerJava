@@ -111,6 +111,17 @@ public final class SldSmugglers extends SldAdvCard {
         }
     }
 
+    public void goodPlaced(FlyBoard board, Player player) {
+        if(this.state != CardState.GOODS_PLACEMENT){
+            throw new IllegalStateException("Illegal state: " + this.state);
+        }
+        if (player.equals(this.actualPlayer)) {
+            this.state = CardState.FINALIZED;
+        }else{
+            throw new BadPlayerException("The player " + player.getUsername() + " cannot confirm goods placement at the moment");
+        }
+    }
+
     @Override
     public void finish(FlyBoard board) {
         if(this.state != CardState.FINALIZED){
