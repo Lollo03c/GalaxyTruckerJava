@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.advCards;
 
 public abstract class LoseSomethingPenalty extends Penalty{
-    private int amount;
+    protected int amount;
 
     public LoseSomethingPenalty(int amount) {
         this.amount = amount;
@@ -14,5 +14,10 @@ public abstract class LoseSomethingPenalty extends Penalty{
             case "goodsLost" -> new LoseGoodsPenalty(amount);
             default -> null;
         };
+    }
+
+    @Override
+    public int getAmount() {
+        return amount;
     }
 }

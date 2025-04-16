@@ -1,7 +1,10 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
+
+import java.util.List;
 
 public class Player {
 
@@ -12,8 +15,8 @@ public class Player {
     private int discardedComponents;
     private Component inHand;
     private boolean isRunning;
-
     private final View view;
+    private List<GoodType> tmpGoods;
 
 
     public Player(String username, HousingColor color) {
@@ -23,8 +26,7 @@ public class Player {
         shipBoard = new ShipBoard(color);
         discardedComponents = 0;
         inHand = null;
-
-        isRunning = false;
+        this.isRunning = false;
 
         view = new View(this);
     }
@@ -53,13 +55,6 @@ public class Player {
 
     public Component getInHand() {
         return inHand;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
-    }
-    public void setRunning(boolean isRunning) {
-        this.isRunning = isRunning;
     }
 
     public void setInHand(Component inHand) {
@@ -92,6 +87,10 @@ public class Player {
 
     public void addCredits(int quantity) {
         credits += quantity;
+    }
+
+    public void giveGoods(List<GoodType> goods) {
+        this.tmpGoods = goods;
     }
 
     public void removeCredits(int quantity) {
@@ -166,5 +165,13 @@ public class Player {
             return false;
         Player tmp = (Player) other;
         return this.username.equals(tmp.getUsername());
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public void setRunning(boolean running) {
+        this.isRunning = running;
     }
 }

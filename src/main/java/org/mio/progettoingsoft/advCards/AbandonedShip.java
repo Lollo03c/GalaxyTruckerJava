@@ -72,6 +72,7 @@ public class AbandonedShip extends AdventureCard {
 
 
                 }
+
                 flyBoard.moveDays(playerState, -daysLost);
                 playerState.addCredits(credits);
 

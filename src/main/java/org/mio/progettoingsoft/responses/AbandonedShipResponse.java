@@ -21,7 +21,6 @@ import java.util.List;
 public class AbandonedShipResponse extends Response{
     @JsonProperty("acceptEffect")
     private boolean acceptEffect;
-
     @JsonProperty("crewDeleted")
     private List<Integer> crewDeleted;
 
