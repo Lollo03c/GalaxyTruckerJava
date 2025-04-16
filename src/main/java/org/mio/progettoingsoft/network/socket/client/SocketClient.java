@@ -39,16 +39,42 @@ public class SocketClient implements VirtualViewSocket {
         }).start();
         runCli();
     }
+    void startMessageProcessor(){
+        Thread processor = new Thread(() -> {
+            while (true) {
+                SerMessage message = serverMessageQueue2.poll();
+
+                if (message != null) {
+                    try {
+                        clientController.handleMessage2(this , message);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+        processor.setDaemon(true); // Imposta il thread come daemon, così verrà terminato quando il programma finisce
+        processor.start();
+    }
+
 
     private void    runVirtualServer() {
-        String line;
+//flusso di esecuzione che deserializza messaggi tramite readObject e li mette
+//nella coda di messaggi, sarà poi il thread startMessageProcessor a chiamare il clientController
+        startMessageProcessor();
         while (true){
             try{
                 SerMessage message = (SerMessage) inputObject.readObject();
                 if(message != null ){
                     synchronized (screenLock){
-                        //serverMessageQueue.add(SerMessage);
-                        clientController.handleMessage2(this,message);
+                        serverMessageQueue2.add(message);
                     }
                 }
             }
