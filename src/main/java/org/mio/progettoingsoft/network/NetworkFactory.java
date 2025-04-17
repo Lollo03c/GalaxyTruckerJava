@@ -21,9 +21,10 @@ public class NetworkFactory {
 
             return new RmiClient(server, view, serverMessageQueue);
         } else {
-            Socket serverSocket = new Socket(info.getHost(), info.getPort());
+            // TODO: da implemnetare anche lato socket
+            // Socket serverSocket = new Socket(info.getHost(), info.getPort());
+            // return new SocketClient(serverSocket);
             return null;
-            //return new SocketClient(serverSocket);
         }
     }
 }

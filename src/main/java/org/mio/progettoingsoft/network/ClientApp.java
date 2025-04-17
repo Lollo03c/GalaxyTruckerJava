@@ -10,7 +10,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientApp {
-    /* Questa classe si occupa di chiedere all'utente se vuole connettersi via socket o RMI e creare la connessione
+    /*
+    * Questa classe si occupa di chiedere all'utente se vuole connettersi via socket o RMI e creare la connessione
     * scelta attraverso NetworkFacotry che implementa il Factory pattern.
     */
     private final boolean isGui;
@@ -20,14 +21,13 @@ public class ClientApp {
     private final VirtualView view;
     private final BlockingQueue<Message> serverMessageQueue;
 
-    public ClientApp(boolean isGui) throws IOException, NotBoundException {
+    public ClientApp(boolean isGui) {
         this.isGui = isGui;
         this.controller = new ClientController();
         this.serverMessageQueue = new LinkedBlockingQueue<>();
-
         this.messageHandler = new MessageHandler(serverMessageQueue);
 
-        // andra fatto con factory in base a isGui
+        // TODO: andra fatto con factory in base a isGui
         view = new Tui();
         // view = new VirtualView(isGui);
     }
@@ -35,6 +35,12 @@ public class ClientApp {
     public void run() throws IOException, NotBoundException {
         ConnectionType connectionType = view.askConnectionType();
         client = NetworkFactory.create(connectionType, view, serverMessageQueue);
-        client.run();
+
+        // TODO: capire come gestire questa eccezione in cui la rete non viene create per qualche motivo
+        if(client != null) {
+            client.run();
+        } else {
+            throw new NotBoundException("Client not found");
+        }
     }
 }

@@ -9,9 +9,7 @@ import org.mio.progettoingsoft.views.VirtualView;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RmiClient extends UnicastRemoteObject implements VirtualClient, Client {
     final VirtualServerRmi server;
@@ -25,7 +23,6 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         this.server = server;
         this.messageHandler = new MessageHandler(server);
         this.serverMessageQueue = serverMessageQueue;
-
         this.view = view;
     }
 
