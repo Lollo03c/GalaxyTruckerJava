@@ -74,7 +74,7 @@ public class BigMeteor extends Meteor {
 
             }
             else{
-                boolean activated = player.getView().askOneDoubleDrill();
+                boolean activated = true;// player.getView().askOneDoubleDrill();
 
                 if (activated){
                     board.removeEnergy();

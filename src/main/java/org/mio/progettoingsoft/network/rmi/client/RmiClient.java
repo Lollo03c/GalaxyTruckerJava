@@ -1,51 +1,46 @@
 package org.mio.progettoingsoft.network.rmi.client;
 
-import org.mio.progettoingsoft.network.ClientController;
+import org.mio.progettoingsoft.network.Client;
+import org.mio.progettoingsoft.network.MessageHandler;
 import org.mio.progettoingsoft.network.SerMessage.SerMessage;
+import org.mio.progettoingsoft.network.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.rmi.server.VirtualViewRmi;
+import org.mio.progettoingsoft.views.VirtualView;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
+public class RmiClient extends UnicastRemoteObject implements VirtualClient, Client {
     final VirtualServerRmi server;
-    final ClientController clientController;
-    private Queue<Message> serverMessageQueue;
+    final MessageHandler messageHandler;
+    private BlockingQueue<Message> serverMessageQueue;
 
-    public  RmiClient(VirtualServerRmi server) throws RemoteException {
+    private final VirtualView view;
+
+    public RmiClient(VirtualServerRmi server, VirtualView view, BlockingQueue<Message> serverMessageQueue) throws RemoteException {
         super();
         this.server = server;
-        this.clientController = new ClientController(server);
-        this.serverMessageQueue = new ConcurrentLinkedQueue<>();
+        this.messageHandler = new MessageHandler(server);
+        this.serverMessageQueue = serverMessageQueue;
+
+        this.view = view;
     }
 
-    public static void main(String[] args) throws RemoteException, NotBoundException {
-        final String serverName = "localhost";
-        final int serverPort = 1234;
-
-        Registry registry = LocateRegistry.getRegistry("127.0.0.1", serverPort);
-
-        VirtualServerRmi server = (VirtualServerRmi) registry.lookup(serverName);
-
-        new RmiClient(server).run();
-    }
-
-    private void run() throws RemoteException {
-        Scanner scan = new Scanner(System.in);
-
-        System.out.print("To be able to connect to the server, enter a nickname: ");
-        String nickname = scan.nextLine();
+    @Override
+    public void run() throws RemoteException {
+        String nickname = view.askNickname();
 
         startMessageProcessor();
 
         this.server.connect(this, nickname);
+    }
+
+    @Override
+    public void close(){
+
     }
 
     private void startMessageProcessor() {
@@ -55,7 +50,7 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
 
                 if (message != null) {
                     try {
-                        clientController.handleMessage(message);
+                        messageHandler.handleMessage(message);
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
@@ -77,6 +72,7 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
     public void update2(SerMessage message) throws RemoteException{
 
     }
+
     @Override
     public void update(Message message) {
         serverMessageQueue.add(message);
@@ -88,7 +84,8 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi {
     }
 
     @Override
-    public void notify(String message) throws RemoteException {
-        System.out.print(message + "\n");
+    public void notify(String message) throws RemoteException{
+
     }
+
 }

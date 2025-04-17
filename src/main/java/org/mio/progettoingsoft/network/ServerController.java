@@ -13,12 +13,12 @@ public class ServerController {
         this.lobby = new Lobby();
     }
 
-    public void addPlayerToGame(VirtualView client, String nickname) throws RemoteException {
+    public void addPlayerToGame(VirtualClient client, String nickname) throws RemoteException {
         if(lobby.getWaitingGame() == null) {
-            client.update(new RequestSetupMessage( client, nickname));
+            client.update(new RequestSetupMessage(client, nickname));
         } else {
             lobby.joinGame(client, nickname);
-            client.update(new JoinedGameMessage(client , nickname));
+            client.update(new JoinedGameMessage(client, nickname));
         }
     }
 
@@ -33,7 +33,7 @@ public class ServerController {
         }
     }
 
-    public void addPlayerToGame2(VirtualView client, String nickname) throws RemoteException {
+    public void addPlayerToGame2(VirtualClient client, String nickname) throws RemoteException {
         if(lobby.getWaitingGame() == null) {
             client.update2(new RequestSetupMessage2(nickname));
 
@@ -42,7 +42,7 @@ public class ServerController {
             client.update2(new JoinedGameMessage2(nickname));
         }
     }
-    public void handleInput2(VirtualView client, SerMessage message) throws RemoteException  {
+    public void handleInput2(VirtualClient client, SerMessage message) throws RemoteException  {
         switch (message) {
             case NewPlayerMessage npm -> {
                 addPlayerToGame2(client, npm.getNickname());

@@ -1,13 +1,13 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.VirtualClient;
 
 import java.rmi.RemoteException;
 import java.util.*;
 
 public class Lobby {
-    private Map<Game, List<VirtualView>> ongoingGames;
+    private Map<Game, List<VirtualClient>> ongoingGames;
     private Game waitingGame;
 
     public Lobby(){
@@ -19,7 +19,7 @@ public class Lobby {
         return Optional.empty();
     }
 
-    public Map<Game, List<VirtualView>> getOngoingGames() {
+    public Map<Game, List<VirtualClient>> getOngoingGames() {
         return ongoingGames;
     }
 
@@ -27,10 +27,10 @@ public class Lobby {
         return waitingGame;
     }
 
-    public void createGame(VirtualView client, String nickname, int numPlayers) throws RemoteException {
+    public void createGame(VirtualClient client, String nickname, int numPlayers) throws RemoteException {
         Game newGame = new Game(numPlayers, nickname);
 
-        List<VirtualView> playerViews = new ArrayList<>();
+        List<VirtualClient> playerViews = new ArrayList<>();
         playerViews.add(client);
         ongoingGames.put(newGame, playerViews);
 
@@ -42,8 +42,8 @@ public class Lobby {
         client.notify("Waiting for " + remaining + " player" + (remaining != 1 ? "s." : "."));
     }
 
-    public void joinGame(VirtualView client, String nickname) throws RemoteException {
-        List<VirtualView> players = ongoingGames.get(waitingGame);
+    public void joinGame(VirtualClient client, String nickname) throws RemoteException {
+        List<VirtualClient> players = ongoingGames.get(waitingGame);
 
         players.add(client);
 
@@ -65,11 +65,11 @@ public class Lobby {
         int remaining;
         if (players.size() < waitingGame.getNumPlayers()) {
             remaining = waitingGame.leftPlayers();
-            for (VirtualView v : players) {
+            for (VirtualClient v : players) {
                 v.notify("Waiting for " + remaining + " player" + (remaining != 1 ? "s." : "."));
             }
         } else {
-            for (VirtualView v : players) {
+            for (VirtualClient v : players) {
                 waitingGame = null;
                 v.notify("The game is full. The will start shortly.");
             }

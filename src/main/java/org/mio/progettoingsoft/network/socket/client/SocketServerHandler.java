@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 
 /* Questa classe implementa la logica di interazione tra il client e il server.
  */
+/*
 public class SocketServerHandler implements VirtualServerSocket {
     final ObjectOutputStream output;
 
@@ -21,13 +22,13 @@ public class SocketServerHandler implements VirtualServerSocket {
     public void add(Integer number) {
     /*     output.println("add");
         output.println(number);
-        output.flush();*/
+        output.flush();
     }
 
     @Override
     public void reset() {
-        /*output.println("reset");
-        output.flush();*/
+        output.println("reset");
+        output.flush();
     }
     public void newPlayer(String nickname) {
         try{
@@ -52,3 +53,4 @@ public class SocketServerHandler implements VirtualServerSocket {
         }
     }
 }
+*/

@@ -5,14 +5,12 @@ import org.mio.progettoingsoft.network.message.Message;
 
 import java.rmi.RemoteException;
 
-public interface VirtualView {
+public interface VirtualClient {
     //ho aggiunto update2 perchè update non utilizza messaggi serializable e quindi non posso usarlo per socket
     public void update(Message message) throws RemoteException;
     public void reportError(String details) throws RemoteException;
 
     public void update2(SerMessage message) throws RemoteException;
 
-
-    // DA ELIMINARE
     public void notify(String message) throws RemoteException;
 }

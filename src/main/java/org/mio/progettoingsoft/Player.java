@@ -3,6 +3,7 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
+import org.mio.progettoingsoft.views.VirtualView;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class Player {
     private int discardedComponents;
     private Component inHand;
     private boolean isRunning;
-    private final View view;
+//    private final VirtualView view;
     private List<GoodType> tmpGoods;
 
 
@@ -28,7 +29,7 @@ public class Player {
         inHand = null;
         this.isRunning = false;
 
-        view = new View(this);
+//        view = new View(this);
     }
 
 
@@ -49,9 +50,9 @@ public class Player {
         return this.color;
     }
 
-    public View getView(){
-        return view;
-    }
+//    public View getView(){
+//        return view;
+//    }
 
     public Component getInHand() {
         return inHand;

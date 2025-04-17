@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.network.SerMessage.SerMessage;
-import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.rmi.RemoteException;
@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 /**
  * Questa interfaccia specializza l'interfaccia VirtualView per la tecnologia Socket
  */
-public interface VirtualViewSocket extends VirtualView {
+public interface VirtualClientSocket extends VirtualClient {
     @Override
     public void update(Message message);
     @Override

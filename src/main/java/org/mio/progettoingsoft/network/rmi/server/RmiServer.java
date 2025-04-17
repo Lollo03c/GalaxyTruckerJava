@@ -1,10 +1,9 @@
 package org.mio.progettoingsoft.network.rmi.server;
 
 import org.mio.progettoingsoft.GameController;
-import org.mio.progettoingsoft.network.SerMessage.GameSetupInput2;
 import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.ServerController;
-import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
 
@@ -17,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
-    final Map<VirtualViewRmi, String> clients = new HashMap<>();
+    final Map<VirtualClient, String> clients = new HashMap<>();
 
     final GameController gameController;
     final ServerController serverController;
@@ -42,7 +41,7 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void connect(VirtualViewRmi client, String nickname) throws RemoteException {
+    public void connect(VirtualClient client, String nickname) throws RemoteException {
         synchronized (this.clients) {
             this.clients.put(client, nickname);
 

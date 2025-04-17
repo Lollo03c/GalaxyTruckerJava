@@ -1,9 +1,9 @@
 package org.mio.progettoingsoft.network.message;
 
-import org.mio.progettoingsoft.network.VirtualView;
+import org.mio.progettoingsoft.network.VirtualClient;
 
 public final class JoinedGameMessage extends Message {
-    public JoinedGameMessage(VirtualView client , String nickname) {
+    public JoinedGameMessage(VirtualClient client , String nickname) {
         super(client, nickname);
     }
     public JoinedGameMessage() {}

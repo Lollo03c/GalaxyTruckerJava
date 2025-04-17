@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft.network.socket.server;
 
-import org.mio.progettoingsoft.GameController;
 import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
@@ -9,7 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-public class SocketClientHandler implements VirtualViewSocket {
+public class SocketClientHandler implements VirtualClientSocket {
 
     final ServerController serverController;
     final SocketServer server;
