@@ -5,8 +5,8 @@ import org.mio.progettoingsoft.network.VirtualClient;
 public final class GameSetupInput extends Message {
     int numPlayers;
 
-    public GameSetupInput(VirtualClient client, String nickname, int numPlayers) {
-        super(client, nickname);
+    public GameSetupInput(String nickname, int numPlayers) {
+        super(nickname);
         this.numPlayers = numPlayers;
     }
 

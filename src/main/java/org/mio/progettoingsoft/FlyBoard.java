@@ -16,7 +16,7 @@ import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
 import java.util.*;
 
 public class FlyBoard {
-    StateEnum state;
+    GameState state;
     private String messageToSend;
 
     private List<AdventureCard> selectionDeckPrivate;
@@ -50,7 +50,7 @@ public class FlyBoard {
         for (int i = 0; i < 24; i++)
             circuit.add(Optional.empty());
 
-        state = StateEnum.WAITING_PLAYERS;
+        state = GameState.WAITING_PLAYERS;
     }
 
     /**
@@ -74,7 +74,7 @@ public class FlyBoard {
         return scoreBoard;
     }
 
-    public StateEnum getState(){
+    public GameState getState(){
         return state;
     }
 
@@ -131,7 +131,7 @@ public class FlyBoard {
         scoreBoard.add(new Player(username, color));
 
         if (scoreBoard.size() == 4){
-            state = StateEnum.BUILDING_SHIP;
+            state = GameState.BUILDING_SHIP;
         }
     }
 
@@ -177,7 +177,7 @@ public class FlyBoard {
         }
     }
 
-    //advance one step and if necessary update the scoreboard
+    //advance one step and if necessary send the scoreboard
     private void advanceOne(Player player) {
         int start = circuit.indexOf(Optional.of(player));
         int index = start;
@@ -372,7 +372,7 @@ public class FlyBoard {
         }
     }
 
-    public void setState(StateEnum state){
+    public void setState(GameState state){
         this.state = state;
     }
 

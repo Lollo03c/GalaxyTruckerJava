@@ -1,87 +1,52 @@
 package org.mio.progettoingsoft.network.rmi.client;
 
 import org.mio.progettoingsoft.network.Client;
-import org.mio.progettoingsoft.network.MessageHandler;
-import org.mio.progettoingsoft.network.SerMessage.SerMessage;
-import org.mio.progettoingsoft.network.VirtualClient;
+import org.mio.progettoingsoft.network.ClientController;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.views.VirtualView;
+import org.mio.progettoingsoft.network.rmi.server.VirtualClientRmi;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.BlockingQueue;
 
-public class RmiClient extends UnicastRemoteObject implements VirtualClient, Client {
+public class RmiClient extends UnicastRemoteObject implements Client, VirtualClientRmi {
     final VirtualServerRmi server;
-    final MessageHandler messageHandler;
-    private BlockingQueue<Message> serverMessageQueue;
+    private BlockingQueue<Message> messageQueue;
+    private ClientController clientController;
 
-    private final VirtualView view;
-
-    public RmiClient(VirtualServerRmi server, VirtualView view, BlockingQueue<Message> serverMessageQueue) throws RemoteException {
+    public RmiClient(VirtualServerRmi server, BlockingQueue<Message> messageQueue) throws RemoteException {
         super();
         this.server = server;
-        this.messageHandler = new MessageHandler(server);
-        this.serverMessageQueue = serverMessageQueue;
-        this.view = view;
+        this.messageQueue = messageQueue;
+        this.clientController = ClientController.get();
+
+        this.server.connect(this);
     }
 
     @Override
-    public void run() throws RemoteException {
-        String nickname = view.askNickname();
+    public void run() {
+        // RMI non serve che stia in ascolto
+    }
 
-        startMessageProcessor();
-
-        this.server.connect(this, nickname);
+    // Metodo chiamato dal ClientController per mandare i messaggi al server -> definito in Client
+    @Override
+    public void sendInput(Message message) throws RemoteException {
+        server.sendToServer(message);
     }
 
     @Override
-    public void close(){
+    public void close() {
 
     }
 
-    private void startMessageProcessor() {
-        Thread processor = new Thread(() -> {
-            while (true) {
-                Message message = serverMessageQueue.poll();
-
-                if (message != null) {
-                    try {
-                        messageHandler.handleMessage(message);
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        });
-        processor.setDaemon(true); // Imposta il thread come daemon, così verrà terminato quando il programma finisce
-        processor.start();
-    }
-
+    // Metodo chiamato dal server per mandare messaggi al client -> definito in VirtualClient
     @Override
-    public void update2(SerMessage message) throws RemoteException{
-
-    }
-
-    @Override
-    public void update(Message message) {
-        serverMessageQueue.add(message);
+    public void sendToClient(Message message) throws RemoteException {
+        messageQueue.add(message);
     }
 
     @Override
     public void reportError(String details) throws RemoteException {
-
-    }
-
-    @Override
-    public void notify(String message) throws RemoteException{
 
     }
 

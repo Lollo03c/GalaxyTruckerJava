@@ -4,11 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.responses.AbandonedShipResponse;
-import org.mio.progettoingsoft.responses.Response;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class AbandonedShip extends AdventureCard {
     private int daysLost;
@@ -54,7 +49,7 @@ public class AbandonedShip extends AdventureCard {
                 .toList();
 
         iterator = playersToPlay.iterator();
-        flyBoard.setState(StateEnum.CARD_EFFECT);
+        flyBoard.setState(GameState.CARD_EFFECT);
     }
 
     @Override
@@ -76,7 +71,7 @@ public class AbandonedShip extends AdventureCard {
                 flyBoard.moveDays(playerState, -daysLost);
                 playerState.addCredits(credits);
 
-                flyBoard.setState(StateEnum.DRAW_CARD);
+                flyBoard.setState(GameState.DRAW_CARD);
             }
 
         }

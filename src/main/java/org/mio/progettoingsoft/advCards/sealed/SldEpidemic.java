@@ -17,7 +17,7 @@ public final class SldEpidemic extends SldAdvCard {
 
     // all players have to play the card, so all of them are added to the list
     public void init(FlyBoard board){
-        if(board.getState() != StateEnum.DRAW_CARD){
+        if(board.getState() != GameState.DRAW_CARD){
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         this.allowedPlayers = board.getScoreBoard();
@@ -52,6 +52,6 @@ public final class SldEpidemic extends SldAdvCard {
         if(this.state != CardState.FINALIZED){
             throw new IllegalStateException("Illegal state for 'finish': " + this.state);
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 }

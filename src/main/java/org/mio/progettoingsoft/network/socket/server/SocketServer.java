@@ -1,31 +1,30 @@
 package org.mio.progettoingsoft.network.socket.server;
 
-import org.mio.progettoingsoft.GameController;
-import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.ServerController;
+import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class SocketServer {
-
-    final ServerSocket listenSocket;
-    final ServerController controller;
-    final List<SocketClientHandler> clients = new ArrayList<>();
-    final private Queue<SerMessage> serverMessageQueue2;
+    private final ServerSocket listenSocket;
+    private final ServerController controller;
+    private final List<SocketClientHandler> clients = new ArrayList<>();
+    private final BlockingQueue<Message> messageQueue;
 
 
     public SocketServer(ServerSocket listenSocket) {
         this.listenSocket = listenSocket;
         this.controller = new ServerController();
-
+        this.messageQueue = new LinkedBlockingQueue<>();
     }
 
-    private void runServer() throws IOException {
+    public void runServer() throws IOException {
         Socket clientSocket = null;
         while ((clientSocket = this.listenSocket.accept()) != null) {
 
@@ -52,14 +51,17 @@ public class SocketServer {
     }
 
     public void broadcastUpdate(Integer value) {
+        /*
         synchronized (this.clients) {
             for (var client : this.clients) {
-                //client.update(value);
+                //client.send(value);
             }
         }
+        */
     }
 
     public void broadcastError() {
+        /*
         synchronized (this.clients) {
             for (VirtualViewSocket client : clients) {
                 try {
@@ -69,15 +71,6 @@ public class SocketServer {
                 }
             }
         }
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
-
-        ServerSocket listenSocket = new ServerSocket(port);
-        System.out.println("Listening on " + host + " : " + port);
-        new SocketServer(listenSocket).runServer();
+         */
     }
 }

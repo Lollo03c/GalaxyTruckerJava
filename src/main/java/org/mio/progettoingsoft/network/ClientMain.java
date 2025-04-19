@@ -10,7 +10,7 @@ public class ClientMain {
 
         System.out.println("Galaxy Truckers | Client");
 
-        boolean isGui = false;
+        boolean isGui = true;
 
         // Arguments parsing
         for (String arg : args) {

@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.views;
 
-import org.mio.progettoingsoft.network.ConnectionType;
+import org.mio.progettoingsoft.GameState;
 
 import java.util.Scanner;
 
@@ -11,22 +11,24 @@ public class Tui implements VirtualView {
         scan = new Scanner(System.in);
     }
 
-    @Override
-    public ConnectionType askConnectionType() {
+    public String gameMenu(GameState gameState) {
+        return switch (gameState) {
+            case START -> printConnectionType();
+            case NICKNAME_REQUEST -> printNicknameRequest();
+            default -> "Invalid gameState";
+        };
+    }
+
+    private String printConnectionType() {
         System.out.println("Select connection type: ");
         System.out.println("1: RMI");
         System.out.println("2: Socket");
         System.out.print("Make your choice: ");
-        boolean isRmi = (scan.nextInt() == 1);
-
-        ConnectionType connectionType = new ConnectionType(isRmi, "127.0.0.1", 1234, "localhost");
-
-        return connectionType;
+        return scan.nextLine();
     }
 
-    @Override
-    public String askNickname() {
-        System.out.print("To be able to connect to the server, enter a nickname: ");
+    private String printNicknameRequest() {
+        System.out.println("Select nickname: ");
         return scan.nextLine();
     }
 }

@@ -1,144 +1,78 @@
 package org.mio.progettoingsoft.network.socket.client;
 
+import org.mio.progettoingsoft.network.Client;
 import org.mio.progettoingsoft.network.ClientController;
-import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.socket.server.VirtualViewSocket;
+import org.mio.progettoingsoft.network.socket.server.VirtualClientSocket;
 
 import java.io.*;
 import java.net.Socket;
-import java.rmi.RemoteException;
-import java.util.Queue;
-import java.util.Scanner;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
 
-public class SocketClient implements VirtualViewSocket {
-    final SocketServerHandler output;
+public class SocketClient implements Client, VirtualClientSocket {
+    private Socket socket;
+    private final ObjectOutputStream out;
+    private final ObjectInputStream in;
+    private final ClientController clientController;
+    private final BlockingQueue<Message> messageQueue;
+
     final Object screenLock = new Object();
-    final private Queue<SerMessage> serverMessageQueue2;
-    final ClientController clientController;
-    ObjectInputStream inputObject;
 
-
-
-
-    protected SocketClient(Socket socket) throws IOException {
-        this.output = new SocketServerHandler(new ObjectOutputStream(socket.getOutputStream()));
-        this.serverMessageQueue2 = new ConcurrentLinkedQueue<>();
-        this.clientController = new ClientController(this.output);
-        inputObject = new ObjectInputStream(socket.getInputStream());
+    public SocketClient(Socket socket, BlockingQueue<Message> messageQueue) throws IOException {
+        this.out = new ObjectOutputStream(socket.getOutputStream());
+        this.in = new ObjectInputStream(socket.getInputStream());
+        this.messageQueue = messageQueue;
+        this.clientController = ClientController.get();
     }
 
-    private void run() {
-        new Thread(() -> {
+    @Override
+    public void run() {
+        Thread listenerThread = new Thread(() -> {
             try {
-                runVirtualServer();
-            } catch (Exception e) {
+                listenToServer();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        }).start();
-        runCli();
-    }
-    void startMessageProcessor(){
-        Thread processor = new Thread(() -> {
-            while (true) {
-                SerMessage message = serverMessageQueue2.poll();
-
-                if (message != null) {
-                    try {
-                        clientController.handleMessage2(this , message);
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        });
-        processor.setDaemon(true); // Imposta il thread come daemon, così verrà terminato quando il programma finisce
-        processor.start();
+        }, "server-listener");
+        listenerThread.setDaemon(true);
+        listenerThread.start();
     }
 
+    @Override
+    public void sendInput(Message message) throws IOException {
+        sendToClient(message);
+    }
 
-    private void    runVirtualServer() {
-//flusso di esecuzione che deserializza messaggi tramite readObject e li mette
-//nella coda di messaggi, sarà poi il thread startMessageProcessor a chiamare il clientController
-        startMessageProcessor();
-        while (true){
-            try{
-                SerMessage message = (SerMessage) inputObject.readObject();
-                if(message != null ){
-                    synchronized (screenLock){
-                        serverMessageQueue2.add(message);
-                    }
-                }
-            }
-            catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                break;
-            }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
+    @Override
+    public void close() {
+
+    }
+
+    @Override
+    public synchronized void sendToClient(Message message) throws IOException {
+        out.writeObject(message);
+        out.reset();
+        out.flush();
+        System.out.println("ho spedito il messaggio al server");
+    }
+
+    private void listenToServer() throws IOException, ClassNotFoundException {
+        while (true) {
+            // Sempre in ascolto, quando riceve qualcosa lo aggiunge alla coda
+            messageQueue.add(receive());
         }
     }
 
-    //thread che rimane in ascolto della CLI del client
-    private void runCli()  {
-        Scanner scan = new Scanner(System.in);
-        //aspetto che inserisca il nome per loggarlo nella partita
-        System.out.println("Insert nickname");
-        String nickname = scan.next();
-        this.output.newPlayer(nickname);
-        //da modificare questa parte !!!!
-        /*while (true) {
-            System.out.print("> ");
-            int command = scan.nextInt();
-            System.out.println("il comando è dentro command in runCli");
-            if (command == 0) {
-                this.output.reset();
-            } else {
-                this.output.add(command);
-            }
-        }*/
+    public Message receive() throws IOException, ClassNotFoundException {
+        return (Message) in.readObject();
     }
 
-    public void update(Message message) {
-        synchronized (screenLock) {
-            //serverMessageQueue.add(message);
-        }
-    }
-
-
-    public void reportError(String details) throws RemoteException {
+    public void reportError(String details) {
         synchronized(screenLock) {
             // TODO. Attenzione, questo può causare data race con il thread dell'interfaccia o un altro thread!
             System.err.print("\n[ERROR] " + details + "\n> ");
         }
-    }
-
-    @Override
-    public void update2(SerMessage message) throws RemoteException {
-
-    }
-
-    public static void main(String[] args) throws IOException {
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
-        Socket serverSocket = new Socket(host, port);
-        new SocketClient(serverSocket).run();
-    }
-
-    @Override
-    public void notify(String message) throws RemoteException {
-
     }
 }

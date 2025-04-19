@@ -2,7 +2,7 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.StateEnum;
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 
@@ -29,7 +29,7 @@ public final class SldAbandonedStation extends SldAdvCard {
 
     @Override
     public void init(FlyBoard board) {
-        if (board.getState() != StateEnum.DRAW_CARD) {
+        if (board.getState() != GameState.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         allowedPlayers = board.getScoreBoard().stream()
@@ -41,7 +41,7 @@ public final class SldAbandonedStation extends SldAdvCard {
         } else {
             throw new RuntimeException("No allowed players");
         }
-        board.setState(StateEnum.CARD_EFFECT);
+        board.setState(GameState.CARD_EFFECT);
         this.state = CardState.ACCEPTATION_CHOICE;
     }
 
@@ -87,6 +87,6 @@ public final class SldAbandonedStation extends SldAdvCard {
         if (this.state != CardState.FINALIZED) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 }

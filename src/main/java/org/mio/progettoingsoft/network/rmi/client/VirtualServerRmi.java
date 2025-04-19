@@ -8,8 +8,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface VirtualServerRmi extends Remote, VirtualServer {
-    void connect(VirtualClient client, String nickname) throws RemoteException;
+    void connect(VirtualClient client) throws RemoteException;
 
     @Override
-    void sendInput(Message message) throws RemoteException;
+    void sendToServer(Message message) throws RemoteException;
 }

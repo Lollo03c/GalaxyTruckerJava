@@ -1,12 +1,11 @@
 package org.mio.progettoingsoft.network;
 
-import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.message.Message;
 
-import java.rmi.RemoteException;
-
+/**
+ * Interfaccia che definisce i metodi del server che devono essere resi accessibili ai client per poter interagire con
+ * la logica del server (controller).
+ */
 public interface VirtualServer {
-    public void sendInput(Message message) throws RemoteException;
-
-    public void sendInput2(SerMessage gameSetupInput2) throws RemoteException;
+    void sendToServer(Message message) throws Exception;
 }

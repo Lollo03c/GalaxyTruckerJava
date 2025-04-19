@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft.network.socket.server;
 
-import org.mio.progettoingsoft.network.SerMessage.SerMessage;
 import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
 
@@ -38,8 +37,9 @@ public class SocketClientHandler implements VirtualClientSocket {
         String line;
         while (true) {
             try {
-                SerMessage mex = (SerMessage) input.readObject();
-                serverController.handleInput2(this,mex);
+                Message mex = (Message) input.readObject();
+                System.out.println("ho ricevuto il messaggio da ");
+                //serverController.handleInput2(this,mex);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
                 break;
@@ -51,8 +51,8 @@ public class SocketClientHandler implements VirtualClientSocket {
     // comunicazione dal server al client
     //non va bene, bisogna serializzare il messaggio println manda solo testo non messaggi
     @Override
-    public void update(Message message)  {
-        //this.output.println("update");
+    public void sendToServer(Message message)  {
+        //this.output.println("send");
         try{
             this.output.writeObject(message);
             this.output.flush();
@@ -65,25 +65,9 @@ public class SocketClientHandler implements VirtualClientSocket {
     }
 
     @Override
-    public void reportError(String details) throws RemoteException {
+    public void reportError(String details) {
         //this.output.println("error");
         //this.output.println(details);
         //this.output.flush();
-    }
-
-    @Override
-    public void update2(SerMessage message) throws RemoteException {
-        try{
-            this.output.writeObject(message);
-            this.output.flush();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void notify(String message) throws RemoteException {
-
     }
 }

@@ -1,8 +1,9 @@
 package org.mio.progettoingsoft.network;
 
-import java.rmi.RemoteException;
+import org.mio.progettoingsoft.network.message.Message;
 
 public interface Client {
-    public void run() throws RemoteException;
-    public void close();
+    void run();
+    void sendInput(Message message) throws Exception;
+    void close();
 }

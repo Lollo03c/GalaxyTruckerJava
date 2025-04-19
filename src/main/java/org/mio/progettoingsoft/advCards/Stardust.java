@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class Stardust extends AdventureCard {
     public Stardust(int id, int level) {
@@ -26,7 +24,7 @@ public class Stardust extends AdventureCard {
         Collections.reverse(playersToPlay);
 
         iterator = playersToPlay.iterator();
-        flyBoard.setState(StateEnum.CARD_EFFECT);
+        flyBoard.setState(GameState.CARD_EFFECT);
     }
 
     public void applyEffect(String json){

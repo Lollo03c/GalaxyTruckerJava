@@ -1,68 +1,46 @@
 package org.mio.progettoingsoft.network;
 
-import org.mio.progettoingsoft.network.SerMessage.*;
-import org.mio.progettoingsoft.network.message.GameSetupInput;
-import org.mio.progettoingsoft.network.message.JoinedGameMessage;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.RequestSetupMessage;
 
 import java.rmi.RemoteException;
-import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 
-public class MessageHandler {
-    VirtualServer server;
-    private final BlockingQueue<Message> serverMessageQueue;
+public class MessageHandler implements Runnable{
+    private final ClientController clientController;
+    private final BlockingQueue<Message> messageQueue;
 
-    public MessageHandler(VirtualServer server) {
-        this.server = server;
-        this.serverMessageQueue = null;
+    public MessageHandler(ClientController clientController, BlockingQueue<Message> messageQueue) {
+        this.clientController = clientController;
+        this.messageQueue = messageQueue;
     }
 
-    public MessageHandler(BlockingQueue<Message> serverMessageQueue) {
-        this.server = server;
-        this.serverMessageQueue = serverMessageQueue;
-    }
-
-    public void handleMessage(Message message) throws RemoteException {
-        switch (message) {
-            case RequestSetupMessage rsm -> handleGameSetup(message);
-            case JoinedGameMessage jgm -> {}
-            default -> System.err.println("Unhandle message: " + message);
-        }
-    }
-    public void handleMessage2(VirtualClient client , SerMessage message) throws RemoteException {
-        switch (message){
-            case RequestSetupMessage2 npm -> handleGameSetup2(client , message);
-            case JoinedGameMessage2 jgm2 -> {
-                System.out.println(message.getNickname() + " joined game    ");
+    /**
+     * Runs the message handler loop. <p>
+     * Loops over the queue in a blocking way (waiting for messages when empty) and handles them.
+     * <p>
+     * This method is supposed to be run on its own thread.
+     */
+    @Override
+    public void run() {
+        // thread di gestione dei messaggi in coda dal server
+        while(true){
+            Message message = messageQueue.poll();
+            if (message != null) {
+                try {
+                    handleMessage(message);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            default-> System.out.println("Unhandle message: " + message);
         }
     }
 
-    private void handleGameSetup2(VirtualClient client , SerMessage message) throws RemoteException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("No match available , creating a match\n");
-        int numPlayers ;
-        do{
-            System.out.println("enter number of players: ");
-            numPlayers = scanner.nextInt();
-        }while(numPlayers < 1 || numPlayers > 4);
-        server.sendInput2(new GameSetupInput2(message.getNickname(), numPlayers));
-    }
+    /**
+     * Handles a {@link Message} by checking its validity and handling it according to its type.
+     *
+     * @param message The {@link Message} to handle
+     */
+    public void handleMessage(Message message) throws RemoteException {
 
-    private void handleGameSetup(Message message) throws RemoteException {
-        Scanner scan = new Scanner(System.in);
-
-        System.out.print("No match available. Creating a match...\n");
-
-        int numPlayers;
-        do {
-            System.out.print("Enter the number of players: ");
-            numPlayers = scan.nextInt();
-        } while (numPlayers < 1 || numPlayers > 4);
-
-        server.sendInput(new GameSetupInput(message.getClient(), message.getNickname(), numPlayers));
     }
 }

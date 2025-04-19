@@ -1,8 +1,6 @@
 package org.mio.progettoingsoft.network;
 
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.views.Tui;
-import org.mio.progettoingsoft.views.VirtualView;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -14,33 +12,28 @@ public class ClientApp {
     * Questa classe si occupa di chiedere all'utente se vuole connettersi via socket o RMI e creare la connessione
     * scelta attraverso NetworkFacotry che implementa il Factory pattern.
     */
-    private final boolean isGui;
     private Client client;
-    private final ClientController controller;
+    private final ClientController clientController;
     private final MessageHandler messageHandler;
-    private final VirtualView view;
     private final BlockingQueue<Message> serverMessageQueue;
 
     public ClientApp(boolean isGui) {
-        this.isGui = isGui;
-        this.controller = new ClientController();
-        this.serverMessageQueue = new LinkedBlockingQueue<>();
-        this.messageHandler = new MessageHandler(serverMessageQueue);
-
-        // TODO: andra fatto con factory in base a isGui
-        view = new Tui();
+        // TODO: andrà fatto con factory in base a isGui
+        // view = new Tui();
         // view = new VirtualView(isGui);
+
+        this.clientController = ClientController.create(isGui);
+        this.serverMessageQueue = new LinkedBlockingQueue<>();
+        this.messageHandler = new MessageHandler(clientController,serverMessageQueue);
     }
 
     public void run() throws IOException, NotBoundException {
-        ConnectionType connectionType = view.askConnectionType();
-        client = NetworkFactory.create(connectionType, view, serverMessageQueue);
+        // Thread che gestisce i messaggi in arrivo
+        Thread messageHandlerThread = new Thread(messageHandler, "message-handler");
+        messageHandlerThread.setDaemon(true);
+        messageHandlerThread.start();
 
-        // TODO: capire come gestire questa eccezione in cui la rete non viene create per qualche motivo
-        if(client != null) {
-            client.run();
-        } else {
-            throw new NotBoundException("Client not found");
-        }
+        // Run the controller loop in this thread
+        clientController.run();
     }
 }

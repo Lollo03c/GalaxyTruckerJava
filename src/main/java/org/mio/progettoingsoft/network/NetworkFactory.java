@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.client.RmiClient;
 import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
+import org.mio.progettoingsoft.network.socket.client.SocketClient;
 import org.mio.progettoingsoft.views.VirtualView;
 
 import java.io.IOException;
@@ -13,18 +14,16 @@ import java.rmi.registry.Registry;
 import java.util.concurrent.BlockingQueue;
 
 public class NetworkFactory {
-    public static Client create(ConnectionType info, VirtualView view, BlockingQueue<Message> serverMessageQueue) throws IOException, NotBoundException {
+    public static Client create(ConnectionType info, VirtualView view, BlockingQueue<Message> messageQueue) throws IOException, NotBoundException {
         if (info.isRmi()) {
             Registry registry = LocateRegistry.getRegistry(info.getHost(), info.getPort());
 
             VirtualServerRmi server = (VirtualServerRmi) registry.lookup(info.getServerName());
 
-            return new RmiClient(server, view, serverMessageQueue);
+            return new RmiClient(server, messageQueue);
         } else {
-            // TODO: da implemnetare anche lato socket
-            // Socket serverSocket = new Socket(info.getHost(), info.getPort());
-            // return new SocketClient(serverSocket);
-            return null;
+            Socket serverSocket = new Socket(info.getHost(), info.getPort());
+            return new SocketClient(serverSocket, messageQueue);
         }
     }
 }

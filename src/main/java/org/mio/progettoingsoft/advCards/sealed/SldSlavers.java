@@ -25,7 +25,7 @@ public final class SldSlavers extends SldAdvCard {
     }
 
     public void init(FlyBoard board) {
-        if (board.getState() != StateEnum.DRAW_CARD) {
+        if (board.getState() != GameState.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         this.allowedPlayers = board.getScoreBoard();
@@ -151,7 +151,7 @@ public final class SldSlavers extends SldAdvCard {
             throw new RuntimeException("There's at least a player with no crew, not implemented yet");
 
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 
 }
