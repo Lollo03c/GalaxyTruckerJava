@@ -5,16 +5,18 @@ import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
-    final Map<VirtualClient, String> clients = new HashMap<>();
+    final static Logger logger = LoggerFactory.getLogger(RmiServer.class);
+
+    final List<VirtualClient> clients = new ArrayList<>();
 
     final GameController gameController;
     final ServerController serverController;
@@ -27,19 +29,17 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
 
     @Override
     public void connect(VirtualClient client) throws RemoteException {
-        String nickname = "prova";
-
         synchronized (this.clients) {
-            this.clients.put(client, nickname);
+            this.clients.add(client);
 
-            System.out.println(nickname + " connected.");
+            logger.info("Client {} has connected to server", client);
 
             /*
             * Dovremmo aggiungere una queue per gestire l'accesso di più client e gestirli sequenzialmente in modo da
             * creare solo le partite realmente necessarie.
             */
             // Player is ready to join a game
-            serverController.addPlayerToGame(client, nickname);
+            serverController.addPlayerToGame(client, "prova");
         }
     }
 

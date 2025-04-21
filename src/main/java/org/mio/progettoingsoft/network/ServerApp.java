@@ -3,6 +3,8 @@ package org.mio.progettoingsoft.network;
 import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
 import org.mio.progettoingsoft.network.rmi.server.RmiServer;
 import org.mio.progettoingsoft.network.socket.server.SocketServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,6 +20,8 @@ public class ServerApp {
 
     private final ServerController serverController;
 
+    private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
+
     public ServerApp() {
         this.serverController = new ServerController();
     }
@@ -31,16 +35,16 @@ public class ServerApp {
         VirtualServerRmi server = new RmiServer();
         Registry registry = LocateRegistry.createRegistry(RMI_PORT);
         registry.rebind(SERVER_NAME, server);
-        System.out.println("Server started on port " + RMI_PORT);
+        logger.info("RMI server {} running on port {}", SERVER_NAME, RMI_PORT);
     }
 
     private void runSocketServer() throws IOException {
         ServerSocket listenSocket = new ServerSocket(SOCKET_PORT);
-        System.out.println("Socket server started on port " + SOCKET_PORT);
-        SocketServer s1 = new SocketServer(listenSocket);
+        logger.info("Socket server {} running on port {}", SERVER_NAME, SOCKET_PORT);
+        SocketServer serverSocket = new SocketServer(listenSocket);
         try{
-            s1.runServer();
-        }catch(IOException e){
+            serverSocket.runServer();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

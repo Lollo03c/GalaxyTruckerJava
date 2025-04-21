@@ -51,7 +51,7 @@ public class SocketClientHandler implements VirtualClientSocket {
     // comunicazione dal server al client
     //non va bene, bisogna serializzare il messaggio println manda solo testo non messaggi
     @Override
-    public void sendToServer(Message message)  {
+    public void sendToClient(Message message)  {
         //this.output.println("send");
         try{
             this.output.writeObject(message);

@@ -28,7 +28,6 @@ public class SocketServer {
         Socket clientSocket = null;
         while ((clientSocket = this.listenSocket.accept()) != null) {
 
-
             SocketClientHandler handler = new SocketClientHandler(
                     this.controller,
                     this,
@@ -46,7 +45,6 @@ public class SocketServer {
                     throw new RuntimeException(e);
                 }
             }).start();
-
         }
     }
 

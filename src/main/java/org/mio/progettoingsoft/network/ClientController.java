@@ -41,6 +41,7 @@ public abstract class ClientController implements Runnable {
         switch (gameState) {
             case START -> handleConnectionTypeInput(input);
             case NICKNAME_REQUEST -> handleNicknameInput(input);
+            case WAITING_GAME -> {}
             default -> System.out.println("Invalid gameState");
         }
     }
@@ -48,7 +49,7 @@ public abstract class ClientController implements Runnable {
     private void handleConnectionTypeInput(String input) throws NotBoundException, IOException, ClassNotFoundException {
         boolean isRmi = (Integer.parseInt(input) == 1);
 
-        ConnectionType connectionType = new ConnectionType(isRmi, "127.0.0.1", 1234, "localhost");
+        ConnectionType connectionType = new ConnectionType(isRmi, "127.0.0.1", isRmi ? 1099 : 1234, "localhost");
         client = NetworkFactory.create(connectionType, view, messageQueue);
 
         // Avvia il client (che si occupa di leggere dal socket o direttamente attraverso RMI e mettere i messaggi in coda)

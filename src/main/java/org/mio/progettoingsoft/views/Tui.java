@@ -15,6 +15,7 @@ public class Tui implements VirtualView {
         return switch (gameState) {
             case START -> printConnectionType();
             case NICKNAME_REQUEST -> printNicknameRequest();
+            case WAITING_GAME -> "Waiting game";
             default -> "Invalid gameState";
         };
     }
@@ -28,7 +29,7 @@ public class Tui implements VirtualView {
     }
 
     private String printNicknameRequest() {
-        System.out.println("Select nickname: ");
+        System.out.print("Select nickname: ");
         return scan.nextLine();
     }
 }

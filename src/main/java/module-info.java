@@ -7,6 +7,7 @@ module org.mio.progettoingsoft {
     requires java.desktop;
     requires java.smartcardio;
     requires java.rmi;
+    requires org.slf4j;
 
     opens org.mio.progettoingsoft to javafx.fxml;
     exports org.mio.progettoingsoft;
