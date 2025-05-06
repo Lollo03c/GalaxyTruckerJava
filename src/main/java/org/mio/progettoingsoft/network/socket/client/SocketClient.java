@@ -6,22 +6,20 @@ import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.socket.server.VirtualClientSocket;
 
 import java.io.*;
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 public class SocketClient implements Client, VirtualClientSocket {
-    private Socket socket;
-    private final ObjectOutputStream out;
+    private final SocketServerHandler output;
     private final ObjectInputStream in;
     private final ClientController clientController;
-    private final BlockingQueue<Message> messageQueue;
+    private final BlockingQueue<Message> inputMessageQueue;
 
     final Object screenLock = new Object();
 
-    public SocketClient(Socket socket, BlockingQueue<Message> messageQueue) throws IOException {
-        this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.in = new ObjectInputStream(socket.getInputStream());
-        this.messageQueue = messageQueue;
+    public SocketClient(ObjectInputStream in, ObjectOutputStream out, BlockingQueue<Message> messageQueue) throws IOException {
+        this.output = new SocketServerHandler(out);
+        this.in = in;
+        this.inputMessageQueue = messageQueue;
         this.clientController = ClientController.get();
     }
 
@@ -42,7 +40,7 @@ public class SocketClient implements Client, VirtualClientSocket {
 
     @Override
     public void sendInput(Message message) throws IOException {
-        sendToClient(message);
+        output.sendToServer(message);
     }
 
     @Override
@@ -51,17 +49,14 @@ public class SocketClient implements Client, VirtualClientSocket {
     }
 
     @Override
-    public synchronized void sendToClient(Message message) throws IOException {
-        out.writeObject(message);
-        out.reset();
-        out.flush();
-        System.out.println("ho spedito il messaggio al server");
+    public synchronized void showUpdate(Message message) throws IOException {
+        inputMessageQueue.add(message);
     }
 
     private void listenToServer() throws IOException, ClassNotFoundException {
         while (true) {
             // Sempre in ascolto, quando riceve qualcosa lo aggiunge alla coda
-            messageQueue.add(receive());
+            showUpdate(receive());
         }
     }
 

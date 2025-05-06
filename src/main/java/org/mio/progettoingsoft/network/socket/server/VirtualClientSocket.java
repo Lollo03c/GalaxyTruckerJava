@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public interface VirtualClientSocket extends VirtualClient {
     @Override
-    void sendToClient(Message message) throws IOException;
+    void showUpdate(Message message) throws IOException;
     @Override
     void reportError(String details);
 }

@@ -1,8 +1,15 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.network.message.Message;
+
 public class GameController {
 
     public GameController() {
+
+    }
+
+    public void handleMessage(Message message){
+
     }
 
     /*

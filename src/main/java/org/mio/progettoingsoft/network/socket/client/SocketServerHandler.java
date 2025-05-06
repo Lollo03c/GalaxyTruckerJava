@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.network.socket.client;
 
 import org.mio.progettoingsoft.network.message.Message;
+
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 
@@ -8,10 +10,10 @@ import java.rmi.RemoteException;
  */
 
 public class SocketServerHandler implements VirtualServerSocket {
-    final ObjectOutputStream output;
+    private final ObjectOutputStream out;
 
     public SocketServerHandler(ObjectOutputStream output) {
-        this.output = output;
+        this.out = output;
     }
 
     public void newPlayer(String nickname) {
@@ -27,6 +29,10 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void sendToServer(Message message) throws RemoteException {
+    public void sendToServer(Message message) throws IOException {
+        out.writeObject(message);
+        out.reset();
+        out.flush();
+        System.out.println("ho spedito il messaggio al server");
     }
 }

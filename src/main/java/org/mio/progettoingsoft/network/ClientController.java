@@ -15,7 +15,7 @@ public abstract class ClientController implements Runnable {
     protected GameState gameState = GameState.START;
     protected Client client;
     protected VirtualView view;
-    protected BlockingQueue<Message> messageQueue;
+    protected BlockingQueue<Message> inputMessageQueue;
     /*
      * nickname
      * gamecode
@@ -50,7 +50,7 @@ public abstract class ClientController implements Runnable {
         boolean isRmi = (Integer.parseInt(input) == 1);
 
         ConnectionType connectionType = new ConnectionType(isRmi, "127.0.0.1", isRmi ? 1099 : 1234, "localhost");
-        client = NetworkFactory.create(connectionType, view, messageQueue);
+        client = NetworkFactory.create(connectionType, view, inputMessageQueue);
 
         // Avvia il client (che si occupa di leggere dal socket o direttamente attraverso RMI e mettere i messaggi in coda)
         // TODO: capire come gestire questa eccezione in cui la rete non viene create per qualche motivo
@@ -64,7 +64,7 @@ public abstract class ClientController implements Runnable {
     }
 
     private void handleNicknameInput(String input) throws Exception {
-        client.sendInput(new NicknameMessage(input));
+        client.sendInput(new NicknameMessage(input, 1));
         gameState = GameState.WAITING_GAME;
     }
 }

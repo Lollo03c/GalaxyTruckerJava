@@ -1,46 +1,35 @@
 package org.mio.progettoingsoft.network.socket.server;
 
+import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class SocketServer {
     private final ServerSocket listenSocket;
-    private final ServerController controller;
-    private final List<SocketClientHandler> clients = new ArrayList<>();
-    private final BlockingQueue<Message> messageQueue;
+    private final BlockingQueue<Message> recivedMessageQueue;
 
-
-    public SocketServer(ServerSocket listenSocket) {
+    public SocketServer(ServerSocket listenSocket, BlockingQueue<Message> recivedMessageQueue) {
         this.listenSocket = listenSocket;
-        this.controller = new ServerController();
-        this.messageQueue = new LinkedBlockingQueue<>();
+        this.recivedMessageQueue = recivedMessageQueue;
     }
 
     public void runServer() throws IOException {
         Socket clientSocket = null;
         while ((clientSocket = this.listenSocket.accept()) != null) {
+            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
+            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
 
-            SocketClientHandler handler = new SocketClientHandler(
-                    this.controller,
-                    this,
-                    clientSocket
-            );
+            SocketClientHandler handler = new SocketClientHandler(in, out, recivedMessageQueue);
 
-            synchronized (this.clients){
-                clients.add(handler);
-            }
             //thread che mi resta sempre attivo e che legge i messaggi dal server al client
             new Thread(() -> {
                 try {
-                    handler.runVirtualView();
+                    handler.runVirtualClient();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

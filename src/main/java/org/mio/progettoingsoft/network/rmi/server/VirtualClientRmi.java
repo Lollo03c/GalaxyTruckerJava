@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 
 public interface VirtualClientRmi extends Remote, VirtualClient {
     @Override
-    void sendToClient(Message message) throws RemoteException;
+    void showUpdate(Message message) throws RemoteException;
 
     @Override
     void reportError(String details) throws RemoteException;

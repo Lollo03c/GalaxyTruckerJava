@@ -14,7 +14,7 @@ public class ClientApp {
     */
     private Client client;
     private final ClientController clientController;
-    private final MessageHandler messageHandler;
+    private final ClientMessageHandler clientMessageHandler;
     private final BlockingQueue<Message> serverMessageQueue;
 
     public ClientApp(boolean isGui) {
@@ -24,12 +24,12 @@ public class ClientApp {
 
         this.clientController = ClientController.create(isGui);
         this.serverMessageQueue = new LinkedBlockingQueue<>();
-        this.messageHandler = new MessageHandler(clientController,serverMessageQueue);
+        this.clientMessageHandler = new ClientMessageHandler(clientController,serverMessageQueue);
     }
 
     public void run() throws IOException, NotBoundException {
         // Thread che gestisce i messaggi in arrivo
-        Thread messageHandlerThread = new Thread(messageHandler, "message-handler");
+        Thread messageHandlerThread = new Thread(clientMessageHandler, "message-handler");
         messageHandlerThread.setDaemon(true);
         messageHandlerThread.start();
 

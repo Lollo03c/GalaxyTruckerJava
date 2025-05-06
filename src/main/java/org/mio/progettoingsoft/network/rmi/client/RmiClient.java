@@ -41,7 +41,7 @@ public class RmiClient extends UnicastRemoteObject implements Client, VirtualCli
 
     // Metodo chiamato dal server per mandare messaggi al client -> definito in VirtualClient
     @Override
-    public void sendToClient(Message message) throws RemoteException {
+    public void showUpdate(Message message) throws RemoteException {
         messageQueue.add(message);
     }
 

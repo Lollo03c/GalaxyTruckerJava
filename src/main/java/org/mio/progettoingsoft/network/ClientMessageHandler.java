@@ -5,11 +5,11 @@ import org.mio.progettoingsoft.network.message.Message;
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 
-public class MessageHandler implements Runnable{
+public class ClientMessageHandler implements Runnable{
     private final ClientController clientController;
     private final BlockingQueue<Message> messageQueue;
 
-    public MessageHandler(ClientController clientController, BlockingQueue<Message> messageQueue) {
+    public ClientMessageHandler(ClientController clientController, BlockingQueue<Message> messageQueue) {
         this.clientController = clientController;
         this.messageQueue = messageQueue;
     }

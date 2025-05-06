@@ -1,43 +1,28 @@
 package org.mio.progettoingsoft.network.socket.server;
 
-import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.*;
-import java.net.Socket;
-import java.rmi.RemoteException;
+import java.util.concurrent.BlockingQueue;
 
 public class SocketClientHandler implements VirtualClientSocket {
+    private final ObjectInputStream input;
+    private final ObjectOutputStream output;
+    private final BlockingQueue<Message> recivedMessageQueue;
 
-    final ServerController serverController;
-    final SocketServer server;
-    ObjectInputStream input; //canale da cui leggo ciò che mi invia il client
-    //    final PrintWriter output; //canale da cui scrivo ciò che voglio inviare al client
-    ObjectOutputStream output;
-    Socket socket;
-
-    public SocketClientHandler(ServerController controller, SocketServer server, Socket socket) {
-        this.serverController = controller;
-        this.server = server;
-        try {
-            this.input = new ObjectInputStream(socket.getInputStream());
-            this.output = new ObjectOutputStream(socket.getOutputStream());
-
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.socket = socket;
+    public SocketClientHandler(ObjectInputStream in, ObjectOutputStream out, BlockingQueue<Message> recivedMessageQueue) {
+        this.input = in;
+        this.output = out;
+        this.recivedMessageQueue = recivedMessageQueue;
     }
 
     //comunicazione dal client al server
     //chiamata dal server nel momento della connessione
-
-    public void runVirtualView() throws IOException {
+    public void runVirtualClient() throws IOException {
         String line;
         while (true) {
             try {
-                Message mex = (Message) input.readObject();
+                recivedMessageQueue.add((Message) input.readObject());
                 System.out.println("ho ricevuto il messaggio da ");
                 //serverController.handleInput2(this,mex);
             } catch (IOException | ClassNotFoundException e) {
@@ -51,7 +36,7 @@ public class SocketClientHandler implements VirtualClientSocket {
     // comunicazione dal server al client
     //non va bene, bisogna serializzare il messaggio println manda solo testo non messaggi
     @Override
-    public void sendToClient(Message message)  {
+    public void showUpdate(Message message)  {
         //this.output.println("send");
         try{
             this.output.writeObject(message);
