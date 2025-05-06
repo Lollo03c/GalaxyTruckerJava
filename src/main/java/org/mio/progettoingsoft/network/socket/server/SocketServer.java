@@ -1,8 +1,10 @@
 package org.mio.progettoingsoft.network.socket.server;
 
-import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.network.rmi.server.RmiServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -12,19 +14,26 @@ import java.util.concurrent.BlockingQueue;
 public class SocketServer {
     private final ServerSocket listenSocket;
     private final BlockingQueue<Message> recivedMessageQueue;
+    private final ServerController serverController = ServerController.getInstance();
+
+    private final static Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
     public SocketServer(ServerSocket listenSocket, BlockingQueue<Message> recivedMessageQueue) {
         this.listenSocket = listenSocket;
         this.recivedMessageQueue = recivedMessageQueue;
     }
 
-    public void runServer() throws IOException {
+    public void runServer() throws Exception {
         Socket clientSocket = null;
         while ((clientSocket = this.listenSocket.accept()) != null) {
             ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
             ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
 
             SocketClientHandler handler = new SocketClientHandler(in, out, recivedMessageQueue);
+
+            serverController.addClient(handler);
+
+            logger.info("Client {} has connected to server", handler);
 
             //thread che mi resta sempre attivo e che legge i messaggi dal server al client
             new Thread(() -> {

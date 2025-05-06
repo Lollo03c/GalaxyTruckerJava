@@ -8,17 +8,23 @@ import java.rmi.RemoteException;
 import java.util.Optional;
 
 public class ServerController {
-    private static ServerController instance = null;
+    private static ServerController instance;
 
     private GameManager gameManager = GameManager.getInstance();
 
-    public ServerController() {}
+    public static ServerController create(){
+        if(instance == null){
+            instance = new ServerController();
+        }
+        return instance;
+    }
 
     public static ServerController getInstance(){
-        if (instance == null)
-            instance = new ServerController();
+       return instance;
+    }
 
-        return instance;
+    public void addClient(VirtualClient client) throws Exception {
+        gameManager.addClientToAccept(client);
     }
 
     /**

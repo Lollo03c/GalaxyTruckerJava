@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.VirtualClient;
 import org.mio.progettoingsoft.network.message.GameSetupInput;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
@@ -28,16 +27,12 @@ public class GameManager{
     private NicknameMessage nicknameMessage = null;
     private GameSetupInput gameSetupInput = null;
 
-    ServerController serverController = ServerController.getInstance();
-
-    public List<String> getNicknames(){
-        return nicknames;
+    public static GameManager create() {
+        if(instance == null) {
+            instance = new GameManager();
+        }
+        return instance;
     }
-
-    public Map<Integer, VirtualClient> getWaitingClients(){
-        return clientsToAccept;
-    }
-
 
     /**
      * return the singleton repreeing the whole class
@@ -45,10 +40,15 @@ public class GameManager{
      * @return the instance of the class
      */
     public static synchronized GameManager getInstance(){
-        if (instance == null)
-            instance = new GameManager();
-
         return instance;
+    }
+
+    public List<String> getNicknames(){
+        return nicknames;
+    }
+
+    public Map<Integer, VirtualClient> getWaitingClients(){
+        return clientsToAccept;
     }
 
     public GameManager(){
@@ -84,7 +84,7 @@ public class GameManager{
         return ongoingGames;
     }
 
-    public void addPlayerToAccept(VirtualClient client) throws Exception {
+    public void addClientToAccept(VirtualClient client) throws Exception {
         synchronized (clientsToAccept){
             while(clientsToAccept.containsKey(nextIdPlayer)){
                 nextIdPlayer++;

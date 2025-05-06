@@ -5,9 +5,9 @@ import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
 import org.mio.progettoingsoft.views.VirtualView;
 
-import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class ClientController implements Runnable {
     private static ClientController instance;
@@ -37,6 +37,10 @@ public abstract class ClientController implements Runnable {
         return instance;
     }
 
+    public void setMessageQueue(BlockingQueue<Message> messageQueue) {
+        this.inputMessageQueue = messageQueue;
+    }
+
     protected void handleInput(String input) throws Exception {
         switch (gameState) {
             case START -> handleConnectionTypeInput(input);
@@ -46,7 +50,7 @@ public abstract class ClientController implements Runnable {
         }
     }
 
-    private void handleConnectionTypeInput(String input) throws NotBoundException, IOException, ClassNotFoundException {
+    private void handleConnectionTypeInput(String input) throws Exception {
         boolean isRmi = (Integer.parseInt(input) == 1);
 
         ConnectionType connectionType = new ConnectionType(isRmi, "127.0.0.1", isRmi ? 1099 : 1234, "localhost");

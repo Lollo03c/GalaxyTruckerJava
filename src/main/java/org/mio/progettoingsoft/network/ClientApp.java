@@ -15,16 +15,17 @@ public class ClientApp {
     private Client client;
     private final ClientController clientController;
     private final ClientMessageHandler clientMessageHandler;
-    private final BlockingQueue<Message> serverMessageQueue;
+    private final BlockingQueue<Message> inputMessageQueue;
 
     public ClientApp(boolean isGui) {
         // TODO: andrà fatto con factory in base a isGui
         // view = new Tui();
         // view = new VirtualView(isGui);
 
+        this.inputMessageQueue = new LinkedBlockingQueue<>();
         this.clientController = ClientController.create(isGui);
-        this.serverMessageQueue = new LinkedBlockingQueue<>();
-        this.clientMessageHandler = new ClientMessageHandler(clientController,serverMessageQueue);
+        this.clientController.setMessageQueue(inputMessageQueue);
+        this.clientMessageHandler = new ClientMessageHandler(clientController, inputMessageQueue);
     }
 
     public void run() throws IOException, NotBoundException {

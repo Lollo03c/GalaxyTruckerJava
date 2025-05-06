@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network;
 
+import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
 import org.mio.progettoingsoft.network.rmi.server.RmiServer;
@@ -21,10 +22,18 @@ public class ServerApp {
     private static final String HOST = "127.0.0.1";
     private static final int SOCKET_PORT = 1234;
 
-    private final BlockingQueue<Message> recivedMessageQueue = new LinkedBlockingQueue<>();
-    private final ServerMessageHandler serverMessageHandler = new ServerMessageHandler(recivedMessageQueue);
+    private final BlockingQueue<Message> recivedMessageQueue;
+    private final ServerMessageHandler serverMessageHandler;
 
     private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
+
+    public ServerApp() {
+        GameManager.create();
+        ServerController.create();
+
+        recivedMessageQueue = new LinkedBlockingQueue<>();
+        serverMessageHandler = new ServerMessageHandler(recivedMessageQueue);
+    }
 
     public void run() throws IOException {
         // Thread che gestisce i messaggi in entrata
@@ -54,6 +63,8 @@ public class ServerApp {
             serverSocket.runServer();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

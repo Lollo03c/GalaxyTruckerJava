@@ -10,7 +10,7 @@ public class TuiController extends ClientController {
 
     public TuiController() {
         super();
-        this.view= new Tui();
+        this.view = new Tui();
     }
 
     @Override

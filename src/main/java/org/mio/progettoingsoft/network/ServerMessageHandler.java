@@ -9,11 +9,13 @@ import org.mio.progettoingsoft.network.message.NicknameMessage;
 import java.util.concurrent.BlockingQueue;
 
 public class ServerMessageHandler implements Runnable {
-    private final ServerController serverController = ServerController.getInstance();
-    private final GameManager gameManager = GameManager.getInstance();
+    private final ServerController serverController;
+    private final GameManager gameManager;
     private final BlockingQueue<Message> receivedMessageQueue;
 
     public ServerMessageHandler(BlockingQueue<Message> receivedMessageQueue) {
+        serverController = ServerController.getInstance();
+        gameManager = GameManager.getInstance();
         this.receivedMessageQueue = receivedMessageQueue;
     }
 

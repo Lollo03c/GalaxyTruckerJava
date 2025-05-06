@@ -14,7 +14,7 @@ public class RmiClient extends UnicastRemoteObject implements Client, VirtualCli
     private BlockingQueue<Message> messageQueue;
     private ClientController clientController;
 
-    public RmiClient(VirtualServerRmi server, BlockingQueue<Message> messageQueue) throws RemoteException {
+    public RmiClient(VirtualServerRmi server, BlockingQueue<Message> messageQueue) throws Exception {
         super();
         this.server = server;
         this.messageQueue = messageQueue;
