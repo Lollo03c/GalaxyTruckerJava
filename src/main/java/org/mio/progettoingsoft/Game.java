@@ -45,6 +45,10 @@ public class Game {
         return numPlayers == clients.size();
     }
 
+    public boolean askSetting() {
+        return clients.size() == 1;
+    }
+
     public void startGame(){
 
     }
@@ -52,15 +56,15 @@ public class Game {
     public void addReceivedMessage(Message message){
         receivedMessages.add(message);
     }
-
-    private void handleMessagesFromServer(){
-        while (true){
-            Message message = receivedMessages.poll();
-
-            gameController.handleMessage(message);
-
-        }
-    }
+//
+//    private void handleMessagesFromServer(){
+//        while (true){
+//            Message message = receivedMessages.poll();
+//
+//            gameController.handleMessage(message);
+//
+//        }
+//    }
 
 
 

@@ -8,10 +8,6 @@ public class GameController {
 
     }
 
-    public void handleMessage(Message message){
-
-    }
-
     /*
     private final FlyBoard flyBoard;
 

@@ -17,18 +17,25 @@ import java.util.concurrent.BlockingQueue;
 
 public class NetworkFactory {
     public static Client create(ConnectionType info, VirtualView view, BlockingQueue<Message> inputMessageQueue) throws Exception {
-        if (info.isRmi()) {
-            Registry registry = LocateRegistry.getRegistry(info.getHost(), info.getPort());
+        try {
+            if (info.isRmi()) {
+                Registry registry = LocateRegistry.getRegistry(info.getHost(), info.getPort());
 
-            VirtualServerRmi server = (VirtualServerRmi) registry.lookup(info.getServerName());
+                VirtualServerRmi server = (VirtualServerRmi) registry.lookup(info.getServerName());
 
-            return new RmiClient(server, inputMessageQueue);
-        } else {
-            Socket serverSocket = new Socket(info.getHost(), info.getPort());
-            ObjectInputStream in = new ObjectInputStream(serverSocket.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(serverSocket.getOutputStream());
-            System.out.println("Connected to " + info.getHost() + ":" + info.getPort());
-            return new SocketClient(in, out, inputMessageQueue);
+                return new RmiClient(server, inputMessageQueue);
+            } else {
+                Socket serverSocket = new Socket(info.getHost(), info.getPort());
+                ObjectOutputStream out = new ObjectOutputStream(serverSocket.getOutputStream());
+                ObjectInputStream in = new ObjectInputStream(serverSocket.getInputStream());
+
+                out.flush();
+                System.out.println("Connected to " + info.getHost() + ":" + info.getPort());
+                return new SocketClient(in, out, inputMessageQueue);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 }

@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.network.VirtualClient;
-import org.mio.progettoingsoft.network.message.GameSetupInput;
+import org.mio.progettoingsoft.network.message.GameSetupMessage;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
 
 import java.util.*;
@@ -25,7 +25,7 @@ public class GameManager{
 
     private final Map<Integer, VirtualClient> clientsToAccept = new ConcurrentHashMap<>();
     private NicknameMessage nicknameMessage = null;
-    private GameSetupInput gameSetupInput = null;
+    private GameSetupMessage gameSetupMessage = null;
 
     public static GameManager create() {
         if(instance == null) {
@@ -43,11 +43,11 @@ public class GameManager{
         return instance;
     }
 
-    public List<String> getNicknames(){
+    public synchronized List<String> getNicknames(){
         return nicknames;
     }
 
-    public Map<Integer, VirtualClient> getWaitingClients(){
+    public synchronized Map<Integer, VirtualClient> getWaitingClients(){
         return clientsToAccept;
     }
 
@@ -84,23 +84,31 @@ public class GameManager{
         return ongoingGames;
     }
 
-    public void addClientToAccept(VirtualClient client) throws Exception {
-        synchronized (clientsToAccept){
-            while(clientsToAccept.containsKey(nextIdPlayer)){
-                nextIdPlayer++;
-            }
+    public synchronized void addClientToAccept(int idClient, VirtualClient client)  {
 
-            clientsToAccept.put(nextIdPlayer, client);
-
-
-            client.showUpdate(new NicknameMessage(null, nextGameId++));
-        }
+        clientsToAccept.put(idClient, client);
     }
 
     /**
      * set the waitingGame as null
      */
-    public void emptyWaitingGame(){
+    public synchronized void emptyWaitingGame(){
         waitingGame = null;
+    }
+
+
+    /**
+     *
+     * @return the next possible available idPlayer
+     */
+    public synchronized int getNextIdPlayer(){
+        while (clientsToAccept.containsKey(nextIdPlayer))
+            nextIdPlayer++;
+
+        return nextIdPlayer++;
+    }
+
+    public synchronized void addNickname(String nick){
+        nicknames.add(nick);
     }
 }

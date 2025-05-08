@@ -22,10 +22,7 @@ public class ServerController {
     public static ServerController getInstance(){
        return instance;
     }
-
-    public void addClient(VirtualClient client) throws Exception {
-        gameManager.addClientToAccept(client);
-    }
+    private boolean waitingForGameSetting = false;
 
     /**
      * called when server received a {@link NicknameMessage}
@@ -36,14 +33,14 @@ public class ServerController {
      */
     public void addPlayer(String nickname, int idPlayer){
         VirtualClient client = gameManager.getWaitingClients().get(idPlayer);
-        if (client != null) {
+        if (client == null) {
             return;
         }
 
         if (gameManager.getNicknames().contains(nickname)) {
 
             try {
-                client.reportError("nickname");
+                client.reportError(0, null, ErrorType.NICKNAME);
             } catch (Exception e) {
 
             }
@@ -57,6 +54,13 @@ public class ServerController {
 
         waitingGame.addPlayer(nickname, client);
         gameManager.getWaitingClients().remove(idPlayer);
+        gameManager.addNickname(nickname);
+
+        if (gameManager.getWaitingGame().get().askSetting()){
+            client.showUpdate(new GameSetupMessage(waitingGame.getIdGame(), nickname, 0, null));
+        }
+
+        waitingForGameSetting = true;
 
         if (waitingGame.isFull()) {
             Game readyToStart = waitingGame;
@@ -64,16 +68,16 @@ public class ServerController {
 
             gameManager.emptyWaitingGame();
         }
-
+        int a = 0;
     }
 
     /**
-     * called when server receives a {@link GameSetupInput}
+     * called when server receives a {@link GameSetupMessage}
      * Set-up the {@link org.mio.progettoingsoft.model.enums.GameMode} and the number of players of the next game to start
      *
-     * @param message : {@link  GameSetupInput}
+     * @param message : {@link  GameSetupMessage}
      */
-    public void setupGame(GameSetupInput message){
+    public void setupGame(GameSetupMessage message){
         Optional<Game> optGame = gameManager.getWaitingGame();
         if (optGame.isEmpty())
             return;
@@ -83,7 +87,10 @@ public class ServerController {
             return;
 
         waitingGame.setupGame(message.getMode(), message.getNumPlayers());
+
+        waitingForGameSetting = false;
     }
+
 
     public void addPlayerToGame(VirtualClient client, String nickname) throws RemoteException {
         /*

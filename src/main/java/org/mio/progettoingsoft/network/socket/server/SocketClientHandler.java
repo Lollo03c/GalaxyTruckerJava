@@ -1,24 +1,39 @@
 package org.mio.progettoingsoft.network.socket.server;
 
+import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.network.message.ErrorMessage;
+import org.mio.progettoingsoft.network.message.ErrorType;
 import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.network.message.WelcomeMessage;
 
 import java.io.*;
+import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 public class SocketClientHandler implements VirtualClientSocket {
-    private final ObjectInputStream input;
-    private final ObjectOutputStream output;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
     private final BlockingQueue<Message> recivedMessageQueue;
 
-    public SocketClientHandler(ObjectInputStream in, ObjectOutputStream out, BlockingQueue<Message> recivedMessageQueue) {
-        this.input = in;
-        this.output = out;
+    public SocketClientHandler(Socket socket, BlockingQueue<Message> recivedMessageQueue) {
+        try {
+            this.input = new ObjectInputStream(socket.getInputStream());
+            this.output = new ObjectOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+
+        }
         this.recivedMessageQueue = recivedMessageQueue;
     }
 
     //comunicazione dal client al server
     //chiamata dal server nel momento della connessione
     public void runVirtualClient() throws IOException {
+        int idClient = GameManager.getInstance().getNextIdPlayer();
+        showUpdate(new WelcomeMessage(idClient));
+
+
+        GameManager.getInstance().addClientToAccept(idClient, this);
+
         String line;
         while (true) {
             try {
@@ -50,9 +65,7 @@ public class SocketClientHandler implements VirtualClientSocket {
     }
 
     @Override
-    public void reportError(String details) {
-        //this.output.println("error");
-        //this.output.println(details);
-        //this.output.flush();
+    public void reportError(int idGame, String nickname, ErrorType errorType) throws Exception{
+        showUpdate(new ErrorMessage(idGame, nickname, errorType));
     }
 }

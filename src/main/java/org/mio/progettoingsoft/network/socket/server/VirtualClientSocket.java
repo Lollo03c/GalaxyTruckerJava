@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.network.VirtualClient;
+import org.mio.progettoingsoft.network.message.ErrorType;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.IOException;
@@ -10,7 +11,8 @@ import java.io.IOException;
  */
 public interface VirtualClientSocket extends VirtualClient {
     @Override
-    void showUpdate(Message message) throws IOException;
+    void showUpdate(Message message);
+
     @Override
-    void reportError(String details);
+    void reportError(int idGame, String nickname, ErrorType errorType) throws Exception;
 }

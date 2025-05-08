@@ -2,9 +2,10 @@ package org.mio.progettoingsoft.network;
 
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.network.message.GameSetupInput;
+import org.mio.progettoingsoft.network.message.GameSetupMessage;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
+import org.mio.progettoingsoft.network.message.WelcomeMessage;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -33,10 +34,13 @@ public class ServerMessageHandler implements Runnable {
         int idGame;
 
         switch (message) {
+            case WelcomeMessage welcomeMessage -> {
+
+            }
             case NicknameMessage nMessage -> {
                 serverController.addPlayer(nMessage.getNickname(), nMessage.getIdPlayer());
             }
-            case GameSetupInput setupMessage -> {
+            case GameSetupMessage setupMessage -> {
                 serverController.setupGame(setupMessage);
             }
             default -> {

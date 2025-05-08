@@ -1,13 +1,18 @@
 package org.mio.progettoingsoft.network.socket.server;
 
+import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.network.ServerController;
+import org.mio.progettoingsoft.network.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.network.message.WelcomeMessage;
+import org.mio.progettoingsoft.network.rmi.server.RmiServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class SocketServer {
@@ -23,14 +28,13 @@ public class SocketServer {
     }
 
     public void runServer() throws Exception {
-        Socket clientSocket = null;
-        while ((clientSocket = this.listenSocket.accept()) != null) {
-            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+        while (true) {
+            Socket clientSocket = listenSocket.accept();
 
-            SocketClientHandler handler = new SocketClientHandler(in, out, recivedMessageQueue);
+//            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
+//            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
 
-            serverController.addClient(handler);
+            SocketClientHandler handler = new SocketClientHandler(clientSocket, recivedMessageQueue);
 
             logger.info("Client {} has connected to server", handler);
 

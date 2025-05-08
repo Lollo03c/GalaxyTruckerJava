@@ -2,10 +2,13 @@ package org.mio.progettoingsoft.network.socket.client;
 
 import org.mio.progettoingsoft.network.Client;
 import org.mio.progettoingsoft.network.ClientController;
+import org.mio.progettoingsoft.network.message.ErrorMessage;
+import org.mio.progettoingsoft.network.message.ErrorType;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.socket.server.VirtualClientSocket;
 
 import java.io.*;
+import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 
 public class SocketClient implements Client, VirtualClientSocket {
@@ -44,13 +47,23 @@ public class SocketClient implements Client, VirtualClientSocket {
     }
 
     @Override
+    public void sendError(int idGame, String nickname, ErrorType errorType) throws IOException {
+        output.sendToServer(new ErrorMessage(idGame, nickname, errorType));
+    }
+
+    @Override
     public void close() {
 
     }
 
     @Override
-    public synchronized void showUpdate(Message message) throws IOException {
+    public synchronized void showUpdate(Message message) {
         inputMessageQueue.add(message);
+    }
+
+    @Override
+    public synchronized void reportError(int idGame, String nickname, ErrorType errorType) throws Exception{
+        showUpdate(new ErrorMessage(idGame, nickname, errorType));
     }
 
     private void listenToServer() throws IOException, ClassNotFoundException {

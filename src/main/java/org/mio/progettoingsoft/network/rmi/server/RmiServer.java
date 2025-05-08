@@ -27,7 +27,7 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
 
     @Override
     public void connect(VirtualClient client) throws Exception {
-        serverController.addClient(client);
+//        serverController.addClient(client);
 
         logger.info("Client {} has connected to server", client);
     }

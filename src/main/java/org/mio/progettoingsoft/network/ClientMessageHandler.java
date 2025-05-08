@@ -1,6 +1,9 @@
 package org.mio.progettoingsoft.network;
 
+import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.network.message.GameSetupMessage;
 import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.network.message.WelcomeMessage;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
@@ -8,6 +11,8 @@ import java.util.concurrent.BlockingQueue;
 public class ClientMessageHandler implements Runnable{
     private final ClientController clientController;
     private final BlockingQueue<Message> messageQueue;
+
+    private int idTempClient;
 
     public ClientMessageHandler(ClientController clientController, BlockingQueue<Message> messageQueue) {
         this.clientController = clientController;
@@ -22,6 +27,7 @@ public class ClientMessageHandler implements Runnable{
      */
     @Override
     public void run() {
+
         // thread di gestione dei messaggi in coda dal server
         while(true){
             Message message = messageQueue.poll();
@@ -41,6 +47,19 @@ public class ClientMessageHandler implements Runnable{
      * @param message The {@link Message} to handle
      */
     public void handleMessage(Message message) throws RemoteException {
+        switch (message){
+            case WelcomeMessage welcomeMessage ->{
+                clientController.setSetupClientId(welcomeMessage.getIdPlayer());
+            }
 
+            case GameSetupMessage gameSetupMessage ->{
+                clientController.setGameState(GameState.SETUP_GAME);
+            }
+            default -> {
+
+            }
+        }
     }
+
+
 }
