@@ -1,4 +1,4 @@
-package org.mio.progettoingsoft.network;
+package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameManager;
@@ -25,12 +25,16 @@ public class ServerMessageHandler implements Runnable {
         while (true) {
             if (!receivedMessageQueue.isEmpty()) {
                 Message message = receivedMessageQueue.poll();
-                handleMessage(message);
+                try {
+                    handleMessage(message);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
-    private void handleMessage(Message message) {
+    private void handleMessage(Message message) throws Exception {
         int idGame;
 
         switch (message) {

@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.network.VirtualClient;
+import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.GameSetupMessage;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
 
@@ -85,7 +85,6 @@ public class GameManager{
     }
 
     public synchronized void addClientToAccept(int idClient, VirtualClient client)  {
-
         clientsToAccept.put(idClient, client);
     }
 

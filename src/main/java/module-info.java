@@ -13,6 +13,8 @@ module org.mio.progettoingsoft {
     exports org.mio.progettoingsoft;
 
     exports org.mio.progettoingsoft.network;
-    exports org.mio.progettoingsoft.network.rmi.client;
-    exports org.mio.progettoingsoft.network.rmi.server;
+    exports org.mio.progettoingsoft.network.client;
+    exports org.mio.progettoingsoft.network.client.rmi;
+    exports org.mio.progettoingsoft.network.server;
+    exports org.mio.progettoingsoft.network.server.rmi;
 }

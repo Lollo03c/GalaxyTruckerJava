@@ -1,4 +1,4 @@
-package org.mio.progettoingsoft.network;
+package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.network.message.Message;
 
@@ -8,23 +8,21 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientApp {
-    /*
-    * Questa classe si occupa di chiedere all'utente se vuole connettersi via socket o RMI e creare la connessione
-    * scelta attraverso NetworkFacotry che implementa il Factory pattern.
-    */
-    private Client client;
     private final ClientController clientController;
     private final ClientMessageHandler clientMessageHandler;
     private final BlockingQueue<Message> inputMessageQueue;
 
     public ClientApp(boolean isGui) {
-        // TODO: andrà fatto con factory in base a isGui
-        // view = new Tui();
-        // view = new VirtualView(isGui);
-
-        this.inputMessageQueue = new LinkedBlockingQueue<>();
         this.clientController = ClientController.create(isGui);
+
+        /*
+         * this queue contains all the incoming messages:
+         * the messages are enqueued by the client (rmiClient/socketClient) object in clientController
+         * the messages are dequeued by the clientMessageHandler
+         */
+        this.inputMessageQueue = new LinkedBlockingQueue<>();
         this.clientController.setMessageQueue(inputMessageQueue);
+
         this.clientMessageHandler = new ClientMessageHandler(clientController, inputMessageQueue);
     }
 

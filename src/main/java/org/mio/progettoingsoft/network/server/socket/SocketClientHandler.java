@@ -1,8 +1,6 @@
-package org.mio.progettoingsoft.network.socket.server;
+package org.mio.progettoingsoft.network.server.socket;
 
 import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.network.message.ErrorMessage;
-import org.mio.progettoingsoft.network.message.ErrorType;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.WelcomeMessage;
 
@@ -29,8 +27,8 @@ public class SocketClientHandler implements VirtualClientSocket {
     //chiamata dal server nel momento della connessione
     public void runVirtualClient() throws IOException {
         int idClient = GameManager.getInstance().getNextIdPlayer();
-        showUpdate(new WelcomeMessage(idClient));
 
+        showUpdate(new WelcomeMessage(idClient));
 
         GameManager.getInstance().addClientToAccept(idClient, this);
 
@@ -62,10 +60,5 @@ public class SocketClientHandler implements VirtualClientSocket {
         }
         //this.output.println(message);
         //this.output.flush();
-    }
-
-    @Override
-    public void reportError(int idGame, String nickname, ErrorType errorType) throws Exception{
-        showUpdate(new ErrorMessage(idGame, nickname, errorType));
     }
 }

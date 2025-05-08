@@ -1,4 +1,4 @@
-package org.mio.progettoingsoft.network;
+package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.network.message.*;
@@ -8,13 +8,11 @@ import java.util.concurrent.BlockingQueue;
 
 public class ClientMessageHandler implements Runnable{
     private final ClientController clientController;
-    private final BlockingQueue<Message> messageQueue;
+    private final BlockingQueue<Message> inputMessageQueue;
 
-    private int idTempClient;
-
-    public ClientMessageHandler(ClientController clientController, BlockingQueue<Message> messageQueue) {
+    public ClientMessageHandler(ClientController clientController, BlockingQueue<Message> inputMessageQueue) {
         this.clientController = clientController;
-        this.messageQueue = messageQueue;
+        this.inputMessageQueue = inputMessageQueue;
     }
 
     /**
@@ -25,10 +23,9 @@ public class ClientMessageHandler implements Runnable{
      */
     @Override
     public void run() {
-
         // thread di gestione dei messaggi in coda dal server
         while(true){
-            Message message = messageQueue.poll();
+            Message message = inputMessageQueue.poll();
             if (message != null) {
                 try {
                     handleMessage(message);

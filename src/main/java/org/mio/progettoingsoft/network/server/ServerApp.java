@@ -1,10 +1,10 @@
-package org.mio.progettoingsoft.network;
+package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
-import org.mio.progettoingsoft.network.rmi.server.RmiServer;
-import org.mio.progettoingsoft.network.socket.server.SocketServer;
+import org.mio.progettoingsoft.network.client.rmi.VirtualServerRmi;
+import org.mio.progettoingsoft.network.server.rmi.RmiServer;
+import org.mio.progettoingsoft.network.server.socket.SocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

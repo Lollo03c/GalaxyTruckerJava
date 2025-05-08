@@ -1,4 +1,4 @@
-package org.mio.progettoingsoft.network;
+package org.mio.progettoingsoft.network.client;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -15,7 +15,7 @@ public class ClientMain {
         // Arguments parsing
         for (String arg : args) {
             switch (arg) {
-                case "-c", "--cli" -> isGui = false;
+                case "-t", "--tui" -> isGui = false;
                 // TODO: gestire in altro modo, stampando su terminale il motivo del problema
                 default -> throw new IllegalArgumentException("Unknown argument: " + arg);
             }

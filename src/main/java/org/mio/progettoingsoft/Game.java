@@ -1,9 +1,7 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.network.Client;
-import org.mio.progettoingsoft.network.VirtualClient;
+import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.StartGameMessage;
 
@@ -62,7 +60,7 @@ public class Game {
         return clients.size() == 1;
     }
 
-    public void startGame(){
+    public void startGame() throws Exception {
         broadcast(new StartGameMessage(idGame));
     }
 
@@ -79,7 +77,7 @@ public class Game {
 //        }
 //    }
 
-    private void broadcast(Message message){
+    private void broadcast(Message message) throws Exception {
         for (VirtualClient client : clients.values())
             client.showUpdate(message);
     }

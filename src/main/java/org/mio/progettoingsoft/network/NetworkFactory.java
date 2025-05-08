@@ -1,16 +1,13 @@
 package org.mio.progettoingsoft.network;
 
+import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.rmi.client.RmiClient;
-import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
-import org.mio.progettoingsoft.network.socket.client.SocketClient;
+import org.mio.progettoingsoft.network.client.rmi.RmiClient;
+import org.mio.progettoingsoft.network.client.rmi.VirtualServerRmi;
+import org.mio.progettoingsoft.network.client.socket.SocketClient;
 import org.mio.progettoingsoft.views.VirtualView;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.concurrent.BlockingQueue;
@@ -26,12 +23,7 @@ public class NetworkFactory {
                 return new RmiClient(server, inputMessageQueue);
             } else {
                 Socket serverSocket = new Socket(info.getHost(), info.getPort());
-                ObjectOutputStream out = new ObjectOutputStream(serverSocket.getOutputStream());
-                ObjectInputStream in = new ObjectInputStream(serverSocket.getInputStream());
-
-                out.flush();
-                System.out.println("Connected to " + info.getHost() + ":" + info.getPort());
-                return new SocketClient(in, out, inputMessageQueue);
+                return new SocketClient(serverSocket, inputMessageQueue);
             }
         } catch (Exception e) {
             e.printStackTrace();

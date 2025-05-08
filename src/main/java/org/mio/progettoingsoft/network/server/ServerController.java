@@ -1,16 +1,18 @@
-package org.mio.progettoingsoft.network;
+package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.*;
 
 import java.rmi.RemoteException;
 import java.util.Optional;
 
 public class ServerController {
+    /**
+     * SINGLETON IMPLEMENTATION
+     * */
     private static ServerController instance;
-
-    private GameManager gameManager = GameManager.getInstance();
 
     public static ServerController create(){
         if(instance == null){
@@ -22,6 +24,10 @@ public class ServerController {
     public static ServerController getInstance(){
        return instance;
     }
+
+
+    private GameManager gameManager = GameManager.getInstance();
+
     private boolean waitingForGameSetting = false;
 
     /**
@@ -31,7 +37,7 @@ public class ServerController {
      * @param nickname : 'String'
      * @param idPlayer : temporary id to get its client
      */
-    public void addPlayer(String nickname, int idPlayer){
+    public void addPlayer(String nickname, int idPlayer) throws Exception {
         VirtualClient client = gameManager.getWaitingClients().get(idPlayer);
         if (client == null) {
             return;
@@ -40,7 +46,7 @@ public class ServerController {
         if (gameManager.getNicknames().contains(nickname)) {
 
             try {
-                client.reportError(0, null, ErrorType.NICKNAME);
+                //client.reportError(0, null, ErrorType.NICKNAME);
             } catch (Exception e) {
 
             }
@@ -66,7 +72,13 @@ public class ServerController {
 
         if (waitingGame.isFull()) {
             Game readyToStart = waitingGame;
-            new Thread(() -> readyToStart.startGame()).start();
+            new Thread(() -> {
+                try {
+                    readyToStart.startGame();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
 
             gameManager.emptyWaitingGame();
         }
@@ -79,7 +91,7 @@ public class ServerController {
      *
      * @param message : {@link  GameSetupMessage}
      */
-    public void setupGame(GameSetupMessage message){
+    public void setupGame(GameSetupMessage message) throws Exception {
         Optional<Game> optGame = gameManager.getWaitingGame();
         if (optGame.isEmpty())
             return;
@@ -92,31 +104,6 @@ public class ServerController {
         waitingGame.getClients().get(message.getNickname()).showUpdate(new WaitingForPlayerMessage(waitingGame.getIdGame(), message.getNickname(), waitingGame.getNumPlayers(), waitingGame.getGameMode()));
 
         waitingForGameSetting = false;
-    }
-
-
-    public void addPlayerToGame(VirtualClient client, String nickname) throws RemoteException {
-        /*
-        if(lobby.getWaitingGame() == null) {
-            client.send(new RequestSetupMessage(client, nickname));
-        } else {
-            lobby.joinGame(client, nickname);
-            client.send(new JoinedGameMessage(client, nickname));
-        }
-         */
-    }
-
-    public void handleInput(Message message) throws RemoteException {
-        /*
-        switch (message) {
-            case GameSetupInput gsi -> {
-                GameSetupInput input = (GameSetupInput) message;
-                lobby.createGame(message.getClient(), input.getNickname(), input.getNumPlayers());
-                System.out.print("Game created " + input.getNickname() + "\n");
-            }
-            default -> throw new RemoteException();
-        }
-         */
     }
 }
 

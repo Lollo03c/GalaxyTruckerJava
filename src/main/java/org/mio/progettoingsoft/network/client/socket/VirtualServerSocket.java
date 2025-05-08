@@ -1,6 +1,6 @@
-package org.mio.progettoingsoft.network.socket.client;
+package org.mio.progettoingsoft.network.client.socket;
 
-import org.mio.progettoingsoft.network.VirtualServer;
+import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.io.IOException;

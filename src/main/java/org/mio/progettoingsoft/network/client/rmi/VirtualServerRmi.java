@@ -1,7 +1,7 @@
-package org.mio.progettoingsoft.network.rmi.client;
+package org.mio.progettoingsoft.network.client.rmi;
 
-import org.mio.progettoingsoft.network.VirtualClient;
-import org.mio.progettoingsoft.network.VirtualServer;
+import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.rmi.Remote;

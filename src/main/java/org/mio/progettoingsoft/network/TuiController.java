@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network;
 
+import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.views.Tui;
 
 import java.io.IOException;

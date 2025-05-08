@@ -1,10 +1,11 @@
-package org.mio.progettoingsoft.network.rmi.server;
+package org.mio.progettoingsoft.network.server.rmi;
 
 import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.network.ServerController;
-import org.mio.progettoingsoft.network.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
+import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.rmi.client.VirtualServerRmi;
+import org.mio.progettoingsoft.network.message.WelcomeMessage;
+import org.mio.progettoingsoft.network.client.rmi.VirtualServerRmi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +26,11 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         this.recivedMessageQueue = recivedMessageQueue;
     }
 
+
     @Override
     public void connect(VirtualClient client) throws Exception {
-//        serverController.addClient(client);
+        int idClient = GameManager.getInstance().getNextIdPlayer();
+        client.showUpdate(new WelcomeMessage(idClient));
 
         logger.info("Client {} has connected to server", client);
     }

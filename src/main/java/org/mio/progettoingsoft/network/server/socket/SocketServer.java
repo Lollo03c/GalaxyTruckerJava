@@ -1,18 +1,13 @@
-package org.mio.progettoingsoft.network.socket.server;
+package org.mio.progettoingsoft.network.server.socket;
 
-import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.network.ServerController;
-import org.mio.progettoingsoft.network.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.WelcomeMessage;
-import org.mio.progettoingsoft.network.rmi.server.RmiServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 public class SocketServer {
@@ -30,9 +25,6 @@ public class SocketServer {
     public void runServer() throws Exception {
         while (true) {
             Socket clientSocket = listenSocket.accept();
-
-//            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-//            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
 
             SocketClientHandler handler = new SocketClientHandler(clientSocket, recivedMessageQueue);
 

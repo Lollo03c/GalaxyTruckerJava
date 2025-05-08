@@ -2,8 +2,7 @@ package org.mio.progettoingsoft.views;
 
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.network.Client;
-import org.mio.progettoingsoft.network.ClientController;
+import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.network.input.EmptyInput;
 import org.mio.progettoingsoft.network.input.Input;
 import org.mio.progettoingsoft.network.input.SetupInput;
