@@ -59,8 +59,10 @@ public class ServerController {
         if (gameManager.getWaitingGame().get().askSetting()){
             client.showUpdate(new GameSetupMessage(waitingGame.getIdGame(), nickname, 0, null));
         }
+        else {
+            client.showUpdate(new WaitingForPlayerMessage(waitingGame.getIdGame(), nickname, waitingGame.getNumPlayers(), waitingGame.getGameMode()));
+        }
 
-        waitingForGameSetting = true;
 
         if (waitingGame.isFull()) {
             Game readyToStart = waitingGame;
@@ -87,6 +89,7 @@ public class ServerController {
             return;
 
         waitingGame.setupGame(message.getMode(), message.getNumPlayers());
+        waitingGame.getClients().get(message.getNickname()).showUpdate(new WaitingForPlayerMessage(waitingGame.getIdGame(), message.getNickname(), waitingGame.getNumPlayers(), waitingGame.getGameMode()));
 
         waitingForGameSetting = false;
     }

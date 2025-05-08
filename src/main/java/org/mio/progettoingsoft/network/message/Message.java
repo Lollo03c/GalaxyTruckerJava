@@ -3,7 +3,7 @@ package org.mio.progettoingsoft.network.message;
 import java.io.Serializable;
 
 public abstract sealed class Message implements Serializable
-        permits ErrorMessage, GameSetupMessage, JoinedGameMessage, NicknameMessage, WelcomeMessage {
+        permits ErrorMessage, GameSetupMessage, JoinedGameMessage, NicknameMessage, StartGameMessage, WaitingForPlayerMessage, WelcomeMessage {
 
     private final Integer idGame;
     private final String nickname;

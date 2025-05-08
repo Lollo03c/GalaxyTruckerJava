@@ -1,9 +1,7 @@
 package org.mio.progettoingsoft.network;
 
 import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.network.message.GameSetupMessage;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.WelcomeMessage;
+import org.mio.progettoingsoft.network.message.*;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
@@ -54,6 +52,16 @@ public class ClientMessageHandler implements Runnable{
 
             case GameSetupMessage gameSetupMessage ->{
                 clientController.setGameState(GameState.SETUP_GAME);
+                clientController.createGame(gameSetupMessage.getIdGame());
+            }
+
+            case WaitingForPlayerMessage waitingForPlayerMessage ->{
+                clientController.setGame(waitingForPlayerMessage.getIdGame(), waitingForPlayerMessage.getMode(), waitingForPlayerMessage.getnPlayers());
+                clientController.setGameState(GameState.PRINT_GAME_INFO);
+            }
+
+            case StartGameMessage startGameMessage -> {
+                clientController.setGameState(GameState.BUILDING_SHIP);
             }
             default -> {
 

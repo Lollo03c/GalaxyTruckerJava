@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.Client;
 import org.mio.progettoingsoft.network.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.network.message.StartGameMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,18 @@ public class Game {
         return idGame;
     }
 
+    public int getNumPlayers(){
+        return numPlayers;
+    }
+
+    public GameMode getGameMode(){
+        return  mode;
+    }
+
+    public Map<String, VirtualClient> getClients(){
+        return clients;
+    }
+
     public void addPlayer(String nickname, VirtualClient client){
         clients.put(nickname, client);
     }
@@ -50,7 +63,7 @@ public class Game {
     }
 
     public void startGame(){
-
+        broadcast(new StartGameMessage(idGame));
     }
 
     public void addReceivedMessage(Message message){
@@ -66,6 +79,10 @@ public class Game {
 //        }
 //    }
 
+    private void broadcast(Message message){
+        for (VirtualClient client : clients.values())
+            client.showUpdate(message);
+    }
 
 
 }

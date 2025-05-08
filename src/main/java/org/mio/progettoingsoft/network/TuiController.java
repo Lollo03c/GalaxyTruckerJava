@@ -16,16 +16,19 @@ public class TuiController extends ClientController {
     @Override
     public void run() {
         while(true) {
-            try {
-                handleInput(view.gameMenu(gameState));
-            } catch (NotBoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            synchronized (gameState) {
+                try {
+                    handleInput(view.gameMenu(gameState));
+
+                } catch (NotBoundException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.network;
 
+import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.input.Input;
 import org.mio.progettoingsoft.network.input.SetupInput;
 import org.mio.progettoingsoft.network.input.StringInput;
@@ -19,10 +21,11 @@ public abstract class ClientController implements Runnable {
     protected Client client;
     protected VirtualView view;
     protected BlockingQueue<Message> inputMessageQueue;
-    private int idGame;
     private String nickname;
 
     private int setupClientid;
+
+    private Game game;
     /*
      * nickname
      * gamecode
@@ -40,8 +43,10 @@ public abstract class ClientController implements Runnable {
         return instance;
     }
 
-    public void setGameState(GameState gameState){
-        this.gameState = gameState;
+    public void setGameState(GameState gameState) {
+        synchronized (gameState) {
+            this.gameState = gameState;
+        }
 
     }
 
@@ -58,7 +63,12 @@ public abstract class ClientController implements Runnable {
             case START -> handleConnectionTypeInput(input);
             case NICKNAME_REQUEST -> handleNicknameInput(input);
             case SETUP_GAME -> handleSetupGame(input);
-            case WAITING_GAME -> {}
+            case PRINT_GAME_INFO -> {}
+            case WAITING_PLAYERS -> { Thread.sleep(10);  }
+            case BUILDING_SHIP -> {
+                System.out.println("partita iniziata");
+                setGameState(GameState.WAITING_PLAYERS);
+            }
             default -> System.out.println("Invalid gameState");
         }
     }
@@ -88,19 +98,32 @@ public abstract class ClientController implements Runnable {
         if (input instanceof StringInput stringInput) {
             this.nickname = stringInput.getString();
             client.sendInput(new NicknameMessage(stringInput.getString(), this.setupClientid));
-            gameState = GameState.WAITING_GAME;
+            gameState = GameState.WAITING_PLAYERS;
         }
     }
 
     private void handleSetupGame(Input input) throws Exception{
         if (input instanceof SetupInput setupInput){
-            Message message = new GameSetupMessage(idGame, nickname, setupInput.getnPlayers(), setupInput.getGameMode());
+            Message message = new GameSetupMessage(game.getIdGame(), nickname, setupInput.getnPlayers(), setupInput.getGameMode());
             client.sendInput(message);
-            gameState = GameState.WAITING_GAME;
+            gameState = GameState.WAITING_PLAYERS;
         }
     }
 
     public void setSetupClientId(int id){
         this.setupClientid = id;
+    }
+
+    public void createGame(int id){
+        game = new Game(id);
+    }
+
+    public void setGame(int id, GameMode mode, int nPlayers){
+        game = new Game(id);
+        game.setupGame(mode, nPlayers);
+    }
+
+    public Game getGame(){
+        return game;
     }
 }
