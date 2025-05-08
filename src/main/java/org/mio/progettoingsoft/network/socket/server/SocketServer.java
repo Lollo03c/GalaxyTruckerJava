@@ -2,7 +2,6 @@ package org.mio.progettoingsoft.network.socket.server;
 
 import org.mio.progettoingsoft.network.ServerController;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.rmi.server.RmiServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
