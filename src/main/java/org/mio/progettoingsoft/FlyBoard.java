@@ -12,52 +12,91 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
+import org.mio.progettoingsoft.model.FlyBoardEasy;
+import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.interfaces.FlyBoardServer;
 
 import java.util.*;
 
-public class FlyBoard {
-    StateEnum state;
+/**
+ * The Flyboard
+ *
+ * has to be created staticty with FlyBoard.createFlyBorard(GameMode) base of the mode of the game to start
+ *
+ */
+
+public abstract class FlyBoard implements FlyBoardServer {
+    GameState state;
     private String messageToSend;
+
+    private final GameMode mode;
 
     private List<AdventureCard> selectionDeckPrivate;
     private List<AdventureCard> selectionDeck1;
     private List<AdventureCard> selectionDeck2;
     private List<AdventureCard> selectionDeck3;
 
-    private final List<AdventureCard> deck;
+    protected final List<AdventureCard> deck;
 
-    private final List<Optional<Player>> circuit;
+    protected final List<Optional<Player>> circuit;
 
-    private final List<Player> scoreBoard;
-    private final Stack<Component> coveredComponents;
-    private final List<Component> uncoveredComponents;
-    private final Map<GoodType, Integer> remainingGoods;
+    private List<Player> scoreBoard;
+    protected final List<Integer> coveredComponents;
+    private final List<Integer> uncoveredComponents;
+
+    protected final List<Player> players;
+
+    private Map<Integer, Component> components = loadComponentMap();
 
     private HourGlass hourGlass;
 
-    public FlyBoard() {
-        this.coveredComponents = new Stack<>();
-        this.uncoveredComponents = new ArrayList<>();
-        this.scoreBoard = new ArrayList<>();
-        this.deck = new ArrayList<>();
-        this.remainingGoods = new HashMap<>();
 
-        loadComponents();
-        loadAdventureCards();
 
-        this.circuit = new ArrayList<>(24);
+    protected FlyBoard(GameMode mode, Set<String> nicknames) {
+        this.mode = mode;
+        this.coveredComponents = new ArrayList<>();
 
-        for (int i = 0; i < 24; i++)
-            circuit.add(Optional.empty());
+        coveredComponents.addAll(components.keySet());
+        Collections.shuffle(coveredComponents);
 
-        state = StateEnum.WAITING_PLAYERS;
+
+        deck = loadAdventureCard();
+
+        uncoveredComponents = new ArrayList<>();
+        players = new ArrayList<>(nicknames.size());
+
+        Iterator<HousingColor> colorIter = Arrays.asList(HousingColor.values()).iterator();
+        for (String nick : nicknames){
+            players.add(new Player(nick, colorIter.next(), mode, this));
+        }
+
+        circuit = createCircuite();
+
+    }
+
+    /**
+     *
+     * @param mode the {@link GameMode} with which start the fame
+     * @param nicknames the nicknames of the players
+     * @return the {@link FlyBoard} created
+     */
+    public static FlyBoard createFlyBoard(GameMode mode, Set<String> nicknames) {
+        FlyBoard flyBoard = null;
+
+        switch (mode) {
+            case EASY -> flyBoard = new FlyBoardEasy(nicknames);
+            case NORMAL -> flyBoard = new FlyBoardNormal(nicknames);
+        }
+
+        return flyBoard;
     }
 
     /**
      * GETTER
      */
     public Optional<Player> getPlayerByUsername(String username) {
-        return scoreBoard.stream().filter(p -> p.getUsername().equals(username)).findFirst();
+        return scoreBoard.stream().filter(p -> p.getNickname().equals(username)).findFirst();
     }
 
     public Optional<Player> getPlayerByColor(HousingColor colorPlayerEnum){
@@ -74,29 +113,33 @@ public class FlyBoard {
         return scoreBoard;
     }
 
-    public StateEnum getState(){
+    public GameState getState(){
         return state;
     }
 
-    public List<Component> getCoveredComponents() {
+    public List<Integer> getCoveredComponents() {
         return coveredComponents;
     }
 
-    public List<Component> getUncoveredComponents() {
+    public List<Integer> getUncoveredComponents() {
         return uncoveredComponents;
     }
 
-    public Component drawComponent() throws NoMoreComponentsException {
-        if (coveredComponents.isEmpty())
-            throw new NoMoreComponentsException("Covered components are not enough");
-        return coveredComponents.pop();
+    public Component getComponentById(int idComp){
+        return components.get(idComp);
     }
 
-    public void addUncoveredComponent(Component c) {
+    public Integer drawComponent() throws NoMoreComponentsException {
+        if (coveredComponents.isEmpty())
+            throw new NoMoreComponentsException("Covered components are not enough");
+        return coveredComponents.removeLast();
+    }
+
+    public void addUncoveredComponent(int c) {
         this.uncoveredComponents.add(c);
     }
 
-    public Component chooseComponentFromUncoveredByIndex(int index) throws NoMoreComponentsException {
+    public Integer chooseComponentFromUncoveredByIndex(int index) throws NoMoreComponentsException {
         if (uncoveredComponents.isEmpty())
             throw new NoMoreComponentsException("No more uncovered components.");
 
@@ -107,7 +150,7 @@ public class FlyBoard {
         if (uncoveredComponents.isEmpty())
             throw new NoMoreComponentsException("No more uncovered components.");
 
-        Component comp = uncoveredComponents.stream().filter(c -> c.getId() == id).findFirst().get();
+        Component comp = getComponentById(uncoveredComponents.stream().filter(c -> c == id).findFirst().get());
         boolean removed = uncoveredComponents.remove(comp);
         if (removed)
             return comp;
@@ -121,17 +164,17 @@ public class FlyBoard {
     // adds a player with the passed user and color (for the main housing), throws an exc if necessary
     public void addPlayer(String username, HousingColor color) throws CannotAddPlayerException {
 
-        if (scoreBoard.stream().anyMatch(player -> player.getUsername().equals(username)))
+        if (scoreBoard.stream().anyMatch(player -> player.getNickname().equals(username)))
             throw new CannotAddPlayerException("Cannot add player with username " + username + ". Username already in use");
         if (scoreBoard.stream().anyMatch(player -> player.getColor().equals(color)))
             throw new CannotAddPlayerException("Cannot add player with color " + color + ". Color already in use");
         if (scoreBoard.size() == 4)
             throw new CannotAddPlayerException("Cannot add player. The game is full");
 
-        scoreBoard.add(new Player(username, color));
+        scoreBoard.add(new Player(username, color, mode, this));
 
         if (scoreBoard.size() == 4){
-            state = StateEnum.BUILDING_SHIP;
+            state = GameState.BUILDING_SHIP;
         }
     }
 
@@ -177,7 +220,7 @@ public class FlyBoard {
         }
     }
 
-    //advance one step and if necessary update the scoreboard
+    //advance one step and if necessary send the scoreboard
     private void advanceOne(Player player) {
         int start = circuit.indexOf(Optional.of(player));
         int index = start;
@@ -244,7 +287,13 @@ public class FlyBoard {
         return deck.isEmpty();
     }
 
-    public void loadComponents() {
+
+    /**
+     *
+     * @return the list of all the components loaded by JSON file
+     */
+    private Map<Integer, Component> loadComponentMap() {
+        List<Component> loadedComponents = new ArrayList<>();
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -262,117 +311,79 @@ public class FlyBoard {
                 switch (type) {
                     case "ENERGY_DEPOT": {
                         boolean isTriple = rootNode.get(i).path("kind").asInt() == 3;
-                        this.coveredComponents.add(new EnergyDepot(id, isTriple, top, bottom, right, left));
+                        loadedComponents.add(new EnergyDepot(id, isTriple, top, bottom, right, left));
                     }
                     break;
 
                     case "DEPOT": {
                         boolean isBig = rootNode.get(i).path("isBig").asBoolean();
                         boolean isHazard = rootNode.get(i).path("isHazard").asBoolean();
-                        this.coveredComponents.add(new Depot(id, isBig, isHazard, top, bottom, right, left));
+                        loadedComponents.add(new Depot(id, isBig, isHazard, top, bottom, right, left));
                     }
                     break;
 
                     case "HOUSING":
-                        this.coveredComponents.add(new Housing(id, top, bottom, right, left));
+                        loadedComponents.add(new Housing(id, top, bottom, right, left));
                         break;
 
                     case "PIPE":
-                        this.coveredComponents.add(new Pipe(id, top, bottom, right, left));
+                        loadedComponents.add(new Pipe(id, top, bottom, right, left));
                         break;
 
                     case "ENGINE":
-                        this.coveredComponents.add(new Engine(id, top, bottom, right, left));
+                        loadedComponents.add(new Engine(id, top, bottom, right, left));
                         break;
 
                     case "DOUBLE_ENGINE":
-                        this.coveredComponents.add(new DoubleEngine(id, top, bottom, right, left));
+                        loadedComponents.add(new DoubleEngine(id, top, bottom, right, left));
                         break;
                     case "DRILL":
-                        this.coveredComponents.add(new Drill(id, top, bottom, right, left));
+                        loadedComponents.add(new Drill(id, top, bottom, right, left));
                         break;
                     case "DOUBLE_DRILL":
-                        this.coveredComponents.add(new DoubleDrill(id, top, bottom, right, left));
+                        loadedComponents.add(new DoubleDrill(id, top, bottom, right, left));
                         break;
                     case "ALIEN_HOUSING":
                         AlienType color = AlienType.stringToAlienType(rootNode.get(i).path("color").asText());
-                        this.coveredComponents.add(new AlienHousing(id, color, top, bottom, right, left));
+                        loadedComponents.add(new AlienHousing(id, color, top, bottom, right, left));
                         break;
                     case "SHIELD":
-                        this.coveredComponents.add(new Shield(id, top, bottom, right, left));
+                        loadedComponents.add(new Shield(id, top, bottom, right, left));
                         break;
                 }
-
-                Collections.shuffle(coveredComponents);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    public void loadAdventureCards() {
+        loadedComponents.add(new Housing(33, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
+        loadedComponents.add(new Housing(34, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
+        loadedComponents.add(new Housing(52, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
+        loadedComponents.add(new Housing(61, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE));
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
-
-            for (int i = 0; i < rootNode.size(); i++) {
-                String type = rootNode.get(i).path("type").asText();
-
-                switch (type) {
-                    case "SLAVERS":
-                        this.deck.add(Slaver.loadSlaver(rootNode.get(i)));
-                        break;
-
-                    case "SMUGGLERS":
-                        this.deck.add(Smugglers.loadSmugglers(rootNode.get(i)));
-                        break;
-
-                    case "PIRATE":
-                        this.deck.add(Pirate.loadPirate(rootNode.get(i)));
-                        break;
-
-                    case "STARDUST":
-                        this.deck.add(Stardust.loadStardust(rootNode.get(i)));
-                        break;
-
-                    case "EPIDEMIC":
-                        this.deck.add(Epidemic.loadEpidemic(rootNode.get(i)));
-                        break;
-
-                    case "OPENSPACE":
-                        this.deck.add(OpenSpace.loadOpenSpace(rootNode.get(i)));
-                        break;
-
-                    case "METEORSWARM":
-                        this.deck.add(MeteorSwarm.loadMeteorSwarm(rootNode.get(i)));
-                        break;
-
-                    case "PLANETS":
-                        this.deck.add(Planets.loadPlanets(rootNode.get(i)));
-                        break;
-
-                    case "COMBATZONE":
-                        this.deck.add(CombatZone.loadCombatZone(rootNode.get(i)));
-                        break;
-
-                    case "ABANDONEDSHIP":
-                        this.deck.add(AbandonedShip.loadAbandonedShip(rootNode.get(i)));
-                        break;
-
-                    case "ABANDONEDSTATION":
-                        this.deck.add(AbandonedStation.loadAbandonedStation(rootNode.get(i)));
-                        break;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        Map<Integer, Component> map = new HashMap<>();
+        for (Component comp : loadedComponents){
+            map.put(comp.getId(), comp);
         }
+
+        return map;
     }
 
-    public void setState(StateEnum state){
+    /**
+     *
+     * @return the list of all the Adventure Cards based on the {@link GameMode} of the game
+     */
+    protected abstract List<AdventureCard> loadAdventureCard();
+
+    /**
+     *
+     * @return the created circuite base on the {@link GameMode} of the game
+     */
+    protected abstract List<Optional<Player>> createCircuite();
+
+
+    public void setState(GameState state){
         this.state = state;
     }
 

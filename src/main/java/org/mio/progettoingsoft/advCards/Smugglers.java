@@ -2,10 +2,8 @@ package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.responses.Response;
 import org.mio.progettoingsoft.responses.SmugglersResponse;
 
 import java.util.ArrayList;
@@ -65,7 +63,7 @@ public class Smugglers extends AdvancedEnemy {
         playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
 
         iterator = playersToPlay.iterator();
-        flyBoard.setState(StateEnum.CARD_EFFECT);
+        flyBoard.setState(GameState.CARD_EFFECT);
     }
 
     @Override
@@ -80,7 +78,7 @@ public class Smugglers extends AdvancedEnemy {
                 }
                 flyBoard.moveDays(playerState, -daysLost);
 
-                flyBoard.setState(StateEnum.DRAW_CARD);
+                flyBoard.setState(GameState.DRAW_CARD);
             }
             else if (response.getStregth() < strength){
                 playerState.getShipBoard().stoleGood(stolenGoods);

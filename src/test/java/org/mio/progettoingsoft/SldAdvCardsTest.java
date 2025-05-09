@@ -5,12 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
-import org.mio.progettoingsoft.advCards.sealed.SldEpidemic;
-import org.mio.progettoingsoft.components.AlienHousing;
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
-import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NoMoreComponentsException;
 
 import java.util.*;
@@ -161,18 +158,18 @@ public class SldAdvCardsTest {
 
     @Test
     public void should_play_abandoned_ship(){
-        flyBoard.setState(StateEnum.DRAW_CARD);
+        flyBoard.setState(GameState.DRAW_CARD);
         SldAdvCard card = new SldAbandonedShip(1, 2, 3, 4, 1);
         switch (card){
             case SldAbandonedShip c ->{
                 /* test sequence */
-                flyBoard.setState(StateEnum.CARD_EFFECT);
+                flyBoard.setState(GameState.CARD_EFFECT);
                 assertThrows(IllegalStateException.class, ()->{
                     c.init(flyBoard);
                 });
-                flyBoard.setState(StateEnum.DRAW_CARD);
+                flyBoard.setState(GameState.DRAW_CARD);
                 c.init(flyBoard);
-                assertEquals(StateEnum.CARD_EFFECT, flyBoard.getState());
+                assertEquals(GameState.CARD_EFFECT, flyBoard.getState());
                 assertEquals(CardState.CREW_REMOVE_CHOICE, c.getState());
 
                 // Antonio is not the leader
@@ -198,7 +195,7 @@ public class SldAdvCardsTest {
                 assertEquals(2, flyBoard.getPlayerByUsername("Antonio").get().getShipBoard().getComponent(4,2).getNumHumanMembers());
                 assertEquals(true, flyBoard.getPlayerByUsername("Antonio").get().getShipBoard().getComponent(3,2).containsAlien(AlienType.PURPLE));
                 c.finish(flyBoard);
-                assertEquals(StateEnum.DRAW_CARD, flyBoard.getState());
+                assertEquals(GameState.DRAW_CARD, flyBoard.getState());
             }
             default -> throw new IllegalStateException("Unexpected value: " + card);
         }

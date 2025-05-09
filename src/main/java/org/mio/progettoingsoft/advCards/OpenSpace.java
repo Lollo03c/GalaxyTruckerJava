@@ -25,7 +25,7 @@ public class OpenSpace extends AdventureCard {
         playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
 
         iterator = playersToPlay.iterator();
-        flyBoard.setState(StateEnum.CARD_EFFECT);
+        flyBoard.setState(GameState.CARD_EFFECT);
     }
 
     @Override

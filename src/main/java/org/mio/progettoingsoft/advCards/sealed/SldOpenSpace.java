@@ -2,7 +2,7 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.StateEnum;
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
@@ -25,7 +25,7 @@ public final class SldOpenSpace extends SldAdvCard {
     // activate them), they will be removed by the finish method (still to be implemented)
     // sets the card state to ENGINE_CHOICE (to accept calls by the players)
     public void init(FlyBoard board) {
-        if (board.getState() != StateEnum.DRAW_CARD) {
+        if (board.getState() != GameState.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         noPowerPlayers = board.getScoreBoard().stream()
@@ -43,7 +43,7 @@ public final class SldOpenSpace extends SldAdvCard {
         } else {
             throw new RuntimeException("No allowed players");
         }
-        board.setState(StateEnum.CARD_EFFECT);
+        board.setState(GameState.CARD_EFFECT);
         this.state = CardState.ENGINE_CHOICE;
     }
 
@@ -56,7 +56,7 @@ public final class SldOpenSpace extends SldAdvCard {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
         }
         if (!board.getScoreBoard().contains(player)) {
-            throw new BadPlayerException("The player " + player.getUsername() + " is not in the board");
+            throw new BadPlayerException("The player " + player.getNickname() + " is not in the board");
         }
 
         this.state = CardState.APPLYING;
@@ -83,7 +83,7 @@ public final class SldOpenSpace extends SldAdvCard {
             }
 
         } else {
-            throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
     }
@@ -97,6 +97,6 @@ public final class SldOpenSpace extends SldAdvCard {
             // here the method should call a procedure or throw an exception to remove the players with no power
             throw new RuntimeException("There's at least a player with no power, not implemented yet");
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 }

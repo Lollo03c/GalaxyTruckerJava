@@ -1,21 +1,26 @@
 package org.mio.progettoingsoft.network.message;
 
-import org.mio.progettoingsoft.network.VirtualView;
-
 import java.io.Serializable;
 
-public sealed class Message implements Serializable
-        permits RequestSetupMessage, JoinedGameMessage, GameSetupInput{
-    private VirtualView client;
-    private String nickname;
+public abstract sealed class Message implements Serializable
+        permits ErrorMessage, GameSetupMessage, JoinedGameMessage, NicknameMessage, StartGameMessage, WaitingForPlayerMessage, WelcomeMessage {
 
-    public Message(VirtualView client , String nickname) {
-        this.client = client;
+    public static String getBroadcastAddress(){
+        return "########";
+    }
+
+    private final Integer idGame;
+    private final String nickname;
+
+
+    protected Message(Integer idGame, String nickname){
+        this.idGame = idGame;
         this.nickname = nickname;
     }
-    public Message() {}
 
-    public VirtualView getClient() {     return client;    }
+    public int getIdGame(){
+        return idGame;
+    }
 
     public String getNickname() {
         return nickname;

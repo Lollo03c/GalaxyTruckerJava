@@ -5,13 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.responses.AbandonedShipResponse;
 import org.mio.progettoingsoft.responses.AbandonedStatationResponse;
-import org.mio.progettoingsoft.responses.Response;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class AbandonedStation extends AdventureCard {
     private int daysLost;
@@ -56,7 +53,7 @@ public class AbandonedStation extends AdventureCard {
                 .toList();
 
         iterator = playersToPlay.iterator();
-        flyBoard.setState(StateEnum.CARD_EFFECT);
+        flyBoard.setState(GameState.CARD_EFFECT);
     }
 
     @Override
@@ -77,7 +74,7 @@ public class AbandonedStation extends AdventureCard {
                 }
                 flyBoard.moveDays(playerState, -daysLost);
 
-                flyBoard.setState(StateEnum.DRAW_CARD);
+                flyBoard.setState(GameState.DRAW_CARD);
             }
         }
     }

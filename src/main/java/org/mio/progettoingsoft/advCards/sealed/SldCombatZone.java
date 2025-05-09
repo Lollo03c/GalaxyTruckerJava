@@ -2,7 +2,7 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.StateEnum;
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.CombatLine;
 import org.mio.progettoingsoft.advCards.Criterion;
 import org.mio.progettoingsoft.advCards.Penalty;
@@ -33,10 +33,10 @@ public final class SldCombatZone extends SldAdvCard {
 
     @Override
     public void init(FlyBoard board) {
-        if (board.getState() != StateEnum.DRAW_CARD) {
+        if (board.getState() != GameState.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
-        board.setState(StateEnum.CARD_EFFECT);
+        board.setState(GameState.CARD_EFFECT);
         this.allowedPlayers = board.getScoreBoard();
         this.playerIterator = allowedPlayers.iterator();
         switch (lines.getFirst().getCriterion()) {
@@ -70,7 +70,7 @@ public final class SldCombatZone extends SldAdvCard {
                 this.state = CardState.APPLYING;
             }
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
     }
@@ -101,7 +101,7 @@ public final class SldCombatZone extends SldAdvCard {
                 this.state = CardState.APPLYING;
             }
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
     }
 
@@ -161,7 +161,7 @@ public final class SldCombatZone extends SldAdvCard {
             tempPenalty.apply(board, player, housingToRemoveCrew);
             nextLine(board);
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " cannot play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " cannot play " + this.getCardName() + " at the moment");
         }
     }
 
@@ -250,6 +250,6 @@ public final class SldCombatZone extends SldAdvCard {
         if (this.state != CardState.FINALIZED) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 }

@@ -2,12 +2,15 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.*;
+import org.mio.progettoingsoft.model.ShipBoardEasy;
+import org.mio.progettoingsoft.model.ShipBoardNormal;
+import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.*;
 import java.util.function.DoubleBinaryOperator;
 import java.util.stream.Stream;
 
-public class ShipBoard {
+public abstract class ShipBoard {
     private final Optional<Component>[][] shipComponents;
 
     private Component[] bookedComponents;
@@ -33,7 +36,22 @@ public class ShipBoard {
     private final int offsetCol;
     private final int offsetRow;
 
-    public ShipBoard(HousingColor color) {
+    private final FlyBoard flyBoard;
+
+    public static ShipBoard createShipBoard(GameMode mode, HousingColor color, FlyBoard flyBoard){
+        ShipBoard shipBoard = null;
+
+
+        switch (mode){
+            case EASY -> shipBoard = new ShipBoardEasy(color, flyBoard);
+            case NORMAL -> shipBoard = new ShipBoardNormal(color, flyBoard);
+        }
+
+        return shipBoard;
+    }
+
+    protected ShipBoard(HousingColor color, FlyBoard flyBoard) {
+        this.flyBoard = flyBoard;
         rows = 5;
         columns = 7;
 
@@ -49,13 +67,7 @@ public class ShipBoard {
 
 
         // Add to bannedCoordinates all the cells where components cannot be placed
-        bannedCoordinates = new ArrayList<>(6);
-        bannedCoordinates.add(new Cordinate(0, 0));
-        bannedCoordinates.add(new Cordinate(0, 1));
-        bannedCoordinates.add(new Cordinate(0, 3));
-        bannedCoordinates.add(new Cordinate(1, 0));
-        bannedCoordinates.add(new Cordinate(1, 6));
-        bannedCoordinates.add(new Cordinate(4, 3));
+        this.bannedCoordinates = getBannedCoordinates();
 
         availableEnergy = 0;
         baseFirePower = 0;
@@ -67,11 +79,16 @@ public class ShipBoard {
         maxNormalGoods = 0;
         numNormalGoods = 0;
         completedBuild = false;
-        // Add the starting cabin to the ship, the id identifies the correct tile image, so it's related with the color
-        this.addComponentToPosition(new Housing(HousingColor.getIdByColor(color), true, color, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 2, 3);
 
+        // Add the starting cabin to the ship, the id identifies the correct tile image, so it's related with the color
+        try {
+            this.addComponentToPosition(color.getIdByColor(), new Cordinate(2, 3), 0);
+        } catch (IncorrectShipBoardException e) {
+
+        }
     }
 
+    protected abstract List<Cordinate> getBannedCoordinates();
 
     public void addBookedComponent(Component bookedComponent) throws NotEnoughSpaceForBookedComponentException{
         if(bookedComponents[0] == null){
@@ -192,40 +209,78 @@ public class ShipBoard {
         return adjacents;
     }
 
-    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacementException, InvalidPositionException {
-        if (bannedCoordinates.contains(new Cordinate(row, column)))
-            throw new InvalidPositionException(row, column);
+    /**
+     * add the {@link Component} with given id, to the given rotation, after rotates it
+     *
+     * @param componentId the id of the {@link Component} to insert
+     * @param cordinate the position where to insert id
+     * @param angle the angle to rotate
+     * @throws IncorrectShipBoardException if the cordinate is invalid
+     */
+    public void addComponentToPosition(int componentId, Cordinate cordinate, int angle) throws IncorrectShipBoardException {
+        if (bannedCoordinates.contains(cordinate))
+            throw new IncorrectShipBoardException("Cannot insert in this cordinate");
 
-        if (!validRow(row) || !validColumn(column))
-            throw new InvalidPositionException(row, column);
+        if (getComponentByCord(cordinate).isPresent())
+            throw new IncorrectShipBoardException("Cordinate already full");
 
-        if (shipComponents[row][column].isPresent()) {
-            throw new IncorrectPlacementException(row, column, component);
-        }
+        Component component = flyBoard.getComponentById(componentId);
+        component.rotate(angle);
 
-        component.setRow(row);
-        component.setColumn(column);
+        boolean validPosition = cordinate.equals(new Cordinate(2, 3)) ||
+                cordinate.getAdjacent().stream().map(cord -> getComponentByCord(cord)).filter(optComp -> optComp.isPresent()).findFirst().equals(Optional.empty());
 
-        shipComponents[row][column] = Optional.of(component);
+        if (!validPosition)
+            throw new IncorrectShipBoardException("Not adjacent components");
 
-        availableEnergy += component.getEnergyQuantity();
-
-        for (Component comp : getAdjacent(row, column).values()) {
-            component.addAlienType(comp.getColorAlien());
-            comp.addAlienType(component.getColorAlien());
-        }
-
-        baseFirePower += component.getFirePower() == 2f ? 0 : component.getFirePower();
-        baseEnginePower += component.getEnginePower() == 2 ? 0 : component.getEnginePower();
+        shipComponents[cordinate.getRow()][cordinate.getColumn()] = Optional.of(component);
+        int a = 0;
     }
 
-    public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacementException, InvalidPositionException {
-        while (angle > 0) {
-            comp.rotateClockwise();
-            angle--;
-        }
-        addComponentToPosition(comp, row, column);
+
+    /**
+     * return the {@link Component} if present, Optional.of otherwise
+     * @param cordinate the {@link Cordinate} for the search
+     * @return
+     */
+    private Optional<Component> getComponentByCord(Cordinate cordinate){
+        return shipComponents[cordinate.getRow()][cordinate.getColumn()];
     }
+
+//    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacementException, InvalidPositionException {
+//        if (bannedCoordinates.contains(new Cordinate(row, column)))
+//            throw new InvalidPositionException(row, column);
+//
+//        if (!validRow(row) || !validColumn(column))
+//            throw new InvalidPositionException(row, column);
+//
+//        if (shipComponents[row][column].isPresent()) {
+//            throw new IncorrectPlacementException(row, column, component);
+//        }
+//
+//        component.setRow(row);
+//        component.setColumn(column);
+//
+//        shipComponents[row][column] = Optional.of(component);
+//
+//        availableEnergy += component.getEnergyQuantity();
+//
+//        for (Component comp : getAdjacent(row, column).values()) {
+//            component.addAlienType(comp.getColorAlien());
+//            comp.addAlienType(component.getColorAlien());
+//        }
+//
+//        baseFirePower += component.getFirePower() == 2f ? 0 : component.getFirePower();
+//        baseEnginePower += component.getEnginePower() == 2 ? 0 : component.getEnginePower();
+//    }
+
+//    public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacementException, InvalidPositionException {
+//        while (angle > 0) {
+//            comp.rotateClockwise();
+//            angle--;
+//        }
+//        addComponentToPosition(comp, row, column);
+//    }
 
     //non basta
     //bisogna controllare l'eliminazione a cascata

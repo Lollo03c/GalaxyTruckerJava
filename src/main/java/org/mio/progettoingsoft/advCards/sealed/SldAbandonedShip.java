@@ -2,11 +2,10 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.StateEnum;
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.List;
 
 public final class SldAbandonedShip extends SldAdvCard {
@@ -27,11 +26,11 @@ public final class SldAbandonedShip extends SldAdvCard {
 
     // it initializes the list of players that can play the card (crew > crewLost) and set the card state CREW_REMOVE_CHOICE
     public void init(FlyBoard board) {
-        if (board.getState() != StateEnum.DRAW_CARD) {
+        if (board.getState() != GameState.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         this.state = CardState.CREW_REMOVE_CHOICE;
-        board.setState(StateEnum.CARD_EFFECT);
+        board.setState(GameState.CARD_EFFECT);
         this.allowedPlayers = board.getScoreBoard().stream()
                 .filter(player -> player.getShipBoard().getQuantityGuests() > this.crewLost)
                 .toList();
@@ -47,11 +46,11 @@ public final class SldAbandonedShip extends SldAdvCard {
     // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
     // else, it does nothing, and it's ready for another call with the next player
     public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Integer[]> housingCordinatesList) {
-        if (this.state != CardState.CREW_REMOVE_CHOICE || board.getState() != StateEnum.CARD_EFFECT) {
+        if (this.state != CardState.CREW_REMOVE_CHOICE || board.getState() != GameState.CARD_EFFECT) {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
         }
         if (!board.getScoreBoard().contains(player)) {
-            throw new BadPlayerException("The player " + player.getUsername() + " is not in the board");
+            throw new BadPlayerException("The player " + player.getNickname() + " is not in the board");
         }
         if (housingCordinatesList == null) {
             throw new BadParameterException("List is null");
@@ -69,10 +68,10 @@ public final class SldAbandonedShip extends SldAdvCard {
                 for (int i = 0; i < housingCordinatesList.size(); i++) {
                     int row = housingCordinatesList.get(i)[0];
                     int col = housingCordinatesList.get(i)[1];
-                    board.getPlayerByUsername(actualPlayer.getUsername()).get().getShipBoard().getComponent(row, col).removeGuest();
+                    board.getPlayerByUsername(actualPlayer.getNickname()).get().getShipBoard().getComponent(row, col).removeGuest();
                 }
-                board.moveDays(board.getPlayerByUsername(actualPlayer.getUsername()).get(), -this.daysLost);
-                board.getPlayerByUsername(actualPlayer.getUsername()).get().addCredits(this.credits);
+                board.moveDays(board.getPlayerByUsername(actualPlayer.getNickname()).get(), -this.daysLost);
+                board.getPlayerByUsername(actualPlayer.getNickname()).get().addCredits(this.credits);
                 this.state = CardState.FINALIZED;
             } else {
                 if (playerIterator.hasNext()) {
@@ -91,6 +90,6 @@ public final class SldAbandonedShip extends SldAdvCard {
         if (this.state != CardState.FINALIZED) {
             throw new IllegalStateException("Illegal state for 'finish': " + this.state);
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 }

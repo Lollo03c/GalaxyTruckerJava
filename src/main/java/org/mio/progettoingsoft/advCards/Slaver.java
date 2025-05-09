@@ -41,7 +41,7 @@ public class Slaver extends AdvancedEnemy{
     public void start(){
         playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
         iterator = playersToPlay.iterator();
-        flyBoard.setState(StateEnum.CARD_EFFECT);
+        flyBoard.setState(GameState.CARD_EFFECT);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class Slaver extends AdvancedEnemy{
                 playerState.addCredits(reward);
                 flyBoard.moveDays(playerState, -daysLost);
 
-                flyBoard.setState(StateEnum.DRAW_CARD);
+                flyBoard.setState(GameState.DRAW_CARD);
             }
             else if (response.getStength() < strength){
                 for (Component comp : response.getHousing()){

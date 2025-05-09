@@ -3,8 +3,7 @@ package org.mio.progettoingsoft.advCards;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.AdvCardType;
-import org.mio.progettoingsoft.StateEnum;
-import org.mio.progettoingsoft.advCards.AdvancedEnemy;
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.responses.PirateResponse;
 
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class Pirate extends AdvancedEnemy{
     public void start(){
         playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
         iterator = playersToPlay.iterator();
-        flyBoard.setState(StateEnum.CARD_EFFECT);
+        flyBoard.setState(GameState.CARD_EFFECT);
     }
 
     @Override
@@ -74,7 +73,7 @@ public class Pirate extends AdvancedEnemy{
                 flyBoard.moveDays(playerState, -daysLost);
             }
             else if (response.getStrength() < strength){
-                flyBoard.setState(StateEnum.CANNONS);
+                flyBoard.setState(GameState.CANNONS);
             }
         }
     }

@@ -25,7 +25,7 @@ public final class SldSlavers extends SldAdvCard {
     }
 
     public void init(FlyBoard board) {
-        if (board.getState() != StateEnum.DRAW_CARD) {
+        if (board.getState() != GameState.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         this.allowedPlayers = board.getScoreBoard();
@@ -67,7 +67,7 @@ public final class SldSlavers extends SldAdvCard {
                 return 0;
             }
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
     }
@@ -101,7 +101,7 @@ public final class SldSlavers extends SldAdvCard {
                 this.nextPlayer();
             }
         }else{
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
     }
 
@@ -114,14 +114,14 @@ public final class SldSlavers extends SldAdvCard {
                 for(int i = 0; i < housingCordinatesList.size(); i++){
                     int row = housingCordinatesList.get(i)[0];
                     int col = housingCordinatesList.get(i)[1];
-                    board.getPlayerByUsername(actualPlayer.getUsername()).get().getShipBoard().getComponent(row, col).removeGuest();
+                    board.getPlayerByUsername(actualPlayer.getNickname()).get().getShipBoard().getComponent(row, col).removeGuest();
                 }
                 this.nextPlayer();
             }else{
                 throw new BadPlayerException("Empty list");
             }
         }else{
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
     }
@@ -151,7 +151,7 @@ public final class SldSlavers extends SldAdvCard {
             throw new RuntimeException("There's at least a player with no crew, not implemented yet");
 
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 
 }
