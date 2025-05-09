@@ -36,10 +36,9 @@ public class SocketClientHandler implements VirtualClientSocket {
         while (true) {
             try {
                 recivedMessageQueue.add((Message) input.readObject());
-                System.out.println("ho ricevuto il messaggio da ");
                 //serverController.handleInput2(this,mex);
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                System.out.println("Client crashed - " + e.getMessage());
                 break;
             }
         }

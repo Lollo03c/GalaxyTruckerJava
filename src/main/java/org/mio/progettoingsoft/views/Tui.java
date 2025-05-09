@@ -30,7 +30,6 @@ public class Tui implements VirtualView {
             case SETUP_GAME -> printSetupGameReguest();
             case PRINT_GAME_INFO -> printGameInfo();
             case WAITING -> new EmptyInput();
-
             case BUILDING_SHIP -> printComponentMenu();
             default -> null;
         };

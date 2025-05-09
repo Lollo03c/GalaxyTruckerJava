@@ -22,7 +22,7 @@ import java.util.concurrent.BlockingQueue;
 public abstract class ClientController implements Runnable {
     /**
      * SINGLETON IMPLEMENTATION
-     * */
+     */
     private static ClientController instance;
 
     public static ClientController create(boolean isGui) {
@@ -57,34 +57,46 @@ public abstract class ClientController implements Runnable {
     private String nickname;
     private VirtualView view;
 
+    protected final Object stateLock = new Object();
+
     private int setupClientid;
 
     private GameClient game;
 
 
     public void setGameState(GameState gameState) {
-        synchronized (gameState) {
+        synchronized (this.stateLock) {
             this.gameState = gameState;
         }
     }
 
+    public GameState getGameState() {
+        synchronized (this.stateLock) {
+            return this.gameState;
+        }
+    }
+
     protected void handleInput(Input input) throws Exception {
-        switch (gameState) {
+        switch (this.getGameState()) {
             case START -> handleConnectionTypeInput(input);
             case NICKNAME_REQUEST -> handleNicknameInput(input);
             case SETUP_GAME -> handleSetupGame(input);
-            case PRINT_GAME_INFO -> {}
-            case WAITING -> { Thread.sleep(10);  }
+            case PRINT_GAME_INFO -> {
+            }
+            case WAITING -> {
+
+            }
             case BUILDING_SHIP -> {
                 System.out.println("partita iniziata");
                 setGameState(GameState.WAITING);
             }
             default -> System.out.println("Invalid gameState");
         }
+
     }
 
     private void handleConnectionTypeInput(Input input) throws Exception {
-        if (input instanceof  StringInput stringInput) {
+        if (input instanceof StringInput stringInput) {
             boolean isRmi = (Integer.parseInt(stringInput.getString()) == 1);
 
             ConnectionType connectionType = new ConnectionType(isRmi, hostAddress, isRmi ? rmiPort : socketPort, serverName);
@@ -97,7 +109,8 @@ public abstract class ClientController implements Runnable {
             } else {
                 throw new NotBoundException("Client not found");
             }
-            gameState = GameState.WAITING;
+            this.setGameState(GameState.WAITING);
+
         }
     }
 
@@ -105,33 +118,33 @@ public abstract class ClientController implements Runnable {
         if (input instanceof StringInput stringInput) {
             nickname = stringInput.getString();
             client.sendToServer(new NicknameMessage(nickname, setupClientid));
-            gameState = GameState.WAITING;
+            this.setGameState(GameState.WAITING);
         }
     }
 
-    private void handleSetupGame(Input input) throws Exception{
-        if (input instanceof SetupInput setupInput){
+    private void handleSetupGame(Input input) throws Exception {
+        if (input instanceof SetupInput setupInput) {
             Message message = new GameSetupMessage(game.getIdGame(), nickname, setupInput.getnPlayers(), setupInput.getGameMode());
             client.sendToServer(message);
-            gameState = GameState.WAITING;
+            this.setGameState(GameState.WAITING);
         }
     }
 
-    public void setSetupClientId(int id){
+    public void setSetupClientId(int id) {
         this.setupClientid = id;
     }
 
-    public void createGame(int id){
+    public void createGame(int id) {
         game = new Game(id);
     }
 
-    public void setGame(int id, GameMode mode, int nPlayers){
+    public void setGame(int id, GameMode mode, int nPlayers) {
         game = new Game(id);
         game.setupGame(mode, nPlayers);
     }
 
 
-    public GameClient getGame(){
+    public GameClient getGame() {
         return game;
     }
 

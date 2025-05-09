@@ -18,27 +18,20 @@ public class TuiController extends ClientController {
     @Override
     public void run() {
         while(true) {
-            synchronized (gameState) {
                 try {
-                    handleInput(view.gameMenu(gameState));
-                } catch (NotBoundException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
+                    handleInput(view.gameMenu(this.getGameState()));
+                    stateLock.notifyAll();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            }
         }
     }
 
     @Override
     public void handleWrongNickname(String nickname){
-        if (gameState.equals(GameState.WAITING)) {
-            System.out.println("Nickname '" + nickname + "' already taken. Try something else");
-            setGameState(GameState.NICKNAME_REQUEST);
-        }
+            if (this.getGameState().equals(GameState.WAITING)) {
+                System.out.println("Nickname '" + nickname + "' already taken. Try something else");
+                setGameState(GameState.NICKNAME_REQUEST);
+            }
     }
 }
