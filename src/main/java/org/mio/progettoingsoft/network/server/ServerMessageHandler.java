@@ -23,7 +23,12 @@ public class ServerMessageHandler implements Runnable {
     public void run() {
         while (true) {
             if (!receivedMessageQueue.isEmpty()) {
-                Message message = receivedMessageQueue.poll();
+                Message message = null;
+                try {
+                    message = receivedMessageQueue.take();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 try {
                     handleMessage(message);
                 } catch (Exception e) {

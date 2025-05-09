@@ -6,7 +6,7 @@ import org.mio.progettoingsoft.network.message.*;
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 
-public class ClientMessageHandler implements Runnable{
+public class ClientMessageHandler implements Runnable {
     private final ClientController clientController;
     private final BlockingQueue<Message> inputMessageQueue;
 
@@ -24,11 +24,21 @@ public class ClientMessageHandler implements Runnable{
     @Override
     public void run() {
         // thread di gestione dei messaggi in coda dal server
-        while(true){
-            Message message = inputMessageQueue.poll();
+        while (true) {
+            Message message = null;
+            try {
+                message = inputMessageQueue.take();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
             if (message != null) {
                 try {
                     handleMessage(message);
+
+                    synchronized (clientController) {
+                        clientController.notifyAll();
+                    }
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -42,7 +52,7 @@ public class ClientMessageHandler implements Runnable{
      * @param message The {@link Message} to handle
      */
     public void handleMessage(Message message) throws RemoteException {
-        switch (message){
+        switch (message) {
             case WelcomeMessage welcomeMessage -> {
                 clientController.setGameState(GameState.NICKNAME_REQUEST);
                 clientController.setSetupClientId(welcomeMessage.getIdPlayer());
@@ -54,8 +64,8 @@ public class ClientMessageHandler implements Runnable{
             }
 
             case WaitingForPlayerMessage waitingForPlayerMessage -> {
-                clientController.setGame(waitingForPlayerMessage.getIdGame(), waitingForPlayerMessage.getMode(), waitingForPlayerMessage.getnPlayers());
                 clientController.setGameState(GameState.PRINT_GAME_INFO);
+                clientController.setGame(waitingForPlayerMessage.getIdGame(), waitingForPlayerMessage.getMode(), waitingForPlayerMessage.getnPlayers());
             }
 
             case StartGameMessage startGameMessage -> {
@@ -63,8 +73,12 @@ public class ClientMessageHandler implements Runnable{
             }
 
             case ErrorMessage errorMessage -> {
-                if (errorMessage.getErrorType().equals(ErrorType.NICKNAME))
-                    clientController.handleWrongNickname(errorMessage.getNickname());
+                switch (errorMessage.getErrorType()){
+                    case NICKNAME -> {
+                        clientController.handleWrongNickname(errorMessage.getNickname());
+                    }
+                    default -> throw new RuntimeException("Unexpected error");
+                }
             }
 
             default -> {

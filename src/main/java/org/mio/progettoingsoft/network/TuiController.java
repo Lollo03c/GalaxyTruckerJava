@@ -20,7 +20,6 @@ public class TuiController extends ClientController {
         while(true) {
                 try {
                     handleInput(view.gameMenu(this.getGameState()));
-                    stateLock.notifyAll();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

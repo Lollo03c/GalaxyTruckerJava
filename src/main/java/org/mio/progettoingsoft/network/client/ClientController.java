@@ -63,19 +63,6 @@ public abstract class ClientController implements Runnable {
 
     private GameClient game;
 
-
-    public void setGameState(GameState gameState) {
-        synchronized (this.stateLock) {
-            this.gameState = gameState;
-        }
-    }
-
-    public GameState getGameState() {
-        synchronized (this.stateLock) {
-            return this.gameState;
-        }
-    }
-
     protected void handleInput(Input input) throws Exception {
         switch (this.getGameState()) {
             case START -> handleConnectionTypeInput(input);
@@ -84,7 +71,11 @@ public abstract class ClientController implements Runnable {
             case PRINT_GAME_INFO -> {
             }
             case WAITING -> {
-
+                synchronized (this) {
+                    while (this.getGameState() == GameState.WAITING) {
+                        this.wait();
+                    }
+                }
             }
             case BUILDING_SHIP -> {
                 System.out.println("partita iniziata");
@@ -110,7 +101,6 @@ public abstract class ClientController implements Runnable {
                 throw new NotBoundException("Client not found");
             }
             this.setGameState(GameState.WAITING);
-
         }
     }
 
@@ -130,6 +120,18 @@ public abstract class ClientController implements Runnable {
         }
     }
 
+    public void setGameState(GameState gameState) {
+        synchronized (this.stateLock) {
+            this.gameState = gameState;
+        }
+    }
+
+    public GameState getGameState() {
+        synchronized (this.stateLock) {
+            return this.gameState;
+        }
+    }
+
     public void setSetupClientId(int id) {
         this.setupClientid = id;
     }
@@ -142,7 +144,6 @@ public abstract class ClientController implements Runnable {
         game = new Game(id);
         game.setupGame(mode, nPlayers);
     }
-
 
     public GameClient getGame() {
         return game;
