@@ -2,7 +2,7 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.StateEnum;
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
@@ -30,11 +30,11 @@ public final class SldPlanets extends SldAdvCard {
 
     @Override
     public void init(FlyBoard board) {
-        if (board.getState() != StateEnum.DRAW_CARD) {
+        if (board.getState() != GameState.DRAW_CARD) {
             throw new IllegalStateException("Illegal state: " + board.getState());
         }
         this.state = CardState.PLANET_CHOICE;
-        board.setState(StateEnum.CARD_EFFECT);
+        board.setState(GameState.CARD_EFFECT);
         this.allowedPlayers = new ArrayList<>(board.getScoreBoard());
         this.playerIterator = allowedPlayers.iterator();
         if (playerIterator.hasNext()) {
@@ -75,7 +75,7 @@ public final class SldPlanets extends SldAdvCard {
                 }
             }
         } else {
-            throw new BadPlayerException("The player " + actualPlayer.getUsername() + " cannot play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " cannot play " + this.getCardName() + " at the moment");
         }
     }
 
@@ -113,7 +113,7 @@ public final class SldPlanets extends SldAdvCard {
                 this.state = CardState.FINALIZED;
             }
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " can't confirm goods placement");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't confirm goods placement");
         }
     }
 
@@ -122,6 +122,6 @@ public final class SldPlanets extends SldAdvCard {
         if (this.state != CardState.FINALIZED) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        board.setState(StateEnum.DRAW_CARD);
+        board.setState(GameState.DRAW_CARD);
     }
 }
