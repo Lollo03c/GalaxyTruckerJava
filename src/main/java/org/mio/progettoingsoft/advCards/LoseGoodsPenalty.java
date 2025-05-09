@@ -19,7 +19,7 @@ public class LoseGoodsPenalty extends LoseSomethingPenalty {
     }
 
     public void apply(FlyBoard board, Player player) {
-        player.getShipBoard().removeGoods(amount);
+//        player.getShipBoard().removeGoods(amount);
     }
 
 }

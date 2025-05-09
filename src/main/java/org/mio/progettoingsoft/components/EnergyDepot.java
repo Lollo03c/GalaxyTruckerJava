@@ -26,13 +26,11 @@ public class EnergyDepot extends Component {
     }
 
     @Override
-    //returns true if the energy depot contains some enery to remove
-    public Boolean removeOneEnergy(){
-        if (storedQuant >= 1){
-            storedQuant--;
-            return true;
-        }
-
-        return false;
+    /**
+     * remove one energy from the depot
+     * MUST BE check first if getEnergyQuanity() > 0
+     */
+    public void removeOneEnergy(){
+        storedQuant--;
     }
 }

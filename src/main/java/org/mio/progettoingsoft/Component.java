@@ -2,6 +2,7 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import java.util.Collections;
 import java.util.List;
@@ -85,20 +86,41 @@ public abstract class Component {
         return 0;
     }
 
-    public Boolean removeOneEnergy(){
-        return false;
+    /**
+     * remove one energy from the {@link org.mio.progettoingsoft.components.EnergyDepot}
+     * MUST BE check first if getEnergyQuanity() > 0
+     */
+    public void removeOneEnergy(){
+
     }
 
-    public Boolean addGood(GoodType type){
-        return false;
+    /**
+     * add the {@link GoodType} given to the {@link org.mio.progettoingsoft.components.Depot}
+     * @param type the {@link GoodType} to add
+     * @return
+     * @throws IncorrectShipBoardException throws the exception if the {@link org.mio.progettoingsoft.components.Depot} is already full
+     *      or trying to add {@link org.mio.progettoingsoft.components.Depot RED} in not a hazrd {@link org.mio.progettoingsoft.components.Depot}
+     */
+    public void addGood(GoodType type) throws IncorrectShipBoardException {
+        throw new IncorrectShipBoardException("not a depot");
     }
 
-    public Boolean removeGood(GoodType type){
-        return false;
+    /**
+     *
+     * @param type the {@link GoodType} to remove
+     * @throws IncorrectShipBoardException if the component is not a {@link org.mio.progettoingsoft.components.Depot} or
+     *  the depot does not contain the giver {@link GoodType}
+     */
+    public void removeGood(GoodType type) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a depot");
     }
 
-    public Map<GoodType, Integer> getStoredGoods(){
-        return Collections.emptyMap();
+    /**
+     *
+     * @return the list of {@link GoodType} contained in the {@link org.mio.progettoingsoft.components.Depot}, an empty list if the component is not a {@link org.mio.progettoingsoft.components.Depot}
+     */
+    public List<GoodType> getStoredGoods(){
+        return Collections.emptyList();
     }
 
     public void addAlienType(AlienType color){

@@ -3,7 +3,9 @@ package org.mio.progettoingsoft.components;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +23,8 @@ public class Depot extends Component {
     }
 
     private final Boolean isHazard;
-    private int storedQuantity;
     private final int maxQuantity;
-    private Map<GoodType, Integer> storedGoods;
+    private List<GoodType> storedGoods;
 
 
     public Depot(int id, boolean isBig, boolean isHazard, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn) {
@@ -31,14 +32,7 @@ public class Depot extends Component {
         this.isBig = isBig;
         this.isHazard = isHazard;
 
-        storedQuantity = 0;
-        storedGoods = new HashMap<>();
-        storedGoods.put(GoodType.BLUE, 0);
-        storedGoods.put(GoodType.GREEN, 0);
-        storedGoods.put(GoodType.YELLOW, 0);
-
-        if (isHazard)
-            storedGoods.put(GoodType.RED, 0);
+        storedGoods = new ArrayList<>();
 
         if (isBig && !isHazard)
             maxQuantity = 3;
@@ -48,66 +42,30 @@ public class Depot extends Component {
             maxQuantity = 2;
     }
 
-    public int getStoredQuantity() {
-        return storedQuantity;
-    }
 
-    public int getStoredQuantityType(GoodType type){
-        return storedGoods.getOrDefault(type, 0);
+    @Override
+    public void addGood(GoodType type) throws IncorrectShipBoardException {
+        if (storedGoods.size() >= maxQuantity)
+            throw new IncorrectShipBoardException("Depot already full");
+
+        if (type.equals(GoodType.RED) && !isHazard)
+            throw new IncorrectShipBoardException("Depot is not hazard");
+
+        storedGoods.add(type);
     }
 
     @Override
-    public Boolean addGood(GoodType type){
-        if (storedGoods.containsKey(type) && storedQuantity < maxQuantity){
-            storedQuantity++;
+    public void removeGood(GoodType type) throws IncorrectShipBoardException{
+        if (!storedGoods.contains(type))
+            throw new IncorrectShipBoardException("GoodType not found in depot");
 
-            storedGoods.put(type, storedGoods.get(type) + 1);
-            return true;
-        }
-
-        return false;
-    }
-
-    public Boolean replaceGood(GoodType toDecrement, GoodType toIncrement){
-        if (storedGoods.containsKey(toDecrement) && storedGoods.containsKey(toIncrement) && storedGoods.get(toDecrement) > 0){
-            storedGoods.put(toDecrement, storedGoods.get(toDecrement) - 1);
-            storedGoods.put(toIncrement, storedGoods.get(toIncrement) + 1);
-        }
-
-        return false;
+        storedGoods.remove(type);
     }
 
     @Override
-    public Boolean removeGood(GoodType type){
-        if (storedGoods.getOrDefault(type, 0) > 0){
-            storedGoods.put(type, storedGoods.get(type) - 1);
-            storedQuantity--;
-
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Map<GoodType, Integer> getStoredGoods(){
+    public List<GoodType> getStoredGoods(){
         return storedGoods;
     }
 
-    @Override
-    public Boolean canContainsGood(GoodType type){
-        if (storedQuantity < maxQuantity && storedGoods.containsKey(type))
-            return true;
 
-        return false;
-    }
-
-    @Override
-    public void setGoodsDepot(Map<GoodType, Integer> goods){
-        storedGoods = goods;
-    }
-
-    @Override
-    public void setGoodsDepot(GoodType type, int quantity){
-        storedGoods.put(type, quantity);
-    }
 }

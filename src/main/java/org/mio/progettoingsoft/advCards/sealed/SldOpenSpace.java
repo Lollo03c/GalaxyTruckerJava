@@ -71,7 +71,7 @@ public final class SldOpenSpace extends SldAdvCard {
             if (numDoubleEngines > actualPlayer.getShipBoard().getDoubleEngine().size()) {
                 throw new BadParameterException("The number of selected engines is more than the actual engines");
             }
-            player.getShipBoard().removeEnergy(numDoubleEngines);
+//            player.getShipBoard().removeEnergy(numDoubleEngines);
             int base = player.getShipBoard().getBaseEnginePower();
             int power = base + numDoubleEngines * 2;
             board.moveDays(actualPlayer, power);

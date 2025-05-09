@@ -63,7 +63,7 @@ public final class SldCombatZone extends SldAdvCard {
             }
             int power = actualPlayer.getShipBoard().getBaseEnginePower() + 2 * numDoubleEngines;
             actualPlayer.getShipBoard().setActivatedEnginePower(power);
-            actualPlayer.getShipBoard().removeEnergy(numDoubleEngines);
+//            actualPlayer.getShipBoard().removeEnergy(numDoubleEngines);
             if (playerIterator.hasNext()) {
                 actualPlayer = playerIterator.next();
             } else {
@@ -93,7 +93,7 @@ public final class SldCombatZone extends SldAdvCard {
                 power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
             }
             actualPlayer.getShipBoard().setActivatedFirePower(power);
-            actualPlayer.getShipBoard().removeEnergy(drillsToActivate.size());
+//            actualPlayer.getShipBoard().removeEnergy(drillsToActivate.size());
 
             if (playerIterator.hasNext()) {
                 actualPlayer = playerIterator.next();

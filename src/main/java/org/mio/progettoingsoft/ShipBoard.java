@@ -20,7 +20,6 @@ public abstract class ShipBoard {
     private final int rows;
     private final int columns;
 
-    private int availableEnergy;
     private float baseFirePower;
     private int baseEnginePower;
     private float activatedFirePower;
@@ -38,6 +37,14 @@ public abstract class ShipBoard {
 
     private final FlyBoard flyBoard;
 
+    /**
+     * static method used to create an istance of ShipBoard based on the {@link GameMode}
+     *
+     * @param mode the {@link GameMode} of the game
+     * @param color the {@link Housing} of the shipboard
+     * @param flyBoard of {@link FlyBoard} used to get the {@link Component} and {@link AdventureCard} lists
+     * @return
+     */
     public static ShipBoard createShipBoard(GameMode mode, HousingColor color, FlyBoard flyBoard){
         ShipBoard shipBoard = null;
 
@@ -69,7 +76,6 @@ public abstract class ShipBoard {
         // Add to bannedCoordinates all the cells where components cannot be placed
         this.bannedCoordinates = getBannedCoordinates();
 
-        availableEnergy = 0;
         baseFirePower = 0;
         baseEnginePower = 0;
         exposedConnectors = 0;
@@ -102,9 +108,6 @@ public abstract class ShipBoard {
 
     public Component[] getBookedComponents() {
         return bookedComponents;
-    }
-    public void setQuantBatteries(int quant) {
-        this.availableEnergy = quant;
     }
 
     // activated firepower: tmp property to store the firepower after activating double drills.
@@ -247,6 +250,57 @@ public abstract class ShipBoard {
         return shipComponents[cordinate.getRow()][cordinate.getColumn()];
     }
 
+
+    /**
+     * remove the given quantity of energy from {@link EnergyDepot} if possible, throws {@link IncorrectShipBoardException} otherwise
+     * @param quantiy the quanity to remove
+     * @return the list of id {@link Component} from which the energy have been taken
+     * @throws IncorrectShipBoardException if not enough energy to remove
+     */
+    public List<Integer> removeEnergy(int quantiy) throws IncorrectShipBoardException{
+        List<Integer> idComps = new ArrayList<>();
+
+        Iterator<Component> iterator = getCompIterator();
+        while(iterator.hasNext() && quantiy > 0){
+            Component comp = iterator.next();
+
+            if (comp.getEnergyQuantity() > 0){
+                int toRemove = Integer.min(quantiy, comp.getEnergyQuantity());
+                quantiy -= toRemove;
+
+                for (int i = 0; i < toRemove; i++){
+                    idComps.add(comp.getId());
+                }
+            }
+        }
+
+        if (quantiy > 0)
+            throw new IncorrectShipBoardException("not enought energy to remove");
+
+        for (int id : idComps){
+            flyBoard.getComponentById(id).removeOneEnergy();
+        }
+
+        return idComps;
+    }
+
+
+    /**
+     *
+     * @return the iterator which enable to iterator over all the components in the shipboard
+     */
+    private Iterator<Component> getCompIterator(){
+        return Stream.of(shipComponents).flatMap(Stream::of).filter(Optional::isPresent).map(Optional::get).iterator();
+    }
+
+    /**
+     *
+     * @return the stream of the components in the shipboard
+     */
+    private Stream<Component> getCompStream(){
+        return Stream.of(shipComponents).flatMap(Stream::of).filter(Optional::isPresent).map(Optional::get);
+    }
+
 //    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacementException, InvalidPositionException {
 //        if (bannedCoordinates.contains(new Cordinate(row, column)))
 //            throw new InvalidPositionException(row, column);
@@ -295,7 +349,6 @@ public abstract class ShipBoard {
         Component toRemove = shipComponents[row][column].get();
         shipComponents[row][column] = Optional.empty();
 
-        availableEnergy -= toRemove.getEnergyQuantity();
         baseEnginePower -= toRemove.getEnginePower() == 2 ? 0 : toRemove.getEnginePower();
         baseFirePower -= toRemove.getFirePower() == 2f ? 0 : toRemove.getFirePower();
     }
@@ -311,7 +364,6 @@ public abstract class ShipBoard {
             }
         }
 
-        availableEnergy -= component.getEnergyQuantity();
         baseEnginePower -= component.getEnginePower() == 2 ? 0 : component.getEnginePower();
         baseFirePower -= component.getFirePower() == 2.0f ? 0 : component.getFirePower();
     }
@@ -342,27 +394,13 @@ public abstract class ShipBoard {
     }
 
     public int getQuantBatteries() {
-        return availableEnergy;
+        Iterator<Component> iter = getCompIterator();
+        int result = 0;
+        while (iter.hasNext())
+            result += iter.next().getEnergyQuantity();
+
+        return result;
     }
-
-    public void removeEnergy() throws NotEnoughBatteriesException {
-        boolean removed = false;
-        List<Component> componentList = this.getComponentsList();
-
-        for (int i = 0; !removed && i < componentList.size(); i++)
-            removed = componentList.get(i).removeOneEnergy();
-
-        if (!removed)
-            throw new NotEnoughBatteriesException();
-
-        availableEnergy--;
-    }
-
-    public void removeEnergy(int quant) throws NotEnoughBatteriesException {
-        for (int i = 0; i < quant; i++)
-            removeEnergy();
-    }
-
 
     private boolean validRow(int row) {
         return row >= 0 && row < rows;
@@ -404,23 +442,6 @@ public abstract class ShipBoard {
                 .toList();
     }
 
-    public List<Component> canRemoveGoods(GoodType type){
-        return getComponentsStream()
-                .filter(comp -> comp.getStoredGoods().getOrDefault(type, 0) > 0)
-                .toList();
-    }
-    //return true if the good has been moved correctly, false otherwise
-    //the various controls are inside the methods addGood
-    public boolean changeDepot(GoodType good, Depot oldDepot, Depot newDepot) {
-        if(newDepot.addGood(good)){
-            return oldDepot.removeGood(good);
-        }
-        return false;
-    }
-
-    public boolean discardGood(GoodType good, Depot depot) {
-        return depot.removeGood(good);
-    }
 
     public void addHumanGuest() throws NotEnoughHousingException {
         boolean added = false;
@@ -693,21 +714,43 @@ public abstract class ShipBoard {
     public void stoleGood(int quantity) {
 
         Iterator<GoodType> iter = GoodType.sortedList.iterator();
+        Map<GoodType, Long> toRemove = new HashMap<>();
 
         while (quantity > 0 && iter.hasNext()){
             GoodType type = iter.next();
-            List<Component> depos = canRemoveGoods(type);
 
-            for (int i = 0; quantity > 0 && i < depos.size(); i++){
-                int toRemove = Integer.min(quantity, depos.get(i).getStoredGoods().get(type));
+            long possible =  getComponentsStream().flatMap(
+                    comp -> comp.getStoredGoods().stream()
+            ).filter(t -> t.equals(type)).count();
 
-                quantity = quantity -= toRemove;
-                depos.get(i).setGoodsDepot(type, depos.get(i).getStoredGoods().get(type) - toRemove);
+            long typeRemoved = Long.min(quantity, possible);
+            quantity -= typeRemoved;
+            toRemove.put(type, typeRemoved);
+        }
+
+        for (GoodType type : toRemove.keySet()){
+            for (int i = 0; i < toRemove.get(type); i++){
+                Iterator<Component> componentIterator = getCompIterator();
+                while (componentIterator.hasNext()){
+                    Component comp = componentIterator.next();
+
+                    try{
+                        comp.removeGood(type);
+                        break;
+                    }
+                    catch (IncorrectShipBoardException e){
+                        continue;
+                    }
+                }
             }
         }
 
         if (quantity > 0){
-            removeEnergy(Integer.min(quantity, availableEnergy));
+            try {
+                removeEnergy(Integer.min(quantity, getQuantBatteries()));
+            } catch (IncorrectShipBoardException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -808,49 +851,7 @@ public abstract class ShipBoard {
         }
     }
 
-    public void removeGoods(int amount){
-        GoodType nowRemoving = GoodType.RED;
-        int i = amount;
-        List<Component> depots = this.getComponentsStream()
-                .filter(c -> c.getType() == ComponentType.DEPOT)
-                .toList();
-        for (Component component : depots) {
-            while (i > 0) {
-                if (component.removeGood(nowRemoving)) i--;
-                else break;
-            }
-        }
-        if (i > 0) {
-            nowRemoving = GoodType.YELLOW;
-            for (Component component : depots) {
-                while (i > 0) {
-                    if (component.removeGood(nowRemoving)) i--;
-                    else break;
-                }
-            }
-            if (i > 0) {
-                nowRemoving = GoodType.GREEN;
-                for (Component component : depots) {
-                    while (i > 0) {
-                        if (component.removeGood(nowRemoving)) i--;
-                        else break;
-                    }
-                }
-                if (i > 0) {
-                    nowRemoving = GoodType.BLUE;
-                    for (Component component : depots) {
-                        while (i > 0) {
-                            if (component.removeGood(nowRemoving)) i--;
-                            else break;
-                        }
-                    }
-                    if (i > 0) {
-                        this.removeEnergy(i);
-                    }
-                }
-            }
-        }
-    }
+
 }
 
 

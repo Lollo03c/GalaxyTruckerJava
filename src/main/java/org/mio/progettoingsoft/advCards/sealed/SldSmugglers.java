@@ -92,7 +92,7 @@ public final class SldSmugglers extends SldAdvCard {
                 }
 
             } else if (power < this.strength) {
-                actualPlayer.getShipBoard().removeGoods(this.stolenGoods);
+//                actualPlayer.getShipBoard().removeGoods(this.stolenGoods);
                 this.nextPlayer();
             } else {
                 this.nextPlayer();

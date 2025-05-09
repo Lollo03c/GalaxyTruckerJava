@@ -34,7 +34,7 @@ public class SmallMeteor extends Meteor {
         boolean activateShield = true; //player.getView().askShield(direction);
 
         if (activateShield){
-            shipBoard.removeEnergy();
+//            shipBoard.removeEnergy();
         }
         else{
             shipBoard.removeComponent(comp);

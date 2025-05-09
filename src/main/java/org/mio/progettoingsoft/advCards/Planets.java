@@ -80,7 +80,7 @@ public class Planets extends AdventureCard {
                 return;
             }
              Planet currentPlanet = currentPlanetOpt.get();
-             depot.addGood(currentPlanet.getGoods().get(good));
+//             depot.addGood(currentPlanet.getGoods().get(good));
              if(good == currentPlanet.getGoods().size()-1){
                  //in questo caso è finito l'effetto del giocatore, è l'ultima merce che devo posizionare quindi aggiorno lo stato
                  if(board.getScoreBoard().getLast().equals(player) || landedPlayers.size() == planets.size()){
@@ -102,7 +102,7 @@ public class Planets extends AdventureCard {
     //return true if the transition of goods is legit, false otherwise
     public boolean moveGoods(Player player, GoodType good, Component oldDepot, Component newDepot){
          if(playerState.equals(player)){
-              return player.getShipBoard().changeDepot(good,(Depot) oldDepot, (Depot) newDepot);
+//              return player.getShipBoard().changeDepot(good,(Depot) oldDepot, (Depot) newDepot);
          }
          //o potremmo lanciare un'eccezione se un player a cui non tocca giocare fa una mossa
          return false;
@@ -110,7 +110,7 @@ public class Planets extends AdventureCard {
 
     public boolean discardGoods(Player player, GoodType good, Component depot){
         if(playerState.equals(player)){
-            return player.getShipBoard().discardGood(good, (Depot) depot);
+//            return player.getShipBoard().discardGood(good, (Depot) depot);
         }
         return false;
     }

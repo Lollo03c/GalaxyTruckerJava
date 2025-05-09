@@ -67,7 +67,7 @@ public class Pirate extends AdvancedEnemy{
 
         if (response.getColorPlayer().equals(playerState.getColor())){
             if (response.getStrength() > strength){
-                playerState.getShipBoard().removeEnergy(response.getEnergyUsed());
+//                playerState.getShipBoard().removeEnergy(response.getEnergyUsed());
 
                 playerState.addCredits(reward);
                 flyBoard.moveDays(playerState, -daysLost);
