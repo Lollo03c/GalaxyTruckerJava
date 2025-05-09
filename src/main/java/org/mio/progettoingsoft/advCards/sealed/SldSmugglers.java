@@ -60,7 +60,7 @@ public final class SldSmugglers extends SldAdvCard {
                 return 0;
             }
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
     }
@@ -98,7 +98,7 @@ public final class SldSmugglers extends SldAdvCard {
                 this.nextPlayer();
             }
         }else{
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
     }
 
@@ -118,7 +118,7 @@ public final class SldSmugglers extends SldAdvCard {
         if (player.equals(this.actualPlayer)) {
             this.state = CardState.FINALIZED;
         }else{
-            throw new BadPlayerException("The player " + player.getUsername() + " cannot confirm goods placement at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " cannot confirm goods placement at the moment");
         }
     }
 

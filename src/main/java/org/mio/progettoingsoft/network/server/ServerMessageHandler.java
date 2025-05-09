@@ -1,11 +1,10 @@
 package org.mio.progettoingsoft.network.server;
 
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.message.GameSetupMessage;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
-import org.mio.progettoingsoft.network.message.WelcomeMessage;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -38,18 +37,15 @@ public class ServerMessageHandler implements Runnable {
         int idGame;
 
         switch (message) {
-            case WelcomeMessage welcomeMessage -> {
-
-            }
-            case NicknameMessage nMessage -> {
-                serverController.addPlayer(nMessage.getNickname(), nMessage.getIdPlayer());
+            case NicknameMessage nicknameMessage -> {
+                serverController.addPlayer(nicknameMessage.getNickname(), nicknameMessage.getIdPlayer());
             }
             case GameSetupMessage setupMessage -> {
                 serverController.setupGame(setupMessage);
             }
             default -> {
                 idGame = message.getIdGame();
-                Game gameToSend = gameManager.getOngoingGames().get(idGame);
+                GameServer gameToSend = gameManager.getOngoingGames().get(idGame);
 
                 if (gameToSend != null) {
                     gameToSend.addReceivedMessage(message);

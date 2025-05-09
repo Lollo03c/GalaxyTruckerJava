@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.GameSetupMessage;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
@@ -20,8 +21,8 @@ public class GameManager{
 
     private final List<String> nicknames = new ArrayList<>();
 
-    private Map<Integer, Game> ongoingGames;
-    private Game waitingGame;
+    private Map<Integer, GameServer> ongoingGames;
+    private GameServer waitingGame;
 
     private final Map<Integer, VirtualClient> clientsToAccept = new ConcurrentHashMap<>();
     private NicknameMessage nicknameMessage = null;
@@ -47,7 +48,7 @@ public class GameManager{
         return nicknames;
     }
 
-    public synchronized Map<Integer, VirtualClient> getWaitingClients(){
+    public synchronized Map<Integer, VirtualClient> getClientsToAccept(){
         return clientsToAccept;
     }
 
@@ -61,7 +62,7 @@ public class GameManager{
      * @return  Optional.empty() if the game has to be created
      *          Optional.of(Game) an optional containing the current waiting game
      */
-    public synchronized Optional<Game> getWaitingGame(){
+    public synchronized Optional<GameServer> getWaitingGame(){
         return waitingGame == null ? Optional.empty() : Optional.of(waitingGame);
     }
 
@@ -80,7 +81,7 @@ public class GameManager{
      *
      * @return a 'Map<Integer, {@link Game}>' representing all the onGoing games;
      */
-    public synchronized Map<Integer, Game> getOngoingGames() {
+    public synchronized Map<Integer, GameServer> getOngoingGames() {
         return ongoingGames;
     }
 

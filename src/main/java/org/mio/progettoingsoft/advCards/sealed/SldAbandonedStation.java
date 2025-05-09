@@ -67,7 +67,7 @@ public final class SldAbandonedStation extends SldAdvCard {
                 return new ArrayList<>(Collections.emptyList());
             }
         } else {
-            throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
     }
 
@@ -78,7 +78,7 @@ public final class SldAbandonedStation extends SldAdvCard {
         if (player.equals(actualPlayer)) {
             this.state = CardState.FINALIZED;
         } else {
-            throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't confirm goods placement");
+            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't confirm goods placement");
         }
     }
 

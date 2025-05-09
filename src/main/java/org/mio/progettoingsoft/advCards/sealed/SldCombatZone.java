@@ -70,7 +70,7 @@ public final class SldCombatZone extends SldAdvCard {
                 this.state = CardState.APPLYING;
             }
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
     }
@@ -101,7 +101,7 @@ public final class SldCombatZone extends SldAdvCard {
                 this.state = CardState.APPLYING;
             }
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
     }
 
@@ -161,7 +161,7 @@ public final class SldCombatZone extends SldAdvCard {
             tempPenalty.apply(board, player, housingToRemoveCrew);
             nextLine(board);
         } else {
-            throw new BadPlayerException("The player " + player.getUsername() + " cannot play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + player.getNickname() + " cannot play " + this.getCardName() + " at the moment");
         }
     }
 

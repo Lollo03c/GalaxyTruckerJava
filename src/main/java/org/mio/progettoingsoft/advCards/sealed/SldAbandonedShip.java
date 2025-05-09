@@ -50,7 +50,7 @@ public final class SldAbandonedShip extends SldAdvCard {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
         }
         if (!board.getScoreBoard().contains(player)) {
-            throw new BadPlayerException("The player " + player.getUsername() + " is not in the board");
+            throw new BadPlayerException("The player " + player.getNickname() + " is not in the board");
         }
         if (housingCordinatesList == null) {
             throw new BadParameterException("List is null");
@@ -68,10 +68,10 @@ public final class SldAbandonedShip extends SldAdvCard {
                 for (int i = 0; i < housingCordinatesList.size(); i++) {
                     int row = housingCordinatesList.get(i)[0];
                     int col = housingCordinatesList.get(i)[1];
-                    board.getPlayerByUsername(actualPlayer.getUsername()).get().getShipBoard().getComponent(row, col).removeGuest();
+                    board.getPlayerByUsername(actualPlayer.getNickname()).get().getShipBoard().getComponent(row, col).removeGuest();
                 }
-                board.moveDays(board.getPlayerByUsername(actualPlayer.getUsername()).get(), -this.daysLost);
-                board.getPlayerByUsername(actualPlayer.getUsername()).get().addCredits(this.credits);
+                board.moveDays(board.getPlayerByUsername(actualPlayer.getNickname()).get(), -this.daysLost);
+                board.getPlayerByUsername(actualPlayer.getNickname()).get().addCredits(this.credits);
                 this.state = CardState.FINALIZED;
             } else {
                 if (playerIterator.hasNext()) {

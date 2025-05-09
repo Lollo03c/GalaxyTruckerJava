@@ -1,4 +1,6 @@
-package org.mio.progettoingsoft.network.client;
+package org.mio.progettoingsoft;
+
+import org.mio.progettoingsoft.network.client.ClientApp;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;

@@ -43,16 +43,17 @@ public class ClientMessageHandler implements Runnable{
      */
     public void handleMessage(Message message) throws RemoteException {
         switch (message){
-            case WelcomeMessage welcomeMessage ->{
+            case WelcomeMessage welcomeMessage -> {
+                clientController.setGameState(GameState.NICKNAME_REQUEST);
                 clientController.setSetupClientId(welcomeMessage.getIdPlayer());
             }
 
-            case GameSetupMessage gameSetupMessage ->{
+            case GameSetupMessage gameSetupMessage -> {
                 clientController.setGameState(GameState.SETUP_GAME);
                 clientController.createGame(gameSetupMessage.getIdGame());
             }
 
-            case WaitingForPlayerMessage waitingForPlayerMessage ->{
+            case WaitingForPlayerMessage waitingForPlayerMessage -> {
                 clientController.setGame(waitingForPlayerMessage.getIdGame(), waitingForPlayerMessage.getMode(), waitingForPlayerMessage.getnPlayers());
                 clientController.setGameState(GameState.PRINT_GAME_INFO);
             }
@@ -60,11 +61,15 @@ public class ClientMessageHandler implements Runnable{
             case StartGameMessage startGameMessage -> {
                 clientController.setGameState(GameState.BUILDING_SHIP);
             }
+
+            case ErrorMessage errorMessage -> {
+                if (errorMessage.getErrorType().equals(ErrorType.NICKNAME))
+                    clientController.handleWrongNickname(errorMessage.getNickname());
+            }
+
             default -> {
 
             }
         }
     }
-
-
 }

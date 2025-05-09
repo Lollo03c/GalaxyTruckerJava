@@ -69,11 +69,7 @@ public class SocketClient implements Client, VirtualClientSocket {
     private void listenToServer() throws IOException, ClassNotFoundException {
         while (true) {
             // Sempre in ascolto, quando riceve qualcosa lo aggiunge alla coda
-            showUpdate(receive());
+            showUpdate((Message) input.readObject());
         }
-    }
-
-    public Message receive() throws IOException, ClassNotFoundException {
-        return (Message) input.readObject();
     }
 }

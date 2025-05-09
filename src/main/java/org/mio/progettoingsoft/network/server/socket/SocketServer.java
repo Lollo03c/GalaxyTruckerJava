@@ -34,7 +34,7 @@ public class SocketServer {
             new Thread(() -> {
                 try {
                     handler.runVirtualClient();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }).start();

@@ -56,7 +56,7 @@ public final class SldOpenSpace extends SldAdvCard {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
         }
         if (!board.getScoreBoard().contains(player)) {
-            throw new BadPlayerException("The player " + player.getUsername() + " is not in the board");
+            throw new BadPlayerException("The player " + player.getNickname() + " is not in the board");
         }
 
         this.state = CardState.APPLYING;
@@ -83,7 +83,7 @@ public final class SldOpenSpace extends SldAdvCard {
             }
 
         } else {
-            throw new BadPlayerException("The player " + actualPlayer.getUsername() + " can't play " + this.getCardName() + " at the moment");
+            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
     }
