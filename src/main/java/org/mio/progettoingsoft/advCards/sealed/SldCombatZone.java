@@ -86,11 +86,11 @@ public final class SldCombatZone extends SldAdvCard {
             if (drillsToActivate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
                 throw new NotEnoughBatteriesException();
             }
-            float power = actualPlayer.getShipBoard().getBaseFirePower();
+            double power = actualPlayer.getShipBoard().getBaseFirePower();
             for (Integer[] coordinate : drillsToActivate) {
                 int row = coordinate[0];
                 int col = coordinate[1];
-                power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
+//                power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
             }
             actualPlayer.getShipBoard().setActivatedFirePower(power);
 //            actualPlayer.getShipBoard().removeEnergy(drillsToActivate.size());
@@ -180,11 +180,11 @@ public final class SldCombatZone extends SldAdvCard {
         // still to be implemented, activating shields and applying the cannon
 
 
-        if (player.getShipBoard().getMultiplePieces().size() > 1) {
-            this.state = CardState.PART_CHOICE;
-        } else {
-            this.nextCannon(board);
-        }
+//        if (player.getShipBoard().getMultiplePieces().size() > 1) {
+//            this.state = CardState.PART_CHOICE;
+//        } else {
+//            this.nextCannon(board);
+//        }
     }
 
     public void applyCannon(FlyBoard board, Player player) {
@@ -195,12 +195,12 @@ public final class SldCombatZone extends SldAdvCard {
 
         // still to be implemented, applying the cannon
 
-
-        if (player.getShipBoard().getMultiplePieces().size() > 1) {
-            this.state = CardState.PART_CHOICE;
-        } else {
-            this.nextCannon(board);
-        }
+//
+//        if (player.getShipBoard().getMultiplePieces().size() > 1) {
+//            this.state = CardState.PART_CHOICE;
+//        } else {
+//            this.nextCannon(board);
+//        }
     }
 
     private void nextCannon(FlyBoard board) {

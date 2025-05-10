@@ -26,25 +26,25 @@ public final class SldEpidemic extends SldAdvCard {
 
     // apply the effect of the card on all players (this card doesn't need player interaction)
     public void applyEffect(FlyBoard board){
-        for (Player player : this.allowedPlayers) {
-            Set<Component> toDoRemove = new HashSet<>();
-            // for each housing directly connected to another housing, verifies if they all contain at least a member
-            // (human/alien) and adds them to those from which one member will be removed
-            player.getShipBoard().getComponentsStream()
-                    .filter(c -> c.getType().equals(ComponentType.HOUSING))
-                    .forEach(c -> {
-                        Map<Direction, Component> adj = player.getShipBoard().getAdjacentConnected(c.getRow(), c.getColumn());
-                        adj.forEach((direction, component) -> {
-                            if (component.getType().equals(ComponentType.HOUSING) && c.getQuantityGuests() > 0 && component.getQuantityGuests() > 0) {
-                                toDoRemove.add(component);
-                            }
-                        });
-                    });
-            // removes a crew member from each selected housing
-            for (Component c : toDoRemove) {
-                c.removeGuest();
-            }
-        }
+//        for (Player player : this.allowedPlayers) {
+//            Set<Component> toDoRemove = new HashSet<>();
+//            // for each housing directly connected to another housing, verifies if they all contain at least a member
+//            // (human/alien) and adds them to those from which one member will be removed
+//            player.getShipBoard().getComponentsStream()
+//                    .filter(c -> c.getType().equals(ComponentType.HOUSING))
+//                    .forEach(c -> {
+//                        Map<Direction, Component> adj = player.getShipBoard().getAdjacentConnected(c.getRow(), c.getColumn());
+//                        adj.forEach((direction, component) -> {
+//                            if (component.getType().equals(ComponentType.HOUSING) && c.getQuantityGuests() > 0 && component.getQuantityGuests() > 0) {
+//                                toDoRemove.add(component);
+//                            }
+//                        });
+//                    });
+//            // removes a crew member from each selected housing
+//            for (Component c : toDoRemove) {
+//                c.removeGuest();
+//            }
+//        }
         this.state = CardState.FINALIZED;
     }
 

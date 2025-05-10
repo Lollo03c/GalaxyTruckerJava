@@ -7,7 +7,6 @@ import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
-import org.mio.progettoingsoft.responses.Response;
 
 import java.util.Collections;
 import java.util.Iterator;

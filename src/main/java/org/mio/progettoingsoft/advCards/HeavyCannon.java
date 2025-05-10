@@ -24,6 +24,6 @@ public class HeavyCannon extends CannonPenalty {
         ObjectMapper objectMapper = new ObjectMapper();
         CannonResponse response = objectMapper.readValue(json, CannonResponse.class);
 
-        player.getShipBoard().removeComponent(response.getComponentPosition());
+//        player.getShipBoard().removeComponent(response.getComponentPosition());
     }
 }

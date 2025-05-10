@@ -48,7 +48,7 @@ public final class SldSmugglers extends SldAdvCard {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
         if (actualPlayer.equals(player)) {
-            float base = player.getShipBoard().getBaseFirePower();
+            double base = player.getShipBoard().getBaseFirePower();
             if (base > this.strength) {
                 this.state = CardState.APPLYING;
                 return 1;
@@ -70,7 +70,7 @@ public final class SldSmugglers extends SldAdvCard {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
         if (player.equals(this.actualPlayer)) {
-            float power = player.getShipBoard().getBaseFirePower();
+            double power = player.getShipBoard().getBaseFirePower();
             if (this.state == CardState.DRILL_CHOICE) {
                 if (coordinatesDoubleToActivate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
                     throw new NotEnoughBatteriesException();
@@ -78,7 +78,7 @@ public final class SldSmugglers extends SldAdvCard {
                 for (Integer[] integers : coordinatesDoubleToActivate) {
                     int row = integers[0];
                     int col = integers[1];
-                    power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
+//                    power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
                 }
                 this.state = CardState.APPLYING;
             }

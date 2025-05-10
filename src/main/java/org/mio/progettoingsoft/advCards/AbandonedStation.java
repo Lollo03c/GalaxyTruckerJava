@@ -68,9 +68,9 @@ public class AbandonedStation extends AdventureCard {
                 ShipBoard shipBoard = playerState.getShipBoard();
 
                 for (int i : response.getDepos().keySet()) {
-                    int[] pos = shipBoard.getCordinate(i);
+//                    int[] pos = shipBoard.getCordinate(i);
 
-                    shipBoard.getComponent(pos[0], pos[1]).setGoodsDepot(response.getDepos().get(i));
+//                    shipBoard.getComponent(pos[0], pos[1]).setGoodsDepot(response.getDepos().get(i));
                 }
                 flyBoard.moveDays(playerState, -daysLost);
 

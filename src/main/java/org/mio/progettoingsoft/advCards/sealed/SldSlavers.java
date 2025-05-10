@@ -51,25 +51,25 @@ public final class SldSlavers extends SldAdvCard {
      */
 
     public int comparePower(FlyBoard board, Player player) {
-        if (this.state != CardState.COMPARING) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (actualPlayer.equals(player)) {
-            float base = player.getShipBoard().getBaseFirePower();
-            if (base > this.strength) {
-                this.state = CardState.APPLYING;
-                return 1;
-            } else if (base < this.strength) {
-                this.state = CardState.DRILL_CHOICE;
-                return -1;
-            } else {
-                this.state = CardState.DRILL_CHOICE;
-                return 0;
-            }
-        } else {
-            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
-        }
-
+//        if (this.state != CardState.COMPARING) {
+//            throw new IllegalStateException("Illegal state: " + this.state);
+//        }
+//        if (actualPlayer.equals(player)) {
+//            float base = player.getShipBoard().getBaseFirePower();
+//            if (base > this.strength) {
+//                this.state = CardState.APPLYING;
+//                return 1;
+//            } else if (base < this.strength) {
+//                this.state = CardState.DRILL_CHOICE;
+//                return -1;
+//            } else {
+//                this.state = CardState.DRILL_CHOICE;
+//                return 0;
+//            }
+//        } else {
+//            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
+//        }
+        return 0;
     }
 
     public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Integer[]> coordinatesDoubleToActivate) {
@@ -77,7 +77,7 @@ public final class SldSlavers extends SldAdvCard {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
         if (player.equals(this.actualPlayer)) {
-            float power = player.getShipBoard().getBaseFirePower();
+            double power = player.getShipBoard().getBaseFirePower();
             if (this.state == CardState.DRILL_CHOICE) {
                 if (coordinatesDoubleToActivate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
                     throw new NotEnoughBatteriesException();
@@ -85,7 +85,7 @@ public final class SldSlavers extends SldAdvCard {
                 for (Integer[] integers : coordinatesDoubleToActivate) {
                     int row = integers[0];
                     int col = integers[1];
-                    power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
+//                    power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
                 }
                 this.state = CardState.APPLYING;
             }
@@ -114,7 +114,7 @@ public final class SldSlavers extends SldAdvCard {
                 for(int i = 0; i < housingCordinatesList.size(); i++){
                     int row = housingCordinatesList.get(i)[0];
                     int col = housingCordinatesList.get(i)[1];
-                    board.getPlayerByUsername(actualPlayer.getNickname()).get().getShipBoard().getComponent(row, col).removeGuest();
+//                    board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard().getComponent(row, col).removeGuest();
                 }
                 this.nextPlayer();
             }else{

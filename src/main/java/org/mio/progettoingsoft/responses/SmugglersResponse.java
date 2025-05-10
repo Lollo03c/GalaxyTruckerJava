@@ -2,7 +2,6 @@ package org.mio.progettoingsoft.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.mio.progettoingsoft.AdvCardType;
-import org.mio.progettoingsoft.advCards.Smugglers;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 

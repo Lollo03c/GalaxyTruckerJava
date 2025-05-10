@@ -23,10 +23,10 @@ public class BigMeteor extends Meteor {
         Component component = hitComponent.get();
         ShipBoard board = player.getShipBoard();
 
-        List<Component> cannons = board.getComponentsStream()
-                .filter(comp -> comp.getDirection() != null)
-                .filter(comp -> comp.getDirection().equals(direction))
-                .toList();
+        List<Component> cannons = null; //board.getCom()
+//                .filter(comp -> comp.getDirection() != null)
+//                .filter(comp -> comp.getDirection().equals(direction))
+//                .toList();
 
         List<Component> singleFounded = new ArrayList<>();
         List<Component> doubleFounded = new ArrayList<>();
@@ -70,7 +70,7 @@ public class BigMeteor extends Meteor {
 
         if (singleFounded.isEmpty()){
             if (doubleFounded.isEmpty()){
-                board.removeComponent(component);
+//                board.removeComponent(component);
 
             }
             else{
@@ -80,7 +80,7 @@ public class BigMeteor extends Meteor {
 //                    board.removeEnergy();
                 }
                 else{
-                    board.removeComponent(component);
+//                    board.removeComponent(component);
                 }
             }
         }

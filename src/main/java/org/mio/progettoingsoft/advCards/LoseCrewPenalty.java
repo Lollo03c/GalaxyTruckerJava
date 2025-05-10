@@ -19,7 +19,7 @@ public class LoseCrewPenalty extends LoseSomethingPenalty{
         for (Integer[] integers : housingToRemoveCrew) {
             int row = integers[0];
             int col = integers[1];
-            board.getPlayerByUsername(player.getNickname()).get().getShipBoard().getComponent(row, col).removeGuest();
+//            board.getPlayerByUsername(player.getNickname()).get().getShipBoard().getComponent(row, col).removeGuest();
         }
     }
 }

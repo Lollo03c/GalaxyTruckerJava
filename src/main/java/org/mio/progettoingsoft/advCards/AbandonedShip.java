@@ -62,8 +62,8 @@ public class AbandonedShip extends AdventureCard {
                 ShipBoard shipBoard = flyBoard.getPlayerByColor(response.getColorPlayer()).get().getShipBoard();
 
                 for (int i : response.getCrewDeleted()) {
-                    int[] cord = shipBoard.getCordinate(i);
-                    shipBoard.getComponent(cord[0], cord[1]).removeGuest();
+//                    int[] cord = shipBoard.getCordinate(i);
+//                    shipBoard.getComponent(cord[0], cord[1]).removeGuest();
 
 
                 }

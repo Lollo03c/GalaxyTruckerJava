@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
@@ -68,10 +69,10 @@ public final class SldAbandonedShip extends SldAdvCard {
                 for (int i = 0; i < housingCordinatesList.size(); i++) {
                     int row = housingCordinatesList.get(i)[0];
                     int col = housingCordinatesList.get(i)[1];
-                    board.getPlayerByUsername(actualPlayer.getNickname()).get().getShipBoard().getComponent(row, col).removeGuest();
+                    board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard().getOptComponentByCord(new Cordinate(row, col)).get().removeGuest(null);
                 }
-                board.moveDays(board.getPlayerByUsername(actualPlayer.getNickname()).get(), -this.daysLost);
-                board.getPlayerByUsername(actualPlayer.getNickname()).get().addCredits(this.credits);
+                board.moveDays(board.getPlayerByUsername(actualPlayer.getNickname()), -this.daysLost);
+                board.getPlayerByUsername(actualPlayer.getNickname()).addCredits(this.credits);
                 this.state = CardState.FINALIZED;
             } else {
                 if (playerIterator.hasNext()) {

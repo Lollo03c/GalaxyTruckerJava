@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.advCards.CombatLine;
 import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.ShipBoardEasy;
@@ -111,11 +112,6 @@ public abstract class ShipBoard {
         this.activatedFirePower = activatedFirePower;
     }
 
-    public boolean isValidPosition(int row, int column) {
-        Cordinate coord = new Cordinate(0, 0);
-        return validRow(row) && validColumn(column) && !bannedCoordinates.contains(coord);
-    }
-
     public int getRows() {
         return rows;
     }
@@ -145,7 +141,7 @@ public abstract class ShipBoard {
      * @return the total fire power when all {@link DoubleDrill} are not activated
      */
     public double getBaseFirePower() {
-        return getComponentsStream().mapToDouble (comp -> comp.getFirePower()).sum();
+        return getCompStream().mapToDouble (comp -> comp.getFirePower()).sum();
     }
 
     /**
@@ -164,7 +160,7 @@ public abstract class ShipBoard {
      * @param cord the {@link Cordinate} of the link to search the adjacent {@link Component}s
      * @return a Map<{@link Direction}, {@link Component}> consisting the adjacent {@link Component} and the relative {@link Direction}
      */
-    public Map<Direction, Component> getAdjacent(Cordinate cord) {
+    private Map<Direction, Component> getAdjacent(Cordinate cord) {
         Map<Direction, Component> adjacents = new HashMap();
 
         for (Direction dir : Direction.values()){
@@ -284,210 +280,147 @@ public abstract class ShipBoard {
         return Stream.of(shipComponents).flatMap(Stream::of).filter(Optional::isPresent).map(Optional::get);
     }
 
-//    public void addComponentToPosition(Component component, int row, int column) throws IncorrectPlacementException, InvalidPositionException {
-//        if (bannedCoordinates.contains(new Cordinate(row, column)))
-//            throw new InvalidPositionException(row, column);
-//
-//        if (!validRow(row) || !validColumn(column))
-//            throw new InvalidPositionException(row, column);
-//
-//        if (shipComponents[row][column].isPresent()) {
-//            throw new IncorrectPlacementException(row, column, component);
-//        }
-//
-//        component.setRow(row);
-//        component.setColumn(column);
-//
-//        shipComponents[row][column] = Optional.of(component);
-//
-//        availableEnergy += component.getEnergyQuantity();
-//
-//        for (Component comp : getAdjacent(row, column).values()) {
-//            component.addAlienType(comp.getColorAlien());
-//            comp.addAlienType(component.getColorAlien());
-//        }
-//
-//        baseFirePower += component.getFirePower() == 2f ? 0 : component.getFirePower();
-//        baseEnginePower += component.getEnginePower() == 2 ? 0 : component.getEnginePower();
-//    }
-
-//    public void addRotatedComponentToPosition(Component comp, int row, int column, int angle) throws IncorrectPlacementException, InvalidPositionException {
-//        while (angle > 0) {
-//            comp.rotateClockwise();
-//            angle--;
-//        }
-//        addComponentToPosition(comp, row, column);
-//    }
-
-
-
-
-
-    private Stream<Optional<Component>> getStreamOptComponents() {
-        return Arrays.stream(shipComponents).flatMap(Arrays::stream);
-    }
 
     public Optional<Component>[][] getComponentsMatrix() {
         return shipComponents;
     }
 
-    public Stream<Component> getComponentsStream() {
-        return getStreamOptComponents()
-                .filter(optComp -> optComp.isPresent())
-                .map(optComp -> optComp.get());
-    }
-
-    public List<Component> getComponentsList() {
-        return this.getComponentsStream().toList();
-    }
 
     /**
      *
      * @return the total number of energy left
      */
     public int getQuantBatteries() {
-        return getComponentsStream().mapToInt(Component::getEnergyQuantity).sum();
+        return getCompStream().mapToInt(Component::getEnergyQuantity).sum();
     }
-
-    private boolean validRow(int row) {
-        return row >= 0 && row < rows;
-    }
-
-    private boolean validColumn(int column) {
-        return column >= 0 && column < columns;
-    }
-
 
     public List<Component> getDoubleEngine() {
-        return getComponentsStream()
+        return getCompStream()
                 .filter(comp -> comp.getEnginePower(true) == 2)
                 .toList();
     }
 
     public List<Component> getDoubleDrill(Direction dir) {
-        return getComponentsStream()
+        return getCompStream()
                 .filter(comp -> comp.getFirePower(true) == 2)
                 .filter(comp -> comp.getDirection() != null)
                 .filter(comp -> comp.getDirection().equals(dir))
                 .toList();
     }
 
-    public List<Component> getIncorrectEngines() {
-        List<Component> incorrect = new ArrayList<>();
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++){
-                if (shipComponents[i][j].isPresent()) {
-                    Component comp = shipComponents[i][j].get();
-                    if (comp.getEnginePower() > 0) {
-                        if (!comp.getDirection().equals(Direction.BACK)) {
-                            incorrect.add(comp);
-                        } else if (validRow(i + 1) && shipComponents[i + 1][j].isPresent()) {
-                            incorrect.add(shipComponents[i][j].get());
-                        }
-                    }
-                }
-            }
-        }
-        return incorrect;
-    }
-
-    public List<Component> getIncorrectDrills() {
-        List<Component> incorrect = new ArrayList<>();
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (shipComponents[i][j].isPresent()) {
-                    Component comp = shipComponents[i][j].get();
-
-                    if (comp.getFirePower() > 0) {
-                        int row = i;
-                        int col = j;
-
-                        switch (comp.getDirection()) {
-                            case FRONT -> row--;
-                            case BACK -> row++;
-                            case LEFT -> col--;
-                            case RIGHT -> col++;
-                        }
-
-                        if (validRow(row) && validColumn(col) && shipComponents[row][col].isPresent())
-                            incorrect.add(shipComponents[row][col].get());
-                    }
-                }
-
-            }
-        }
-
-        return incorrect;
-    }
-
-    /*
-    // checks if the ALIEN_HOUSING components are connected to at least one HOUSING
-    // not necessary
-    public Set<Component> getIncorrectAlienHousings() {
-        Set<Component> incorrect = new HashSet<>();
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (shipComponents[i][j].isPresent()) {
-                    Component comp = shipComponents[i][j].get();
-                    if (comp.getType().equals(ComponentType.ALIEN_HOUSING)) {
-                        boolean correct = false;
-                        Map<Direction, Component> adjacents = getAdjacent(i, j);
-                        for (Component component : adjacents.values()) {
-                            correct = correct ||
-                                    (component.getType().equals(ComponentType.HOUSING) &&
-                                            !component.isFirstHousing());
-                        }
-                        if (!correct) {
-                            incorrect.add(comp);
-                        }
-                    }
-                }
-            }
-        }
-        return incorrect;
-    }
+    /**
+     *
+     * @return the list of {@link Cordinate} of the {@link Engine} and {@link DoubleEngine} placed incorrectly (not pointaing BACK-WARDS)
      */
+    public List<Cordinate> getIncorrectEngines() {
+        List<Cordinate> result = new ArrayList<>();
 
-    // This method check the correct positioning of the component, except for the direction and nearby placement of drills/engines
-    // the method insert in the set both component in case of connector mismatch
-    public Set<Component> getIncorrectComponents() {
-        Set<Component> incorrect = new HashSet<>();
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (shipComponents[i][j].isPresent()) {
-                    Component comp = shipComponents[i][j].get();
+            //empty tile
+            if (getOptComponentByCord(cord).isEmpty())
+                continue;
 
-                    //
-//                    Map<Direction, Component> adjacent = getAdjacent(i, j);
-                    boolean correct = true;
+            //not an engine
+            if (getOptComponentByCord(cord).get().getEnginePower(true) == 0)
+                continue;
 
-                    /* this part is now made by the getMultiplePieces method
-                    // Modified by Stefano to check if a component is flying (not connected to any other):
-                    if (adjacent.isEmpty()) {
-                        correct = false;
-                    } else {
-                        for (Direction dir : adjacent.keySet()) {
-                            correct = correct && comp.isCompatible(adjacent.get(dir), dir);
-                        }
-                    }*/
-
-//                    for (Direction dir : adjacent.keySet()) {
-//                        correct = correct && comp.isCompatible(adjacent.get(dir), dir);
-                    }
-
-//                    if (!correct) {
-                        incorrect.add(shipComponents[i][j].get());
-                    }
-                }
-
-        return null;
+            if (! getOptComponentByCord(cord).get().getDirection().equals(Direction.BACK))
+                result.add(cord);
+        }
+        return result;
     }
 
+    /**
+     *
+     * @return the list {@link Cordinate} of the {@link Drill} and {@link DoubleDrill} place incorrectly -> if it points in a not empty tile
+     */
+    public List<Cordinate> getIncorrectDrills() {
+        List<Cordinate> incorrect = new ArrayList<>();
 
-//        return incorrect;
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            Optional<Component> optComp = getOptComponentByCord(cord);
+            if (optComp.isEmpty() || optComp.get().getFirePower(true) == 0)
+                continue;
+
+            Direction dir = optComp.get().getDirection();
+
+            try {
+                Cordinate toCheck =new Cordinate(cord.getRow() + dir.offsetRow(), cord.getColumn() + dir.offsetCol());
+                if (getOptComponentByCord(toCheck).isEmpty())
+                    incorrect.add(cord);
+
+            }
+            catch (InvalidCordinate e){
+
+            }
+        }
+
+        return incorrect;
+    }
+
+    /**
+     *
+     * @return the set of all the {@link Cordinate} relative to the {@link Component} which are not correctly configured in the shipboard
+     */
+    private Set<Cordinate> getIncorrectComponents() {
+        Set<Cordinate> incorrect = new HashSet<>();
+
+        incorrect.addAll(getIncorrectDrills());
+        incorrect.addAll(getIncorrectEngines());
+
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cordinate = cordinateIterator.next();
+
+            //empty tile
+            if (getOptComponentByCord(cordinate).isEmpty())
+                continue;
+
+            Component comp = getOptComponentByCord(cordinate).get();
+            Map<Direction, Component> adjacent = getAdjacent(cordinate);
+            for (Direction dir : adjacent.keySet()){
+                Component other = adjacent.get(dir);
+                if (comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
+                    incorrect.add(cordinate);
+                }
+            }
+
+        }
+        return incorrect;
+    }
+
+    public void validateShip() throws IncorrectShipBoardException{
+        if (!getIncorrectComponents().isEmpty())
+            throw new IncorrectShipBoardException("shipboard is not valid");
+
+        //set the allowedGuest to all the housing, based on the neaby AlienHousing
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cordinate = cordinateIterator.next();
+
+            if (getOptComponentByCord(cordinate).isEmpty())
+                continue;
+
+            Component component = getOptComponentByCord(cordinate).get();
+            if (component.getType().equals(ComponentType.HOUSING)){
+                Map<Direction, Component> adjacents = getAdjacent(cordinate);
+
+                for (Component comp : adjacents.values()){
+                    try {
+                        component.addAllowedGuest(comp.getColorAlien());
+                    } catch (IncorrectShipBoardException e) {
+
+                    }
+                }
+            }
+        }
+    }
 
     // this method returns the disconnected pieces (not only single components but group of them not interconnected)
     // this method uses an algorithm of Breadth-First Search (a big thanks to API)
@@ -530,58 +463,37 @@ public abstract class ShipBoard {
 //        return multiple;
 //    }
 
-    //this method count the number of exposed connectors
-//    public int getExposedConnectors() {
-//        int numExposedConnectors = 0;
-//        for (int i = 0; i < rows; i++) {
-//            for (int j = 0; j < columns; j++) {
-//                if (shipComponents[i][j].isPresent()) {
-//                    Component comp = shipComponents[i][j].get();
-////                    Map<Direction, Component> adjacent = getAdjacent(i, j);
-//                    if (isExposed(comp, adjacent, Direction.FRONT)) numExposedConnectors++;
-//                    if (isExposed(comp, adjacent, Direction.BACK)) numExposedConnectors++;
-//                    if (isExposed(comp, adjacent, Direction.LEFT)) numExposedConnectors++;
-//                    if (isExposed(comp, adjacent, Direction.RIGHT)) numExposedConnectors++;
-//                }
-//            }
-//        }
-//        return numExposedConnectors;
-//    }
+    /**
+     *
+     * @return the number of exposed connectors of the shipboard
+     */
+    public int getExposedConnectors() {
+        int numExposedConnectors = 0;
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cordinate = cordinateIterator.next();
 
-    public boolean isExposed(Component comp, Map<Direction, Component> adj, Direction dir) {
-        if (!comp.getConnector(dir).equals(Connector.FLAT)) {
-            return !adj.containsKey(dir);
+            if (getOptComponentByCord(cordinate).isEmpty())
+                continue;
+
+            Component comp = getOptComponentByCord(cordinate).get();
+            Map<Direction, Component> adjacents = getAdjacent(cordinate);
+
+            for (Direction dir : Direction.values()){
+                if (!comp.getConnector(dir).equals(Connector.FLAT) && adjacents.containsKey(dir))
+                    numExposedConnectors++;
+            }
         }
-        return false;
+
+        return numExposedConnectors;
     }
-
-//    public int getHumanNumber(){
-//        return this.getComponentsStream().filter(c -> c.getType().equals(ComponentType.HOUSING))
-//                .map(c -> c.getNumHumanMembers()).reduce(0, Integer::sum);
-//    }
-
-    /*
-    public int getAlienNumber(){
-        int sum = 0;
-        sum += (int) this.getComponentsStream().filter(c -> (
-                c.getType().equals(ComponentType.HOUSING) &&
-                        c.canContainsAlien(AlienType.PURPLE) &&
-                        c.getGuestedAlien().get(AlienType.PURPLE)))
-                .count();
-        sum += (int) this.getComponentsStream().filter(c -> (
-                        c.getType().equals(ComponentType.HOUSING) &&
-                                c.canContainsAlien(AlienType.BROWN) &&
-                                c.getGuestedAlien().get(AlienType.BROWN)))
-                .count();
-        return sum;
-    }*/
 
     /**
      *
      * @return the number of guests hosted in the shipBoard
      */
     public int getQuantityGuests() {
-        return getComponentsStream().
+        return getCompStream().
                 mapToInt(comp -> comp.getGuests().size())
                 .sum();
     }
@@ -598,7 +510,7 @@ public abstract class ShipBoard {
         while (quantity > 0 && iter.hasNext()){
             GoodType type = iter.next();
 
-            long possible =  getComponentsStream().flatMap(
+            long possible =  getCompStream().flatMap(
                     comp -> comp.getStoredGoods().stream()
             ).filter(t -> t.equals(type)).count();
 
@@ -671,14 +583,14 @@ public abstract class ShipBoard {
 
     public String toString() {
         String out = "";
-        for(Component c : getComponentsStream().toList()){
+        for(Component c : getCompStream().toList()){
             out += c.toString() + "\n";
         }
         return out;
     }
 
     public float getMaximumFirePower(){
-        return (float) getComponentsStream()
+        return (float) getCompStream()
                 .mapToDouble(Component::getFirePower)
                 .sum();
     }

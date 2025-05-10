@@ -37,7 +37,7 @@ public class SmallMeteor extends Meteor {
 //            shipBoard.removeEnergy();
         }
         else{
-            shipBoard.removeComponent(comp);
+//            shipBoard.removeComponent(comp);
         }
 
     }

@@ -57,7 +57,7 @@ public class Slaver extends AdvancedEnemy{
             }
             else if (response.getStength() < strength){
                 for (Component comp : response.getHousing()){
-                    comp.removeGuest();
+//                    comp.removeGuest();
                 }
             }
 

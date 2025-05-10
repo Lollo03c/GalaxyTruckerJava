@@ -3,9 +3,11 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-public class Cordinate {
+public class Cordinate{
     private final int row;
     private final int column;
 
@@ -69,4 +71,33 @@ public class Cordinate {
 
         return adj;
     }
+
+    public static Iterator<Cordinate> getIterator(){
+        return new Iterator<Cordinate>() {
+            private int currentRow = 0;
+            private int currentCol = 0;
+
+            @Override
+            public boolean hasNext() {
+                return !(currentRow == 4 && currentCol == 6);
+            }
+
+            @Override
+            public Cordinate next() {
+                if (!hasNext())
+                    throw new NoSuchElementException();
+
+                Cordinate current = new Cordinate(currentRow, currentCol);
+                currentCol++;
+                if (currentCol > maxCol){
+                    currentCol = 0;
+                    currentRow++;
+                }
+
+                return current;
+            }
+        };
+    }
+
+
 }

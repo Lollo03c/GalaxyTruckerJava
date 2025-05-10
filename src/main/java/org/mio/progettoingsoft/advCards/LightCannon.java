@@ -45,7 +45,7 @@ public class LightCannon extends CannonPenalty {
 
         player.getShipBoard().removeEnergy(response.getEnergyUsed());
         if (response.isDestroyed()){
-            player.getShipBoard().removeComponent(response.getComponentPosition());
+//            player.getShipBoard().removeComponent(response.getComponentPosition());
         }
     }
 }
