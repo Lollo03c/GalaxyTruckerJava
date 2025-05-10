@@ -1,120 +1,156 @@
 package org.mio.progettoingsoft.components;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
+
+import java.text.CollationElementIterator;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class HousingTest {
 
     private Connector flat = Connector.FLAT;
+    private Component house;
+
+    private int count(GuestType type){
+        return Collections.frequency(house.getGuests(), type);
+    }
+
+    @BeforeEach
+    void setup(){
+        house = new Housing(1, flat, flat, flat, flat);
+    }
 
     @Test
     void shuold_add_1_member(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addHumanMember();
+        house.addGuest(GuestType.HUMAN);
 
-        assertEquals(1, house.getNumHumanMembers());
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case HUMAN -> assertEquals(1, count(type));
+                default -> assertEquals(0, count(type));
+            }
+        }
     }
 
     @Test
     void shuold_add_2_member(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addHumanMember();
-        house.addHumanMember();
+        house.addGuest(GuestType.HUMAN);
+        house.addGuest(GuestType.HUMAN);
 
-        assertEquals(2, house.getNumHumanMembers());
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case HUMAN -> assertEquals(2, count(type));
+                default -> assertEquals(0, count(type));
+            }
+        }
     }
 
     @Test
     void shuold_not_add_third_member(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addHumanMember();
-        house.addHumanMember();
 
-        assertEquals(2, house.getNumHumanMembers());
-        assertFalse(house.addHumanMember());
-        assertEquals(2, house.getNumHumanMembers());
+        house.addGuest(GuestType.HUMAN);
+        house.addGuest(GuestType.HUMAN);
+
+        assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(GuestType.HUMAN));
+
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case HUMAN -> assertEquals(2, count(type));
+                default -> assertEquals(0, count(type));
+            }
+        }
     }
 
     @Test
     void shuold_remove_two_member(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addHumanMember();
-        house.addHumanMember();
 
-        assertEquals(2, house.getNumHumanMembers());
+        house.addGuest(GuestType.HUMAN);
+        house.addGuest(GuestType.HUMAN);
 
-        house.removeGuest();
-        assertEquals(1, house.getNumHumanMembers());
 
-        house.removeGuest();
-        assertEquals(0, house.getNumHumanMembers());
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case HUMAN -> assertEquals(2, count(type));
+                default -> assertEquals(0, count(type));
+            }
+        }
+
+        house.removeGuest(GuestType.HUMAN);
+        house.removeGuest(GuestType.HUMAN);
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case HUMAN -> assertEquals(0, count(type));
+                default -> assertEquals(0, count(type));
+            }
+        }
+
     }
 
     @Test
     void shuold_not_remove_member_if_empty(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-
-//        assertFalse(house.removeOneEnergy());
+        for (GuestType type : GuestType.values()){
+            assertThrows(IncorrectShipBoardException.class, () -> house.removeGuest(type));
+        }
     }
 
     @Test
     void should_add_alien(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addAlienType(AlienType.BROWN);
+        house.addAllowedGuest(GuestType.BROWN);
 
-        assertTrue(house.addAlien(AlienType.BROWN));
+        house.addGuest(GuestType.BROWN);
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case BROWN -> assertEquals(1, count(type));
+                default -> assertEquals(0, count(type));
+            }
 
-        assertTrue(house.containsAlien(AlienType.BROWN));
-        assertFalse(house.addAlien(AlienType.BROWN));
+            assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(type));
+        }
     }
 
     @Test
     void should_reject_alien_if_not_allowed(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-
-        assertFalse(house.addAlien(AlienType.BROWN));
-        assertFalse(house.containsAlien(AlienType.BROWN));
+        assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(GuestType.BROWN));
+        assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(GuestType.PURPLE));
     }
 
     @Test
     void should_reject_human_if_alien_alredy_in(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addAlienType(AlienType.BROWN);
+        house.addAllowedGuest(GuestType.BROWN);
 
-        house.addAlien(AlienType.BROWN);
-        assertTrue(house.containsAlien(AlienType.BROWN));
+        house.addGuest(GuestType.BROWN);
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case BROWN -> assertEquals(1, count(type));
+                default -> assertEquals(0, count(type));
+            }
+        }
 
-        assertFalse(house.addHumanMember());
-        assertEquals(0, house.getNumHumanMembers());
+        for (GuestType type : GuestType.values())
+            assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(type));
+
     }
 
     @Test
     void should_reject_alien_if_human_alredy_in(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addAlienType(AlienType.BROWN);
+        house.addAllowedGuest(GuestType.BROWN);
 
-        assertTrue(house.addHumanMember());
-        assertEquals(1, house.getNumHumanMembers());
+        house.addGuest(GuestType.HUMAN);
+        for (GuestType type : GuestType.values()){
+            switch (type){
+                case HUMAN -> assertEquals(1, count(type));
+                default -> assertEquals(0, count(type));
+            }
+        }
 
-        assertFalse(house.addAlien(AlienType.BROWN));
-        assertFalse(house.containsAlien(AlienType.BROWN));
+
+        assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(GuestType.BROWN));
+        assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(GuestType.PURPLE));
+        house.addGuest(GuestType.HUMAN);
     }
-
-    @Test
-    void should_reject_other_alien(){
-        Component house = new Housing(1, flat, flat, flat, flat);
-        house.addAlienType(AlienType.BROWN);
-        house.addAlienType(AlienType.PURPLE);
-
-        assertTrue(house.addAlien(AlienType.PURPLE));
-        assertFalse(house.addAlien(AlienType.BROWN));
-
-        assertTrue(house.containsAlien(AlienType.PURPLE));
-        assertFalse(house.containsAlien(AlienType.BROWN));
-    }
-
-
 }

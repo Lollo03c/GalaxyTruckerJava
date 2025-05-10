@@ -10,10 +10,18 @@ public class DoubleDrill extends Drill{
     }
 
     @Override
-    public float getFirePower(){
+    public float getFirePower(boolean actived){
+        if (!actived)
+            return 0.0f;
+
         if(getDirection() == Direction.FRONT)
             return 2f;
         return 1f;
+    }
+
+    @Override
+    public float getFirePower(){
+        return 0.0f;
     }
 
     public String toString(){

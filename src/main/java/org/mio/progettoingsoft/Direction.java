@@ -21,4 +21,20 @@ public enum Direction {
             default -> Direction.FRONT;
         };
     }
+
+    public int offsetCol(){
+        return switch (this){
+            case FRONT -> -1;
+            case BACK -> 1;
+            default -> 0;
+        };
+    }
+
+    public int offsetRow(){
+        return switch (this){
+            case RIGHT -> 1;
+            case LEFT -> -1;
+            default -> 0;
+        };
+    }
 }

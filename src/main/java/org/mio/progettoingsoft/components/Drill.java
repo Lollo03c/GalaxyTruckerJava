@@ -50,10 +50,19 @@ public class Drill extends Component {
         };
     }
 
+
     @Override
     public float getFirePower(){
         if (direction.equals(Direction.FRONT))
-            return 1f;
+            return 1.0f;
+
+        return 0.5f;
+    }
+
+    @Override
+    public float getFirePower(boolean actived){
+        if (direction.equals(Direction.FRONT))
+            return 1.0f;
 
         return 0.5f;
     }

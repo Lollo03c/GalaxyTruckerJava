@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.components.AlienType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
@@ -88,10 +88,10 @@ public abstract class Component {
 
     /**
      * remove one energy from the {@link org.mio.progettoingsoft.components.EnergyDepot}
-     * MUST BE check first if getEnergyQuanity() > 0
+     * @throws if the component is not a {@link org.mio.progettoingsoft.components.EnergyDepot} or the energy depot is emptyw
      */
-    public void removeOneEnergy(){
-
+    public void removeOneEnergy() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not an energy depot");
     }
 
     /**
@@ -123,14 +123,64 @@ public abstract class Component {
         return Collections.emptyList();
     }
 
-    public void addAlienType(AlienType color){
-        return ;
+
+    /**
+     * add the given {@link GuestType} to the allowed guest of the housing
+     * @param type the {@link GuestType} to add
+     * @throws IncorrectShipBoardException if the component is not a {@link org.mio.progettoingsoft.components.Housing}
+     */
+    public void addAllowedGuest(GuestType type) throws IncorrectShipBoardException {
+        throw new IncorrectShipBoardException("not a housing");
     }
 
-    public AlienType getColorAlien(){
-        return AlienType.NOALIEAN;
+    /**
+     * add the given {@link GuestType} to the {@link org.mio.progettoingsoft.components.Housing}
+     * @param guestType the {@link GuestType} to add
+     * @throws IncorrectShipBoardException if the guestType cannot be added to the housing or the comoponent is not a {@link org.mio.progettoingsoft.components.Housing}
+     */
+    public void addGuest(GuestType guestType) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a housing");
     }
-     
+
+
+    /**
+     *
+     * @param type the {@link GuestType} to add
+     * @return true if the given guestType can be added to the housing, false otherwise
+     * @throws IncorrectShipBoardException if the component is not a {@link org.mio.progettoingsoft.components.Housing}
+     */
+    public boolean canAddGuest(GuestType type) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a housing");
+    }
+    /**
+     *
+     * @return the {@link GuestType} of the {@link org.mio.progettoingsoft.components.AlienHousing}
+     * @throws IncorrectShipBoardException if the component is not an {@link org.mio.progettoingsoft.components.AlienHousing}
+     */
+    public GuestType getColorAlien() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a alien housing");
+    }
+
+    /**
+     *
+     * @return the list of {@link GuestType} hosted in the {@link org.mio.progettoingsoft.components.Housing},
+     *  an empty list if the component is not a {@link org.mio.progettoingsoft.components.Housing}
+     *
+     */
+    public List<GuestType> getGuests() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * remove the {@link GuestType} given from the housing, throws the exception if the operation cannot be done
+     * @param type {@link GuestType} to remove
+     * @throws IncorrectShipBoardException if the component is not an {@link org.mio.progettoingsoft.components.Housing}
+     *  or the given {@link GuestType} is not contained as a guest
+     */
+    public void removeGuest(GuestType type) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a housing");
+    }
+
     public Boolean isCompatible(Component other, Direction direction){
         return switch (direction){
             case FRONT -> topConnector.isCompatible(other.bottomConnector);
@@ -149,36 +199,21 @@ public abstract class Component {
         };
     }
 
-    public Boolean addHumanMember(){
-        return false;
-    }
-
-//    public Boolean removeHumanMember(){
-//        return false;
-//    }
-
-    public Integer getNumHumanMembers(){
+    public int getEnginePower(){
         return 0;
     }
 
-    public Boolean addAlien(AlienType type){
-        return false;
-    }
-
-//    public Boolean removeAlien(AlienType type){
-//        return false;
-//    }
-
-    public Boolean containsAlien(AlienType type) {
-        return false;
+    public int getEnginePower(boolean activated){
+        return 0;
     }
 
     public float getFirePower(){
         return 0f;
     }
 
-    public int getEnginePower(){
-        return 0;
+
+    public float getFirePower(boolean actived){
+        return 0f;
     }
 
     public Direction getDirection(){
@@ -198,33 +233,21 @@ public abstract class Component {
         };
     }
 
-    public Boolean canContainsAlien(AlienType type){
-        return false;
-    }
-
-    public Boolean canContainsGood(GoodType type){
-        return false;
-    }
-
-    public Boolean canContainsHumanGuest(){
-        return false;
-    }
-
-    public Boolean containsGuest(){
-        return false;
+    /**
+     *
+     * @param type the {@link GoodType} to be checked
+     * @return whether the given {@link GoodType} can be added in the {@link  org.mio.progettoingsoft.components.Depot}
+     * @throws IncorrectShipBoardException if the component is not a {@link org.mio.progettoingsoft.components.Depot}
+     */
+    public boolean canContainsGood(GoodType type) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a depot");
     }
 
 
-    public Boolean isFirstHousing(){return false;}
-
-    public int getQuantityGuests(){
-        return 0;
-    }
-
-    public boolean removeGuest(){
-        return false;
-    }
-
+    /**
+     *
+     * @return the id of the component, it refers to the id given to the JSON file
+     */
     public int getId() {
         return id;
     }
@@ -238,11 +261,4 @@ public abstract class Component {
                 " Row: " + row + " Column: " + column;
     }
 
-    public void setGoodsDepot(Map<GoodType, Integer> goods){
-        return ;
-    }
-
-    public void setGoodsDepot(GoodType type, int quantity){
-        return ;
-    }
 }

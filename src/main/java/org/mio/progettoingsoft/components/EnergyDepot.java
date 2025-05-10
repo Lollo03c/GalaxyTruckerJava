@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.components;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import java.util.Optional;
 
@@ -30,7 +31,10 @@ public class EnergyDepot extends Component {
      * remove one energy from the depot
      * MUST BE check first if getEnergyQuanity() > 0
      */
-    public void removeOneEnergy(){
+    public void removeOneEnergy() throws IncorrectShipBoardException{
+        if (storedQuant <= 0)
+            throw new IncorrectShipBoardException("not enough batteries");
+
         storedQuant--;
     }
 }

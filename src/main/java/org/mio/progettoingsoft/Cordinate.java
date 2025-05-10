@@ -28,8 +28,16 @@ public class Cordinate {
         return column;
     }
 
-    public boolean Equals(int r, int c){
-        return r == row && c == column;
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj)
+            return true;
+
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+
+        Cordinate other = (Cordinate) obj;
+        return row == other.row && column == other.column;
     }
 
     public List<Cordinate> getAdjacent(){

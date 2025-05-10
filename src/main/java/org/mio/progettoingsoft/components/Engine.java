@@ -58,6 +58,11 @@ public class Engine extends Component {
         return enginePower;
     }
 
+    @Override
+    public int getEnginePower(boolean activated){
+        return enginePower;
+    }
+
     public String toString(){
         return super.toString() + " Direction: " + getDirection();
     }

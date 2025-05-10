@@ -5,16 +5,16 @@ import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
 
 public class AlienHousing extends Component {
-    private final AlienType color;
+    private final GuestType color;
 
-    public AlienHousing(int id, AlienType color, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn) {
+    public AlienHousing(int id, GuestType color, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn) {
         super(id, ComponentType.ALIEN_HOUSING,topConn, bottomConn, rightConn, leftConn);
 
         this.color = color;
     }
 
     @Override
-    public AlienType getColorAlien() {
+    public GuestType getColorAlien() {
         return color;
     }
 }

@@ -7,7 +7,6 @@ import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.*;
-import java.util.function.DoubleBinaryOperator;
 import java.util.stream.Stream;
 
 public abstract class ShipBoard {
@@ -20,16 +19,11 @@ public abstract class ShipBoard {
     private final int rows;
     private final int columns;
 
-    private float baseFirePower;
-    private int baseEnginePower;
-    private float activatedFirePower;
+    private int discaredComponents = 0;
+
+    private double activatedFirePower;
     private int activatedEnginePower;
     private int exposedConnectors;
-    private int maxEnergy;
-    private int maxSpecialGoods;
-    private int numSpecialGoods;
-    private int maxNormalGoods;
-    private int numNormalGoods;
     private boolean completedBuild;
 
     private final int offsetCol;
@@ -76,14 +70,7 @@ public abstract class ShipBoard {
         // Add to bannedCoordinates all the cells where components cannot be placed
         this.bannedCoordinates = getBannedCoordinates();
 
-        baseFirePower = 0;
-        baseEnginePower = 0;
         exposedConnectors = 0;
-        maxEnergy = 0;
-        maxSpecialGoods = 0;
-        numSpecialGoods = 0;
-        maxNormalGoods = 0;
-        numNormalGoods = 0;
         completedBuild = false;
 
         // Add the starting cabin to the ship, the id identifies the correct tile image, so it's related with the color
@@ -94,6 +81,10 @@ public abstract class ShipBoard {
         }
     }
 
+    /**
+     *
+     * @return the list of banneed {@link Cordinate} based on the {@link GameMode} of the game
+     */
     protected abstract List<Cordinate> getBannedCoordinates();
 
     public void addBookedComponent(Component bookedComponent) throws NotEnoughSpaceForBookedComponentException{
@@ -112,11 +103,11 @@ public abstract class ShipBoard {
 
     // activated firepower: tmp property to store the firepower after activating double drills.
     // How to use: askDoubleDrill, set activFP = base + activated, do whatever you need, then set activated = base
-    public float getActivatedFirePower() {
+    public double getActivatedFirePower() {
         return activatedFirePower;
     }
 
-    public void setActivatedFirePower(float activatedFirePower) {
+    public void setActivatedFirePower(double activatedFirePower) {
         this.activatedFirePower = activatedFirePower;
     }
 
@@ -141,74 +132,52 @@ public abstract class ShipBoard {
         return offsetRow;
     }
 
+    /**
+     *
+     * @return the total engine power when all {@link DoubleEngine} are not activated
+     */
     public int getBaseEnginePower() {
-        return baseEnginePower;
+        return getCompStream().mapToInt(comp -> comp.getEnginePower()).sum();
     }
 
-    public float getBaseFirePower() {
-        return baseFirePower;
+    /**
+     *
+     * @return the total fire power when all {@link DoubleDrill} are not activated
+     */
+    public double getBaseFirePower() {
+        return getComponentsStream().mapToDouble (comp -> comp.getFirePower()).sum();
     }
 
-    public Component getComponent(int row, int col) throws EmptyComponentException, InvalidPositionException {
-        if (!validRow(row) || !validColumn(col))
-            throw new InvalidPositionException(row, col);
-
-        if (shipComponents[row][col].isEmpty())
-            throw new EmptyComponentException(row, col);
-
-        return shipComponents[row][col].get();
+    /**
+     *
+     * @param type the {@link GoodType} to search for
+     * @return the number of goods of the given {@link GoodType} contained in the shipboard
+     */
+    public int getStoredQuantity(GoodType type){
+        return (int) getCompStream().flatMap(comp -> comp.getStoredGoods().stream())
+                .filter(t -> t.equals(type))
+                .count();
     }
 
-    public Component getComponent(int position){
-        int[] cord = getCordinate(position);
-        return getComponent(cord[0], cord[1]);
-    }
-
-    public boolean isEmptyComponent(int row, int column) throws InvalidPositionException {
-        if (!validRow(row) || validColumn(column))
-            throw new InvalidPositionException(row, column);
-
-        return shipComponents[row][column].isEmpty();
-    }
-
-    public Map<Direction, Component> getAdjacent(int row, int column) {
+    /**
+     *
+     * @param cord the {@link Cordinate} of the link to search the adjacent {@link Component}s
+     * @return a Map<{@link Direction}, {@link Component}> consisting the adjacent {@link Component} and the relative {@link Direction}
+     */
+    public Map<Direction, Component> getAdjacent(Cordinate cord) {
         Map<Direction, Component> adjacents = new HashMap();
 
-        if (validRow(row - 1) && shipComponents[row - 1][column].isPresent()) {
-            adjacents.put(Direction.FRONT, shipComponents[row - 1][column].get());
-        }
-        if (validRow(row + 1) && shipComponents[row + 1][column].isPresent()) {
-            adjacents.put(Direction.BACK, shipComponents[row + 1][column].get());
-        }
-        if (validColumn(column + 1) && shipComponents[row][column + 1].isPresent()) {
-            adjacents.put(Direction.RIGHT, shipComponents[row][column + 1].get());
-        }
-        if (validColumn(column - 1) && shipComponents[row][column - 1].isPresent()) {
-            adjacents.put(Direction.LEFT, shipComponents[row][column - 1].get());
-        }
+        for (Direction dir : Direction.values()){
+            try{
+                Cordinate cordinate = new Cordinate(cord.getRow() + dir.offsetRow(), cord.getColumn() + dir.offsetCol());
+                Optional<Component> optComp = getOptComponentByCord(cordinate);
+                if (optComp.isPresent())
+                    adjacents.put(dir, optComp.get());
+            }
+            catch (InvalidCordinate e){
+            }
 
-        return adjacents;
-    }
-
-    public Map<Direction, Component> getAdjacentConnected(int row, int column) {
-        if(shipComponents[row][column].isEmpty()){
-            throw new EmptyComponentException(row, column);
         }
-        Map<Direction, Component> adjacents = new HashMap();
-
-        if (validRow(row - 1) && shipComponents[row - 1][column].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row - 1][column].get(), Direction.FRONT)) {
-            adjacents.put(Direction.FRONT, shipComponents[row - 1][column].get());
-        }
-        if (validRow(row + 1) && shipComponents[row + 1][column].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row + 1][column].get(), Direction.BACK)) {
-            adjacents.put(Direction.BACK, shipComponents[row + 1][column].get());
-        }
-        if (validColumn(column + 1) && shipComponents[row][column + 1].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row][column + 1].get(), Direction.RIGHT)) {
-            adjacents.put(Direction.RIGHT, shipComponents[row][column + 1].get());
-        }
-        if (validColumn(column - 1) && shipComponents[row][column - 1].isPresent() && shipComponents[row][column].isPresent() && shipComponents[row][column].get().isConnected(shipComponents[row][column - 1].get(), Direction.LEFT)) {
-            adjacents.put(Direction.LEFT, shipComponents[row][column - 1].get());
-        }
-
         return adjacents;
     }
 
@@ -224,20 +193,19 @@ public abstract class ShipBoard {
         if (bannedCoordinates.contains(cordinate))
             throw new IncorrectShipBoardException("Cannot insert in this cordinate");
 
-        if (getComponentByCord(cordinate).isPresent())
+        if (getOptComponentByCord(cordinate).isPresent())
             throw new IncorrectShipBoardException("Cordinate already full");
 
         Component component = flyBoard.getComponentById(componentId);
         component.rotate(angle);
 
         boolean validPosition = cordinate.equals(new Cordinate(2, 3)) ||
-                cordinate.getAdjacent().stream().map(cord -> getComponentByCord(cord)).filter(optComp -> optComp.isPresent()).findFirst().equals(Optional.empty());
+                !getAdjacent(cordinate).values().isEmpty();
 
         if (!validPosition)
             throw new IncorrectShipBoardException("Not adjacent components");
 
         shipComponents[cordinate.getRow()][cordinate.getColumn()] = Optional.of(component);
-        int a = 0;
     }
 
 
@@ -246,8 +214,23 @@ public abstract class ShipBoard {
      * @param cordinate the {@link Cordinate} for the search
      * @return
      */
-    private Optional<Component> getComponentByCord(Cordinate cordinate){
+    public Optional<Component> getOptComponentByCord(Cordinate cordinate){
         return shipComponents[cordinate.getRow()][cordinate.getColumn()];
+    }
+
+
+    /**
+     *
+     * @param cordinate the {@link Cordinate} of the tile to empty
+     * @throws IncorrectShipBoardException if the tile is already empty
+     */
+    public void removeComponent(Cordinate cordinate) throws IncorrectShipBoardException{
+        if (getOptComponentByCord(cordinate).isEmpty())
+            throw new IncorrectShipBoardException("tile is empty. nothing to remove");
+
+        shipComponents[cordinate.getRow()][cordinate.getRow()] = Optional.empty();
+        discaredComponents++;
+
     }
 
 
@@ -336,44 +319,9 @@ public abstract class ShipBoard {
 //        addComponentToPosition(comp, row, column);
 //    }
 
-    //non basta
-    //bisogna controllare l'eliminazione a cascata
-    public void removeComponent(int row, int column) throws EmptyComponentException {
-        if (!validRow(row) || !validColumn(column)) {
-            throw new InvalidPositionException(row, column);
-        }
 
-        if (shipComponents[row][column].isEmpty())
-            throw new EmptyComponentException(row, column);
 
-        Component toRemove = shipComponents[row][column].get();
-        shipComponents[row][column] = Optional.empty();
 
-        baseEnginePower -= toRemove.getEnginePower() == 2 ? 0 : toRemove.getEnginePower();
-        baseFirePower -= toRemove.getFirePower() == 2f ? 0 : toRemove.getFirePower();
-    }
-
-    //non basta
-    //bisogna controllare l'eliminazione a cascata
-    public void removeComponent(Component component) {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (shipComponents[i][j].isPresent() && shipComponents[i][j].get().equals(component))
-                    shipComponents[i][j] = Optional.empty();
-
-            }
-        }
-
-        baseEnginePower -= component.getEnginePower() == 2 ? 0 : component.getEnginePower();
-        baseFirePower -= component.getFirePower() == 2.0f ? 0 : component.getFirePower();
-    }
-
-    public void removeComponent(int componentPosition){
-        int row = componentPosition / columns;
-        int col = componentPosition % columns;
-
-        removeComponent(row, col);
-    }
 
     private Stream<Optional<Component>> getStreamOptComponents() {
         return Arrays.stream(shipComponents).flatMap(Arrays::stream);
@@ -393,13 +341,12 @@ public abstract class ShipBoard {
         return this.getComponentsStream().toList();
     }
 
+    /**
+     *
+     * @return the total number of energy left
+     */
     public int getQuantBatteries() {
-        Iterator<Component> iter = getCompIterator();
-        int result = 0;
-        while (iter.hasNext())
-            result += iter.next().getEnergyQuantity();
-
-        return result;
+        return getComponentsStream().mapToInt(Component::getEnergyQuantity).sum();
     }
 
     private boolean validRow(int row) {
@@ -410,79 +357,16 @@ public abstract class ShipBoard {
         return column >= 0 && column < columns;
     }
 
-    /*public void addGood(GoodType type) throws FullGoodDepot {
-        boolean added = false;
-
-        for (int i = 0; !added && i < componentList.size(); i++){
-            added = componentList.get(i).addGood(type);
-        }
-
-        if (!added)
-            throw new FullGoodDepot(type);
-
-        goods.put(type, goods.get(type) + 1);
-    }
-
-    public void removeGood(GoodType type) throws NotEnoughGoods{
-        boolean removed = false;
-
-        for (int i = 0; !removed && i < componentList.size(); i++){
-            removed = componentList.get(i).removeGood(type);
-        }
-
-        if(!removed)
-            throw new NotEnoughGoods(type);
-
-        goods.put(type, goods.get(type) - 1);
-    }*/
-
-    public List<Component> canContainGood(GoodType type) {
-        return getComponentsStream()
-                .filter(comp -> comp.canContainsGood(type))
-                .toList();
-    }
-
-
-    public void addHumanGuest() throws NotEnoughHousingException {
-        boolean added = false;
-        List<Component> componentList = this.getComponentsList();
-
-        for (int i = 0; !added && i < componentList.size(); i++)
-            added = componentList.get(i).addHumanMember();
-
-
-        if (!added)
-            throw new NotEnoughHousingException();
-    }
-
-    public List<Component> canContainsHumanGuest() {
-        return getComponentsStream()
-                .filter(comp -> comp.canContainsHumanGuest())
-                .toList();
-    }
-
-    public List<Component> canContainsAlienGuest(AlienType type) {
-        return getComponentsStream()
-                .filter(comp -> comp.canContainsAlien(type))
-                .toList();
-    }
-
-    public List<Component> canRemoveGuest() {
-        return getComponentsStream()
-                .filter(comp -> comp.containsGuest())
-                .toList();
-    }
-
 
     public List<Component> getDoubleEngine() {
         return getComponentsStream()
-                .filter(comp -> comp.getEnginePower() == 2)
+                .filter(comp -> comp.getEnginePower(true) == 2)
                 .toList();
     }
 
     public List<Component> getDoubleDrill(Direction dir) {
         return getComponentsStream()
-                .filter(comp -> comp.getFirePower() == 2)
+                .filter(comp -> comp.getFirePower(true) == 2)
                 .filter(comp -> comp.getDirection() != null)
                 .filter(comp -> comp.getDirection().equals(dir))
                 .toList();
@@ -577,7 +461,7 @@ public abstract class ShipBoard {
                     Component comp = shipComponents[i][j].get();
 
                     //
-                    Map<Direction, Component> adjacent = getAdjacent(i, j);
+//                    Map<Direction, Component> adjacent = getAdjacent(i, j);
                     boolean correct = true;
 
                     /* this part is now made by the getMultiplePieces method
@@ -590,79 +474,79 @@ public abstract class ShipBoard {
                         }
                     }*/
 
-                    for (Direction dir : adjacent.keySet()) {
-                        correct = correct && comp.isCompatible(adjacent.get(dir), dir);
+//                    for (Direction dir : adjacent.keySet()) {
+//                        correct = correct && comp.isCompatible(adjacent.get(dir), dir);
                     }
 
-                    if (!correct) {
+//                    if (!correct) {
                         incorrect.add(shipComponents[i][j].get());
                     }
                 }
 
-            }
-        }
-
-        return incorrect;
+        return null;
     }
+
+
+//        return incorrect;
 
     // this method returns the disconnected pieces (not only single components but group of them not interconnected)
     // this method uses an algorithm of Breadth-First Search (a big thanks to API)
-    public List<Set<Component>> getMultiplePieces(){
-        List<Set<Component>> multiple = new ArrayList<>();
-        if(this.getComponentsStream().findAny().isPresent()){
-            int[][] visited = new int[rows][columns];
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++) {
-                    visited[i][j] = -1;
-                }
-            }
-
-            while(this.getComponentsStream().anyMatch(comp -> visited[comp.getRow()][comp.getColumn()] == -1)){
-                Component c = this.getComponentsStream().filter(comp -> visited[comp.getRow()][comp.getColumn()] == -1).findFirst().get();
-
-                Queue<Component> queue = new LinkedList<>();
-                queue.add(c);
-                visited[c.getRow()][c.getColumn()] = 0;
-
-                Set<Component> part = new HashSet<>();
-
-                while (!queue.isEmpty()) {
-                    Component comp = queue.remove();
-                    part.add(comp);
-                    Map<Direction, Component> adj = getAdjacentConnected(comp.getRow(), comp.getColumn());
-                    for(Component component : adj.values()){
-                        if(visited[component.getRow()][component.getColumn()] == -1){
-                            visited[component.getRow()][component.getColumn()] = 0;
-                            queue.add(component);
-                        }
-                    }
-                    visited[comp.getRow()][comp.getColumn()] = 1;
-                }
-
-                multiple.add(part);
-
-            }
-        }
-        return multiple;
-    }
+//    public List<Set<Component>> getMultiplePieces(){
+//        List<Set<Component>> multiple = new ArrayList<>();
+//        if(this.getComponentsStream().findAny().isPresent()){
+//            int[][] visited = new int[rows][columns];
+//            for (int i = 0; i < rows; i++) {
+//                for (int j = 0; j < columns; j++) {
+//                    visited[i][j] = -1;
+//                }
+//            }
+//
+//            while(this.getComponentsStream().anyMatch(comp -> visited[comp.getRow()][comp.getColumn()] == -1)){
+//                Component c = this.getComponentsStream().filter(comp -> visited[comp.getRow()][comp.getColumn()] == -1).findFirst().get();
+//
+//                Queue<Component> queue = new LinkedList<>();
+//                queue.add(c);
+//                visited[c.getRow()][c.getColumn()] = 0;
+//
+//                Set<Component> part = new HashSet<>();
+//
+//                while (!queue.isEmpty()) {
+//                    Component comp = queue.remove();
+//                    part.add(comp);
+//                    Map<Direction, Component> adj = getAdjacentConnected(comp.getRow(), comp.getColumn());
+//                    for(Component component : adj.values()){
+//                        if(visited[component.getRow()][component.getColumn()] == -1){
+//                            visited[component.getRow()][component.getColumn()] = 0;
+//                            queue.add(component);
+//                        }
+//                    }
+//                    visited[comp.getRow()][comp.getColumn()] = 1;
+//                }
+//
+//                multiple.add(part);
+//
+//            }
+//        }
+//        return multiple;
+//    }
 
     //this method count the number of exposed connectors
-    public int getExposedConnectors() {
-        int numExposedConnectors = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (shipComponents[i][j].isPresent()) {
-                    Component comp = shipComponents[i][j].get();
-                    Map<Direction, Component> adjacent = getAdjacent(i, j);
-                    if (isExposed(comp, adjacent, Direction.FRONT)) numExposedConnectors++;
-                    if (isExposed(comp, adjacent, Direction.BACK)) numExposedConnectors++;
-                    if (isExposed(comp, adjacent, Direction.LEFT)) numExposedConnectors++;
-                    if (isExposed(comp, adjacent, Direction.RIGHT)) numExposedConnectors++;
-                }
-            }
-        }
-        return numExposedConnectors;
-    }
+//    public int getExposedConnectors() {
+//        int numExposedConnectors = 0;
+//        for (int i = 0; i < rows; i++) {
+//            for (int j = 0; j < columns; j++) {
+//                if (shipComponents[i][j].isPresent()) {
+//                    Component comp = shipComponents[i][j].get();
+////                    Map<Direction, Component> adjacent = getAdjacent(i, j);
+//                    if (isExposed(comp, adjacent, Direction.FRONT)) numExposedConnectors++;
+//                    if (isExposed(comp, adjacent, Direction.BACK)) numExposedConnectors++;
+//                    if (isExposed(comp, adjacent, Direction.LEFT)) numExposedConnectors++;
+//                    if (isExposed(comp, adjacent, Direction.RIGHT)) numExposedConnectors++;
+//                }
+//            }
+//        }
+//        return numExposedConnectors;
+//    }
 
     public boolean isExposed(Component comp, Map<Direction, Component> adj, Direction dir) {
         if (!comp.getConnector(dir).equals(Connector.FLAT)) {
@@ -692,25 +576,20 @@ public abstract class ShipBoard {
         return sum;
     }*/
 
+    /**
+     *
+     * @return the number of guests hosted in the shipBoard
+     */
     public int getQuantityGuests() {
         return getComponentsStream().
-                mapToInt(comp -> comp.getQuantityGuests())
+                mapToInt(comp -> comp.getGuests().size())
                 .sum();
     }
 
-    public String printPosition(Component comp) {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (shipComponents[i][j].isPresent()) {
-                    if (shipComponents[i][j].get() == comp)
-                        return "(" + i + ", " + j + ")";
-                }
-            }
-        }
-        return "";
-    }
-
-    //TODO : va testata
+    /**
+     *
+     * @param quantity int : quantity of goods / batteries to stole
+     */
     public void stoleGood(int quantity) {
 
         Iterator<GoodType> iter = GoodType.sortedList.iterator();
@@ -752,16 +631,6 @@ public abstract class ShipBoard {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    public int getColumnComponent(Component comp) {
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                if (shipComponents[i][j].isPresent() && shipComponents[i][j].get() == comp)
-                    return j;
-            }
-        }
-        return -1;
     }
 
     // activated engine power: tmp property to store the engine power after activating double engines.
@@ -808,15 +677,6 @@ public abstract class ShipBoard {
         return out;
     }
 
-    public int[] getCordinate(int pos){
-        int[] cord = new int[2];
-
-        cord[0] = pos / columns;
-        cord[1] = pos % columns;
-
-        return cord;
-    }
-
     public float getMaximumFirePower(){
         return (float) getComponentsStream()
                 .mapToDouble(Component::getFirePower)
@@ -824,7 +684,7 @@ public abstract class ShipBoard {
     }
 
     public void keepPart(int row, int col){
-        List<Set<Component>> multiple = getMultiplePieces();
+        List<Set<Component>> multiple = Collections.emptyList(); // getMultiplePieces();
         int partToKeep = -1;
         for(int i = 0; i < multiple.size(); i++){
             Set<Component> set = multiple.get(i);
@@ -845,7 +705,7 @@ public abstract class ShipBoard {
             if(i != partToKeep){
                 Set<Component> set = multiple.get(i);
                 for(Component c : set){
-                    this.removeComponent(c.getRow(), c.getColumn());
+                    this.removeComponent(new Cordinate(c.getRow(), c.getColumn()));
                 }
             }
         }

@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.components;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,13 +29,13 @@ class EnergyDepotTest {
     void should_remove_two_batteries(){
         Component energy = new EnergyDepot(1, false, flat, flat, flat, flat);
 
-//        assertTrue(energy.removeOneEnergy());
+        energy.removeOneEnergy();
         assertEquals(1, energy.getEnergyQuantity());
 
-//        assertTrue(energy.removeOneEnergy());
+        energy.removeOneEnergy();
         assertEquals(0, energy.getEnergyQuantity());
 
-//        assertFalse(energy.removeOneEnergy());
+        assertThrows(IncorrectShipBoardException.class, () -> energy.removeOneEnergy());
         assertEquals(0, energy.getEnergyQuantity());
     }
 }

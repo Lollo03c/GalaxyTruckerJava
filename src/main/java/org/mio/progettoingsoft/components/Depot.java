@@ -67,5 +67,13 @@ public class Depot extends Component {
         return storedGoods;
     }
 
+    @Override
+    public boolean canContainsGood(GoodType type) throws IncorrectShipBoardException{
+        if (type.equals(GoodType.RED) && !isHazard)
+            return false;
+
+        return storedGoods.size() < maxQuantity;
+    }
+
 
 }
