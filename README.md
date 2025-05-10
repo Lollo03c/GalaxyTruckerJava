@@ -9,10 +9,10 @@ held by prof. Alessandro Margara in the academic year 2024-2025.<br>
 |:-----------------------------|:-----:|
 | Basic rules                  |  🟡   |
 | Complete rules               |  🟡   |
-| CLI                          |  ❌   |
+| CLI                          |  🟡   |
 | GUI                          |  ❌   |
-| Socket                       |  ❌   |
-| RMI                          |  ❌   |
+| Socket                       |  🟡   |
+| RMI                          |  🟡   |
 | First flight                 |  ❌   |
 | Multiple matches             |  ❌   |
 | Persistence                  |  ❌   |
