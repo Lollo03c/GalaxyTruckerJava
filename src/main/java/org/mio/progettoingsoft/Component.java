@@ -2,8 +2,10 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.AlienType;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.HousingColor;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +15,13 @@ public abstract class Component {
     private final ComponentType type;
     private int row;
     private int column;
-
+    public Boolean getHazard() {
+        return false;
+    }
+    public Boolean getBig() {
+        return false;
+    }
+    public boolean getTriple(){        return false;    }
     public Component(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         this.id = id;
         topConnector = topConn;
@@ -109,6 +117,7 @@ public abstract class Component {
         };
     }
 
+
     public Boolean isConnected(Component other, Direction direction){
         return switch (direction){
             case FRONT -> topConnector.isConnected(other.bottomConnector);
@@ -117,6 +126,14 @@ public abstract class Component {
             case LEFT -> leftConnector.isConnected(other.rightConnector);
         };
     }
+
+    public int getGuestedHuman(){return 0;    }
+
+    public Map<AlienType, Boolean> getGuestedAlien(){
+        return new HashMap<>();
+    }
+    public boolean getIsFirst() {return false;}
+    public HousingColor getHousingColor() {return HousingColor.NOCOLOR;}
 
     public Boolean addHumanMember(){
         return false;

@@ -10,6 +10,13 @@ public enum AlienType {
             default ->  AlienType.NOALIEAN;
         };
     }
+    public String alienToColor(){
+        return switch (this){
+            case PURPLE -> "\u001B[35m";
+            case BROWN -> "\u001B[33m";
+            case NOALIEAN -> "\u001B[31m";
+        };
+    }
 
     @Override
     public String toString(){

@@ -21,6 +21,11 @@ public class EnergyDepot extends Component {
     }
 
     @Override
+    public boolean getTriple(){
+        return isTriple;
+    }
+
+    @Override
     public Integer getEnergyQuantity(){
         return storedQuant;
     }

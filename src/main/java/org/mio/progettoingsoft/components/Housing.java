@@ -15,7 +15,6 @@ public class Housing extends Component {
 
     private Integer guestedHuman;
     private HousingColor color;
-
     public Housing(int id, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         super(id, ComponentType.HOUSING, topConn, bottomConn, rightConn, leftConn);
 
@@ -26,13 +25,19 @@ public class Housing extends Component {
 
     public Housing(int id, boolean isFirst, HousingColor color,  Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         super(id, ComponentType.HOUSING, topConn, bottomConn, rightConn, leftConn);
-
         guestedAlien = new HashMap<>();
         guestedHuman = 0;
         this.isFirst = isFirst;
         this.color = color;
 
     }
+    @Override
+    public int getGuestedHuman(){return guestedHuman;    }
+    @Override
+    public HousingColor getHousingColor() {return this.color;}
+
+    @Override
+    public boolean getIsFirst() {return this.isFirst;}
 
     @Override
     public void addAlienType(AlienType type){
@@ -93,7 +98,7 @@ public class Housing extends Component {
     private Boolean isEmpty(){
         return guestedHuman == 0 && !guestedAlien.containsValue(true);
     }
-
+    @Override
     public Map<AlienType, Boolean> getGuestedAlien(){
         return guestedAlien;
     }

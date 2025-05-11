@@ -10,12 +10,12 @@ import java.util.Map;
 
 public class Depot extends Component {
 
+    private final Boolean isBig;
     public Boolean getBig() {
         return isBig;
     }
 
-    private final Boolean isBig;
-
+    @Override
     public Boolean getHazard() {
         return isHazard;
     }
