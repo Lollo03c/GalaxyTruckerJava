@@ -7,4 +7,9 @@ public class GuiController extends ClientController {
     public void run() {
 
     }
+
+    @Override
+    public void handleWrongNickname(String nickname){
+
+    }
 }

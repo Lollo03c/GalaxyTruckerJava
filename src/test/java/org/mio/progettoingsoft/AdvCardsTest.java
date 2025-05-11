@@ -34,7 +34,7 @@ public class    AdvCardsTest {
         players.add(playerAndrea);
 
         for (int i = 0; i < 4; i++) {
-            fly.addPlayer(players.get(i).getUsername(), players.get(i).getColor());
+            fly.addPlayer(players.get(i).getNickname(), players.get(i).getColor());
         }
 
         fly.getCircuit().set(6, Optional.of(fly.getScoreBoard().get(0)));
@@ -54,34 +54,34 @@ public class    AdvCardsTest {
         }
 
         fly.getScoreBoard().stream()
-                .filter(p -> p.getUsername().equals("Stefano"))
+                .filter(p -> p.getNickname().equals("Stefano"))
                 .findFirst().ifPresent(p -> {
                             p.getShipBoard().addComponentToPosition(new Pipe(5, Connector.DOUBLE, Connector.SINGLE, Connector.DOUBLE, Connector.DOUBLE), 1, 4);
                         }
                 );
         // Stefano has 9 exposed connectors
         fly.getScoreBoard().stream()
-                .filter(p -> p.getUsername().equals("Lorenzo"))
+                .filter(p -> p.getNickname().equals("Lorenzo"))
                 .findFirst().ifPresent(p -> {
                             p.getShipBoard().addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.FLAT, Connector.SINGLE, Connector.DOUBLE), 3, 4);
                         }
                 );
         // Lorenzo has 6 exposed connectors
         fly.getScoreBoard().stream()
-                .filter(p -> p.getUsername().equals("Andrea"))
+                .filter(p -> p.getNickname().equals("Andrea"))
                 .findFirst().ifPresent(p -> {
                             p.getShipBoard().addComponentToPosition(new Pipe(5, Connector.TRIPLE, Connector.SINGLE, Connector.FLAT, Connector.SINGLE), 4, 2);
                         }
                 );
         // Andrea has 8 exposed connectors
         // Antonio has 7 exposed connectors
-        int stefExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Stefano")).findFirst().get().getShipBoard().getExposedConnectors();
+        int stefExp = fly.getScoreBoard().stream().filter(p -> p.getNickname().equals("Stefano")).findFirst().get().getShipBoard().getExposedConnectors();
         assertEquals(9, stefExp);
-        int lorExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Lorenzo")).findFirst().get().getShipBoard().getExposedConnectors();
+        int lorExp = fly.getScoreBoard().stream().filter(p -> p.getNickname().equals("Lorenzo")).findFirst().get().getShipBoard().getExposedConnectors();
         assertEquals(6, lorExp);
-        int andExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Andrea")).findFirst().get().getShipBoard().getExposedConnectors();
+        int andExp = fly.getScoreBoard().stream().filter(p -> p.getNickname().equals("Andrea")).findFirst().get().getShipBoard().getExposedConnectors();
         assertEquals(8, andExp);
-        int antExp = fly.getScoreBoard().stream().filter(p -> p.getUsername().equals("Antonio")).findFirst().get().getShipBoard().getExposedConnectors();
+        int antExp = fly.getScoreBoard().stream().filter(p -> p.getNickname().equals("Antonio")).findFirst().get().getShipBoard().getExposedConnectors();
         assertEquals(7, antExp);
         fly.loadAdventureCards();
         fly.shuffleDeck();

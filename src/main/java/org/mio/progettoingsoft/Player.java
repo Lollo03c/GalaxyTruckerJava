@@ -3,13 +3,13 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
-import org.mio.progettoingsoft.views.VirtualView;
+import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.List;
 
 public class Player {
 
-    private final String username;
+    private final String nickname;
     private int credits;
     private HousingColor color;
     private ShipBoard shipBoard;
@@ -20,11 +20,13 @@ public class Player {
     private List<GoodType> tmpGoods;
 
 
-    public Player(String username, HousingColor color) {
-        this.username = username;
+    public Player(String nickname, HousingColor color, GameMode mode, FlyBoard flyboard) {
+        this.nickname = nickname;
         credits = 0;
         this.color = color;
-        shipBoard = new ShipBoard(color);
+
+        shipBoard = ShipBoard.createShipBoard(mode, color, flyboard);
+
         discardedComponents = 0;
         inHand = null;
         this.isRunning = false;
@@ -34,8 +36,8 @@ public class Player {
 
 
     /** GETTER */
-    public String getUsername() {
-        return username;
+    public String getNickname() {
+        return nickname;
     }
 
     public ShipBoard getShipBoard() {
@@ -124,7 +126,7 @@ public class Player {
             comp.rotateClockwise();
         }
 //secondo me potremmo mettere il metodo void e non fare il controllo con l'if
-        shipBoard.addComponentToPosition(comp, row, column);
+//        shipBoard.addComponentToPosition(comp, row, column);
 //            System.out.println("Occupied cell");
 
     }
@@ -165,7 +167,7 @@ public class Player {
         if( !(other instanceof Player))
             return false;
         Player tmp = (Player) other;
-        return this.username.equals(tmp.getUsername());
+        return this.nickname.equals(tmp.getNickname());
     }
 
     public boolean isRunning() {

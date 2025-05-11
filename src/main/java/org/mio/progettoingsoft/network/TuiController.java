@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network;
 
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.views.Tui;
 
@@ -11,7 +12,7 @@ public class TuiController extends ClientController {
 
     public TuiController() {
         super();
-        this.view = new Tui();
+        this.view = new Tui(this);
     }
 
     @Override
@@ -20,7 +21,6 @@ public class TuiController extends ClientController {
             synchronized (gameState) {
                 try {
                     handleInput(view.gameMenu(gameState));
-
                 } catch (NotBoundException e) {
                     throw new RuntimeException(e);
                 } catch (IOException e) {
@@ -31,6 +31,14 @@ public class TuiController extends ClientController {
                     throw new RuntimeException(e);
                 }
             }
+        }
+    }
+
+    @Override
+    public void handleWrongNickname(String nickname){
+        if (gameState.equals(GameState.WAITING)) {
+            System.out.println("Nickname '" + nickname + "' already taken. Try something else");
+            setGameState(GameState.NICKNAME_REQUEST);
         }
     }
 }

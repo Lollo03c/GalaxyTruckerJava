@@ -1,17 +1,18 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.interfaces.GameClient;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.StartGameMessage;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Game {
-    private final FlyBoard flyboard;
+public class Game implements GameServer, GameClient {
+    private FlyBoard flyboard;
     private final int idGame;
     private GameMode mode;
     private int numPlayers;
@@ -21,33 +22,39 @@ public class Game {
 
     private Map<String, VirtualClient> clients = new HashMap<>();
 
+    private GameState gameState;
+
     public Game(int idGame) {
         this.idGame = idGame;
-
-        this.flyboard = new FlyBoard();
     }
 
+    @Override
     public void setupGame(GameMode mode, int numPlayers){
         this.mode = mode;
         this.numPlayers = numPlayers;
     }
 
+    @Override
     public int getIdGame(){
         return idGame;
     }
 
+    @Override
     public int getNumPlayers(){
         return numPlayers;
     }
 
+    @Override
     public GameMode getGameMode(){
         return  mode;
     }
 
+    @Override
     public Map<String, VirtualClient> getClients(){
         return clients;
     }
 
+    @Override
     public void addPlayer(String nickname, VirtualClient client){
         clients.put(nickname, client);
     }
@@ -56,16 +63,37 @@ public class Game {
         return numPlayers == clients.size();
     }
 
+    @Override
     public boolean askSetting() {
         return clients.size() == 1;
     }
 
-    public void startGame() throws Exception {
-        broadcast(new StartGameMessage(idGame));
+    /**
+     * once the game is full of the players starts the game on a different Thread
+     */
+    @Override
+    public void startGame(){
+        flyboard = FlyBoard.createFlyBoard(mode, clients.keySet());
+        gameController.setGame(this);
+
+        //game modifica il suo stato
+        setGameState(GameState.WAITING);
+        gameController.update(gameState);
+
     }
 
+    @Override
     public void addReceivedMessage(Message message){
         receivedMessages.add(message);
+    }
+
+    @Override
+    public FlyBoard getFlyBoard(){
+        return this.flyboard;
+    }
+
+    public void setGameState(GameState newState){
+        this.gameState = newState;
     }
 //
 //    private void handleMessagesFromServer(){
@@ -77,10 +105,6 @@ public class Game {
 //        }
 //    }
 
-    private void broadcast(Message message) throws Exception {
-        for (VirtualClient client : clients.values())
-            client.showUpdate(message);
-    }
 
 
 }

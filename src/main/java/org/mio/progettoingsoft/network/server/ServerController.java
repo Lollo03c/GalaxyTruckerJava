@@ -1,12 +1,15 @@
 package org.mio.progettoingsoft.network.server;
 
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerController {
     /**
@@ -25,10 +28,25 @@ public class ServerController {
        return instance;
     }
 
+    private final static Logger logger = LoggerFactory.getLogger(ServerController.class);
 
-    private GameManager gameManager = GameManager.getInstance();
+    private final GameManager gameManager = GameManager.getInstance();
+
+    private final Map<String, VirtualClient> userToClient = new ConcurrentHashMap<>();
 
     private boolean waitingForGameSetting = false;
+
+    /**
+     * called when the server receive a new connection from a client
+     * send a {@link WelcomeMessage} to the client and regsiter the client in the waiting clients list
+     * @param client : virtual client to send message to
+     * @throws Exception : throws the exc thrown by the showUpdate message
+     */
+    public void addClientToAccept(VirtualClient client) throws Exception {
+        int idClient = GameManager.getInstance().getNextIdPlayer();
+        client.showUpdate(new WelcomeMessage(idClient));
+        gameManager.addClientToAccept(idClient, client);
+    }
 
     /**
      * called when server received a {@link NicknameMessage}
@@ -38,29 +56,30 @@ public class ServerController {
      * @param idPlayer : temporary id to get its client
      */
     public void addPlayer(String nickname, int idPlayer) throws Exception {
-        VirtualClient client = gameManager.getWaitingClients().get(idPlayer);
+        VirtualClient client = gameManager.getClientsToAccept().get(idPlayer);
+
         if (client == null) {
+            logger.info("Received a NicknameMessage (\"{}\") from unknown setupID ({})", nickname, idPlayer);
             return;
         }
 
-        if (gameManager.getNicknames().contains(nickname)) {
-
-            try {
-                //client.reportError(0, null, ErrorType.NICKNAME);
-            } catch (Exception e) {
-
-            }
+        if (gameManager.getNicknames().contains(nickname) || nickname.equals(Message.getBroadcastAddress())) {
+            logger.info("\"{}\" already taken", nickname);
+            client.showUpdate(new ErrorMessage(-1, nickname, ErrorType.NICKNAME));
             return;
         }
 
         if (gameManager.getWaitingGame().isEmpty())
             gameManager.createWaitingGame();
 
-        Game waitingGame = gameManager.getWaitingGame().get();
+        GameServer waitingGame = gameManager.getWaitingGame().get();
 
         waitingGame.addPlayer(nickname, client);
-        gameManager.getWaitingClients().remove(idPlayer);
+        gameManager.getClientsToAccept().remove(idPlayer);
+        this.userToClient.put(nickname, client);
         gameManager.addNickname(nickname);
+
+        logger.info("{} inserito alla partita {}", nickname, waitingGame.getIdGame());
 
         if (gameManager.getWaitingGame().get().askSetting()){
             client.showUpdate(new GameSetupMessage(waitingGame.getIdGame(), nickname, 0, null));
@@ -71,7 +90,7 @@ public class ServerController {
 
 
         if (waitingGame.isFull()) {
-            Game readyToStart = waitingGame;
+            GameServer readyToStart = waitingGame;
             new Thread(() -> {
                 try {
                     readyToStart.startGame();
@@ -92,13 +111,21 @@ public class ServerController {
      * @param message : {@link  GameSetupMessage}
      */
     public void setupGame(GameSetupMessage message) throws Exception {
-        Optional<Game> optGame = gameManager.getWaitingGame();
-        if (optGame.isEmpty())
-            return;
+        Optional<GameServer> optGame = gameManager.getWaitingGame();
 
-        Game waitingGame = optGame.get();
-        if (waitingGame.getIdGame() != message.getIdGame())
+        // TODO l'error di tipo SETUP non è ancora gestito lato client!!!!
+        if (optGame.isEmpty()) {
+            logger.error("Recieved gameSetupMessage, but no game was created.");
+            this.userToClient.get(message.getNickname()).showUpdate(new ErrorMessage(-1, message.getNickname(), ErrorType.SETUP));
             return;
+        }
+
+        GameServer waitingGame = optGame.get();
+        if (waitingGame.getIdGame() != message.getIdGame()) {
+            logger.error("Recieved gameSetupMessage with erroneous game ID: {}", message.getIdGame());
+            this.userToClient.get(message.getNickname()).showUpdate(new ErrorMessage(-1, message.getNickname(), ErrorType.SETUP));
+            return;
+        }
 
         waitingGame.setupGame(message.getMode(), message.getNumPlayers());
         waitingGame.getClients().get(message.getNickname()).showUpdate(new WaitingForPlayerMessage(waitingGame.getIdGame(), message.getNickname(), waitingGame.getNumPlayers(), waitingGame.getGameMode()));

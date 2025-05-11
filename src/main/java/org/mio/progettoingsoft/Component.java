@@ -62,9 +62,18 @@ public abstract class Component {
         return !comp.equals(Connector.FLAT);
     }
 
+    /**
+     * rotates the component, changes its {@link Connector} and the direction base of the component type
+     * @param nRotationsClockWise
+     */
+    public void rotate(int nRotationsClockWise){
+        for (int i = 0; i < nRotationsClockWise; i++)
+            this.rotateClockwise();
+    }
+
     // the two "rotate" methods move the components in the selected order (clockwise or no)
     // then it should change the "pointing direction" of the component
-    public void rotateClockwise(){
+    protected void rotateClockwise(){
         Connector tmp = this.topConnector;
         this.topConnector = this.leftConnector;
         this.leftConnector = this.bottomConnector;
@@ -72,7 +81,7 @@ public abstract class Component {
         this.rightConnector = tmp;
     }
 
-    public void rotateCounterClockwise(){
+    protected void rotateCounterClockwise(){
         Connector tmp = this.topConnector;
         this.topConnector = this.rightConnector;
         this.rightConnector = this.bottomConnector;

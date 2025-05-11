@@ -22,8 +22,8 @@ public enum HousingColor {
         };
     }
 
-    public static int getIdByColor(HousingColor color){
-        return switch (color) {
+    public int getIdByColor(){
+        return switch (this) {
             case BLUE -> 33;
             case GREEN -> 34;
             case RED -> 52;

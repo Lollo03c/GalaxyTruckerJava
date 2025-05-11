@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.client;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.network.ConnectionType;
 import org.mio.progettoingsoft.network.GuiController;
 import org.mio.progettoingsoft.network.NetworkFactory;
@@ -43,7 +44,6 @@ public abstract class ClientController implements Runnable {
         this.inputMessageQueue = messageQueue;
     }
 
-
     // connection parameters - start
     private final String hostAddress = "127.0.0.1";
     private final int rmiPort = 1099;
@@ -52,21 +52,20 @@ public abstract class ClientController implements Runnable {
     // connection parameters - en
 
     protected GameState gameState = GameState.START;
-    protected Client client;
-    protected VirtualView view;
-    protected BlockingQueue<Message> inputMessageQueue;
+    private Client client;
+    private BlockingQueue<Message> inputMessageQueue;
     private String nickname;
+    private VirtualView view;
 
     private int setupClientid;
 
-    private Game game;
+    private GameClient game;
 
 
     public void setGameState(GameState gameState) {
         synchronized (gameState) {
             this.gameState = gameState;
         }
-
     }
 
     protected void handleInput(Input input) throws Exception {
@@ -75,10 +74,10 @@ public abstract class ClientController implements Runnable {
             case NICKNAME_REQUEST -> handleNicknameInput(input);
             case SETUP_GAME -> handleSetupGame(input);
             case PRINT_GAME_INFO -> {}
-            case WAITING_PLAYERS -> { Thread.sleep(10);  }
+            case WAITING -> { Thread.sleep(10);  }
             case BUILDING_SHIP -> {
                 System.out.println("partita iniziata");
-                setGameState(GameState.WAITING_PLAYERS);
+                setGameState(GameState.WAITING);
             }
             default -> System.out.println("Invalid gameState");
         }
@@ -91,7 +90,6 @@ public abstract class ClientController implements Runnable {
             ConnectionType connectionType = new ConnectionType(isRmi, hostAddress, isRmi ? rmiPort : socketPort, serverName);
             client = NetworkFactory.create(connectionType, view, inputMessageQueue);
 
-
             // Avvia il client (che si occupa di leggere dal socket o direttamente attraverso RMI e mettere i messaggi in coda)
             // TODO: capire come gestire questa eccezione in cui la rete non viene create per qualche motivo
             if (client != null) {
@@ -99,17 +97,15 @@ public abstract class ClientController implements Runnable {
             } else {
                 throw new NotBoundException("Client not found");
             }
-//        client.sendInput(new WelcomeMessage());
-
-            gameState = GameState.NICKNAME_REQUEST;
+            gameState = GameState.WAITING;
         }
     }
 
     private void handleNicknameInput(Input input) throws Exception {
         if (input instanceof StringInput stringInput) {
-            this.nickname = stringInput.getString();
-            client.sendToServer(new NicknameMessage(stringInput.getString(), this.setupClientid));
-            gameState = GameState.WAITING_PLAYERS;
+            nickname = stringInput.getString();
+            client.sendToServer(new NicknameMessage(nickname, setupClientid));
+            gameState = GameState.WAITING;
         }
     }
 
@@ -117,7 +113,7 @@ public abstract class ClientController implements Runnable {
         if (input instanceof SetupInput setupInput){
             Message message = new GameSetupMessage(game.getIdGame(), nickname, setupInput.getnPlayers(), setupInput.getGameMode());
             client.sendToServer(message);
-            gameState = GameState.WAITING_PLAYERS;
+            gameState = GameState.WAITING;
         }
     }
 
@@ -134,7 +130,10 @@ public abstract class ClientController implements Runnable {
         game.setupGame(mode, nPlayers);
     }
 
-    public Game getGame(){
+
+    public GameClient getGame(){
         return game;
     }
+
+    public abstract void handleWrongNickname(String nickname);
 }

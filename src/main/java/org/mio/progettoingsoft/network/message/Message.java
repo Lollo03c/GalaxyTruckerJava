@@ -5,6 +5,10 @@ import java.io.Serializable;
 public abstract sealed class Message implements Serializable
         permits ErrorMessage, GameSetupMessage, JoinedGameMessage, NicknameMessage, StartGameMessage, WaitingForPlayerMessage, WelcomeMessage {
 
+    public static String getBroadcastAddress(){
+        return "########";
+    }
+
     private final Integer idGame;
     private final String nickname;
 

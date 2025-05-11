@@ -1,4 +1,6 @@
-package org.mio.progettoingsoft.network.server;
+package org.mio.progettoingsoft;
+
+import org.mio.progettoingsoft.network.server.ServerApp;
 
 import java.io.IOException;
 

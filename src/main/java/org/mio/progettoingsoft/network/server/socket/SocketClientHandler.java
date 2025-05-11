@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.server.socket;
 import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.WelcomeMessage;
+import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,6 +13,7 @@ public class SocketClientHandler implements VirtualClientSocket {
     private ObjectInputStream input;
     private ObjectOutputStream output;
     private final BlockingQueue<Message> recivedMessageQueue;
+    private final ServerController serverController;
 
     public SocketClientHandler(Socket socket, BlockingQueue<Message> recivedMessageQueue) {
         try {
@@ -21,16 +23,14 @@ public class SocketClientHandler implements VirtualClientSocket {
 
         }
         this.recivedMessageQueue = recivedMessageQueue;
+        serverController = ServerController.getInstance();
     }
 
     //comunicazione dal client al server
     //chiamata dal server nel momento della connessione
-    public void runVirtualClient() throws IOException {
-        int idClient = GameManager.getInstance().getNextIdPlayer();
+    public void runVirtualClient() throws Exception {
 
-        showUpdate(new WelcomeMessage(idClient));
-
-        GameManager.getInstance().addClientToAccept(idClient, this);
+        serverController.addClientToAccept(this);
 
         String line;
         while (true) {

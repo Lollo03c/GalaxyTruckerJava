@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.ServerMain;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.client.rmi.VirtualServerRmi;
 import org.mio.progettoingsoft.network.server.rmi.RmiServer;
