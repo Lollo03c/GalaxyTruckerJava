@@ -1,13 +1,18 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.input.Input;
 import org.mio.progettoingsoft.network.message.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -77,8 +82,11 @@ public class Game implements GameServer, GameClient {
         gameController.setGame(this);
 
         //game modifica il suo stato
-        setGameState(GameState.WAITING);
+        setGameState(GameState.BUILDING_SHIP);
         gameController.update(gameState);
+
+        gameController.setReceivedMessages(receivedMessages);
+        gameController.run();
 
     }
 
@@ -87,13 +95,31 @@ public class Game implements GameServer, GameClient {
         receivedMessages.add(message);
     }
 
-    @Override
-    public FlyBoard getFlyBoard(){
-        return this.flyboard;
-    }
-
     public void setGameState(GameState newState){
         this.gameState = newState;
+    }
+
+    @Override
+    public int getCoveredComponent() throws IncorrectFlyBoardException {
+        Integer idComp;
+        try{
+            idComp = flyboard.getCoveredComponents().removeLast();
+            return idComp;
+        }
+        catch (NoSuchElementException e){
+            throw new IncorrectShipBoardException("");
+        }
+
+    }
+
+    @Override
+    public VirtualClient getClient(String nickname){
+        return clients.get(nickname);
+    }
+
+    @Override
+    public FlyBoard getFlyboard(){
+        return flyboard;
     }
 //
 //    private void handleMessagesFromServer(){

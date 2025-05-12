@@ -56,6 +56,7 @@ public class ServerController {
      * @param idPlayer : temporary id to get its client
      */
     public void addPlayer(String nickname, int idPlayer) throws Exception {
+
         VirtualClient client = gameManager.getClientsToAccept().get(idPlayer);
 
         if (client == null) {
@@ -81,10 +82,10 @@ public class ServerController {
 
         logger.info("{} inserito alla partita {}", nickname, waitingGame.getIdGame());
 
-        if (gameManager.getWaitingGame().get().askSetting()){
+        if (gameManager.getWaitingGame().get().askSetting()) {
             client.showUpdate(new GameSetupMessage(waitingGame.getIdGame(), nickname, 0, null));
-        }
-        else {
+            waitingForGameSetting = true;
+        } else {
             client.showUpdate(new WaitingForPlayerMessage(waitingGame.getIdGame(), nickname, waitingGame.getNumPlayers(), waitingGame.getGameMode()));
         }
 
@@ -93,6 +94,7 @@ public class ServerController {
             GameServer readyToStart = waitingGame;
             new Thread(() -> {
                 try {
+                    gameManager.addGame(readyToStart);
                     readyToStart.startGame();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -101,7 +103,7 @@ public class ServerController {
 
             gameManager.emptyWaitingGame();
         }
-        int a = 0;
+
     }
 
     /**
@@ -131,6 +133,10 @@ public class ServerController {
         waitingGame.getClients().get(message.getNickname()).showUpdate(new WaitingForPlayerMessage(waitingGame.getIdGame(), message.getNickname(), waitingGame.getNumPlayers(), waitingGame.getGameMode()));
 
         waitingForGameSetting = false;
+    }
+
+    public boolean getIsWaitinGameSetup(){
+        return waitingForGameSetting;
     }
 }
 

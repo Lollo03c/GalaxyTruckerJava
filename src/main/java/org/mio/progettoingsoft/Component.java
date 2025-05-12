@@ -261,4 +261,8 @@ public abstract class Component {
                 " Row: " + row + " Column: " + column;
     }
 
+    public String getTuiString(){
+        return String.valueOf(id);
+    }
+
 }

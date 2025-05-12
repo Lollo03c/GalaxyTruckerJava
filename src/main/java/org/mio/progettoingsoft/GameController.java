@@ -1,12 +1,21 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.message.CoveredComponentMessage;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.StartGameMessage;
 
-public class GameController {
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.stream.Collectors;
+
+public class GameController implements Runnable {
     private GameServer game;
+    private BlockingQueue<Message> receivedMessages;
 
 
     public GameController() {
@@ -17,10 +26,16 @@ public class GameController {
         this.game = game;
     }
 
+    public void setReceivedMessages(BlockingQueue<Message> receivedMessages){
+        this.receivedMessages = receivedMessages;
+    }
+
 
     public void update(GameState gameState){
         switch (gameState){
-            case BUILDING_SHIP -> broadcast(new StartGameMessage(game.getIdGame()));
+            case BUILDING_SHIP -> {
+                broadcast(new StartGameMessage(game.getIdGame(), new HashSet<>(game.getClients().keySet())));
+            }
 
             default -> {}
         }
@@ -34,6 +49,42 @@ public class GameController {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Override
+    public void run() {
+        while(true){
+            try {
+                Message message = receivedMessages.take();
+
+                switch (message) {
+                    case CoveredComponentMessage coveredComponentMessage -> {
+                        try {
+                            handleCoveredComponent(coveredComponentMessage);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    default -> {
+                    }
+                }
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+
+
+
+
+        }
+    }
+
+    private void handleCoveredComponent(CoveredComponentMessage message) throws Exception {
+        int nextComponentId = game.getCoveredComponent();
+
+        VirtualClient client =  game.getClient(message.getNickname());
+        client.showUpdate(new CoveredComponentMessage(game.getIdGame(), message.getNickname(), nextComponentId));
     }
 
 

@@ -4,10 +4,7 @@ import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.TuiController;
 import org.mio.progettoingsoft.network.client.ClientController;
-import org.mio.progettoingsoft.network.input.EmptyInput;
-import org.mio.progettoingsoft.network.input.Input;
-import org.mio.progettoingsoft.network.input.SetupInput;
-import org.mio.progettoingsoft.network.input.StringInput;
+import org.mio.progettoingsoft.network.input.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,13 +91,13 @@ public class Tui implements VirtualView {
             possibleOptions.add(4);
         }
 
-        tuiController.setGameState(GameState.WAITING);
+        //TODO va controllato se la scelta e' valida
+        int chosen = Integer.parseInt(scan.nextLine());
+        return new IntInput(chosen);
+    }
 
-
-
-
-
-        return new EmptyInput();
+    public String readInput(){
+        return scan.nextLine();
     }
 
 }

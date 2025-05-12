@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.model.state.*;
 import org.mio.progettoingsoft.network.message.*;
 
 import java.rmi.RemoteException;
@@ -11,7 +12,7 @@ public class ClientMessageHandler implements Runnable {
     private final BlockingQueue<Message> inputMessageQueue;
 
     public ClientMessageHandler(ClientController clientController, BlockingQueue<Message> inputMessageQueue) {
-        this.clientController = clientController;
+        this.clientController = ClientController.get();
         this.inputMessageQueue = inputMessageQueue;
     }
 
@@ -34,12 +35,17 @@ public class ClientMessageHandler implements Runnable {
 
             if (message != null) {
                 try {
-                    handleMessage(message);
+
+
+//                    if (message.getNickname().equals(clientController.getNickname()) ||
+//                            message.getNickname().equals(Message.getBroadcastAddress())) {
+                        handleMessage(message);
+  //                  }
 
                     synchronized (clientController) {
                         clientController.notifyAll();
                     }
-                } catch (RemoteException e) {
+                } catch(RemoteException e){
                     throw new RuntimeException(e);
                 }
             }
@@ -54,22 +60,32 @@ public class ClientMessageHandler implements Runnable {
     public void handleMessage(Message message) throws RemoteException {
         switch (message) {
             case WelcomeMessage welcomeMessage -> {
-                clientController.setGameState(GameState.NICKNAME_REQUEST);
+                clientController.setNextState(new SetNicknameState());
+//                clientController.setGameState(GameState.NICKNAME_REQUEST);
                 clientController.setSetupClientId(welcomeMessage.getIdPlayer());
             }
 
             case GameSetupMessage gameSetupMessage -> {
+                clientController.setNextState(new SetupGameState());
                 clientController.setGameState(GameState.SETUP_GAME);
                 clientController.createGame(gameSetupMessage.getIdGame());
             }
 
             case WaitingForPlayerMessage waitingForPlayerMessage -> {
-                clientController.setGameState(GameState.PRINT_GAME_INFO);
                 clientController.setGame(waitingForPlayerMessage.getIdGame(), waitingForPlayerMessage.getMode(), waitingForPlayerMessage.getnPlayers());
+                clientController.setNextState(new WaitingState(WaitingState.WaitingType.PLAYERS));
+                clientController.setGameState(GameState.PRINT_GAME_INFO);
             }
 
             case StartGameMessage startGameMessage -> {
+                clientController.createPlayers(startGameMessage.getPlayers());
+
+                clientController.setNextState(new BuildingShipState());
                 clientController.setGameState(GameState.BUILDING_SHIP);
+            }
+
+            case CoveredComponentMessage coveredComponentMessage -> {
+                clientController.setNextState(new AddComponentState(coveredComponentMessage.getIdComp()));
             }
 
             case ErrorMessage errorMessage -> {
