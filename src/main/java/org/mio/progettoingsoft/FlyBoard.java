@@ -390,4 +390,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         this.state = state;
     }
 
+    public List<Player> getPlayers(){
+        return players;
+    }
+
 }

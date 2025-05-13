@@ -9,7 +9,8 @@ public interface GameClient {
     void setupGame(GameMode mode, int nPlayers);
     GameMode getGameMode();
     int getNumPlayers();
-    FlyBoard getFlyBoard();
+
+
 
 
 }

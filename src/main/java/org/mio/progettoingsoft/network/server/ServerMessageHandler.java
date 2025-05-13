@@ -41,9 +41,17 @@ public class ServerMessageHandler implements Runnable {
     private void handleMessage(Message message) throws Exception {
         int idGame;
 
+
         switch (message) {
             case NicknameMessage nicknameMessage -> {
-                serverController.addPlayer(nicknameMessage.getNickname(), nicknameMessage.getIdPlayer());
+                if (serverController.getIsWaitinGameSetup()) {
+                    receivedMessageQueue.add(message);
+                }
+                else {
+                    serverController.addPlayer(nicknameMessage.getNickname(), nicknameMessage.getIdPlayer());
+                }
+
+
             }
             case GameSetupMessage setupMessage -> {
                 serverController.setupGame(setupMessage);
@@ -51,6 +59,7 @@ public class ServerMessageHandler implements Runnable {
             default -> {
                 idGame = message.getIdGame();
                 GameServer gameToSend = gameManager.getOngoingGames().get(idGame);
+                int a = 0;
 
                 if (gameToSend != null) {
                     gameToSend.addReceivedMessage(message);

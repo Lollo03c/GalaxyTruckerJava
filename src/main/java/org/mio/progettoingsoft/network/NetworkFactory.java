@@ -13,7 +13,7 @@ import java.rmi.registry.Registry;
 import java.util.concurrent.BlockingQueue;
 
 public class NetworkFactory {
-    public static Client create(ConnectionType info, VirtualView view, BlockingQueue<Message> inputMessageQueue) throws Exception {
+    public static Client create(ConnectionType info, VirtualView view, BlockingQueue<Message> inputMessageQueue)  {
         try {
             if (info.isRmi()) {
                 Registry registry = LocateRegistry.getRegistry(info.getHost(), info.getPort());

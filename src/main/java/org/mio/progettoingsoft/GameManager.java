@@ -111,4 +111,8 @@ public class GameManager{
     public synchronized void addNickname(String nick){
         nicknames.add(nick);
     }
+
+    public void addGame(GameServer game){
+        this.ongoingGames.put(game.getIdGame(), game);
+    }
 }

@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.model.interfaces;
 
+import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.message.Message;
@@ -18,5 +19,9 @@ public interface GameServer {
     boolean isFull();
     boolean askSetting();
     void addReceivedMessage(Message message);
+    FlyBoard getFlyboard();
+
+    int getCoveredComponent();
+    VirtualClient getClient(String nickname);
 
 }
