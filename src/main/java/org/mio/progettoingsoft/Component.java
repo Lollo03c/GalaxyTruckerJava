@@ -14,7 +14,13 @@ public abstract class Component {
     private final ComponentType type;
     private int row;
     private int column;
-
+    public Boolean getHazard() {
+        return false;
+    }
+    public Boolean getBig() {
+        return false;
+    }
+    public boolean getTriple(){        return false;    }
     public Component(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         this.id = id;
         topConnector = topConn;
@@ -199,7 +205,15 @@ public abstract class Component {
         };
     }
 
-    public int getEnginePower(){
+    public Boolean addHumanMember(){
+        return false;
+    }
+
+//    public Boolean removeHumanMember(){
+//        return false;
+//    }
+
+    public Integer getNumHumanMembers(){
         return 0;
     }
 

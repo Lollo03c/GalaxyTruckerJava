@@ -3,7 +3,6 @@ package org.mio.progettoingsoft.components;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
-import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import java.util.*;
 

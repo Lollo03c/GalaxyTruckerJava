@@ -21,6 +21,12 @@ class DepotTest {
         assertFalse(depot.canContainsGood(GoodType.RED));
     }
 
+    /*@Test
+    void should_display_component(){
+        Component depot = new Depot(1, false, false, flat, flat, flat, flat);
+
+    }*/
+
     @Test
     void shuold_load_1_good(){
         Component depot = new Depot(1, false, false, flat, flat, flat, flat);

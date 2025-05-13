@@ -11,6 +11,16 @@ public enum Direction {
             case FRONT -> BACK;
         };
     }
+    @Override
+    public String toString() {
+        switch (this){
+            case FRONT : return "front";
+            case BACK : return "back";
+            case RIGHT : return "right";
+            case LEFT : return "left";
+            default: return "";
+        }
+    }
 
     public static Direction stringToDirection(String d){
         return switch (d) {

@@ -23,6 +23,17 @@ public enum Connector {
         };
     }
 
+    @Override
+    public String toString() {
+        switch(this){
+            case SINGLE: return "single";
+            case DOUBLE: return "double";
+            case TRIPLE: return "triple";
+            case FLAT: return "flat";
+            default: return "unknown";
+        }
+    }
+
     public Boolean isCompatible(Connector other){
         // Modified by Stefano: two flat are compatible, but the components have to be connected to another one (checked in other methods)
         if (this.equals(Connector.FLAT) && other.equals(Connector.FLAT))
