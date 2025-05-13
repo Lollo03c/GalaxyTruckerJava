@@ -308,6 +308,8 @@ public class ShipCell {
                     cell[2][6].setChar('3');
                 }
                 else {cell[2][6].setChar('2');}
+                int storedQuantity = component.getEnergyQuantity();
+//                for(int i : storedQuantity)
             }
             break;
             //housing e alien housing da fare perchè non mi è chiara la logica

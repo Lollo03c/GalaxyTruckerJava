@@ -94,7 +94,7 @@ public class ClientMessageHandler implements Runnable {
             }
 
             case AddComponentMessage addComponentMessage -> {
-                if (!addComponentMessage.getCordinate().equals(clientController.getNickname()))
+                if (!addComponentMessage.getNickname().equals(clientController.getNickname()))
                     clientController.handleAddComponent(addComponentMessage.getNickname(), addComponentMessage.getIdComp()
                     , addComponentMessage.getCordinate(), addComponentMessage.getRotations());
             }
