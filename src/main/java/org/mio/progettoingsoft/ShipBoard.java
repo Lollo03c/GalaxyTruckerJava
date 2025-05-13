@@ -8,12 +8,13 @@ import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class ShipBoard {
     private final Optional<Component>[][] shipComponents;
 
-    private Component[] bookedComponents;
+    private List<Optional<Integer>> bookedComponents;
 
     private final List<Cordinate> bannedCoordinates;
 
@@ -61,7 +62,9 @@ public abstract class ShipBoard {
         offsetCol = 4;
 
         shipComponents = new Optional[rows][columns];
-        bookedComponents = new Component[2];
+        bookedComponents = new ArrayList<>();
+        bookedComponents.add(Optional.empty());
+        bookedComponents.add(Optional.empty());
 
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
@@ -88,17 +91,29 @@ public abstract class ShipBoard {
      */
     protected abstract List<Cordinate> getBannedCoordinates();
 
-    public void addBookedComponent(Component bookedComponent) throws NotEnoughSpaceForBookedComponentException{
-        if(bookedComponents[0] == null){
-            bookedComponents[0] = bookedComponent;
-        }else if(bookedComponents[1] == null){
-            bookedComponents[1] = bookedComponent;
-        }else{
-            throw new NotEnoughSpaceForBookedComponentException("ShipBoard: Too many booked components");
+    public void addBookedComponent(Integer bookedComponent) throws IncorrectShipBoardException {
+        long counted = bookedComponents.stream()
+                .filter(Optional::isPresent).count();
+
+        if (counted == 0){
+            bookedComponents.set(0, Optional.of(bookedComponent));
         }
+        else if (counted == 1)
+            bookedComponents.set(1, Optional.of(bookedComponent));
+        else
+            throw new IncorrectShipBoardException("");
     }
 
-    public Component[] getBookedComponents() {
+    public void swapBookComponent(int bookedComponent, int position){
+        bookedComponents.set(position, Optional.of(bookedComponent));
+    }
+
+
+    /**
+     *
+     * @return the list of the id of the booked Component
+     */
+    public List<Optional<Integer>> getBookedComponents() {
         return bookedComponents;
     }
 
@@ -133,7 +148,7 @@ public abstract class ShipBoard {
      * @return the total engine power when all {@link DoubleEngine} are not activated
      */
     public int getBaseEnginePower() {
-        return getCompStream().mapToInt(comp -> comp.getEnginePower()).sum();
+        return getCompStream().mapToInt(comp -> comp.getEnginePower(false)).sum();
     }
 
     /**
@@ -621,6 +636,12 @@ public abstract class ShipBoard {
                 }
             }
         }
+    }
+
+    public List<Optional<Component>> getComponents(){
+        return Stream.of(shipComponents)
+                .flatMap(Arrays::stream)
+                .collect(Collectors.toList());
     }
 
 

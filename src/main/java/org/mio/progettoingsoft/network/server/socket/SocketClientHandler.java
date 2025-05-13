@@ -26,8 +26,11 @@ public class SocketClientHandler implements VirtualClientSocket {
         serverController = ServerController.getInstance();
     }
 
-    //comunicazione dal client al server
-    //chiamata dal server nel momento della connessione
+    /**
+     * called by a new thread when a new client connects to the server
+     * the thread waits for messages from the client, if a message arrives it is added to the queue
+     */
+
     public void runVirtualClient() throws Exception {
 
         serverController.addClientToAccept(this);
@@ -36,7 +39,6 @@ public class SocketClientHandler implements VirtualClientSocket {
         while (true) {
             try {
                 recivedMessageQueue.add((Message) input.readObject());
-                //serverController.handleInput2(this,mex);
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("Client crashed - " + e.getMessage());
                 break;
@@ -45,8 +47,10 @@ public class SocketClientHandler implements VirtualClientSocket {
 
     }
 
-    // comunicazione dal server al client
-    //non va bene, bisogna serializzare il messaggio println manda solo testo non messaggi
+    /**
+     * this method is used to send a {@link Message} to the client
+     * @param message: the message to send to the client (it can be a Welcome or un update of the state)
+     */
     @Override
     public void showUpdate(Message message)  {
         //this.output.println("send");
@@ -55,9 +59,7 @@ public class SocketClientHandler implements VirtualClientSocket {
             this.output.flush();
         }
         catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error while sending a message to" + message.getNickname());
         }
-        //this.output.println(message);
-        //this.output.flush();
     }
 }

@@ -3,6 +3,7 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.message.AddBookedMessage;
 import org.mio.progettoingsoft.network.message.CoveredComponentMessage;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.StartGameMessage;
@@ -65,7 +66,12 @@ public class GameController implements Runnable {
                             throw new RuntimeException(e);
                         }
                     }
-
+                    case AddBookedMessage addBookedMessage -> {
+                        ShipBoard ship = game.getFlyboard().getPlayerByUsername(addBookedMessage.getNickname()).getShipBoard();
+                        ship.addBookedComponent(addBookedMessage.getAddedCompId());
+                        broadcast(new AddBookedMessage(game.getIdGame(), message.getNickname(), addBookedMessage.getAddedCompId(),
+                                addBookedMessage.getToPosition()));
+                    }
                     default -> {
                     }
                 }

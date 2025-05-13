@@ -30,6 +30,8 @@ public enum HousingColor implements Serializable {
             case GREEN -> 34;
             case RED -> 52;
             case YELLOW -> 61;
+            default -> -1;
         };
     }
+
 }

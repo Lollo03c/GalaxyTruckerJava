@@ -20,13 +20,8 @@ import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
 import org.mio.progettoingsoft.views.VirtualView;
 
-import java.rmi.NotBoundException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ClientController implements Runnable {
     /**
@@ -189,5 +184,14 @@ public abstract class ClientController implements Runnable {
 
     public void createPlayers(Set<String> players){
         flyBoard = FlyBoard.createFlyBoard(game.getGameMode(), players);
+    }
+
+    public void handleBookedComponent(String nickname, int idComp, int position){
+        ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        shipBoard.addBookedComponent(idComp);
+    }
+
+    public void handleAddComponent(String nickname, int idComp, Cordinate cordinate, int rotation) {
+
     }
 }

@@ -3,7 +3,7 @@ package org.mio.progettoingsoft.network.message;
 import java.io.Serializable;
 
 public abstract sealed class Message implements Serializable
-        permits CoveredComponentMessage, ErrorMessage, GameSetupMessage, JoinedGameMessage, NicknameMessage, StartGameMessage, WaitingForPlayerMessage, WelcomeMessage {
+        permits AddBookedMessage, AddComponentMessage, AddUncoveredMessage, CoveredComponentMessage, ErrorMessage, GameSetupMessage, JoinedGameMessage, NicknameMessage, StartGameMessage, WaitingForPlayerMessage, WelcomeMessage {
 
     public static String getBroadcastAddress(){
         return "########";

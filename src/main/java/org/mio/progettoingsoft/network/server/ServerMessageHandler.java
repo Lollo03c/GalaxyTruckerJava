@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.message.AddBookedMessage;
 import org.mio.progettoingsoft.network.message.GameSetupMessage;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.network.message.NicknameMessage;
@@ -41,7 +42,6 @@ public class ServerMessageHandler implements Runnable {
     private void handleMessage(Message message) throws Exception {
         int idGame;
 
-
         switch (message) {
             case NicknameMessage nicknameMessage -> {
                 if (serverController.getIsWaitinGameSetup()) {
@@ -50,13 +50,12 @@ public class ServerMessageHandler implements Runnable {
                 else {
                     serverController.addPlayer(nicknameMessage.getNickname(), nicknameMessage.getIdPlayer());
                 }
-
-
             }
             case GameSetupMessage setupMessage -> {
                 serverController.setupGame(setupMessage);
             }
             default -> {
+                //TODO il reindirizzo del messaggio verso una singola partita è da eseguire nella classe gameManager
                 idGame = message.getIdGame();
                 GameServer gameToSend = gameManager.getOngoingGames().get(idGame);
                 int a = 0;

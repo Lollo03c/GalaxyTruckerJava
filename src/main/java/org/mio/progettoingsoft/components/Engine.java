@@ -53,10 +53,10 @@ public class Engine extends Component {
         };
     }
 
-    @Override
-    public int getEnginePower(){
-        return enginePower;
-    }
+//    @Override
+//    public int getEnginePower(){
+//        return enginePower;
+//    }
 
     @Override
     public int getEnginePower(boolean activated){

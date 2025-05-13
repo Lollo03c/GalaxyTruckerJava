@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.components;
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import java.util.*;
 
@@ -41,7 +42,16 @@ public class Housing extends Component {
 
         guests.add(GuestType.HUMAN);
     }
-
+    @Override
+    public HousingColor getHousingColorById(int id){
+        return switch (id) {
+            case 33 -> HousingColor.BLUE;
+            case 34 -> HousingColor.GREEN;
+            case 52 -> HousingColor.RED;
+            case 61 -> HousingColor.YELLOW;
+            default -> HousingColor.BLUE;
+        };
+    }
     @Override
     public boolean canAddGuest(GuestType type){
         if (!guestAllowed.contains(type))

@@ -73,14 +73,6 @@ public class Player {
         return temp;
     }
 
-    public void bookComponentInHand() throws NotEnoughSpaceForBookedComponentException {
-        if( inHand == null)
-            throw new NoComponentInHandException("No component in hand!");
-        shipBoard.addBookedComponent(inHand);
-        inHand = null;
-    }
-
-
 
     public void addDiscardComponent(int quantity) {
         discardedComponents += quantity;

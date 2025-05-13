@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NoMoreComponentsException;
 import org.mio.progettoingsoft.model.FlyBoardEasy;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
@@ -94,12 +95,12 @@ public abstract class FlyBoard implements FlyBoardServer {
     /**
      * GETTER
      */
-    public Player getPlayerByUsername(String nickname) {
+    public Player getPlayerByUsername(String nickname) throws IncorrectFlyBoardException {
         for (Player player : players)
             if (player.getNickname().equals(nickname))
                 return player;
 
-        return null;
+        throw new IncorrectFlyBoardException("");
     }
 
     public Optional<Player> getPlayerByColor(HousingColor colorPlayerEnum){

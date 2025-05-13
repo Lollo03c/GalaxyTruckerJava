@@ -30,7 +30,7 @@ public class SocketServer {
 
             logger.info("Client {} has connected to server", handler);
 
-            //thread che mi resta sempre attivo e che legge i messaggi dal server al client
+            //create a new thread which waits for messages from the client
             new Thread(() -> {
                 try {
                     handler.runVirtualClient();
@@ -39,29 +39,5 @@ public class SocketServer {
                 }
             }).start();
         }
-    }
-
-    public void broadcastUpdate(Integer value) {
-        /*
-        synchronized (this.clients) {
-            for (var client : this.clients) {
-                //client.send(value);
-            }
-        }
-        */
-    }
-
-    public void broadcastError() {
-        /*
-        synchronized (this.clients) {
-            for (VirtualViewSocket client : clients) {
-                try {
-                    client.reportError("already reset");
-                } catch (java.rmi.RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-         */
     }
 }

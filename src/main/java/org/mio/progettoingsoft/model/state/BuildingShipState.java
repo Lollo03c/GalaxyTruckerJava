@@ -35,11 +35,15 @@ public class BuildingShipState extends ClientState{
 
         Message response = null;
         switch (chosen) {
-            case 1 -> response = new CoveredComponentMessage(controller.getGame().getIdGame(), controller.getNickname(), -1);
+            case 1 ->{
+                response = new CoveredComponentMessage(controller.getGame().getIdGame(), controller.getNickname(), -1);
+                controller.setNextState(new WaitingState(WaitingState.WaitingType.GENERIC));
+            }
 
+            case 3 -> controller.setNextState(new ViewShipBoardState());
         }
 
-        controller.setNextState(new WaitingState(WaitingState.WaitingType.GENERIC));
-        return Optional.of(response);
+
+        return Optional.ofNullable(response);
     }
 }

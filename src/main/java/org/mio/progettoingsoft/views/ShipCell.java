@@ -1,15 +1,12 @@
 package org.mio.progettoingsoft.views;
 
-import ch.qos.logback.core.pattern.color.BlueCompositeConverter;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.*;
-import org.mio.progettoingsoft.network.server.ServerApp;
 import org.mio.progettoingsoft.Component;
 
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class ShipCell {
@@ -45,11 +42,18 @@ public class ShipCell {
     }
 
     public void computeCell(){
-        drawConnector();
-        drawComponent();
-        drawBorder();
+        computeConnector();
+        computeComponent();
+        computeBorder();
+        //System.out.println(this);
     }
-    private void drawConnector(){
+
+    public void drawCell(){
+        this.computeCell();
+        System.out.println(this);
+    }
+
+    private void computeConnector(){
         String topConn = component.getConnector(Direction.FRONT).toString();
         switch (topConn){
             case "flat" : {
@@ -156,9 +160,10 @@ public class ShipCell {
 
 
 
-    public void drawComponent(){
+    public void computeComponent(){
 
-        //PIPE, DRILL,SHIELD, DOUBLE_DRILL, ENGINE, DOUBLE_ENGINE,DEPOT,  ENERGY_DEPOT, HOUSING, ALIEN_HOUSING
+        //PIPE, DRILL,SH
+        // IELD, DOUBLE_DRILL, ENGINE, DOUBLE_ENGINE,DEPOT,  ENERGY_DEPOT, HOUSING, ALIEN_HOUSING
         ComponentType type = component.getType();
         switch (type){
             case PIPE: {
@@ -279,8 +284,11 @@ public class ShipCell {
                         cell[1][1].setChar('d');
                         cell[1][2].setChar('e');}
                 }
-                Map<GoodType, Integer> storedGoods =component.getStoredGoods();
+
+                List<GoodType> storedGoods = component.getStoredGoods();
                 drawGoods(storedGoods);
+                //Map<GoodType, Integer> storedGoods =component.getStoredGoods();
+                //drawGoods(storedGoods);
             }
             break;
             case ENERGY_DEPOT: {
@@ -304,16 +312,38 @@ public class ShipCell {
             break;
             //housing e alien housing da fare perchè non mi è chiara la logica
             case HOUSING: {
-                boolean isFirst = component.getIsFirst();
-                int humans = component.getGuestedHuman();
+                List<GuestType> guests = component.getGuests();
+                int humans = (int) guests.stream()
+                        .filter(x -> x == GuestType.HUMAN)
+                        .count();
+                boolean isFirst = component.getId() == 33
+                        || component.getId() == 34
+                        || component.getId() == 52
+                        || component.getId() == 61;
+                //int humans = component.getGuestedHuman();
                 if (humans == 1){
                     cell[3][4].setChar('o');
                 } else if (humans == 2) {
                     cell[3][3].setChar('o');
                     cell[3][5].setChar('o');
+                } else {
+                    Optional<GuestType> purpleAlien = guests.stream().filter(x -> x == GuestType.PURPLE).findFirst();
+                    Optional<GuestType> brownAlien = guests.stream().filter(x -> x == GuestType.BROWN).findFirst();
+                    if(purpleAlien.isPresent()){
+                        cell[3][4].setChar('●');
+                        cell[3][4].setColor(PURPLE);
+                    }
+                    else if(brownAlien.isPresent()){
+                        cell[3][4].setChar('●');
+                        cell[3][4].setColor(BROWN);
+                    }
                 }
+
+
+                //Map<AlienType, Boolean> guestedAlien = component.getGuestedAlien();
+
                 if (isFirst) {
-                    String color = component.getHousingColor().colorToString();
+                    String color = component.getHousingColorById(component.getId()).colorToString();
                     for(ColoredChar[] row : cell){
                         for(ColoredChar cc : row){
                             cc.setColor(color);
@@ -340,24 +370,11 @@ public class ShipCell {
                     cell[1][5].setChar('i');
                     cell[1][6].setChar('n');
                     cell[1][7].setChar('g');
-                    Map<AlienType, Boolean> guestedAlien = component.getGuestedAlien();
-                    if(guestedAlien.containsKey(AlienType.PURPLE)){
-                        if(guestedAlien.get(AlienType.PURPLE)){
-                            cell[3][4].setChar('●');
-                            cell[3][4].setColor(PURPLE);
-                        }
-                    }
-                    else if(guestedAlien.containsKey(AlienType.BROWN)){
-                        if(guestedAlien.get(AlienType.BROWN)){
-                            cell[3][4].setChar('●');
-                            cell[3][4].setColor(BROWN);
-                        }
-                    }
                 }
             }
             break;
             case ALIEN_HOUSING:{
-                String color = component.getColorAlien().alienToColor();
+                String color = component.getColorAlien().guestToColor();
                 for(ColoredChar[] row : cell){
                     for(ColoredChar cc : row){
                         cc.setColor(color);
@@ -378,7 +395,16 @@ public class ShipCell {
             break;
         }
     }
-    private void drawGoods(Map<GoodType,Integer> storedGoods){
+    private void drawGoods(List<GoodType> storedGoods){
+        int index = 0;
+        for(GoodType goodType : storedGoods){
+            cell[3][3+index].setChar('□');
+            cell[3][3+index].setColor(goodType.toColor());
+            index += 1;
+        }
+    }
+
+    /*private void drawGoods(Map<GoodType,Integer> storedGoods){
         int index = 0;
         for(GoodType goodType : storedGoods.keySet()){
             if(storedGoods.get(goodType) > 0){
@@ -387,8 +413,8 @@ public class ShipCell {
                 index += 1;
             }
         }
-    }
-    private void drawBorder() {
+    }*/
+    private void computeBorder() {
         cell[0][0].setChar('┌');
         cell[0][8].setChar('┐');
         cell[4][0].setChar('└');
@@ -455,7 +481,7 @@ public class ShipCell {
     }
 
     public static void main(String[] args) throws IOException {
-        Component depot = new Pipe(1, Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
+        /*Component depot = new Pipe(1, Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
         Component drill = new DoubleDrill(2,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
         Component shield = new Shield(3,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
         Component doubleEngine = new DoubleEngine(3,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
@@ -466,18 +492,25 @@ public class ShipCell {
         fullDepot.addGood(GoodType.BLUE);
         fullDepot.addGood(GoodType.GREEN);
         fullDepot.addGood(GoodType.YELLOW);
-        Component firstHouse = new Housing(1,true,HousingColor.GREEN,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE);
+        Component firstHouse = new Housing(33,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE);
         Component house = new Housing(1,Connector.TRIPLE,Connector.SINGLE,Connector.DOUBLE,Connector.FLAT);
-        house.addAlienType(AlienType.PURPLE);
+        house.addGuest(GuestType.BROWN);
+
         //house.addAlienType(AlienType.BROWN);
-        house.addAlien(AlienType.PURPLE);
         firstHouse.addHumanMember();
         firstHouse.addHumanMember();
         firstHouse.addHumanMember();
-        Component alienHouse = new AlienHousing(4,AlienType.BROWN,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
-        ShipCell cella = new ShipCell(alienHouse);
-        cella.computeCell();
-        System.out.println(cella);
-        System.out.println(fullDepot.getStoredGoods());
+        Component alienHouse = new AlienHousing(4,GuestType.BROWN,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
+        */
+
+        Component fullDepot = new Depot(30,true,false,Connector.FLAT,Connector.DOUBLE,Connector.TRIPLE,Connector.SINGLE);
+        fullDepot.addGood(GoodType.BLUE);
+        fullDepot.addGood(GoodType.YELLOW);
+        fullDepot.addGood(GoodType.GREEN);
+
+        ShipCell cella = new ShipCell(fullDepot);
+        cella.drawCell();
+        //cella.computeCell();
+        //System.out.println(cella);
     }
 }

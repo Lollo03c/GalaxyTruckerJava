@@ -88,6 +88,17 @@ public class ClientMessageHandler implements Runnable {
                 clientController.setNextState(new AddComponentState(coveredComponentMessage.getIdComp()));
             }
 
+            case AddBookedMessage addBookedMessage -> {
+                if (!addBookedMessage.getNickname().equals(clientController.getNickname()))
+                    clientController.handleBookedComponent(addBookedMessage.getNickname(), addBookedMessage.getAddedCompId(), addBookedMessage.getToPosition());
+            }
+
+            case AddComponentMessage addComponentMessage -> {
+                if (!addComponentMessage.getCordinate().equals(clientController.getNickname()))
+                    clientController.handleAddComponent(addComponentMessage.getNickname(), addComponentMessage.getIdComp()
+                    , addComponentMessage.getCordinate(), addComponentMessage.getRotations());
+            }
+
             case ErrorMessage errorMessage -> {
                 switch (errorMessage.getErrorType()){
                     case NICKNAME -> {

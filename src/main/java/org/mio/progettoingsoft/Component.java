@@ -2,6 +2,7 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import java.util.Collections;
@@ -167,12 +168,16 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not a alien housing");
     }
 
-    /**
-     *
-     * @return the list of {@link GuestType} hosted in the {@link org.mio.progettoingsoft.components.Housing},
-     *  an empty list if the component is not a {@link org.mio.progettoingsoft.components.Housing}
-     *
-     */
+    public HousingColor getHousingColorById(int id){
+        return HousingColor.BLUE;
+    }
+
+        /**
+         *
+         * @return the list of {@link GuestType} hosted in the {@link org.mio.progettoingsoft.components.Housing},
+         *  an empty list if the component is not a {@link org.mio.progettoingsoft.components.Housing}
+         *
+         */
     public List<GuestType> getGuests() {
         return Collections.emptyList();
     }

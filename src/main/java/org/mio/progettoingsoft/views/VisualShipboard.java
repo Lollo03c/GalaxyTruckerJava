@@ -2,7 +2,10 @@ package org.mio.progettoingsoft.views;
 
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.ShipBoard;
 import org.mio.progettoingsoft.components.*;
+import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,8 +15,27 @@ import java.util.Optional;
 public class VisualShipboard {
     private List<Optional<Component>> components;
     private List<Optional<ShipCell>> shipCells;
-    public VisualShipboard(List<Optional<Component>> components) {
+
+
+    public VisualShipboard(ShipBoard shipBoard) {
+
+        components = shipBoard.getComponents();
         //lista di componenti da shipBoard[5][4]
+        this.components = components;
+        this.shipCells = new ArrayList<>();
+        for (Optional<Component> component : components) {
+            if (component.isPresent()) {
+                ShipCell cell = new ShipCell(component.get());
+                cell.computeCell();
+                this.shipCells.add(Optional.of(cell));
+            }
+            else {
+                this.shipCells.add(Optional.empty());
+            }
+        }
+    }
+    public VisualShipboard(List<Optional<Component>> components) {
+
         this.components = components;
         this.shipCells = new ArrayList<>();
         for (Optional<Component> component : components) {
@@ -73,27 +95,29 @@ public class VisualShipboard {
 
 
     public static void main(String[] args) throws IOException {
-        Component depotReal = new Depot(2,true,true,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE,Connector.SINGLE);
-        Component energyDepot = new EnergyDepot(2,true,Connector.FLAT,Connector.DOUBLE,Connector.TRIPLE,Connector.SINGLE);
-        Component doubleEngine = new DoubleEngine(3,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
-        Component drill = new DoubleDrill(2,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
-        Component fullDepot = new Depot(1,false,false,Connector.FLAT,Connector.DOUBLE,Connector.TRIPLE,Connector.SINGLE);
+        Component depotReal = new Depot(68,true,true,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE,Connector.SINGLE);
+        Component energyDepot = new EnergyDepot(16,true,Connector.FLAT,Connector.DOUBLE,Connector.TRIPLE,Connector.SINGLE);
+        Component doubleEngine = new DoubleEngine(92,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
+        Component drill = new DoubleDrill(128,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
+        Component fullDepot = new Depot(18,true,false,Connector.FLAT,Connector.DOUBLE,Connector.TRIPLE,Connector.SINGLE);
         fullDepot.addGood(GoodType.BLUE);
         fullDepot.addGood(GoodType.GREEN);
         fullDepot.addGood(GoodType.YELLOW);
-        Component shield = new Shield(3,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
-        Component firstHouse = new Housing(1,true,HousingColor.GREEN,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE);
-        Component house = new Housing(1,Connector.TRIPLE,Connector.SINGLE,Connector.DOUBLE,Connector.FLAT);
-        Component house2 = new Housing(3,Connector.TRIPLE,Connector.FLAT,Connector.DOUBLE,Connector.FLAT);
-        house2.addAlienType(AlienType.BROWN);
-        house2.addAlien(AlienType.BROWN);
-        house.addAlienType(AlienType.PURPLE);
-        house.addAlien(AlienType.PURPLE);
+        Component shield = new Shield(149,Connector.DOUBLE, Connector.SINGLE,Connector.TRIPLE, Connector.FLAT);
+        Component firstHouse = new Housing(34,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE,Connector.TRIPLE);
+        Component house = new Housing(40,Connector.TRIPLE,Connector.SINGLE,Connector.DOUBLE,Connector.FLAT);
+        Component house2 = new Housing(41,Connector.TRIPLE,Connector.FLAT,Connector.DOUBLE,Connector.FLAT);
+        house2.addAllowedGuest(GuestType.BROWN);
+        house2.addGuest(GuestType.BROWN);
+
+        house.addAllowedGuest(GuestType.PURPLE);
+        house.addGuest(GuestType.PURPLE);
+
         firstHouse.addHumanMember();
         firstHouse.addHumanMember();
         firstHouse.addHumanMember();
-        Component alienHouse = new AlienHousing(4,AlienType.BROWN,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
-        Component alienHouse12 = new AlienHousing(4,AlienType.PURPLE,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
+        Component alienHouse = new AlienHousing(137,GuestType.BROWN,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
+        Component alienHouse12 = new AlienHousing(143,GuestType.PURPLE,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
 
 
         List<Optional<Component>> components = new ArrayList<>();
