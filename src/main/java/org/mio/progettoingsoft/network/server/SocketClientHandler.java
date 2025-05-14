@@ -22,7 +22,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class SocketClientHandler implements Runnable, VirtualServer{
+public class SocketClientHandler extends Server implements Runnable, VirtualServer{
     private final Socket socket;
 
     private final BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
@@ -30,7 +30,8 @@ public class SocketClientHandler implements Runnable, VirtualServer{
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public SocketClientHandler(Socket socket){
+    public SocketClientHandler(Socket socket) throws RemoteException {
+        super();
         this.socket =  socket;
     }
 

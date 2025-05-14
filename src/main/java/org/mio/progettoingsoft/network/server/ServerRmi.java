@@ -11,13 +11,14 @@ import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 
-public class ServerRmi extends UnicastRemoteObject implements VirtualServer, Server, Serializable {
+public class ServerRmi extends Server implements VirtualServer, Serializable {
 
 
     public ServerRmi() throws RemoteException {
@@ -42,6 +43,7 @@ public class ServerRmi extends UnicastRemoteObject implements VirtualServer, Ser
     public int registerClient(VirtualClient client) throws RemoteException{
         GameManager gameManager = GameManager.getInstance();
         int idClient = gameManager.addClientToAccept(client);
+
         return idClient;
     }
 

@@ -6,7 +6,11 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -74,16 +78,41 @@ public class Game implements GameServer, GameClient {
      */
     @Override
     public void startGame(){
+
         flyboard = FlyBoard.createFlyBoard(mode, clients.keySet());
         gameController.setGame(this);
+        Map<String, VirtualClient> prova = new HashMap<>();
 
-        for (VirtualClient client : clients.values()) {
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+
+            for (String name : clients.keySet()) {
+                prova.put(name, (VirtualClient) registry.lookup(name));
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (VirtualClient c : prova.values()) {
             try {
-                client.setState(GameState.GAME_START);
+                c.setState(GameState.GAME_START);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
         }
+//        for (VirtualClient client : clients.values()) {
+//            try {
+//                client.setState(GameState.GAME_START);
+//
+//                int a = 0;
+//            } catch (RemoteException e) {
+//                e.printStackTrace();
+//                throw new RuntimeException(e);
+//            }
+//        }
+        System.out.println("Game " +idGame + " is starting" );
 
     }
 

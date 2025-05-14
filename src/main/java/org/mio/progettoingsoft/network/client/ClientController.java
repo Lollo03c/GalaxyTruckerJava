@@ -7,10 +7,11 @@ import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 
+import javax.swing.plaf.IconUIResource;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 
-public class ClientController implements VirtualClient, Serializable {
+public class ClientController {
     private static ClientController instance;
 
     public static ClientController getInstance(){
@@ -58,16 +59,18 @@ public class ClientController implements VirtualClient, Serializable {
                 e.printStackTrace();
             }
         }
-
+        System.out.println("creato");
         client.connect();
+        System.out.println("connesso");
         client.registryClient();
 
+        System.out.println("registrato");
         setState(GameState.NICKNAME);
     }
 
     public void setIdClient(int idClient){
         this.idClient = idClient;
-        System.out.println(idClient);
+//        System.out.println(idClient);
     }
 
     public int getIdClient(){
@@ -103,12 +106,13 @@ public class ClientController implements VirtualClient, Serializable {
 
     public void setConfirmedNickname(String nickname){
         this.nickname = nickname;
+//        System.out.println("DEBUG -> Nickname Impostato");
     }
 
     public void setGameInfo(GameInfo gameInfo){
         client.setGameInfo(gameInfo);
 
-        System.out.println("game impostato");
+//        System.out.println("game impostato");
         setState(GameState.WAITING);
 
     }

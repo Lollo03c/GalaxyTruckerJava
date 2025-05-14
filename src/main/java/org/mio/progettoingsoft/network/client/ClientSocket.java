@@ -120,7 +120,7 @@ public class ClientSocket extends Client {
     }
 
     @Override
-    public void setState(GameState newState){
-
+    public void setState(GameState newState) throws RemoteException{
+        int a = 0;
     }
 }

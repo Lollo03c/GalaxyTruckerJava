@@ -14,7 +14,7 @@ public class ServerApp implements Runnable {
             serverRmi.run();
             System.out.println("Rmi Server started wth port 1099 with registry 'GameSpace'");
 
-            Server serverSocket = new SocketServer();
+            SocketServer serverSocket = new SocketServer();
             new Thread(serverSocket::run).start();
             System.out.println("Socket server started with port 1050");
 

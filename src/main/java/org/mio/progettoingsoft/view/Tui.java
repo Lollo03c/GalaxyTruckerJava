@@ -18,7 +18,8 @@ public class Tui extends View{
     @Override
     public void run(){
         while (true) {
-            switch (controller.getState()) {
+            GameState state = controller.getState();
+            switch (state) {
                 case START -> printConnectionMenu();
                 case NICKNAME -> askNickname();
                 case WAITING -> {}

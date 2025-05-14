@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
-public class SocketServer implements Server {
+public class SocketServer implements Runnable {
     private final int port = 1050;
 
     public SocketServer(){
