@@ -1,153 +1,115 @@
 package org.mio.progettoingsoft.network.client;
 
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.model.interfaces.GameClient;
-import org.mio.progettoingsoft.network.ConnectionType;
-import org.mio.progettoingsoft.network.GuiController;
-import org.mio.progettoingsoft.network.NetworkFactory;
-import org.mio.progettoingsoft.network.TuiController;
-import org.mio.progettoingsoft.network.input.Input;
-import org.mio.progettoingsoft.network.input.SetupInput;
-import org.mio.progettoingsoft.network.input.StringInput;
-import org.mio.progettoingsoft.network.message.GameSetupMessage;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.NicknameMessage;
-import org.mio.progettoingsoft.views.VirtualView;
+import org.mio.progettoingsoft.exceptions.IncorrectClientException;
+import org.mio.progettoingsoft.exceptions.IncorrectNameException;
+import org.mio.progettoingsoft.exceptions.SetGameModeException;
+import org.mio.progettoingsoft.model.enums.GameInfo;
+import org.mio.progettoingsoft.network.server.VirtualServer;
 
-import java.rmi.NotBoundException;
-import java.util.concurrent.BlockingQueue;
+import java.io.Serializable;
+import java.rmi.RemoteException;
 
-public abstract class ClientController implements Runnable {
-    /**
-     * SINGLETON IMPLEMENTATION
-     */
+public class ClientController implements VirtualClient, Serializable {
     private static ClientController instance;
 
-    public static ClientController create(boolean isGui) {
-        if (instance == null) {
-            if (isGui) {
-                instance = new GuiController();
-            } else {
-                instance = new TuiController();
-            }
+    public static ClientController getInstance(){
+        if (instance == null){
+            instance = new ClientController();
         }
+
         return instance;
     }
 
-    public static ClientController get() {
-        return instance;
-    }
-
-    public void setMessageQueue(BlockingQueue<Message> messageQueue) {
-        this.inputMessageQueue = messageQueue;
-    }
-
-    // connection parameters - start
-    private final String hostAddress = "127.0.0.1";
-    private final int rmiPort = 1099;
-    private final int socketPort = 1234;
-    private final String serverName = "localhost";
-    // connection parameters - en
-
-    protected GameState gameState = GameState.START;
+    private VirtualServer virtualServer;
+    private GameState state = GameState.START;
+    private Object lockState = new Object();
     private Client client;
-    private BlockingQueue<Message> inputMessageQueue;
+
+    private int idClient;
+    private int idGame;
     private String nickname;
-    private VirtualView view;
 
-    protected final Object stateLock = new Object();
+    public GameState getState(){
+        synchronized (lockState){
+            return state;
+        }
+    }
 
-    private int setupClientid;
+    public void setState(GameState newState){
+        synchronized (lockState){
+            this.state = newState;
+        }
+    }
 
-    private GameClient game;
-
-    protected void handleInput(Input input) throws Exception {
-        switch (this.getGameState()) {
-            case START -> handleConnectionTypeInput(input);
-            case NICKNAME_REQUEST -> handleNicknameInput(input);
-            case SETUP_GAME -> handleSetupGame(input);
-            case PRINT_GAME_INFO -> {
+    public void connectToServer(boolean isRmi){
+        if (isRmi){
+            try {
+                client = new ClientRmi();
             }
-            case WAITING -> {
-                synchronized (this) {
-                    while (this.getGameState() == GameState.WAITING) {
-                        this.wait();
-                    }
-                }
+            catch (Exception e){
+                e.printStackTrace();
             }
-            case BUILDING_SHIP -> {
-                System.out.println("partita iniziata");
-                setGameState(GameState.WAITING);
+        }
+        else {
+            try {
+                client = new ClientSocket();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-            default -> System.out.println("Invalid gameState");
         }
 
+        client.connect();
+        client.registryClient();
+
+        setState(GameState.NICKNAME);
     }
 
-    private void handleConnectionTypeInput(Input input) throws Exception {
-        if (input instanceof StringInput stringInput) {
-            boolean isRmi = (Integer.parseInt(stringInput.getString()) == 1);
-
-            ConnectionType connectionType = new ConnectionType(isRmi, hostAddress, isRmi ? rmiPort : socketPort, serverName);
-            client = NetworkFactory.create(connectionType, view, inputMessageQueue);
-
-            // Avvia il client (che si occupa di leggere dal socket o direttamente attraverso RMI e mettere i messaggi in coda)
-            // TODO: capire come gestire questa eccezione in cui la rete non viene create per qualche motivo
-            if (client != null) {
-                client.run();
-            } else {
-                throw new NotBoundException("Client not found");
-            }
-            this.setGameState(GameState.WAITING);
-        }
+    public void setIdClient(int idClient){
+        this.idClient = idClient;
+        System.out.println(idClient);
     }
 
-    private void handleNicknameInput(Input input) throws Exception {
-        if (input instanceof StringInput stringInput) {
-            nickname = stringInput.getString();
-            client.sendToServer(new NicknameMessage(nickname, setupClientid));
-            this.setGameState(GameState.WAITING);
-        }
+    public int getIdClient(){
+        return idClient;
     }
 
-    private void handleSetupGame(Input input) throws Exception {
-        if (input instanceof SetupInput setupInput) {
-            Message message = new GameSetupMessage(game.getIdGame(), nickname, setupInput.getnPlayers(), setupInput.getGameMode());
-            client.sendToServer(message);
-            this.setGameState(GameState.WAITING);
+    public void setNickname(String nickname){
+
+        try {
+            client.setNickname(nickname);
+
+            setState(GameState.WAITING);
+        } catch (IncorrectNameException e) {
+            setState(GameState.ERROR_NICKNAME);
+        } catch (IncorrectClientException e) {
+            throw new RuntimeException(e);
+        } catch (SetGameModeException e) {
+            setState(GameState.GAME_MODE);
         }
     }
 
-    public void setGameState(GameState gameState) {
-        synchronized (this.stateLock) {
-            this.gameState = gameState;
-        }
+    public int getIdGame(){
+        return idGame;
     }
 
-    public GameState getGameState() {
-        synchronized (this.stateLock) {
-            return this.gameState;
-        }
+    public String getNickname(){
+        return nickname;
     }
 
-    public void setSetupClientId(int id) {
-        this.setupClientid = id;
+    public void setIdGame(int idGame){
+        this.idGame = idGame;
     }
 
-    public void createGame(int id) {
-        game = new Game(id);
+    public void setConfirmedNickname(String nickname){
+        this.nickname = nickname;
     }
 
-    public void setGame(int id, GameMode mode, int nPlayers) {
-        game = new Game(id);
-        game.setupGame(mode, nPlayers);
-    }
+    public void setGameInfo(GameInfo gameInfo){
+        client.setGameInfo(gameInfo);
 
-    public GameClient getGame() {
-        return game;
-    }
+        System.out.println("game impostato");
+        setState(GameState.WAITING);
 
-    public abstract void handleWrongNickname(String nickname);
+    }
 }

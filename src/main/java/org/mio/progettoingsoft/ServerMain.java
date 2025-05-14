@@ -1,13 +1,12 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.network.server.ServerApp;
+import org.mio.progettoingsoft.network.server.*;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 
 public class ServerMain {
-    public static void main(String[] args) throws IOException {
-        System.out.println("Galaxy Truckers | Server");
 
+    public static void main(String[] args) {
         ServerApp serverApp = new ServerApp();
         serverApp.run();
     }

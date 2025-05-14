@@ -1,12 +1,27 @@
 package org.mio.progettoingsoft.network.client;
 
-import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.exceptions.IncorrectClientException;
+import org.mio.progettoingsoft.exceptions.IncorrectNameException;
+import org.mio.progettoingsoft.exceptions.SetGameModeException;
+import org.mio.progettoingsoft.model.enums.GameInfo;
+import org.mio.progettoingsoft.network.server.VirtualServer;
 
-public interface Client {
-    void run();
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-    //manda un messaggio dal client al server
-    void sendToServer(Message message) throws Exception;
+public abstract class Client extends UnicastRemoteObject implements VirtualClient, Serializable {
+    protected Client() throws RemoteException {
+        super();
+    }
 
-    void close() throws Exception;
+    VirtualServer virtualServer;
+    protected ClientController controller = ClientController.getInstance();
+
+    public abstract void connect();
+    public abstract void registryClient();
+
+    public abstract void setNickname(String nickname) throws IncorrectNameException, IncorrectClientException, SetGameModeException;
+    public abstract void setGameInfo(GameInfo gameInfo);
+
 }

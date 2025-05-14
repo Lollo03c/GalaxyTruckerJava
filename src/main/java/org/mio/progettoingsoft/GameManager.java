@@ -1,9 +1,10 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.exceptions.IncorrectClientException;
+import org.mio.progettoingsoft.exceptions.IncorrectNameException;
+import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
-import org.mio.progettoingsoft.network.message.GameSetupMessage;
-import org.mio.progettoingsoft.network.message.NicknameMessage;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,11 +23,9 @@ public class GameManager{
     private final List<String> nicknames = new ArrayList<>();
 
     private Map<Integer, GameServer> ongoingGames;
-    private GameServer waitingGame;
+    private GameServer waitingGame = null;
 
     private final Map<Integer, VirtualClient> clientsToAccept = new ConcurrentHashMap<>();
-    private NicknameMessage nicknameMessage = null;
-    private GameSetupMessage gameSetupMessage = null;
 
     public static GameManager create() {
         if(instance == null) {
@@ -41,6 +40,9 @@ public class GameManager{
      * @return the instance of the class
      */
     public static synchronized GameManager getInstance(){
+        if (instance == null)
+            instance = new GameManager();
+
         return instance;
     }
 
@@ -62,8 +64,11 @@ public class GameManager{
      * @return  Optional.empty() if the game has to be created
      *          Optional.of(Game) an optional containing the current waiting game
      */
-    public synchronized Optional<GameServer> getWaitingGame(){
-        return waitingGame == null ? Optional.empty() : Optional.of(waitingGame);
+    public synchronized GameServer getWaitingGame(){
+        if (waitingGame == null)
+            waitingGame = new Game(getNextGameIdToStart());
+
+        return waitingGame;
     }
 
     /**
@@ -89,6 +94,13 @@ public class GameManager{
         clientsToAccept.put(idClient, client);
     }
 
+    public synchronized int addClientToAccept(VirtualClient client){
+        int idClient = getNextIdPlayer();
+        clientsToAccept.put(idClient, client);
+        System.out.println("Aggiunto client " + client + "con id " + idClient);
+        return idClient;
+    }
+
     /**
      * set the waitingGame as null
      */
@@ -110,5 +122,37 @@ public class GameManager{
 
     public synchronized void addNickname(String nick){
         nicknames.add(nick);
+    }
+
+    private synchronized int getNextGameIdToStart(){
+        while (ongoingGames.containsKey(nextGameId))
+            nextGameId++;
+
+        return nextGameId++;
+    }
+
+    public synchronized void addPlayerToGame(int idClient, String nickname) throws IncorrectClientException, IncorrectNameException, SetGameModeException {
+        if (!clientsToAccept.containsKey(idClient))
+            throw new IncorrectClientException("");
+
+        if (nicknames.contains(nickname))
+            throw new IncorrectNameException("");
+
+        GameServer gameToStart = getWaitingGame();
+        gameToStart.addPlayer(nickname, clientsToAccept.get(idClient));
+
+        nicknames.add(nickname);
+
+        clientsToAccept.remove(idClient);
+
+        if (waitingGame.askSetting())
+            throw new SetGameModeException("");
+
+        if (gameToStart.getClients().size() == gameToStart.getNumPlayers()){
+            GameServer ready = gameToStart;
+
+            waitingGame = null;
+            new Thread(ready::startGame).start();
+        }
     }
 }

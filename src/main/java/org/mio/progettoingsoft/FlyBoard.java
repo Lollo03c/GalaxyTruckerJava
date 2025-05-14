@@ -177,7 +177,7 @@ public abstract class FlyBoard implements FlyBoardServer {
         scoreBoard.add(new Player(username, color, mode, this));
 
         if (scoreBoard.size() == 4){
-            state = GameState.BUILDING_SHIP;
+//            state = GameState.BUILDING_SHIP;
         }
     }
 

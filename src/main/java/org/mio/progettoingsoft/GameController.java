@@ -1,10 +1,6 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.model.interfaces.GameServer;
-import org.mio.progettoingsoft.network.client.VirtualClient;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.StartGameMessage;
-
 public class GameController {
     private GameServer game;
 
@@ -20,21 +16,21 @@ public class GameController {
 
     public void update(GameState gameState){
         switch (gameState){
-            case BUILDING_SHIP -> broadcast(new StartGameMessage(game.getIdGame()));
+//            case BUILDING_SHIP -> broadcast(new StartGameMessage(game.getIdGame()));
 
             default -> {}
         }
     }
 
-    private void broadcast(Message message){
-        for (VirtualClient client : game.getClients().values()){
-            try {
-                client.showUpdate(message);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    private void broadcast(Message message){
+//        for (VirtualClient client : game.getClients().values()){
+//            try {
+//                client.showUpdate(message);
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 
 
 //    private void broadcast(Message message) throws Exception {

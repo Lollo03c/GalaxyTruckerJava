@@ -1,5 +1,11 @@
 package org.mio.progettoingsoft;
 
-public enum GameState {
-    START, NICKNAME_REQUEST, SETUP_GAME, PRINT_GAME_INFO, WAITING, BUILDING_SHIP, SHIP_VALIDATION, DRAW_CARD, CARD_EFFECT, CANNONS;
+import java.io.Serializable;
+
+public enum GameState implements Serializable {
+    WAITING, START, NICKNAME, GAME_MODE,
+
+    GAME_START,
+
+    ERROR_NICKNAME;
 }

@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.advCards.CombatLine;
 import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.ShipBoardEasy;

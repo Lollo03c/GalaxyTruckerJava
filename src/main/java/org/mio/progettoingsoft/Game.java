@@ -3,9 +3,10 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.VirtualClient;
-import org.mio.progettoingsoft.network.message.Message;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -17,7 +18,7 @@ public class Game implements GameServer, GameClient {
     private GameMode mode;
     private int numPlayers;
 
-    private final BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Object> receivedMessages = new LinkedBlockingQueue<>();
     private final GameController gameController = new GameController();
 
     private Map<String, VirtualClient> clients = new HashMap<>();
@@ -76,16 +77,20 @@ public class Game implements GameServer, GameClient {
         flyboard = FlyBoard.createFlyBoard(mode, clients.keySet());
         gameController.setGame(this);
 
-        //game modifica il suo stato
-        setGameState(GameState.WAITING);
-        gameController.update(gameState);
+        for (VirtualClient client : clients.values()) {
+            try {
+                client.setState(GameState.GAME_START);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
     }
 
-    @Override
-    public void addReceivedMessage(Message message){
-        receivedMessages.add(message);
-    }
+//    @Override
+//    public void addReceivedMessage(Message message){
+//        receivedMessages.add(message);
+//    }
 
     @Override
     public FlyBoard getFlyBoard(){
