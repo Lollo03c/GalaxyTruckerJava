@@ -1,8 +1,6 @@
 package org.mio.progettoingsoft.network.server;
 
-import org.mio.progettoingsoft.network.messages.Message;
-import org.mio.progettoingsoft.network.messages.NicknameMessage;
-import org.mio.progettoingsoft.network.messages.WelcomeMessage;
+import org.mio.progettoingsoft.network.messages.*;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -24,6 +22,25 @@ public class ServerMessageHandler implements Runnable {
                 switch (message){
                     case NicknameMessage nicknameMessage -> {
                         server.handleNickname(nicknameMessage.getIdClient(), nicknameMessage.getNickname());
+                    }
+
+                    case GameInfoMessage gameInfoMessage -> {
+                        server.handleGameInfo(gameInfoMessage.getGameInfo());
+                    }
+
+                    case ComponentMessage componentMessage -> {
+                        switch (componentMessage.getAction()) {
+                            case ADD -> {
+                                server.addComponent(componentMessage.getGameId(), componentMessage.getNickname(),
+                                        componentMessage.getIdComp(), componentMessage.getCordinate(), componentMessage.getRotations());
+                            }
+
+                            case REMOVE -> {}
+
+                            case COVERED -> {
+                                server.getCoveredComponent(componentMessage.getGameId(), componentMessage.getNickname());
+                            }
+                        }
                     }
                     default -> {}
                 }

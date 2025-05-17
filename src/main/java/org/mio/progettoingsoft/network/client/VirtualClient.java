@@ -20,6 +20,8 @@ public interface VirtualClient extends Remote {
     void setState(GameState state) throws RemoteException;
 
     void setFlyBoard(GameMode mode, Map<String, HousingColor> players) throws RemoteException;
+
+    void setInHandComponent(int idComponent) throws RemoteException;
     void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
 
 }

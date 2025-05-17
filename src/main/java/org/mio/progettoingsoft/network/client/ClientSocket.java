@@ -71,9 +71,20 @@ public class ClientSocket extends Client{
                         controller.setGameId(gameIdMessage.getGameId());
                     }
 
-                    default -> {
-                        System.out.println("Received " + message);
+                    case FlyBoardMessage flyBoardMessage -> {
+                        controller.setFlyBoard(flyBoardMessage.getMode(), flyBoardMessage.getPlayers());
                     }
+
+                    case ComponentMessage componentMessage -> {
+                        switch (componentMessage.getAction()){
+                            case COVERED -> controller.setInHandComponent(componentMessage.getIdComp());
+                            case REMOVE -> {}
+                            case ADD -> controller.addOtherComponent(componentMessage.getNickname(), componentMessage.getIdComp(),
+                                    componentMessage.getCordinate(), componentMessage.getRotations());
+                        }
+                    }
+
+                    default -> {}
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -96,16 +107,21 @@ public class ClientSocket extends Client{
 
     @Override
     public void handleGameInfo(GameInfo gameInfo){
-
+        Message message = new GameInfoMessage(-1, "", gameInfo);
+        sendMessage(message);
     }
 
     @Override
     public int getCoveredComponent(int idGame){
+        Message message = new ComponentMessage(idGame, controller.getNickname(), ComponentMessage.Action.COVERED, 0, null, 0);
+        sendMessage(message);
+
         return -1;
     }
 
     @Override
     public void handleComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations){
-
+        Message message = new ComponentMessage(idGame, nickname, ComponentMessage.Action.ADD, idComp, cordinate, rotations);
+        sendMessage(message);
     }
 }

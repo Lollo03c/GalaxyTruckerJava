@@ -20,6 +20,7 @@ public class ShipCell {
     public static final String PURPLE = "\u001B[35m";
     private ColoredChar[][] cell = new ColoredChar[5][9];
     private Component component;
+
     public ShipCell(Component component) {
         this.component = component;
         for (int i = 0; i < 5; i++)

@@ -25,15 +25,6 @@ public class ServerRMI extends Server implements VirtualServer {
         return idClient;
     }
 
-    @Override
-    public int getCoveredComponent(int idGame) throws RemoteException{
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        FlyBoard flyBoard = game.getFlyboard();
-
-        return flyBoard.getCoveredComponents().removeLast();
-
-    }
-
 
 
 }

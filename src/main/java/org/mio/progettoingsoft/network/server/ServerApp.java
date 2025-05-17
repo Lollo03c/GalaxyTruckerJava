@@ -52,7 +52,7 @@ public class ServerApp implements Runnable{
                 Socket clientSocket = serverSocket.accept();
 
                 SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, receivedMessages);
-                clientHandler.run();
+                new Thread(clientHandler).start();
 
             }
         } catch (IOException e) {

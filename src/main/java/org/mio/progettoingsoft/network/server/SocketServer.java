@@ -14,12 +14,4 @@ public class SocketServer extends Server{
         return -1;
     }
 
-    @Override
-    public int getCoveredComponent(int idGame) throws RemoteException{
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        FlyBoard flyBoard = game.getFlyboard();
-
-        return flyBoard.getCoveredComponents().removeLast();
-
-    }
 }

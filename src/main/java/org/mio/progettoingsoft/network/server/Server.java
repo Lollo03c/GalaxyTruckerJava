@@ -47,4 +47,19 @@ public abstract class Server implements VirtualServer{
             }
         }
     }
+
+    @Override
+    public void getCoveredComponent(int idGame, String nickname){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
+        VirtualClient client = game.getClients().get(nickname);
+
+        try {
+            client.setInHandComponent(flyBoard.getCoveredComponents().removeLast());
+            client.setState(GameState.ADD_COMPONENT);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

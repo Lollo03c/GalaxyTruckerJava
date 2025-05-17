@@ -78,4 +78,10 @@ public class VirtualSocketClient implements VirtualClient{
         Message message = new ComponentMessage(0, nickname, ComponentMessage.Action.ADD, idComp, cordinate, rotations );
         sendMessage(message);
     }
+
+    @Override
+    public void setInHandComponent(int idComp){
+        Message message = new ComponentMessage(0, "", ComponentMessage.Action.COVERED, idComp, null, 0);
+        sendMessage(message);
+    }
 }

@@ -74,7 +74,8 @@ public class ClientRmi extends Client implements VirtualClient{
     @Override
     public int getCoveredComponent(int idGame){
         try{
-            return server.getCoveredComponent(idGame);
+            controller.setState(GameState.ADD_COMPONENT);
+            server.getCoveredComponent(idGame, controller.getNickname());
         }
         catch (RemoteException e){
 

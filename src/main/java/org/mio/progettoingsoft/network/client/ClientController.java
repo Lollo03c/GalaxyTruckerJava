@@ -57,6 +57,10 @@ public class ClientController {
         }
     }
 
+    public String getNickname(){
+        return nickname;
+    }
+
     public Object getStateLock(){
         return stateLock;
     }
@@ -117,7 +121,6 @@ public class ClientController {
     public void handleBuildingShip(int chosen){
         if (chosen == 1){
             inHandComponent = client.getCoveredComponent(idGame);
-            setState(GameState.ADD_COMPONENT);
         }
         else if (chosen == 2){
 
@@ -155,5 +158,9 @@ public class ClientController {
         synchronized (otherShipboard){
             otherShipboard.addComponentToPosition(idComp, cordinate, rotations);
         }
+    }
+
+    public void setInHandComponent(int idComp){
+        this.inHandComponent = idComp;
     }
 }

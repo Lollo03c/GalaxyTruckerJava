@@ -75,6 +75,13 @@ public abstract class Client implements VirtualClient{
         );
     }
 
+    @Override
+    public void setInHandComponent(int idComponent) throws RemoteException{
+        executors.submit(() ->
+                controller.setInHandComponent(idComponent)
+        );
+    }
+
 
 
 

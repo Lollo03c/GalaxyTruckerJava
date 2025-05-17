@@ -67,9 +67,4 @@ public class SocketClientHandler extends Server implements Runnable{
     public int registerClient(VirtualClient client){
         return -1;
     }
-
-    @Override
-    public int getCoveredComponent(int idGame){
-        return -1;
-    }
 }
