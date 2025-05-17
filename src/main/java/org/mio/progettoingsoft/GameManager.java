@@ -6,8 +6,11 @@ import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /*
     implemented with singleton
@@ -17,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameManager{
     private static GameManager instance;
 
-    private int nextIdPlayer = 0;
-    private int nextGameId = 0;
+    private AtomicInteger nextIdPlayer = new AtomicInteger(0);
+    private AtomicInteger nextIdGame = new AtomicInteger(0);
 
     private final List<String> nicknames = new ArrayList<>();
 
@@ -26,6 +29,9 @@ public class GameManager{
     private GameServer waitingGame = null;
 
     private final Map<Integer, VirtualClient> clientsToAccept = new ConcurrentHashMap<>();
+
+    private final Object lockCreatingGame = new Object();
+    private final AtomicBoolean creatingGame = new AtomicBoolean(false);
 
     public static GameManager create() {
         if(instance == null) {
@@ -71,15 +77,6 @@ public class GameManager{
         return waitingGame;
     }
 
-    /**
-     * Create a new {@link Game} with the first idGame available
-     */
-    public synchronized void createWaitingGame(){
-        while (ongoingGames.containsKey(nextGameId))
-            nextGameId++;
-
-        waitingGame = new Game(nextGameId);
-    }
 
 
     /**
@@ -90,15 +87,13 @@ public class GameManager{
         return ongoingGames;
     }
 
-    public synchronized void addClientToAccept(int idClient, VirtualClient client)  {
-        clientsToAccept.put(idClient, client);
-    }
+    public int addClientToAccept(VirtualClient client){
+            while (clientsToAccept.containsKey(nextIdPlayer.getAndIncrement())){
 
-    public synchronized int addClientToAccept(VirtualClient client){
-        int idClient = getNextIdPlayer();
-        clientsToAccept.put(idClient, client);
-        System.out.println("Aggiunto client " + client + "con id " + idClient);
-        return idClient;
+            }
+            int idClient = nextIdPlayer.getAndIncrement();
+            clientsToAccept.put(idClient, client);
+            return idClient;
     }
 
     /**
@@ -113,46 +108,115 @@ public class GameManager{
      *
      * @return the next possible available idPlayer
      */
-    public synchronized int getNextIdPlayer(){
-        while (clientsToAccept.containsKey(nextIdPlayer))
-            nextIdPlayer++;
-
-        return nextIdPlayer++;
-    }
+//    public int getNextIdPlayer(){
+//        synchronized (this) {
+//            while (clientsToAccept.containsKey(nextIdPlayer))
+//                nextIdPlayer++;
+//
+//            return nextIdPlayer++;
+//        }
+//    }
 
     public synchronized void addNickname(String nick){
         nicknames.add(nick);
     }
 
     private synchronized int getNextGameIdToStart(){
-        while (ongoingGames.containsKey(nextGameId))
-            nextGameId++;
+        while (ongoingGames.containsKey(nextIdGame.get())){
+            nextIdGame.set(nextIdGame.get() + 1);
+        }
 
-        return nextGameId++;
+
+        return nextIdGame.getAndIncrement();
     }
 
-    public synchronized void addPlayerToGame(int idClient, String nickname) throws IncorrectClientException, IncorrectNameException, SetGameModeException {
-        if (!clientsToAccept.containsKey(idClient))
-            throw new IncorrectClientException("");
-
-        if (nicknames.contains(nickname))
-            throw new IncorrectNameException("");
-
-        GameServer gameToStart = getWaitingGame();
-        gameToStart.addPlayer(nickname, clientsToAccept.get(idClient));
-
-        nicknames.add(nickname);
-
-        clientsToAccept.remove(idClient);
-
-        if (waitingGame.askSetting())
-            throw new SetGameModeException("");
-
-        if (gameToStart.getClients().size() == gameToStart.getNumPlayers()){
-            GameServer ready = gameToStart;
-
-            waitingGame = null;
-            new Thread(ready::startGame).start();
+    public void addPlayerToGame(int idClient, String nickname) {
+        if (!clientsToAccept.containsKey(idClient)) {
+            return;
         }
+
+
+        VirtualClient client = clientsToAccept.get(idClient);
+        if (nicknames.contains(nickname)) {
+            try {
+                client.wrongNickname();
+                return;
+            } catch (RemoteException e) {
+                //todo bisogna togliere il client
+            }
+
+        }
+
+        try {
+            client.setNickname(nickname);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        synchronized (lockCreatingGame) {
+           while (creatingGame.get()) {
+               try {
+                   lockCreatingGame.wait();
+               } catch (InterruptedException e) {
+                   throw new RuntimeException(e);
+               }
+           }
+
+           GameServer gameToStart = getWaitingGame();
+           if (gameToStart.askSetting()){
+               try{
+                   creatingGame.set(true);
+
+                   client.setGameId(gameToStart.getIdGame());
+                   client.askGameSettings(nickname);
+
+                   gameToStart.addPlayer(nickname, client);
+                   clientsToAccept.remove(idClient);
+                   nicknames.add(nickname);
+                   System.out.println(nickname + gameToStart.getIdGame());
+                   return;
+
+               }
+               catch (RemoteException e){
+                   e.printStackTrace();
+               }
+           }
+           else {
+               try {
+                   client.setGameId(gameToStart.getIdGame());
+                   client.setState(GameState.WAITING_PLAYERS);
+
+                   gameToStart.addPlayer(nickname, client);
+                   System.out.println(nickname + gameToStart.getIdGame());
+
+                   clientsToAccept.remove(idClient);
+                   nicknames.add(nickname);
+
+               } catch (RemoteException e) {
+                   e.printStackTrace();
+               }
+
+               if (gameToStart.getClients().size() == gameToStart.getNumPlayers()){
+                   GameServer ready = gameToStart;
+                   ongoingGames.put(ready.getIdGame(), ready);
+
+                   waitingGame = null;
+                   new Thread(ready::startGame).start();
+               }
+           }
+
+
+        }
+
+
+    }
+
+    public AtomicBoolean getCreatingGame(){
+        return this.creatingGame;
+    }
+
+    public Object getLockCreatingGame(){
+        return lockCreatingGame;
     }
 }

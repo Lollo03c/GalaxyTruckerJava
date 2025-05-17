@@ -1,34 +1,35 @@
 package org.mio.progettoingsoft.network.server;
 
-import org.mio.progettoingsoft.network.server.messages.Message;
+import org.mio.progettoingsoft.network.messages.Message;
+import org.mio.progettoingsoft.network.messages.NicknameMessage;
+import org.mio.progettoingsoft.network.messages.WelcomeMessage;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.concurrent.BlockingQueue;
 
-public class ServerMessageHandler implements Runnable{
-    private final BlockingQueue<Message> receivedMessage;
-    private final ObjectInputStream input;
+public class ServerMessageHandler implements Runnable {
+    private final BlockingQueue<Message> receivedMessages;
+    private final Server server;
 
-    public ServerMessageHandler(ObjectInputStream input, BlockingQueue<Message> receivedMessage){
-        this.input = input;
-        this.receivedMessage = receivedMessage;
+    public ServerMessageHandler(Server server, BlockingQueue<Message> receivedMessages){
+        this.server = server;
+        this.receivedMessages = receivedMessages;
     }
 
     @Override
     public void run(){
         while (true){
-            try{
-                Message message = (Message) input.readObject();
+            try {
+                Message message = receivedMessages.take();
 
-                this.receivedMessage.add(message);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+                switch (message){
+                    case NicknameMessage nicknameMessage -> {
+                        server.handleNickname(nicknameMessage.getIdClient(), nicknameMessage.getNickname());
+                    }
+                    default -> {}
+                }
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
     }
-
-
 }

@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class ShipBoard {
@@ -26,8 +27,8 @@ public abstract class ShipBoard {
     private int exposedConnectors;
     private boolean completedBuild;
 
-    private final int offsetCol;
-    private final int offsetRow;
+    private final int offsetCol = 4;
+    private final int offsetRow = 5;
 
     private final FlyBoard flyBoard;
 
@@ -55,9 +56,6 @@ public abstract class ShipBoard {
         this.flyBoard = flyBoard;
         rows = 5;
         columns = 7;
-
-        offsetRow = 5;
-        offsetCol = 4;
 
         shipComponents = new Optional[rows][columns];
         bookedComponents = new Component[2];
@@ -621,6 +619,14 @@ public abstract class ShipBoard {
             }
         }
     }
+
+    public List<Optional<Component>> getComponents() {
+        return Arrays.stream(shipComponents)
+                .flatMap(Arrays::stream)
+                .toList();
+    }
+
+
 
 
 }

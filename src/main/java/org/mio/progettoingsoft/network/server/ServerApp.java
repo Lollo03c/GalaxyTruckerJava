@@ -1,26 +1,62 @@
 package org.mio.progettoingsoft.network.server;
 
+import org.mio.progettoingsoft.network.messages.Message;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class ServerApp implements Runnable {
-    ExecutorService executor = Executors.newFixedThreadPool(6);
+public class ServerApp implements Runnable{
 
+    private Server server;
     @Override
     public void run(){
-        try {
-            Server serverRmi = new ServerRmi();
-            serverRmi.run();
-            System.out.println("Rmi Server started wth port 1099 with registry 'GameSpace'");
+        startRmiServer();
+        startSocketServer();
+    }
 
-            SocketServer serverSocket = new SocketServer();
-            new Thread(serverSocket::run).start();
-            System.out.println("Socket server started with port 1050");
+    private void startRmiServer(){
+        final int portRmi = 1099;
+        try {
+            System.setProperty("java.rmi.server.hostname", "localhost");
+            Registry registry =  LocateRegistry.createRegistry(portRmi);
+
+            ServerRMI rmiServer = new ServerRMI();
+            registry.rebind("GameSpace", rmiServer);
+
+            System.out.println("Server RMI running on port " + portRmi);
 
         } catch (RemoteException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
+    private void startSocketServer() {
+        final int port = 1050;
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
+            Server socketServer = new SocketServer();
+
+            BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
+            ServerMessageHandler serverMessageHandler = new ServerMessageHandler(socketServer, receivedMessages);
+            new Thread(serverMessageHandler).start();
+
+            while (true){
+                Socket clientSocket = serverSocket.accept();
+
+                SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, receivedMessages);
+                clientHandler.run();
+
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network.server;
 
+import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.exceptions.IncorrectClientException;
 import org.mio.progettoingsoft.exceptions.IncorrectNameException;
 import org.mio.progettoingsoft.exceptions.SetGameModeException;
@@ -10,9 +11,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface VirtualServer extends Remote {
-    int registerClient(VirtualClient client) throws RemoteException;
-    void setNickname(int idClient, String nickname) throws RemoteException, IncorrectNameException, IncorrectClientException,
-            SetGameModeException;
 
-    void setGameInfo(GameInfo gameInfo) throws RemoteException;
+    int registerClient(VirtualClient client) throws RemoteException;
+    void handleNickname(int idClient, String nickname) throws RemoteException;
+    void handleGameInfo(GameInfo gameInfo) throws RemoteException;
+    int getCoveredComponent(int idGame) throws RemoteException;
+    void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
 }

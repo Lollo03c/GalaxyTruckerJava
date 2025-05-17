@@ -1,110 +1,94 @@
 package org.mio.progettoingsoft.network.client;
 
+import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.exceptions.IncorrectClientException;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectNameException;
 import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
+import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 
-import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Map;
 
-public class ClientRmi extends Client implements Serializable {
-    ExecutorService executor = Executors.newFixedThreadPool(2);
+public class ClientRmi extends Client implements VirtualClient{
+    private VirtualServer server;
 
-    public ClientRmi() throws RemoteException{
-        super();
+    public ClientRmi() throws RemoteException {
+        System.setProperty("java.rmi.server.hostname", "localhost");  // l'IP reale del client sulla rete
+        UnicastRemoteObject.exportObject(this, 0);
+
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+            server = (VirtualServer) registry.lookup("GameSpace");
+
+//            System.out.println("connesso al server Rmi");
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void connect(){
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            virtualServer = (VirtualServer) registry.lookup("GameSpace");
-            String ip = InetAddress.getLocalHost().getHostAddress();
-            System.setProperty("java.rmi.server.hostname", ip);
-
-//            System.out.println("Connesso");
-
-        } catch (RemoteException | NotBoundException e) {
+            idClient = server.registerClient(this);
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void registryClient(){
+    public void ping(String msg) throws RemoteException{
+        System.out.println(msg);
+    }
+
+    @Override
+    public void handleNickname(String nickname) {
         try {
-            System.out.println(" connesso0 ");
-            int idClient = virtualServer.registerClient(this);
-            System.out.println(" connesso1 ");
-
-            ClientController.getInstance().setIdClient(idClient);
-            System.out.println(" connesso21 ");
-
+            server.handleNickname(idClient, nickname);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            //server non raggiungibile
         }
     }
 
     @Override
-    public void setNickname(String nickname) throws IncorrectNameException, IncorrectClientException, SetGameModeException {
+    public void handleGameInfo(GameInfo gameInfo){
+
         try {
-            virtualServer.setNickname(controller.getIdClient(), nickname);
-
-            try {
-                Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-                registry.bind(nickname, (VirtualClient) this);
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            } catch (AlreadyBoundException e) {
-                throw new RuntimeException(e);
-            }
-
-            controller.setConfirmedNickname(nickname);
-//            System.out.println("nickname aggiunto");
-        } catch (RemoteException e){
-            e.printStackTrace();
-        }
-        catch (SetGameModeException e){
-            try {
-                Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-                registry.bind(nickname, (VirtualClient) this);
-            } catch (RemoteException ep) {
-                throw new RuntimeException(e);
-            } catch (AlreadyBoundException ep) {
-                throw new RuntimeException(e);
-            }
-
-            throw new SetGameModeException("");
-        }
-
-
-    }
-
-    @Override
-    public void setGameInfo(GameInfo gameInfo){
-        try {
-            virtualServer.setGameInfo(gameInfo);
+            server.handleGameInfo(gameInfo);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void setState(GameState newState) throws RemoteException{
-        executor.execute(() -> controller.setState(GameState.GAME_START));
+    public int getCoveredComponent(int idGame){
+        try{
+            return server.getCoveredComponent(idGame);
+        }
+        catch (RemoteException e){
+
+        }
+        return  -1;
     }
+
+    @Override
+    public void handleComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations){
+        try {
+            server.addComponent(idGame, nickname, idComp, cordinate, rotations);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -12,15 +12,8 @@ import java.util.Map;
 
 public class Depot extends Component {
 
-    public Boolean getBig() {
-        return isBig;
-    }
 
     private final Boolean isBig;
-
-    public Boolean getHazard() {
-        return isHazard;
-    }
 
     private final Boolean isHazard;
     private final int maxQuantity;
@@ -73,6 +66,16 @@ public class Depot extends Component {
             return false;
 
         return storedGoods.size() < maxQuantity;
+    }
+
+    @Override
+    public boolean getHazard(){
+        return isHazard;
+    }
+
+    @Override
+    public boolean getBig(){
+        return isBig;
     }
 
 

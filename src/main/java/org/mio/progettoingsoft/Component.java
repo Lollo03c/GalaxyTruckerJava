@@ -2,6 +2,7 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import java.util.Collections;
@@ -94,6 +95,10 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not an energy depot");
     }
 
+    public boolean getTriple() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not an energy depot");
+    }
+
     /**
      * add the {@link GoodType} given to the {@link org.mio.progettoingsoft.components.Depot}
      * @param type the {@link GoodType} to add
@@ -160,6 +165,11 @@ public abstract class Component {
     public GuestType getColorAlien() throws IncorrectShipBoardException{
         throw new IncorrectShipBoardException("not a alien housing");
     }
+
+    public HousingColor getHousingColorById(int id) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("");
+    }
+
 
     /**
      *
@@ -240,6 +250,14 @@ public abstract class Component {
      * @throws IncorrectShipBoardException if the component is not a {@link org.mio.progettoingsoft.components.Depot}
      */
     public boolean canContainsGood(GoodType type) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a depot");
+    }
+
+    public boolean getHazard() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a depot");
+    }
+
+    public boolean getBig() throws IncorrectShipBoardException{
         throw new IncorrectShipBoardException("not a depot");
     }
 

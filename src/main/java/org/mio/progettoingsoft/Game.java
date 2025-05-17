@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 public class Game implements GameServer, GameClient {
     private FlyBoard flyboard;
@@ -35,8 +37,15 @@ public class Game implements GameServer, GameClient {
 
     @Override
     public void setupGame(GameMode mode, int numPlayers){
-        this.mode = mode;
-        this.numPlayers = numPlayers;
+
+        synchronized (GameManager.getInstance().getLockCreatingGame()) {
+            GameManager.getInstance().getCreatingGame().set(false);
+            GameManager.getInstance().getLockCreatingGame().notifyAll();
+
+
+            this.mode = mode;
+            this.numPlayers = numPlayers;
+        }
     }
 
     @Override
@@ -70,7 +79,7 @@ public class Game implements GameServer, GameClient {
 
     @Override
     public boolean askSetting() {
-        return clients.size() == 1;
+        return clients.isEmpty();
     }
 
     /**
@@ -80,38 +89,21 @@ public class Game implements GameServer, GameClient {
     public void startGame(){
 
         flyboard = FlyBoard.createFlyBoard(mode, clients.keySet());
-        gameController.setGame(this);
-        Map<String, VirtualClient> prova = new HashMap<>();
+        Map<String, HousingColor> colorMap = flyboard.getPlayers().stream()
+                .collect(Collectors.toMap(
+                        Player::getNickname,
+                        Player::getColor
+                ));
 
-        try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-
-            for (String name : clients.keySet()) {
-                prova.put(name, (VirtualClient) registry.lookup(name));
-            }
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        } catch (NotBoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (VirtualClient c : prova.values()) {
+        for (VirtualClient client : clients.values()){
             try {
-                c.setState(GameState.GAME_START);
+                client.setFlyBoard(mode ,colorMap);
+                client.setState(GameState.GAME_START);
+                client.setState(GameState.BUILDING_SHIP);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
         }
-//        for (VirtualClient client : clients.values()) {
-//            try {
-//                client.setState(GameState.GAME_START);
-//
-//                int a = 0;
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//                throw new RuntimeException(e);
-//            }
-//        }
         System.out.println("Game " +idGame + " is starting" );
 
     }
@@ -128,6 +120,11 @@ public class Game implements GameServer, GameClient {
 
     public void setGameState(GameState newState){
         this.gameState = newState;
+    }
+
+    @Override
+    public FlyBoard getFlyboard(){
+        return flyboard;
     }
 //
 //    private void handleMessagesFromServer(){

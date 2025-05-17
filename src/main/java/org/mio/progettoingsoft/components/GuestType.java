@@ -19,4 +19,16 @@ public enum GuestType {
             case HUMAN -> "HUMAN";
         };
     }
+
+
+
+    public String guestToColor(){
+        return switch (this){
+            case PURPLE -> "\u001B[35m";
+            case BROWN -> "\u001B[33m";
+            case HUMAN -> "non importante";
+        };
+    }
+
+
 }

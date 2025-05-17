@@ -1,36 +1,25 @@
 package org.mio.progettoingsoft.network.server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ExecutorService;
+import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.client.VirtualClient;
 
-public class SocketServer implements Runnable {
-    private final int port = 1050;
+import java.rmi.RemoteException;
 
-    public SocketServer(){
+public class SocketServer extends Server{
+
+    @Override
+    public int registerClient(VirtualClient client){
+        return -1;
     }
 
     @Override
-    public void run(){
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server socket on port " + port);
+    public int getCoveredComponent(int idGame) throws RemoteException{
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
 
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("new socket client " + clientSocket);
+        return flyBoard.getCoveredComponents().removeLast();
 
-                SocketClientHandler clientHandler = new SocketClientHandler(clientSocket);
-                new Thread(clientHandler).start();
-
-
-
-            }
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
     }
-
-
 }

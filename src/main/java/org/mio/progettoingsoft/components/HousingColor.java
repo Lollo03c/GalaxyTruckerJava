@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.components;
 
 public enum HousingColor {
-    BLUE, GREEN, RED, YELLOW;
+    BLUE, GREEN, RED, YELLOW, NOCOLOR;
 
     public static HousingColor stringToColor(String s){
         return switch(s){
@@ -19,6 +19,17 @@ public enum HousingColor {
             case GREEN -> 34;
             case RED -> 52;
             case YELLOW -> 61;
+            default -> -1;
+        };
+    }
+
+    public String colorToString(){
+        return switch (this){
+            case RED -> "\u001B[31m";
+            case BLUE -> "\u001B[34m";
+            case GREEN -> "\u001B[32m";
+            case YELLOW -> "\u001B[33m";
+            case NOCOLOR -> "\u001B[0m";
         };
     }
 }
