@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.ShipBoard;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
+import org.mio.progettoingsoft.views.tui.VisualShipboardNormal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,5 +32,12 @@ public class ShipBoardNormal extends ShipBoard {
 
         }
         return banned;
+    }
+
+
+    @Override
+    public void drawShipboard() {
+        VisualShipboardNormal shipboard = new VisualShipboardNormal(this.getComponents());
+        shipboard.drawShipboard();
     }
 }

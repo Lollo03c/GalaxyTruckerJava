@@ -30,7 +30,7 @@ public abstract class ShipBoard {
 
     private final int offsetCol;
     private final int offsetRow;
-
+    private HousingColor housingColor;
     private final FlyBoard flyBoard;
 
     /**
@@ -44,7 +44,6 @@ public abstract class ShipBoard {
     public static ShipBoard createShipBoard(GameMode mode, HousingColor color, FlyBoard flyBoard){
         ShipBoard shipBoard = null;
 
-
         switch (mode){
             case EASY -> shipBoard = new ShipBoardEasy(color, flyBoard);
             case NORMAL -> shipBoard = new ShipBoardNormal(color, flyBoard);
@@ -53,8 +52,13 @@ public abstract class ShipBoard {
         return shipBoard;
     }
 
+    public void drawShipboard(){}
+    public HousingColor getHousingColor(){
+        return housingColor;
+    }
     protected ShipBoard(HousingColor color, FlyBoard flyBoard) {
         this.flyBoard = flyBoard;
+        housingColor = color;
         rows = 5;
         columns = 7;
 

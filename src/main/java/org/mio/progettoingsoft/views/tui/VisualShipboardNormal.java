@@ -1,97 +1,25 @@
-package org.mio.progettoingsoft.views;
+package org.mio.progettoingsoft.views.tui;
 
 import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Connector;
-import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.ShipBoard;
 import org.mio.progettoingsoft.components.*;
-import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class VisualShipboard {
-    private List<Optional<Component>> components;
-    private List<Optional<ShipCell>> shipCells;
+public class VisualShipboardNormal extends VisualShipboard {
 
-
-    public VisualShipboard(ShipBoard shipBoard) {
-
-        components = shipBoard.getComponents();
-        //lista di componenti da shipBoard[5][4]
-        this.components = components;
-        this.shipCells = new ArrayList<>();
-        for (Optional<Component> component : components) {
-            if (component.isPresent()) {
-                ShipCell cell = new ShipCell(component.get());
-                cell.computeCell();
-                this.shipCells.add(Optional.of(cell));
-            }
-            else {
-                this.shipCells.add(Optional.empty());
-            }
-        }
+    public VisualShipboardNormal(ShipBoard shipBoard) {
+        this(shipBoard.getComponents());
     }
-    public VisualShipboard(List<Optional<Component>> components) {
-
-        this.components = components;
-        this.shipCells = new ArrayList<>();
-        for (Optional<Component> component : components) {
-            if (component.isPresent()) {
-                ShipCell cell = new ShipCell(component.get());
-                cell.computeCell();
-                this.shipCells.add(Optional.of(cell));
-            }
-            else {
-                this.shipCells.add(Optional.empty());
-            }
-        }
+    public VisualShipboardNormal(List<Optional<Component>> components) {
+        super(components);
+        this.rows = 5;
+        this.cols = 7;
     }
-
-    public void drawShipboard() {
-        int cols = 7;
-        int rows = 5;
-        int cellHeight = 5;
-        int cellWidth = 9;
-        int offrow = 5;
-        int offcol = 4;
-
-        System.out.print("    "); // spazio per l’indice riga
-        for (int col = offcol; col < cols + offcol; col++) {
-            String colStr = String.valueOf(col);
-            int padLeft = (cellWidth - colStr.length()) / 2;
-            int padRight = cellWidth - colStr.length() - padLeft;
-            System.out.print(" ".repeat(padLeft) + colStr + " ".repeat(padRight));
-        }
-        System.out.println();
-
-        for (int row = 0; row < rows; row++) {
-            for (int line = 0; line < cellHeight; line++) {
-                if (line == cellHeight / 2) {
-                    int disp = row+offrow;
-                    System.out.printf("%-3d ", disp);
-                } else {
-                    System.out.print("    ");
-                }
-
-                for (int col = 0; col < cols; col++) {
-                    int index = row * cols + col;
-                    if (index < shipCells.size() && shipCells.get(index).isPresent()) {
-                        ColoredChar[][] matrix = shipCells.get(index).get().getMatrix();
-                        for (int j = 0; j < cellWidth; j++) {
-                            System.out.print(matrix[line][j]);
-                        }
-                    } else {
-                        System.out.print(" ".repeat(cellWidth));
-                    }
-                }
-                System.out.println();
-            }
-        }
-    }
-
 
 
     public static void main(String[] args) throws IOException {
@@ -118,7 +46,7 @@ public class VisualShipboard {
         firstHouse.addHumanMember();
         Component alienHouse = new AlienHousing(137,GuestType.BROWN,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
         Component alienHouse12 = new AlienHousing(143,GuestType.PURPLE,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
-
+        energyDepot.removeOneEnergy();
 
         List<Optional<Component>> components = new ArrayList<>();
         components.add(Optional.empty());
@@ -157,7 +85,7 @@ public class VisualShipboard {
         components.add(Optional.of(house2));
         components.add(Optional.of(alienHouse12));
 
-        VisualShipboard shipboard = new VisualShipboard(components);
+        VisualShipboardNormal shipboard = new VisualShipboardNormal(components);
         shipboard.drawShipboard();
     }
 }

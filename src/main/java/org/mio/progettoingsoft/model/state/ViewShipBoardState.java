@@ -4,7 +4,7 @@ import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.network.message.Message;
 import org.mio.progettoingsoft.views.Tui;
-import org.mio.progettoingsoft.views.VisualShipboard;
+import org.mio.progettoingsoft.views.tui.VisualShipboardNormal;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public class ViewShipBoardState extends ClientState {
         String otherNick = view.readInput();
 
         try {
-            new VisualShipboard(controller.getFlyBoard().getPlayerByUsername(otherNick).getShipBoard()).drawShipboard();
+            controller.getFlyBoard().getPlayerByUsername(otherNick).getShipBoard().drawShipboard();
         }
         catch (IncorrectFlyBoardException e){
             System.out.println("Player not found");

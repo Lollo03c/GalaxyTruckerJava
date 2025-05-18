@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,14 +87,25 @@ public class FlyBoardNormal extends FlyBoard {
 
         return loadedCards;
     }
+    @Override
+    public void drawCircuit(){
+        VisualFlyboardNormal visual = new VisualFlyboardNormal(this);
+        visual.drawCircuit();
+    }
+
+    @Override
+    public void drawScoreboard(){
+        VisualFlyboardNormal visual = new VisualFlyboardNormal(this);
+        visual.drawScoreboard();
+    }
 
     @Override
     protected List<Optional<Player>> createCircuite(){
-        List<Optional<Player>> newCircuite = new ArrayList<>();
+        List<Optional<Player>> newCircuit = new ArrayList<>();
 
         for (int i = 0; i < 24; i++)
-            newCircuite.add(Optional.empty());
+            newCircuit.add(Optional.empty());
 
-        return newCircuite;
+        return newCircuit;
     }
 }

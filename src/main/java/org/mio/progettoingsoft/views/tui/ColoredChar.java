@@ -1,4 +1,4 @@
-package org.mio.progettoingsoft.views;
+package org.mio.progettoingsoft.views.tui;
 
 public class ColoredChar {
     public char c;

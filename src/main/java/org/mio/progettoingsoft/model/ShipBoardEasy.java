@@ -44,4 +44,9 @@ public class ShipBoardEasy extends ShipBoard {
 
         return banned;
     }
+
+    @Override
+    public void drawShipboard() {
+        //TODO : da completare
+    }
 }

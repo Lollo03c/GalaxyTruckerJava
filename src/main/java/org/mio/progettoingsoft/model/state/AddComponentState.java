@@ -7,9 +7,9 @@ import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.network.message.AddComponentMessage;
 import org.mio.progettoingsoft.network.message.AddUncoveredMessage;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.views.ShipCell;
+import org.mio.progettoingsoft.views.tui.ShipCell;
 import org.mio.progettoingsoft.views.Tui;
-import org.mio.progettoingsoft.views.VisualShipboard;
+import org.mio.progettoingsoft.views.tui.VisualShipboardNormal;
 
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ public class AddComponentState extends ClientState {
         ShipBoard shipBoard = controller.getFlyBoard().getPlayerByUsername(controller.getNickname()).getShipBoard();
 
         new ShipCell(controller.getFlyBoard().getComponentById(idComp)).drawCell();
-        new VisualShipboard(shipBoard).drawShipboard();
+        shipBoard.drawShipboard();
 
         System.out.println("1 : Insert to the shipboard");
         System.out.println("2 : Return to the flyboard as uncovered");

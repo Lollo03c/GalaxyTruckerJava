@@ -1,4 +1,4 @@
-package org.mio.progettoingsoft.views;
+package org.mio.progettoingsoft.views.tui;
 
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.*;
@@ -308,6 +308,8 @@ public class ShipCell {
                     cell[2][6].setChar('3');
                 }
                 else {cell[2][6].setChar('2');}
+                int energyQuantity = component.getEnergyQuantity();
+                drawBatteries(energyQuantity);
             }
             break;
             //housing e alien housing da fare perchè non mi è chiara la logica
@@ -393,6 +395,12 @@ public class ShipCell {
                 cell[2][6].setChar('e');
             }
             break;
+        }
+    }
+    //to be modified
+    private void drawBatteries(int quantity){
+        for(int k = 0 ; k < quantity ; k++){
+            cell[3][3+k].setChar('▓');
         }
     }
     private void drawGoods(List<GoodType> storedGoods){

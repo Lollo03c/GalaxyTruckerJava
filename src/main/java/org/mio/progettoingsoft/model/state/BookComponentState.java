@@ -3,9 +3,8 @@ package org.mio.progettoingsoft.model.state;
 import org.mio.progettoingsoft.ShipBoard;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.network.message.AddBookedMessage;
-import org.mio.progettoingsoft.network.message.AddComponentMessage;
 import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.views.ShipCell;
+import org.mio.progettoingsoft.views.tui.ShipCell;
 import org.mio.progettoingsoft.views.Tui;
 
 import java.util.List;

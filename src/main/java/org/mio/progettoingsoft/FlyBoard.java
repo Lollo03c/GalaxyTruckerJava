@@ -3,7 +3,6 @@ package org.mio.progettoingsoft;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.components.*;
-import org.mio.progettoingsoft.exceptions.BadParameterException;
 
 
 import java.io.File;
@@ -39,9 +38,8 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     protected final List<AdventureCard> deck;
 
-    protected final List<Optional<Player>> circuit;
-
-    private List<Player> scoreBoard;
+    public final List<Optional<Player>> circuit;
+    private List<Player> scoreBoard = new ArrayList<>();
     protected final List<Integer> coveredComponents;
     private final List<Integer> uncoveredComponents;
 
@@ -83,7 +81,6 @@ public abstract class FlyBoard implements FlyBoardServer {
      */
     public static FlyBoard createFlyBoard(GameMode mode, Set<String> nicknames) {
         FlyBoard flyBoard = null;
-
         switch (mode) {
             case EASY -> flyBoard = new FlyBoardEasy(nicknames);
             case NORMAL -> flyBoard = new FlyBoardNormal(nicknames);
@@ -138,7 +135,13 @@ public abstract class FlyBoard implements FlyBoardServer {
             throw new NoMoreComponentsException("Covered components are not enough");
         return coveredComponents.removeLast();
     }
+    /**
+    *   Method that draws the circuit
+     */
+    public void drawCircuit(){}
+    public void drawScoreboard(){
 
+    }
     public void addUncoveredComponent(int c) {
         this.uncoveredComponents.add(c);
     }
@@ -386,6 +389,9 @@ public abstract class FlyBoard implements FlyBoardServer {
      */
     protected abstract List<Optional<Player>> createCircuite();
 
+    public void setScoreboard(List<Player> players) {
+        this.scoreBoard = players;
+    }
 
     public void setState(GameState state){
         this.state = state;

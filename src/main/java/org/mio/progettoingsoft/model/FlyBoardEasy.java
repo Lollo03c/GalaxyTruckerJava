@@ -7,6 +7,8 @@ import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.views.tui.VisualFlyboardEasy;
+import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,6 +92,16 @@ public class FlyBoardEasy extends FlyBoard {
         }
 
         return loadedCards;
+    }
+    @Override
+    public void drawCircuit(){
+        VisualFlyboardEasy visual = new VisualFlyboardEasy(this);
+        visual.drawCircuit();
+    }
+    @Override
+    public void drawScoreboard(){
+        VisualFlyboardEasy visual = new VisualFlyboardEasy(this);
+        visual.drawScoreboard();
     }
 
     @Override
