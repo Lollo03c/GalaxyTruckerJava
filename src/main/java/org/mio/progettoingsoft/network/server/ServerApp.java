@@ -24,6 +24,7 @@ public class ServerApp implements Runnable{
     private void startRmiServer(){
         final int portRmi = 1099;
         try {
+            //192.168.1.147
             System.setProperty("java.rmi.server.hostname", "localhost");
             Registry registry =  LocateRegistry.createRegistry(portRmi);
 
@@ -42,6 +43,7 @@ public class ServerApp implements Runnable{
 
         try {
             ServerSocket serverSocket = new ServerSocket(port);
+
             Server socketServer = new SocketServer();
 
             BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();

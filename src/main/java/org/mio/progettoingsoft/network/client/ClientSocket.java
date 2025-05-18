@@ -81,6 +81,10 @@ public class ClientSocket extends Client{
                             case REMOVE -> {}
                             case ADD -> controller.addOtherComponent(componentMessage.getNickname(), componentMessage.getIdComp(),
                                     componentMessage.getCordinate(), componentMessage.getRotations());
+
+
+                            case ADD_UNCOVERED ->
+                                controller.addUncoveredComponent(componentMessage.getIdComp());
                         }
                     }
 
@@ -112,16 +116,20 @@ public class ClientSocket extends Client{
     }
 
     @Override
-    public int getCoveredComponent(int idGame){
+    public void getCoveredComponent(int idGame){
         Message message = new ComponentMessage(idGame, controller.getNickname(), ComponentMessage.Action.COVERED, 0, null, 0);
         sendMessage(message);
-
-        return -1;
     }
 
     @Override
     public void handleComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations){
         Message message = new ComponentMessage(idGame, nickname, ComponentMessage.Action.ADD, idComp, cordinate, rotations);
+        sendMessage(message);
+    }
+
+    @Override
+    public void discardComponent(int idComponent){
+        Message message = new ComponentMessage(idClient, "", ComponentMessage.Action.DISCARD, idComponent, null, 0);
         sendMessage(message);
     }
 }

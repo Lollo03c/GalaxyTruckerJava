@@ -51,6 +51,10 @@ public class Tui extends View{
                         buildingShipMenu();
                     }
 
+                    case COMPONENT_MENU -> {
+                        componentMenu();
+                    }
+
                     case ADD_COMPONENT -> addComponent();
 
                     case VIEW_SHIP_BUILDING -> viewShipBuilding();
@@ -139,9 +143,6 @@ public class Tui extends View{
     }
 
     private void addComponent(){
-        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();;
-        new VisualShipboard(controller.getShipBoard()).drawShipboard();
-
         System.out.println("Insert row : ");
         int row = Integer.parseInt(scanner.nextLine());
 
@@ -164,5 +165,25 @@ public class Tui extends View{
         String chosenPlayer = scanner.nextLine();
         new VisualShipboard(controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard()).drawShipboard();
         controller.setState(GameState.BUILDING_SHIP);
+    }
+
+    private void componentMenu(){
+        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();;
+        new VisualShipboard(controller.getShipBoard()).drawShipboard();
+
+        System.out.println("1 : Insert in the shipboard");
+        System.out.println("2 : Put back in the deck");
+        System.out.println("3 : Save for later");
+
+        int chosenAction = Integer.parseInt(scanner.nextLine());
+        if (chosenAction == 1){
+            controller.setState(GameState.ADD_COMPONENT);
+        }
+        else if (chosenAction == 2){
+            controller.discardComponent();
+        }
+        else if (chosenAction == 3){
+
+        }
     }
 }

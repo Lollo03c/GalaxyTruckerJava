@@ -37,6 +37,10 @@ public class ServerMessageHandler implements Runnable {
 
                             case REMOVE -> {}
 
+                            case DISCARD -> {
+                                server.discardComponent(componentMessage.getGameId(), componentMessage.getIdComp());
+                            }
+
                             case COVERED -> {
                                 server.getCoveredComponent(componentMessage.getGameId(), componentMessage.getNickname());
                             }

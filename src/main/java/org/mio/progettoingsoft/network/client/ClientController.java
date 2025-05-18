@@ -11,6 +11,8 @@ import org.mio.progettoingsoft.view.ShipCell;
 import org.mio.progettoingsoft.view.VisualShipboard;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -42,6 +44,7 @@ public class ClientController {
     private int idGame;
 
     private int inHandComponent;
+    private List<Integer> uncoveredComponents = new ArrayList<>();
 
     public void setGameId(int gameId){
         this.idGame = gameId;
@@ -120,7 +123,7 @@ public class ClientController {
 
     public void handleBuildingShip(int chosen){
         if (chosen == 1){
-            inHandComponent = client.getCoveredComponent(idGame);
+            client.getCoveredComponent(idGame);
         }
         else if (chosen == 2){
 
@@ -162,5 +165,18 @@ public class ClientController {
 
     public void setInHandComponent(int idComp){
         this.inHandComponent = idComp;
+    }
+
+    public void discardComponent(){
+        client.discardComponent(inHandComponent);
+        setState(GameState.BUILDING_SHIP);
+    }
+
+    public int getIdGame(){
+        return idGame;
+    }
+
+    public void addUncoveredComponent(int idComp){
+        uncoveredComponents.add(idComp);
     }
 }

@@ -23,5 +23,5 @@ public interface VirtualClient extends Remote {
 
     void setInHandComponent(int idComponent) throws RemoteException;
     void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
-
+    void addUnoveredComponent(int idComp) throws RemoteException;
 }

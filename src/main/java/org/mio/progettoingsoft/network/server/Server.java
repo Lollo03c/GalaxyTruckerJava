@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.exceptions.IncorrectNameException;
 import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import java.rmi.RemoteException;
@@ -57,9 +58,25 @@ public abstract class Server implements VirtualServer{
 
         try {
             client.setInHandComponent(flyBoard.getCoveredComponents().removeLast());
-            client.setState(GameState.ADD_COMPONENT);
+            client.setState(GameState.COMPONENT_MENU);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void discardComponent(int idGame, int idComponent){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        flyBoard.addUncoveredComponent(idComponent);
+
+        for (VirtualClient client : game.getClients().values()){
+            try {
+                client.addUnoveredComponent(idComponent);
+            }
+            catch (RemoteException e){
+
+            }
         }
     }
 }

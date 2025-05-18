@@ -25,8 +25,9 @@ public abstract class Client implements VirtualClient{
     public abstract void handleNickname(String nickname);
 
     public abstract void handleGameInfo(GameInfo gameInfo);
-    public abstract int getCoveredComponent(int idGame);
+    public abstract void getCoveredComponent(int idGame);
     public abstract void handleComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations);
+    public abstract void discardComponent(int idComponent);
 
     @Override
     public void setNickname(String nickname) throws RemoteException{
@@ -81,6 +82,15 @@ public abstract class Client implements VirtualClient{
                 controller.setInHandComponent(idComponent)
         );
     }
+
+    @Override
+    public void addUnoveredComponent(int idComp) throws RemoteException{
+        executors.submit(() -> {
+            controller.addUncoveredComponent(idComp);
+        });
+    }
+
+
 
 
 

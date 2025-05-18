@@ -72,15 +72,14 @@ public class ClientRmi extends Client implements VirtualClient{
     }
 
     @Override
-    public int getCoveredComponent(int idGame){
+    public void getCoveredComponent(int idGame){
         try{
-            controller.setState(GameState.ADD_COMPONENT);
             server.getCoveredComponent(idGame, controller.getNickname());
+//            controller.setState(GameState.COMPONENT_MENU);
         }
         catch (RemoteException e){
 
         }
-        return  -1;
     }
 
     @Override
@@ -89,6 +88,16 @@ public class ClientRmi extends Client implements VirtualClient{
             server.addComponent(idGame, nickname, idComp, cordinate, rotations);
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void discardComponent(int idComponent){
+        try{
+            server.discardComponent(controller.getIdGame(), idComponent);
+        }
+        catch (RemoteException e){
+
         }
     }
 

@@ -84,4 +84,10 @@ public class VirtualSocketClient implements VirtualClient{
         Message message = new ComponentMessage(0, "", ComponentMessage.Action.COVERED, idComp, null, 0);
         sendMessage(message);
     }
+
+    @Override
+    public void addUnoveredComponent(int idComp){
+        Message message = new ComponentMessage(0, "", ComponentMessage.Action.ADD_UNCOVERED, idComp, null, 0);
+        sendMessage(message);
+    }
 }

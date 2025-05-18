@@ -13,8 +13,10 @@ import java.rmi.RemoteException;
 public interface VirtualServer extends Remote {
 
     int registerClient(VirtualClient client) throws RemoteException;
+
     void handleNickname(int idClient, String nickname) throws RemoteException;
     void handleGameInfo(GameInfo gameInfo) throws RemoteException;
     void getCoveredComponent(int idGame, String nickname) throws RemoteException;
     void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
+    void discardComponent(int idGame, int idComponent) throws RemoteException;
 }

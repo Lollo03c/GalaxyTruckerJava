@@ -138,8 +138,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         return coveredComponents.removeLast();
     }
 
-    public void addUncoveredComponent(int c) {
-        this.uncoveredComponents.add(c);
+    public void addUncoveredComponent(int idComp) {
+        this.uncoveredComponents.add(idComp);
     }
 
     public Integer chooseComponentFromUncoveredByIndex(int index) throws NoMoreComponentsException {
