@@ -3,10 +3,7 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
-import org.mio.progettoingsoft.network.message.AddBookedMessage;
-import org.mio.progettoingsoft.network.message.CoveredComponentMessage;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.StartGameMessage;
+import org.mio.progettoingsoft.network.message.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,6 +68,11 @@ public class GameController implements Runnable {
                         ship.addBookedComponent(addBookedMessage.getAddedCompId());
                         broadcast(new AddBookedMessage(game.getIdGame(), message.getNickname(), addBookedMessage.getAddedCompId(),
                                 addBookedMessage.getToPosition()));
+                    }
+                    case AddComponentMessage addComponentMessage -> {
+                        ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(addComponentMessage.getNickname()).getShipBoard();
+                        shipBoard.addComponentToPosition(addComponentMessage.getIdComp(), addComponentMessage.getCordinate(), addComponentMessage.getRotations());
+                        broadcast(addComponentMessage);
                     }
                     default -> {
                     }

@@ -40,7 +40,7 @@ public class ServerController {
      * called when the server receive a new connection from a client
      * send a {@link WelcomeMessage} to the client and regsiter the client in the waiting clients list
      * @param client : virtual client to send message to
-     * @throws Exception : throws the exc thrown by the showUpdate message
+     * @throws Exception : forwards the exc thrown by the showUpdate message
      */
     public void addClientToAccept(VirtualClient client) throws Exception {
         int idClient = GameManager.getInstance().getNextIdPlayer();

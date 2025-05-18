@@ -192,6 +192,11 @@ public abstract class ClientController implements Runnable {
     }
 
     public void handleAddComponent(String nickname, int idComp, Cordinate cordinate, int rotation) {
+        ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        shipBoard.addComponentToPosition(idComp, cordinate, rotation);
+    }
 
+    public void sendToServer(Message message) throws Exception {
+        client.sendToServer(message);
     }
 }

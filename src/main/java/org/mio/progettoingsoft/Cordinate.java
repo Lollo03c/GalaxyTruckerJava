@@ -2,12 +2,13 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class Cordinate{
+public class Cordinate implements Serializable {
     private final int row;
     private final int column;
 
