@@ -10,6 +10,8 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.views.tui.ShipCell;
 import org.mio.progettoingsoft.views.tui.VisualShipboard;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ public class ClientController {
     private Client client;
 
     private ClientController(){
-        stateQueue.add(GameState.START);
+        this.setState(GameState.START);
     }
 
     public static synchronized ClientController getInstance(){
@@ -35,8 +37,6 @@ public class ClientController {
     private GameState gameState = GameState.START;
     private final Object stateLock = new Object();
     private final Object flyboardLock = new Object();
-
-    BlockingQueue<GameState> stateQueue = new LinkedBlockingQueue<>();
     FlyBoard flyBoard;
     ShipBoard shipBoard;
 
@@ -46,12 +46,22 @@ public class ClientController {
     private int inHandComponent;
     private List<Integer> uncoveredComponents = new ArrayList<>();
 
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        support.addPropertyChangeListener(listener);
+    }
+
     public void setGameId(int gameId){
         this.idGame = gameId;
     }
 
     public void setState(GameState state){
-        stateQueue.add(state);
+        synchronized (stateLock) {
+            GameState oldState = this.gameState;
+            this.gameState = state;
+            support.firePropertyChange("gameState", oldState, state);
+        }
     }
 
     public GameState getState(){
@@ -73,6 +83,7 @@ public class ClientController {
     }
 
     public void connectToServer(boolean isRmi){
+        setState(GameState.WAITING);
         try {
             client = isRmi ? new ClientRmi() : new ClientSocket();
 
@@ -83,13 +94,10 @@ public class ClientController {
         }
 
         client.connect();
-
-
         setState(GameState.NICKNAME);
-    }
-
-    public BlockingQueue<GameState> getStateQueue() {
-        return stateQueue;
+        synchronized (this){
+            this.notifyAll();
+        }
     }
 
     public void handleNickname(String nickname){

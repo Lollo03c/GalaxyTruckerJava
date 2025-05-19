@@ -106,7 +106,6 @@ public class ClientSocket extends Client{
     public void handleNickname(String nickname){
         Message message = new NicknameMessage(-1, nickname, idClient);
         sendMessage(message);
-
     }
 
     @Override

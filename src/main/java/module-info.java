@@ -16,4 +16,5 @@ module org.mio.progettoingsoft {
     exports org.mio.progettoingsoft.network.client;
     exports org.mio.progettoingsoft.network.server;
     exports org.mio.progettoingsoft.network.messages;
+    exports org.mio.progettoingsoft.views.gui;
 }

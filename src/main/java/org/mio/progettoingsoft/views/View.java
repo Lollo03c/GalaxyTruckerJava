@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft.views;
 
-public abstract class View implements Runnable {
+import java.beans.PropertyChangeListener;
 
+public interface View extends PropertyChangeListener {
+    void run();
 }
