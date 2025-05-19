@@ -1,15 +1,10 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
-import org.mio.progettoingsoft.views.tui.ShipCell;
-import org.mio.progettoingsoft.views.tui.VisualShipboard;
 import org.mio.progettoingsoft.views.View;
 
 import java.util.Scanner;
@@ -59,11 +54,23 @@ public class Tui extends View {
 
                     case ADD_COMPONENT -> addComponent();
 
+                    case DRAW_UNCOVERED_COMPONENTS ->
+                        drawUncoveredComponents();
+
                     case VIEW_SHIP_BUILDING -> viewShipBuilding();
+
+                    case VIEW_DECKS_LIST -> viewDecksList();
+
+                    case VIEW_DECK -> viewDeck();
 
                     case ERROR_NICKNAME -> {
                         System.out.println("Nickname already taken. Try Something else\n");
                         controller.setState(GameState.NICKNAME);
+                    }
+
+                    case UNABLE_UNCOVERED_COMPONENT -> {
+                        System.out.println("This component has been already taken.");
+                        controller.setState(GameState.BUILDING_SHIP);
                     }
 
                     case ERROR_PLACEMENT -> {
@@ -140,6 +147,10 @@ public class Tui extends View {
         System.out.println("2 : pick uncovered component");
         System.out.println("3 : view other player's ship");
 
+        if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL)) {
+            System.out.println("4 : look at decks");
+        }
+
         int chosen = Integer.parseInt(scanner.nextLine());
         controller.handleBuildingShip(chosen);
     }
@@ -187,5 +198,38 @@ public class Tui extends View {
         else if (chosenAction == 3){
 
         }
+    }
+
+    private void drawUncoveredComponents(){
+        int count = 1;
+        for (int idComp : controller.getFlyBoard().getUncoveredComponents()){
+            System.out.println("Component #" + idComp);
+            Component component = controller.getFlyBoard().getComponentById(idComp);
+            new ShipCell(component).drawCell();
+        }
+
+        System.out.print("Select component to draw : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        controller.drawCovered(chosen);
+    }
+
+    private void viewDecksList(){
+        System.out.println("Available decks : ");
+        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()){
+            System.out.println("Deck #" + numberDeck);
+        }
+        System.out.print("Choose deck number : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        controller.bookDeck(chosen);
+    }
+
+    private void viewDeck(){
+        System.out.println("hai in mano il deck #" + controller.getInHandDeck());
+        System.out.println("premere invio per continuare");
+
+        String buffer = scanner.nextLine();
+        controller.freeDeck();
     }
 }

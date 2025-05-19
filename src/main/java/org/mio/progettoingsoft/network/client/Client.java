@@ -28,6 +28,9 @@ public abstract class Client implements VirtualClient{
     public abstract void getCoveredComponent(int idGame);
     public abstract void handleComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations);
     public abstract void discardComponent(int idComponent);
+    public abstract void drawUncovered(int idComponent);
+    public abstract void bookDeck(int deckNumber);
+    public abstract void freeDeck(int deckNumver);
 
     @Override
     public void setNickname(String nickname) throws RemoteException{
@@ -88,6 +91,27 @@ public abstract class Client implements VirtualClient{
         executors.submit(() -> {
             controller.addUncoveredComponent(idComp);
         });
+    }
+
+    @Override
+    public void removeUncovered(int idComp) throws RemoteException{
+        executors.submit(() ->
+            controller.removeUncovered(idComp)
+        );
+    }
+
+    @Override
+    public void removeDeck(Integer deckNumber) throws RemoteException{
+        executors.submit(() -> controller.removeDeck(deckNumber));
+    }
+
+    @Override
+    public void setInHandDeck(int deck){
+        executors.submit(() -> controller.setInHandDeck(deck));
+    }
+
+    public void addAvailableDeck(int deckNumber){
+        executors.submit(() -> controller.addAvailableDeck(deckNumber));
     }
 
 

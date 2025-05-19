@@ -24,4 +24,9 @@ public interface VirtualClient extends Remote {
     void setInHandComponent(int idComponent) throws RemoteException;
     void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
     void addUnoveredComponent(int idComp) throws RemoteException;
+    void removeUncovered(int idComp) throws RemoteException;
+
+    void removeDeck(Integer deckNumber) throws RemoteException;
+    void setInHandDeck(int deck) throws RemoteException;
+    void addAvailableDeck(int deckNumber) throws RemoteException;
 }

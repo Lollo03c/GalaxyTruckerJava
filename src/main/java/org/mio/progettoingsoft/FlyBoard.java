@@ -17,6 +17,7 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.FlyBoardServer;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The Flyboard
@@ -31,12 +32,12 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     private final GameMode mode;
 
-    private List<AdventureCard> selectionDeckPrivate;
-    private List<AdventureCard> selectionDeck1;
-    private List<AdventureCard> selectionDeck2;
-    private List<AdventureCard> selectionDeck3;
+    protected List<AdventureCard> selectionDeckPrivate;
+    protected List<List<Integer>> littleDecks;
+    private List<Integer> availableDecks = new ArrayList<>();
 
-    protected final List<AdventureCard> deck;
+    protected final List<Integer> deck;
+
 
     public final List<Optional<Player>> circuit;
     private List<Player> scoreBoard = new ArrayList<>();
@@ -46,6 +47,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     protected final List<Player> players;
 
     private Map<Integer, Component> components = loadComponentMap();
+    protected Map<Integer, AdventureCard> adventureCards = loadAdventureCard();
 
     private HourGlass hourGlass;
 
@@ -59,7 +61,12 @@ public abstract class FlyBoard implements FlyBoardServer {
         Collections.shuffle(coveredComponents);
 
 
-        deck = loadAdventureCard();
+        deck = new ArrayList<>();
+        deck.addAll(adventureCards.keySet());
+        Collections.shuffle(deck);
+
+        buildLittleDecks();
+        availableDecks.addAll(List.of(0, 1, 2));
 
         uncoveredComponents = new ArrayList<>();
         players = new ArrayList<>(nicknames.size());
@@ -72,6 +79,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         circuit = createCircuite();
 
     }
+
+    protected abstract void buildLittleDecks();
 
     /**
      *
@@ -164,8 +173,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         throw new NoMoreComponentsException("It's not possible to remove the component.");
     }
 
-    public List<AdventureCard> getAdventureCards() {
-        return deck;
+    public AdventureCard getAdventureCardById(int id) {
+        return adventureCards.get(id);
     }
 
     // adds a player with the passed user and color (for the main housing), throws an exc if necessary
@@ -286,8 +295,8 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
     public AdventureCard drawAdventureCard() {
-        AdventureCard card = deck.remove(0);
-        return card;
+        int idCard = deck.removeLast();
+        return getAdventureCardById(idCard);
     }
 
     public boolean isDeckEmpty() {
@@ -381,7 +390,7 @@ public abstract class FlyBoard implements FlyBoardServer {
      *
      * @return the list of all the Adventure Cards based on the {@link GameMode} of the game
      */
-    protected abstract List<AdventureCard> loadAdventureCard();
+    protected abstract Map<Integer, AdventureCard> loadAdventureCard();
 
     /**
      *
@@ -399,6 +408,14 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public List<Player> getPlayers(){
         return players;
+    }
+
+    public GameMode getMode(){
+        return mode;
+    }
+
+    public List<Integer> getAvailableDecks(){
+        return availableDecks;
     }
 
 }

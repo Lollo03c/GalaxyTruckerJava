@@ -2,17 +2,11 @@ package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
-import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.views.tui.ShipCell;
-import org.mio.progettoingsoft.views.tui.VisualShipboard;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,7 +38,7 @@ public class ClientController {
     private int idGame;
 
     private int inHandComponent;
-    private List<Integer> uncoveredComponents = new ArrayList<>();
+    private int inHandDeck;
 
     public void setGameId(int gameId){
         this.idGame = gameId;
@@ -126,10 +120,13 @@ public class ClientController {
             client.getCoveredComponent(idGame);
         }
         else if (chosen == 2){
-
+            setState(GameState.DRAW_UNCOVERED_COMPONENTS);
         }
         else if (chosen == 3){
             setState(GameState.VIEW_SHIP_BUILDING);
+        }
+        else if (chosen == 4){
+            setState(GameState.VIEW_DECKS_LIST);
         }
     }
 
@@ -177,6 +174,46 @@ public class ClientController {
     }
 
     public void addUncoveredComponent(int idComp){
-        uncoveredComponents.add(idComp);
+        synchronized (flyBoard.getUncoveredComponents()) {
+            flyBoard.getUncoveredComponents().add(idComp);
+        }
+    }
+
+    public void drawCovered(int idComp){
+        client.drawUncovered(idComp);
+    }
+
+    public void removeUncovered(Integer idComp){
+        synchronized (flyBoard.getUncoveredComponents()){
+            flyBoard.getUncoveredComponents().remove(idComp);
+        }
+    }
+
+    public void bookDeck(Integer deckNumber){
+        client.bookDeck(deckNumber);
+    }
+
+    public void removeDeck(Integer deckNumber){
+        synchronized (flyBoard.getAvailableDecks()) {
+            flyBoard.getAvailableDecks().remove(deckNumber);
+        }
+    }
+
+    public void setInHandDeck(int deckNumber){
+        inHandDeck = deckNumber;
+    }
+
+    public int getInHandDeck(){
+        return inHandDeck;
+    }
+
+    public void freeDeck(){
+        client.freeDeck(inHandDeck);
+    }
+
+    public void addAvailableDeck(int deckNumber){
+        synchronized (flyBoard.getAvailableDecks()){
+            flyBoard.getAvailableDecks().add(deckNumber);
+        }
     }
 }

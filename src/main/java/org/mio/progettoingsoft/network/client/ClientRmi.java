@@ -101,4 +101,36 @@ public class ClientRmi extends Client implements VirtualClient{
         }
     }
 
+    @Override
+    public void drawUncovered(int idComponent){
+        try{
+            server.drawUncovered(controller.getIdGame(), controller.getNickname(), idComponent);
+        }
+        catch (RemoteException e){
+
+        }
+    }
+
+    @Override
+    public void bookDeck(int deckNumber){
+        try{
+            server.bookDeck(controller.getIdGame(),controller.getNickname(), deckNumber);
+        }
+        catch (RemoteException e){
+
+        }
+    }
+
+    @Override
+    public void freeDeck(int deckNumber){
+        try{
+            server.freeDeck(controller.getIdGame(), controller.getNickname(), controller.getInHandDeck());
+        }
+        catch (RemoteException e){
+
+        }
+    }
+
+
+
 }

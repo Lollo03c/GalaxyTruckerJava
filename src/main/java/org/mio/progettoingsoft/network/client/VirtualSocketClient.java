@@ -90,4 +90,28 @@ public class VirtualSocketClient implements VirtualClient{
         Message message = new ComponentMessage(0, "", ComponentMessage.Action.ADD_UNCOVERED, idComp, null, 0);
         sendMessage(message);
     }
+
+    @Override
+    public void removeUncovered(int idComp){
+        Message message = new ComponentMessage(0, "", ComponentMessage.Action.DRAW_UNCOVERED, idComp, null, 0);
+        sendMessage(message);
+    }
+
+    @Override
+    public void removeDeck(Integer idDeck){
+        Message message = new DeckMessage(0, "", DeckMessage.Action.REMOVE_FROM_CLIENT, idDeck);
+        sendMessage(message);
+    }
+
+    @Override
+    public void setInHandDeck(int deckNumber){
+        Message message = new DeckMessage(0, "", DeckMessage.Action.BOOK, deckNumber);
+        sendMessage(message);
+    }
+
+    @Override
+    public void addAvailableDeck(int deckNumber){
+        Message message = new DeckMessage(0, "", DeckMessage.Action.UNBOOK, deckNumber);
+        sendMessage(message);
+    }
 }
