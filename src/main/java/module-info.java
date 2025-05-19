@@ -9,6 +9,7 @@ module org.mio.progettoingsoft {
     requires java.rmi;
     requires org.slf4j;
     requires ch.qos.logback.core;
+    requires java.logging;
 
     opens org.mio.progettoingsoft to javafx.fxml;
     exports org.mio.progettoingsoft;

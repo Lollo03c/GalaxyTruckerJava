@@ -1,19 +1,15 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.exceptions.IncorrectClientException;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
-import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
-import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Optional;
 
-public abstract class Server implements VirtualServer{
+public abstract class Server implements VirtualServer {
 
     @Override
     public void handleNickname(int idClient, String nickname) {
@@ -37,6 +33,8 @@ public abstract class Server implements VirtualServer{
 
         ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();
         shipBoard.addComponentToPosition(idComp, cordinate, rotations);
+
+        Logger.debug(nickname + " added component " + idComp);
 
         for (Player player : game.getFlyboard().getPlayers()){
             if (!player.getNickname().equals(nickname)){
@@ -74,7 +72,7 @@ public abstract class Server implements VirtualServer{
 
         for (VirtualClient client : game.getClients().values()){
             try {
-                client.addUnoveredComponent(idComponent);
+                client.addUncoveredComponent(idComponent);
             }
             catch (RemoteException e){
 

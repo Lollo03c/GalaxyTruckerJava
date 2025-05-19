@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -104,8 +105,8 @@ public class Game implements GameServer, GameClient {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("Game " +idGame + " is starting" );
 
+        Logger.info("Game " + idGame + " started");
     }
 
 //    @Override

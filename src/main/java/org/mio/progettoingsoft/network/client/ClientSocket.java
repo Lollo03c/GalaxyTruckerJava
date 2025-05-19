@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ClientSocket extends Client{
+public class ClientSocket extends Client {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -108,7 +108,6 @@ public class ClientSocket extends Client{
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            ;
         }
     }
 
@@ -121,7 +120,6 @@ public class ClientSocket extends Client{
     public void handleNickname(String nickname){
         Message message = new NicknameMessage(-1, nickname, idClient);
         sendMessage(message);
-
     }
 
     @Override

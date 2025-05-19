@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-public class VirtualSocketClient implements VirtualClient{
+public class VirtualSocketClient implements VirtualClient {
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
 
@@ -86,7 +86,7 @@ public class VirtualSocketClient implements VirtualClient{
     }
 
     @Override
-    public void addUnoveredComponent(int idComp){
+    public void addUncoveredComponent(int idComp){
         Message message = new ComponentMessage(0, "", ComponentMessage.Action.ADD_UNCOVERED, idComp, null, 0);
         sendMessage(message);
     }
