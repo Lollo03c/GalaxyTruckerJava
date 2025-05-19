@@ -15,13 +15,7 @@ public abstract class Component {
     private final ComponentType type;
     private int row;
     private int column;
-    public Boolean getHazard() {
-        return false;
-    }
-    public Boolean getBig() {
-        return false;
-    }
-    public boolean getTriple(){        return false;    }
+
     public Component(int id, ComponentType type, Connector topConn, Connector bottomConn, Connector rightConn, Connector leftConn){
         this.id = id;
         topConnector = topConn;
@@ -101,6 +95,10 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not an energy depot");
     }
 
+    public boolean getTriple() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not an energy depot");
+    }
+
     /**
      * add the {@link GoodType} given to the {@link org.mio.progettoingsoft.components.Depot}
      * @param type the {@link GoodType} to add
@@ -168,16 +166,17 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not a alien housing");
     }
 
-    public HousingColor getHousingColorById(int id){
-        return HousingColor.BLUE;
+    public HousingColor getHousingColorById(int id) throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("");
     }
 
-        /**
-         *
-         * @return the list of {@link GuestType} hosted in the {@link org.mio.progettoingsoft.components.Housing},
-         *  an empty list if the component is not a {@link org.mio.progettoingsoft.components.Housing}
-         *
-         */
+
+    /**
+     *
+     * @return the list of {@link GuestType} hosted in the {@link org.mio.progettoingsoft.components.Housing},
+     *  an empty list if the component is not a {@link org.mio.progettoingsoft.components.Housing}
+     *
+     */
     public List<GuestType> getGuests() {
         return Collections.emptyList();
     }
@@ -210,15 +209,7 @@ public abstract class Component {
         };
     }
 
-    public Boolean addHumanMember(){
-        return false;
-    }
-
-//    public Boolean removeHumanMember(){
-//        return false;
-//    }
-
-    public Integer getNumHumanMembers(){
+    public int getEnginePower(){
         return 0;
     }
 
@@ -262,6 +253,14 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not a depot");
     }
 
+    public boolean getHazard() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a depot");
+    }
+
+    public boolean getBig() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a depot");
+    }
+
 
     /**
      *
@@ -278,10 +277,6 @@ public abstract class Component {
                 " Right: " + rightConnector.toString() +
                 " Left: " + leftConnector.toString() +
                 " Row: " + row + " Column: " + column;
-    }
-
-    public String getTuiString(){
-        return String.valueOf(id);
     }
 
 }

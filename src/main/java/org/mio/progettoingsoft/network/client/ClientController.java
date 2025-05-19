@@ -2,201 +2,181 @@ package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.IncorrectNameException;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
+import org.mio.progettoingsoft.exceptions.SetGameModeException;
+import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.model.interfaces.GameClient;
-import org.mio.progettoingsoft.model.state.ClientState;
-import org.mio.progettoingsoft.model.state.ConnectionSetup;
-import org.mio.progettoingsoft.network.ConnectionType;
-import org.mio.progettoingsoft.network.GuiController;
-import org.mio.progettoingsoft.network.NetworkFactory;
-import org.mio.progettoingsoft.network.TuiController;
-import org.mio.progettoingsoft.network.input.Input;
-import org.mio.progettoingsoft.network.input.IntInput;
-import org.mio.progettoingsoft.network.input.SetupInput;
-import org.mio.progettoingsoft.network.input.StringInput;
-import org.mio.progettoingsoft.network.message.CoveredComponentMessage;
-import org.mio.progettoingsoft.network.message.GameSetupMessage;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.NicknameMessage;
-import org.mio.progettoingsoft.views.VirtualView;
+import org.mio.progettoingsoft.view.ShipCell;
+import org.mio.progettoingsoft.view.VisualShipboard;
 
-import java.util.Set;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class ClientController implements Runnable {
-    /**
-     * SINGLETON IMPLEMENTATION
-     */
+public class ClientController {
     private static ClientController instance;
+    private Client client;
 
-    public static ClientController create(boolean isGui) {
-        if (instance == null) {
-            if (isGui) {
-                instance = new GuiController();
-            } else {
-                instance = new TuiController();
-            }
-        }
+    private ClientController(){
+        stateQueue.add(GameState.START);
+    }
+
+    public static synchronized ClientController getInstance(){
+        if (instance == null)
+            instance = new ClientController();
+
         return instance;
     }
 
-    public static ClientController get() {
-        return instance;
-    }
+    private GameState gameState = GameState.START;
+    private final Object stateLock = new Object();
+    private final Object flyboardLock = new Object();
 
-    public void setMessageQueue(BlockingQueue<Message> messageQueue) {
-        this.inputMessageQueue = messageQueue;
-    }
+    BlockingQueue<GameState> stateQueue = new LinkedBlockingQueue<>();
+    FlyBoard flyBoard;
+    ShipBoard shipBoard;
 
-    protected ClientState state = new ConnectionSetup();
-    protected ClientState nextState;
-
-    protected GameState gameState = GameState.START;
-    protected Client client;
-    private BlockingQueue<Message> inputMessageQueue;
     private String nickname;
-    private VirtualView view;
+    private int idGame;
 
-    protected final Object stateLock = new Object();
-    protected final Object stateLock2 = new Object();
+    private int inHandComponent;
+    private List<Integer> uncoveredComponents = new ArrayList<>();
 
-    private int setupClientid;
+    public void setGameId(int gameId){
+        this.idGame = gameId;
+    }
 
-    private GameClient game;
-    private FlyBoard flyBoard;
+    public void setState(GameState state){
+        stateQueue.add(state);
+    }
+
+    public GameState getState(){
+        synchronized (stateLock){
+            return gameState;
+        }
+    }
 
     public String getNickname(){
         return nickname;
     }
 
-    protected void handleInput(Input input) throws Exception {
-        switch (this.getGameState()) {
-//            case START -> handleConnectionTypeInput(input);
-//            case NICKNAME_REQUEST -> handleNicknameInput(input);
-//            case SETUP_GAME -> handleSetupGame(input);
-            case PRINT_GAME_INFO -> {
-            }
-            case WAITING -> {
-                synchronized (this) {
-                    while (this.getGameState() == GameState.WAITING) {
-                        this.wait();
-                    }
-                }
-            }
-            case BUILDING_SHIP -> {
-                System.out.println("partita iniziata");
-                this.setGameState(GameState.BUILDING_SHIP);
-
-                handleBuildingShip(input);
-
-            }
-            default -> System.out.println("Invalid gameState");
-        }
-
+    public Object getStateLock(){
+        return stateLock;
     }
 
-    public void handleConnectionTypeInput(ConnectionType connectionType) {
-        client = NetworkFactory.create(connectionType, view, inputMessageQueue);
-
-        // Avvia il client (che si occupa di leggere dal socket o direttamente attraverso RMI e mettere i messaggi in coda)
-        // TODO: capire come gestire questa eccezione in cui la rete non viene create per qualche motivo
-        if (client != null) {
-            client.run();
-        }
-//        } else {
-//            throw new NotBoundException("Client not found");
-//        }
-
-
-    }
-
-    public Message handleNicknameInput(String nickname) {
+    public void setNickname(String nickname){
         this.nickname = nickname;
-        return new NicknameMessage(nickname, setupClientid);
     }
 
-    public Message handleSetupGame(GameMode mode, int nPlayers) {
-        return new GameSetupMessage(game.getIdGame(), nickname, nPlayers, mode);
-    }
+    public void connectToServer(boolean isRmi){
+        try {
+            client = isRmi ? new ClientRmi() : new ClientSocket();
 
-    private void handleBuildingShip(Input intInput) throws Exception{
-        if (intInput instanceof IntInput input){
-            int chosenAction = input.getNumber();
-            Message message = null;
-
-            switch (chosenAction){
-                case 1 -> message = new CoveredComponentMessage(game.getIdGame(), nickname, -1);
-
-
-                default -> {}
-            }
-
-            client.sendToServer(message);
-            this.setGameState(GameState.WAITING);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        client.connect();
+
+
+        setState(GameState.NICKNAME);
     }
 
-    public void setGameState(GameState gameState) {
-        synchronized (this.stateLock) {
-            this.gameState = gameState;
-        }
+    public BlockingQueue<GameState> getStateQueue() {
+        return stateQueue;
     }
 
-    public void setGameState(ClientState state){
-        synchronized (this) {
-            this.notifyAll();
-            this.state = state;
-        }
+    public void handleNickname(String nickname){
+        client.handleNickname(nickname);
     }
 
-    public GameState getGameState() {
-        synchronized (this.stateLock) {
-            return this.gameState;
-        }
-    }
-
-    public void setSetupClientId(int id) {
-        this.setupClientid = id;
-    }
-
-    public void createGame(int id) {
-        game = new Game(id);
-    }
-
-    public void setGame(int id, GameMode mode, int nPlayers) {
-        game = new Game(id);
-        game.setupGame(mode, nPlayers);
-    }
-
-    public GameClient getGame() {
-        return game;
-    }
-
-    public abstract void handleWrongNickname(String nickname);
-
-    public void setNextState(ClientState state){
-        this.nextState = state;
+    public void setGameInfo(GameInfo gameInfo){
+        client.handleGameInfo(gameInfo);
     }
 
     public FlyBoard getFlyBoard(){
         return flyBoard;
     }
 
-    public void createPlayers(Set<String> players){
-        flyBoard = FlyBoard.createFlyBoard(game.getGameMode(), players);
+    public Object getFlyboardLock(){
+        return flyboardLock;
     }
 
-    public void handleBookedComponent(String nickname, int idComp, int position){
-        ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-        shipBoard.addBookedComponent(idComp);
+    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players){
+        synchronized (flyboardLock){
+            flyBoard = FlyBoard.createFlyBoard(mode, players.keySet());
+
+
+            for (Player player : flyBoard.getPlayers()) {
+                HousingColor color = players.get(player.getNickname());
+                player.setHousingColor(color);
+            }
+            shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        }
     }
 
-    public void handleAddComponent(String nickname, int idComp, Cordinate cordinate, int rotation) {
-        ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-        shipBoard.addComponentToPosition(idComp, cordinate, rotation);
+    public void handleBuildingShip(int chosen){
+        if (chosen == 1){
+            client.getCoveredComponent(idGame);
+        }
+        else if (chosen == 2){
+
+        }
+        else if (chosen == 3){
+            setState(GameState.VIEW_SHIP_BUILDING);
+        }
     }
 
-    public void sendToServer(Message message) throws Exception {
-        client.sendToServer(message);
+    public int getInHandComponent(){
+        return inHandComponent;
+    }
+
+    public ShipBoard getShipBoard(){
+        return shipBoard;
+    }
+
+    public void addComponent(Cordinate cordinate, int rotations){
+
+        try {
+            shipBoard.addComponentToPosition(inHandComponent, cordinate, rotations);
+
+            client.handleComponent(idGame, nickname, inHandComponent, cordinate, rotations);
+            inHandComponent = -1;
+
+            setState(GameState.BUILDING_SHIP);
+        } catch (IncorrectShipBoardException e) {
+            setState(GameState.ERROR_PLACEMENT);
+        }
+    }
+
+    public void addOtherComponent(String nickname, int idComp, Cordinate cordinate, int rotations){
+        ShipBoard otherShipboard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+
+        synchronized (otherShipboard){
+            otherShipboard.addComponentToPosition(idComp, cordinate, rotations);
+        }
+    }
+
+    public void setInHandComponent(int idComp){
+        this.inHandComponent = idComp;
+    }
+
+    public void discardComponent(){
+        client.discardComponent(inHandComponent);
+        setState(GameState.BUILDING_SHIP);
+    }
+
+    public int getIdGame(){
+        return idGame;
+    }
+
+    public void addUncoveredComponent(int idComp){
+        uncoveredComponents.add(idComp);
     }
 }

@@ -1,8 +1,6 @@
 package org.mio.progettoingsoft.components;
 
-import java.io.Serializable;
-
-public enum HousingColor implements Serializable {
+public enum HousingColor {
     BLUE, GREEN, RED, YELLOW, NOCOLOR;
 
     public static HousingColor stringToColor(String s){
@@ -12,15 +10,6 @@ public enum HousingColor implements Serializable {
             case "yellow" -> HousingColor.YELLOW;
             case "green" -> HousingColor.GREEN;
             default -> HousingColor.BLUE;
-        };
-    }
-    public String colorToString(){
-        return switch (this){
-            case RED -> "\u001B[31m";
-            case BLUE -> "\u001B[34m";
-            case GREEN -> "\u001B[32m";
-            case YELLOW -> "\u001B[33m";
-            case NOCOLOR -> "\u001B[0m";
         };
     }
 
@@ -34,4 +23,13 @@ public enum HousingColor implements Serializable {
         };
     }
 
+    public String colorToString(){
+        return switch (this){
+            case RED -> "\u001B[31m";
+            case BLUE -> "\u001B[34m";
+            case GREEN -> "\u001B[32m";
+            case YELLOW -> "\u001B[33m";
+            case NOCOLOR -> "\u001B[0m";
+        };
+    }
 }

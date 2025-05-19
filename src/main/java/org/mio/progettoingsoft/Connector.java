@@ -57,4 +57,14 @@ public enum Connector {
 
         return this.equals(other);
     }
+
+    @Override
+    public String toString(){
+        return switch (this){
+            case TRIPLE -> "triple";
+            case FLAT -> "flat";
+            case DOUBLE -> "double";
+            case SINGLE -> "single";
+        };
+    }
 }

@@ -2,28 +2,30 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.network.client.ClientApp;
 
-import java.io.IOException;
-import java.rmi.NotBoundException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientMain {
-    public static void main(String[] args) throws NotBoundException, IOException {
-        /* Questa classe serve per lancia ClientApp in modalità CLI o GUI a seconda dell'args in ingresso,
-         * quindi deve occuparti SOLO di lancia ClientApp con il metodo run() e interfacciarsi con il logger*/
 
-        System.out.println("Galaxy Truckers | Client");
-
+    public static void main(String[] args) {
+        List<String> argsList = Arrays.asList(args);
         boolean isGui = true;
 
-        // Arguments parsing
-        for (String arg : args) {
-            switch (arg) {
-                case "-t", "--tui", "--cli" -> isGui = false;
-                // TODO: gestire in altro modo, stampando su terminale il motivo del problema
-                default -> throw new IllegalArgumentException("Unknown argument: " + arg);
-            }
+        if (argsList.contains("--cli"))
+            isGui = false;
+        else if (argsList.contains("--gui"))
+            isGui = true;
+        else {
+            System.out.println("Start mode not specified");
         }
+
+
 
         ClientApp clientApp = new ClientApp(isGui);
         clientApp.run();
     }
 }
+

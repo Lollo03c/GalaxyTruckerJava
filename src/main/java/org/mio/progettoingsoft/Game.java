@@ -1,20 +1,22 @@
 package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
-import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.VirtualClient;
-import org.mio.progettoingsoft.network.input.Input;
-import org.mio.progettoingsoft.network.message.Message;
 
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 public class Game implements GameServer, GameClient {
     private FlyBoard flyboard;
@@ -22,7 +24,7 @@ public class Game implements GameServer, GameClient {
     private GameMode mode;
     private int numPlayers;
 
-    private final BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Object> receivedMessages = new LinkedBlockingQueue<>();
     private final GameController gameController = new GameController();
 
     private Map<String, VirtualClient> clients = new HashMap<>();
@@ -35,8 +37,15 @@ public class Game implements GameServer, GameClient {
 
     @Override
     public void setupGame(GameMode mode, int numPlayers){
-        this.mode = mode;
-        this.numPlayers = numPlayers;
+
+        synchronized (GameManager.getInstance().getLockCreatingGame()) {
+            GameManager.getInstance().getCreatingGame().set(false);
+            GameManager.getInstance().getLockCreatingGame().notifyAll();
+
+
+            this.mode = mode;
+            this.numPlayers = numPlayers;
+        }
     }
 
     @Override
@@ -70,7 +79,7 @@ public class Game implements GameServer, GameClient {
 
     @Override
     public boolean askSetting() {
-        return clients.size() == 1;
+        return clients.isEmpty();
     }
 
     /**
@@ -78,43 +87,39 @@ public class Game implements GameServer, GameClient {
      */
     @Override
     public void startGame(){
+
         flyboard = FlyBoard.createFlyBoard(mode, clients.keySet());
-        gameController.setGame(this);
+        Map<String, HousingColor> colorMap = flyboard.getPlayers().stream()
+                .collect(Collectors.toMap(
+                        Player::getNickname,
+                        Player::getColor
+                ));
 
-        //game modifica il suo stato
-        setGameState(GameState.BUILDING_SHIP);
-        gameController.update(gameState);
-
-        gameController.setReceivedMessages(receivedMessages);
-        gameController.run();
+        for (VirtualClient client : clients.values()){
+            try {
+                client.setFlyBoard(mode ,colorMap);
+                client.setState(GameState.GAME_START);
+                client.setState(GameState.BUILDING_SHIP);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println("Game " +idGame + " is starting" );
 
     }
 
+//    @Override
+//    public void addReceivedMessage(Message message){
+//        receivedMessages.add(message);
+//    }
+
     @Override
-    public void addReceivedMessage(Message message){
-        receivedMessages.add(message);
+    public FlyBoard getFlyBoard(){
+        return this.flyboard;
     }
 
     public void setGameState(GameState newState){
         this.gameState = newState;
-    }
-
-    @Override
-    public int getCoveredComponent() throws IncorrectFlyBoardException {
-        Integer idComp;
-        try{
-            idComp = flyboard.getCoveredComponents().removeLast();
-            return idComp;
-        }
-        catch (NoSuchElementException e){
-            throw new IncorrectShipBoardException("");
-        }
-
-    }
-
-    @Override
-    public VirtualClient getClient(String nickname){
-        return clients.get(nickname);
     }
 
     @Override

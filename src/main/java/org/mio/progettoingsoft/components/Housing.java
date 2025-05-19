@@ -80,5 +80,16 @@ public class Housing extends Component {
     public void addAllowedGuest(GuestType type){
         guestAllowed.add(type);
     }
+
+    @Override
+    public HousingColor getHousingColorById(int id){
+        return switch (id) {
+            case 33 -> HousingColor.BLUE;
+            case 34 -> HousingColor.GREEN;
+            case 52 -> HousingColor.RED;
+            case 61 -> HousingColor.YELLOW;
+            default -> HousingColor.BLUE;
+        };
+    }
 }
 

@@ -1,12 +1,27 @@
 package org.mio.progettoingsoft.network.client;
 
-import org.mio.progettoingsoft.network.message.Message;
+import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.enums.GameMode;
 
-/**
- * Interfaccia che definisce i metodi utilizzati dal server per notificare i cambiamenti di stato ai client.
- */
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Map;
 
-public interface VirtualClient {
-    // Manda messaggio dal server al client
-    void showUpdate(Message message) throws Exception;
+public interface VirtualClient extends Remote {
+
+    void ping(String msg) throws RemoteException;
+    void setNickname(String nickname) throws RemoteException;
+    void askGameSettings(String nickname) throws RemoteException;
+    void wrongNickname() throws RemoteException;
+    void setGameId(int gameId) throws RemoteException;
+
+    void setState(GameState state) throws RemoteException;
+
+    void setFlyBoard(GameMode mode, Map<String, HousingColor> players) throws RemoteException;
+
+    void setInHandComponent(int idComponent) throws RemoteException;
+    void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
+    void addUnoveredComponent(int idComp) throws RemoteException;
 }

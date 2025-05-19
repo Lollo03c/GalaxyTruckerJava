@@ -1,70 +1,63 @@
 package org.mio.progettoingsoft.network.server;
 
-import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.ServerMain;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.client.rmi.VirtualServerRmi;
-import org.mio.progettoingsoft.network.server.rmi.RmiServer;
-import org.mio.progettoingsoft.network.server.socket.SocketServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mio.progettoingsoft.network.messages.Message;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ServerApp {
-    private static final int RMI_PORT = 1099;
-    private static final String SERVER_NAME = "localhost";
-    private static final String HOST = "127.0.0.1";
-    private static final int SOCKET_PORT = 1234;
+public class ServerApp implements Runnable{
 
-    private final BlockingQueue<Message> recivedMessageQueue;
-    private final ServerMessageHandler serverMessageHandler;
-
-    private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
-
-    public ServerApp() {
-        GameManager.create();
-        ServerController.create();
-
-        recivedMessageQueue = new LinkedBlockingQueue<>();
-        serverMessageHandler = new ServerMessageHandler(recivedMessageQueue);
+    private Server server;
+    @Override
+    public void run(){
+        startRmiServer();
+        startSocketServer();
     }
 
-    public void run() throws IOException {
-        // Thread che gestisce i messaggi in entrata
-        Thread messageHandlerThread = new Thread(serverMessageHandler, "server-message-handler");
-        messageHandlerThread.setDaemon(true);
-        messageHandlerThread.start();
+    private void startRmiServer(){
+        final int portRmi = 1099;
+        try {
+            //192.168.1.147
+            System.setProperty("java.rmi.server.hostname", "localhost");
+            Registry registry =  LocateRegistry.createRegistry(portRmi);
 
-        runRmiServer();
-        runSocketServer();
+            ServerRMI rmiServer = new ServerRMI();
+            registry.rebind("GameSpace", rmiServer);
+
+            System.out.println("Server RMI running on port " + portRmi);
+
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void runRmiServer() throws RemoteException {
-        VirtualServerRmi server = new RmiServer(recivedMessageQueue);
-        Registry registry = LocateRegistry.createRegistry(RMI_PORT);
-        registry.rebind(SERVER_NAME, server);
+    private void startSocketServer() {
+        final int port = 1050;
 
-        logger.info("RMI server {} running on port {}", SERVER_NAME, RMI_PORT);
-    }
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
 
-    private void runSocketServer() throws IOException {
-        ServerSocket listenSocket = new ServerSocket(SOCKET_PORT);
+            Server socketServer = new SocketServer();
 
-        logger.info("Socket server {} running on port {}", SERVER_NAME, SOCKET_PORT);
+            BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
+            ServerMessageHandler serverMessageHandler = new ServerMessageHandler(socketServer, receivedMessages);
+            new Thread(serverMessageHandler).start();
 
-        SocketServer serverSocket = new SocketServer(listenSocket, recivedMessageQueue);
-        try{
-            serverSocket.runServer();
+            while (true){
+                Socket clientSocket = serverSocket.accept();
+
+                SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, receivedMessages);
+                new Thread(clientHandler).start();
+
+            }
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

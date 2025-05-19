@@ -1,19 +1,8 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
-import org.mio.progettoingsoft.network.client.VirtualClient;
-import org.mio.progettoingsoft.network.message.*;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.stream.Collectors;
-
-public class GameController implements Runnable {
+public class GameController {
     private GameServer game;
-    private BlockingQueue<Message> receivedMessages;
 
 
     public GameController() {
@@ -24,76 +13,24 @@ public class GameController implements Runnable {
         this.game = game;
     }
 
-    public void setReceivedMessages(BlockingQueue<Message> receivedMessages){
-        this.receivedMessages = receivedMessages;
-    }
-
 
     public void update(GameState gameState){
         switch (gameState){
-            case BUILDING_SHIP -> {
-                broadcast(new StartGameMessage(game.getIdGame(), new HashSet<>(game.getClients().keySet())));
-            }
+//            case BUILDING_SHIP -> broadcast(new StartGameMessage(game.getIdGame()));
 
             default -> {}
         }
     }
 
-    private void broadcast(Message message){
-        for (VirtualClient client : game.getClients().values()){
-            try {
-                client.showUpdate(message);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    @Override
-    public void run() {
-        while(true){
-            try {
-                Message message = receivedMessages.take();
-
-                switch (message) {
-                    case CoveredComponentMessage coveredComponentMessage -> {
-                        try {
-                            handleCoveredComponent(coveredComponentMessage);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    case AddBookedMessage addBookedMessage -> {
-                        ShipBoard ship = game.getFlyboard().getPlayerByUsername(addBookedMessage.getNickname()).getShipBoard();
-                        ship.addBookedComponent(addBookedMessage.getAddedCompId());
-                        broadcast(new AddBookedMessage(game.getIdGame(), message.getNickname(), addBookedMessage.getAddedCompId(),
-                                addBookedMessage.getToPosition()));
-                    }
-                    case AddComponentMessage addComponentMessage -> {
-                        ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(addComponentMessage.getNickname()).getShipBoard();
-                        shipBoard.addComponentToPosition(addComponentMessage.getIdComp(), addComponentMessage.getCordinate(), addComponentMessage.getRotations());
-                        broadcast(addComponentMessage);
-                    }
-                    default -> {
-                    }
-                }
-            }
-            catch (InterruptedException e){
-                e.printStackTrace();
-            }
-
-
-
-
-        }
-    }
-
-    private void handleCoveredComponent(CoveredComponentMessage message) throws Exception {
-        int nextComponentId = game.getCoveredComponent();
-
-        VirtualClient client =  game.getClient(message.getNickname());
-        client.showUpdate(new CoveredComponentMessage(game.getIdGame(), message.getNickname(), nextComponentId));
-    }
+//    private void broadcast(Message message){
+//        for (VirtualClient client : game.getClients().values()){
+//            try {
+//                client.showUpdate(message);
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 
 
 //    private void broadcast(Message message) throws Exception {

@@ -56,6 +56,10 @@ public class Player {
 //        return view;
 //    }
 
+    public void setHousingColor(HousingColor color){
+        this.color = color;
+    }
+
     public Component getInHand() {
         return inHand;
     }

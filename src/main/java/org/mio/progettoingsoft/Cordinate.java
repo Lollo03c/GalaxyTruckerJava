@@ -100,5 +100,9 @@ public class Cordinate implements Serializable {
         };
     }
 
+    public static Cordinate convertWithOffset(int row, int column) throws InvalidCordinate{
+        return new Cordinate(row - 5, column - 4);
+    }
+
 
 }

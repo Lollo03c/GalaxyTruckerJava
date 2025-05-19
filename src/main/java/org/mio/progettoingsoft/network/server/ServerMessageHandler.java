@@ -1,68 +1,55 @@
 package org.mio.progettoingsoft.network.server;
 
-import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.model.interfaces.GameServer;
-import org.mio.progettoingsoft.network.message.AddBookedMessage;
-import org.mio.progettoingsoft.network.message.GameSetupMessage;
-import org.mio.progettoingsoft.network.message.Message;
-import org.mio.progettoingsoft.network.message.NicknameMessage;
+import org.mio.progettoingsoft.network.messages.*;
 
 import java.util.concurrent.BlockingQueue;
 
 public class ServerMessageHandler implements Runnable {
-    private final ServerController serverController;
-    private final GameManager gameManager;
-    private final BlockingQueue<Message> receivedMessageQueue;
+    private final BlockingQueue<Message> receivedMessages;
+    private final Server server;
 
-    public ServerMessageHandler(BlockingQueue<Message> receivedMessageQueue) {
-        serverController = ServerController.getInstance();
-        gameManager = GameManager.getInstance();
-        this.receivedMessageQueue = receivedMessageQueue;
+    public ServerMessageHandler(Server server, BlockingQueue<Message> receivedMessages){
+        this.server = server;
+        this.receivedMessages = receivedMessages;
     }
 
     @Override
-    public void run() {
-        while (true) {
-            if (!receivedMessageQueue.isEmpty()) {
-                Message message = null;
-                try {
-                    message = receivedMessageQueue.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    handleMessage(message);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-    }
+    public void run(){
+        while (true){
+            try {
+                Message message = receivedMessages.take();
 
-    private void handleMessage(Message message) throws Exception {
-        int idGame;
+                switch (message){
+                    case NicknameMessage nicknameMessage -> {
+                        server.handleNickname(nicknameMessage.getIdClient(), nicknameMessage.getNickname());
+                    }
 
-        switch (message) {
-            case NicknameMessage nicknameMessage -> {
-                if (serverController.getIsWaitinGameSetup()) {
-                    receivedMessageQueue.add(message);
-                }
-                else {
-                    serverController.addPlayer(nicknameMessage.getNickname(), nicknameMessage.getIdPlayer());
-                }
-            }
-            case GameSetupMessage setupMessage -> {
-                serverController.setupGame(setupMessage);
-            }
-            default -> {
-                //TODO il reindirizzo del messaggio verso una singola partita è da eseguire nella classe gameManager
-                idGame = message.getIdGame();
-                GameServer gameToSend = gameManager.getOngoingGames().get(idGame);
-                int a = 0;
+                    case GameInfoMessage gameInfoMessage -> {
+                        server.handleGameInfo(gameInfoMessage.getGameInfo());
+                    }
 
-                if (gameToSend != null) {
-                    gameToSend.addReceivedMessage(message);
+                    case ComponentMessage componentMessage -> {
+                        switch (componentMessage.getAction()) {
+                            case ADD -> {
+                                server.addComponent(componentMessage.getGameId(), componentMessage.getNickname(),
+                                        componentMessage.getIdComp(), componentMessage.getCordinate(), componentMessage.getRotations());
+                            }
+
+                            case REMOVE -> {}
+
+                            case DISCARD -> {
+                                server.discardComponent(componentMessage.getGameId(), componentMessage.getIdComp());
+                            }
+
+                            case COVERED -> {
+                                server.getCoveredComponent(componentMessage.getGameId(), componentMessage.getNickname());
+                            }
+                        }
+                    }
+                    default -> {}
                 }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }

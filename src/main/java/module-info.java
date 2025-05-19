@@ -13,9 +13,7 @@ module org.mio.progettoingsoft {
     opens org.mio.progettoingsoft to javafx.fxml;
     exports org.mio.progettoingsoft;
 
-    exports org.mio.progettoingsoft.network;
     exports org.mio.progettoingsoft.network.client;
-    exports org.mio.progettoingsoft.network.client.rmi;
     exports org.mio.progettoingsoft.network.server;
-    exports org.mio.progettoingsoft.network.server.rmi;
+    exports org.mio.progettoingsoft.network.messages;
 }
