@@ -36,9 +36,7 @@ public class VisualShipboardEasy extends VisualShipboard {
         house.addAllowedGuest(GuestType.PURPLE);
         house.addGuest(GuestType.PURPLE);
 
-        firstHouse.addHumanMember();
-        firstHouse.addHumanMember();
-        firstHouse.addHumanMember();
+        firstHouse.addGuest(GuestType.HUMAN);
         Component alienHouse = new AlienHousing(137,GuestType.BROWN,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
         Component alienHouse12 = new AlienHousing(143,GuestType.PURPLE,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
         energyDepot.removeOneEnergy();

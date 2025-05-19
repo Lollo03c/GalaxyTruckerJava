@@ -7,8 +7,8 @@ import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.view.ShipCell;
-import org.mio.progettoingsoft.view.VisualShipboard;
+import org.mio.progettoingsoft.views.tui.ShipCell;
+import org.mio.progettoingsoft.views.tui.VisualShipboard;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

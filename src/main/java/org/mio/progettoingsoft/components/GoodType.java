@@ -36,15 +36,6 @@ public enum GoodType {
         };
     }
 
-    public String toColor(){
-        return switch (this){
-            case RED -> "\u001B[31m";
-            case BLUE -> "\u001B[34m";
-            case GREEN -> "\u001B[32m";
-            case YELLOW -> "\u001B[33m";
-        };
-    }
-
     public static GoodType stringToGoodType(String s){
         return switch (s){
             case "BLUE" -> GoodType.BLUE;

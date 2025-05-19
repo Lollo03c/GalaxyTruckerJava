@@ -112,12 +112,6 @@ public class Game implements GameServer, GameClient {
 //    public void addReceivedMessage(Message message){
 //        receivedMessages.add(message);
 //    }
-
-    @Override
-    public FlyBoard getFlyBoard(){
-        return this.flyboard;
-    }
-
     public void setGameState(GameState newState){
         this.gameState = newState;
     }

@@ -53,6 +53,7 @@ public abstract class ShipBoard {
     }
 
     public void drawShipboard(){}
+
     public HousingColor getHousingColor(){
         return housingColor;
     }

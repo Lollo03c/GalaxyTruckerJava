@@ -1,18 +1,20 @@
-package org.mio.progettoingsoft.view;
+package org.mio.progettoingsoft.views.tui;
 
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
+import org.mio.progettoingsoft.views.tui.ShipCell;
+import org.mio.progettoingsoft.views.tui.VisualShipboard;
+import org.mio.progettoingsoft.views.View;
 
 import java.util.Scanner;
 
-public class Tui extends View{
+public class Tui extends View {
     private Scanner scanner = new Scanner(System.in);
     private final ClientController controller;
 
@@ -163,13 +165,13 @@ public class Tui extends View{
         printPlayersName();
         System.out.print("Insert nickname to look at :");
         String chosenPlayer = scanner.nextLine();
-        new VisualShipboard(controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard()).drawShipboard();
+        controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard().drawShipboard();
         controller.setState(GameState.BUILDING_SHIP);
     }
 
     private void componentMenu(){
         new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();;
-        new VisualShipboard(controller.getShipBoard()).drawShipboard();
+        controller.getShipBoard().drawShipboard();
 
         System.out.println("1 : Insert in the shipboard");
         System.out.println("2 : Put back in the deck");

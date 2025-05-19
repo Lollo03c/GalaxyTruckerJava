@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
-import org.mio.progettoingsoft.view.Tui;
-import org.mio.progettoingsoft.view.View;
+import org.mio.progettoingsoft.views.tui.Tui;
+import org.mio.progettoingsoft.views.View;
 
 public class ClientApp implements Runnable{
     private final View view;
