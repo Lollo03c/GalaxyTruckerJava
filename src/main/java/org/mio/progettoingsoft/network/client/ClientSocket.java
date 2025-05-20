@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.client;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.messages.*;
+import org.mio.progettoingsoft.network.server.VirtualServer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,6 +25,7 @@ public class ClientSocket extends Client {
             socket = new Socket("localhost", 1050);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
+//            VirtualSocketServer server = new VirtualSocketServer();
 
             ClientMessageReceiver clientMessageReceiver = new ClientMessageReceiver(in, receivedMessages);
             new Thread(clientMessageReceiver).start();
@@ -111,14 +113,8 @@ public class ClientSocket extends Client {
     }
 
     @Override
-    public void ping(String msg){
-        return ;
-    }
-
-    @Override
     public void handleNickname(String nickname){
-        Message message = new NicknameMessage(-1, nickname, idClient);
-        sendMessage(message);
+
     }
 
     @Override
@@ -157,6 +153,7 @@ public class ClientSocket extends Client {
         sendMessage(message);
     }
 
+    @Override
     public void freeDeck(int deckNumber){
         Message message = new DeckMessage(controller.getIdGame(), controller.getNickname(), DeckMessage.Action.UNBOOK, deckNumber);
         sendMessage(message);

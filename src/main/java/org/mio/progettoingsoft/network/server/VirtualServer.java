@@ -2,14 +2,10 @@ package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
-import org.mio.progettoingsoft.network.client.VirtualClient;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface VirtualServer extends Remote {
-
-    int registerClient(VirtualClient client) throws RemoteException;
+public interface VirtualServer {
 
     void handleNickname(int idClient, String nickname) throws RemoteException;
     void handleGameInfo(GameInfo gameInfo, String nickname) throws RemoteException;

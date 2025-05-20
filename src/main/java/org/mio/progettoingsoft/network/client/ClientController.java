@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.network.server.VirtualServer;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -14,6 +15,8 @@ import java.util.Map;
 public class ClientController {
     private static ClientController instance;
     private Client client;
+
+    private VirtualServer server;
 
     private ClientController(){
         this.setState(GameState.START);
@@ -81,8 +84,7 @@ public class ClientController {
     public void connectToServer(boolean isRmi){
         setState(GameState.WAITING);
         try {
-            client = isRmi ? new ClientRmi() : new ClientSocket();
-
+            Client client = isRmi ? new ClientRmi() : new ClientSocket();
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -229,5 +231,9 @@ public class ClientController {
         synchronized (flyBoard.getAvailableDecks()){
             flyBoard.getAvailableDecks().add(deckNumber);
         }
+    }
+
+    public void setServer(VirtualServer server){
+        this.server = server;
     }
 }

@@ -32,6 +32,10 @@ public class VirtualSocketClient implements VirtualClient {
         }
     }
 
+    /**
+     * Metodi derivati da VirtualClient, ovvero i metodi che vengono chiamati dal server
+     */
+
     @Override
     public void ping(String msg) throws RemoteException {
 
