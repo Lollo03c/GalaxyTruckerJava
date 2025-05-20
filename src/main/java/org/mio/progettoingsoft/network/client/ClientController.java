@@ -194,6 +194,10 @@ public class ClientController {
     }
 
     public void drawCovered(int idComp){
+        if (! flyBoard.getUncoveredComponents().contains(idComp)){
+            setState(GameState.UNABLE_UNCOVERED_COMPONENT);
+            return;
+        }
         client.drawUncovered(idComp);
     }
 
@@ -228,6 +232,14 @@ public class ClientController {
     public void addAvailableDeck(int deckNumber){
         synchronized (flyBoard.getAvailableDecks()){
             flyBoard.getAvailableDecks().add(deckNumber);
+        }
+    }
+
+    public void bookComponent(){
+        try {
+            shipBoard.addBookedComponent(inHandComponent);
+        } catch (IncorrectShipBoardException e) {
+            setState(GameState.SWITCH_BOOKED);
         }
     }
 }

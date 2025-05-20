@@ -75,6 +75,24 @@ public class Tui implements View {
 
             case VIEW_SHIP_BUILDING -> viewShipBuilding();
 
+            case DRAW_UNCOVERED_COMPONENTS -> drawUncoveredComponents();
+
+            case UNABLE_DECK -> {
+                System.out.println("Deck is already been taken");
+                controller.setState(GameState.BUILDING_SHIP);
+            }
+
+            case VIEW_DECK -> viewDeck();
+
+            case VIEW_DECKS_LIST -> viewDecksList();
+
+            case SWITCH_BOOKED -> switchBookedComponents();
+
+            case UNABLE_UNCOVERED_COMPONENT -> {
+                System.out.println("Component is already been taken");
+                controller.setState(GameState.BUILDING_SHIP);
+            }
+
             case ERROR_NICKNAME -> {
                 System.out.println("Nickname already taken. Try Something else\n");
                 controller.setState(GameState.NICKNAME);
@@ -349,22 +367,31 @@ public class Tui implements View {
             controller.discardComponent();
         }
         else if (choice == 3){
-
+            controller.bookComponent();
         }
     }
 
     private void drawUncoveredComponents() {
         int count = 1;
+        if (controller.getFlyBoard().getUncoveredComponents().isEmpty()){
+            System.out.println("No uncovered Components");
+            controller.setState(GameState.BUILDING_SHIP);
+            return;
+        }
+
         for (int idComp : controller.getFlyBoard().getUncoveredComponents()){
             System.out.println("Component #" + idComp);
             Component component = controller.getFlyBoard().getComponentById(idComp);
             new ShipCell(component).drawCell();
         }
 
-        System.out.print("Select component to draw : ");
+        System.out.print("Select component to draw (-1 to null) : ");
         int chosen = Integer.parseInt(scanner.nextLine());
 
-        controller.drawCovered(chosen);
+        if (chosen == -1)
+            controller.setState(GameState.BUILDING_SHIP);
+        else
+            controller.drawCovered(chosen);
     }
 
     private void viewDecksList(){
@@ -395,5 +422,9 @@ public class Tui implements View {
                 System.out.println((count++) + " " + player.getNickname() + " : " + player.getColor());
             }
         }
+    }
+
+    private void switchBookedComponents(){
+
     }
 }
