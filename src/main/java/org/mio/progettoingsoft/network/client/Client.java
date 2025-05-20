@@ -19,8 +19,7 @@ public abstract class Client implements VirtualClient {
 
     public abstract void connect();
     public abstract void handleNickname(String nickname);
-
-    public abstract void handleGameInfo(GameInfo gameInfo);
+    public abstract void handleGameInfo(GameInfo gameInfo, String nickname);
     public abstract void getCoveredComponent(int idGame);
     public abstract void handleComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations);
     public abstract void discardComponent(int idComponent);

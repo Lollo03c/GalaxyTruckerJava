@@ -49,10 +49,9 @@ public class ClientRmi extends Client {
     }
 
     @Override
-    public void handleGameInfo(GameInfo gameInfo){
-
+    public void handleGameInfo(GameInfo gameInfo, String nickname){
         try {
-            server.handleGameInfo(gameInfo);
+            server.handleGameInfo(gameInfo, nickname);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

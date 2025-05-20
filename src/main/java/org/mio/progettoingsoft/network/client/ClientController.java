@@ -10,8 +10,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientController {
     private static ClientController instance;
@@ -28,7 +26,7 @@ public class ClientController {
         return instance;
     }
 
-    private GameState gameState = GameState.START;
+    private GameState gameState;
     private final Object stateLock = new Object();
     private final Object flyboardLock = new Object();
     FlyBoard flyBoard;
@@ -51,10 +49,14 @@ public class ClientController {
     }
 
     public void setState(GameState state){
+        GameState oldState;
         synchronized (stateLock) {
-            GameState oldState = this.gameState;
+            oldState = this.gameState;
             this.gameState = state;
+        }
+        if(oldState != state){
             support.firePropertyChange("gameState", oldState, state);
+            System.out.println(oldState + " -> " + state);
         }
     }
 
@@ -99,11 +101,15 @@ public class ClientController {
     }
 
     public void setGameInfo(GameInfo gameInfo){
-        client.handleGameInfo(gameInfo);
+        client.handleGameInfo(gameInfo, nickname);
     }
 
     public FlyBoard getFlyBoard(){
         return flyBoard;
+    }
+
+    public GameInfo getGameInfo(){
+        return new GameInfo(idGame, flyBoard.getMode(), flyBoard.getNumPlayers());
     }
 
     public Object getFlyboardLock(){

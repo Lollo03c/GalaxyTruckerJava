@@ -19,11 +19,15 @@ public abstract class Server implements VirtualServer {
     }
 
     @Override
-    public void handleGameInfo(GameInfo gameInfo){
+    public void handleGameInfo(GameInfo gameInfo, String nickname){
         GameManager gameManager = GameManager.getInstance();
-        GameServer game = gameManager.getWaitingGame();;
-
+        GameServer game = gameManager.getWaitingGame();
         game.setupGame(gameInfo.mode(), gameInfo.nPlayers());
+        try {
+            game.getClients().get(nickname).setState(GameState.WAITING_PLAYERS);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
