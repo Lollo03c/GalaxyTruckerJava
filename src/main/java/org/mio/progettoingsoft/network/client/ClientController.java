@@ -12,7 +12,9 @@ import org.mio.progettoingsoft.network.server.VirtualServer;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ClientController {
     private static ClientController instance;
@@ -156,8 +158,14 @@ public class ClientController {
             setState(GameState.DRAW_UNCOVERED_COMPONENTS);
         } else if (chosen == 3) {
             setState(GameState.VIEW_SHIP_BUILDING);
-        } else if (chosen == 4) {
+        }
+        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.NORMAL)) {
             setState(GameState.VIEW_DECKS_LIST);
+        }
+        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.EASY)){
+            //server.playerReady()
+            setState(GameState.END_BUILDING);
+
         }
     }
 
@@ -217,11 +225,15 @@ public class ClientController {
         }
     }
 
-    public void drawCovered(int idComp) {
-        try {
-            server.drawUncovered(idGame, nickname, idComp);
+    public void drawCovered(int idComp){
+        if (! flyBoard.getUncoveredComponents().contains(idComp)){
+            setState(GameState.UNABLE_UNCOVERED_COMPONENT);
+            return;
+        }
+        try{
+        server.drawUncovered(idGame, nickname, idComp);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+
         }
     }
 
@@ -265,5 +277,22 @@ public class ClientController {
         synchronized (flyBoard.getAvailableDecks()) {
             flyBoard.getAvailableDecks().add(deckNumber);
         }
+    }
+
+    public void bookComponent(){
+        try {
+            flyBoard.getPlayerByUsername(nickname).getShipBoard().addBookedComponent(inHandComponent);
+            setState(GameState.BUILDING_SHIP);
+        } catch (IncorrectShipBoardException e) {
+            setState(GameState.SWITCH_BOOKED);
+        }
+    }
+
+    public void bookComponent(int posToRemove){
+        int idComp = shipBoard.getBookedComponents().get(posToRemove).get();
+
+        shipBoard.swapBookComponent(inHandComponent, posToRemove);
+        inHandComponent = idComp;
+        setState(GameState.COMPONENT_MENU);
     }
 }

@@ -3,6 +3,7 @@ package org.mio.progettoingsoft;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
@@ -184,33 +185,15 @@ class ShipBoardTest {
         assertEquals(0, first.getQuantBatteries());
     }
 //
-//    @Test
-//    void should_add_housing_with_bottom_alien(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//
-//        Component housing = new Housing(1, flat, flat, flat, flat);
-//        Component alienHousing = new AlienHousing(1, GuestType.PURPLE, flat, flat, flat, flat);
-//
-//        ship.addComponentToPosition(housing, 2, 2);
-//        ship.addComponentToPosition(alienHousing, 3, 2);
-//
-//        assertTrue(housing.canContainsAlien(GuestType.PURPLE));
-//        assertFalse(housing.canContainsAlien(GuestType.BROWN));
-//    }
-//
-//    @Test
-//    void should_add_housing_with_top_alien(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//
-//        Component housing = new Housing(1, flat, flat, flat, flat);
-//        Component alienHousing = new AlienHousing(1, GuestType.PURPLE, flat, flat, flat, flat);
-//
-//        ship.addComponentToPosition(housing, 2, 2);
-//        ship.addComponentToPosition(alienHousing, 1, 2);
-//
-//        assertTrue(housing.canContainsAlien(GuestType.PURPLE));
-//        assertFalse(housing.canContainsAlien(GuestType.BROWN));
-//    }
+    @Test
+    void should_add_housing_with_top_alien(){
+
+        first.addComponentToPosition(137, new Cordinate(2, 2), 0);
+        first.addComponentToPosition(46, new Cordinate(2,1), 0);
+        first.validateShip();
+
+        assertTrue(flyBoard.getComponentById(46).canAddGuest(GuestType.BROWN));
+    }
 //
 //    @Test
 //    void should_add_housing_with_right_alien(){
