@@ -88,6 +88,8 @@ public abstract class ShipBoard {
         } catch (IncorrectShipBoardException e) {
 
         }
+
+
     }
 
     /**
@@ -101,15 +103,19 @@ public abstract class ShipBoard {
                 .filter(Optional::isPresent).count();
 
         if (counted == 0){
+            shipComponents[0][5] = Optional.of(flyBoard.getComponentById(bookedComponent));
             bookedComponents.set(0, Optional.of(bookedComponent));
         }
-        else if (counted == 1)
+        else if (counted == 1) {
+            shipComponents[0][6] = Optional.of(flyBoard.getComponentById(bookedComponent));
             bookedComponents.set(1, Optional.of(bookedComponent));
+        }
         else
             throw new IncorrectShipBoardException("");
     }
 
     public void swapBookComponent(int bookedComponent, int position){
+        shipComponents[0][5 + position] = Optional.of(flyBoard.getComponentById(bookedComponent));
         bookedComponents.set(position, Optional.of(bookedComponent));
     }
 
@@ -402,11 +408,12 @@ public abstract class ShipBoard {
             if (getOptComponentByCord(cordinate).isEmpty())
                 continue;
 
+            //incorrect by connectors
             Component comp = getOptComponentByCord(cordinate).get();
             Map<Direction, Component> adjacent = getAdjacent(cordinate);
             for (Direction dir : adjacent.keySet()){
                 Component other = adjacent.get(dir);
-                if (comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
+                if (! comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
                     incorrect.add(cordinate);
                 }
             }

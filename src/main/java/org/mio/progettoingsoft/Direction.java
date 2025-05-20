@@ -34,16 +34,16 @@ public enum Direction {
 
     public int offsetCol(){
         return switch (this){
-            case FRONT -> -1;
-            case BACK -> 1;
+            case RIGHT -> 1;
+            case LEFT -> -1;
             default -> 0;
         };
     }
 
     public int offsetRow(){
         return switch (this){
-            case RIGHT -> 1;
-            case LEFT -> -1;
+            case FRONT -> 1;
+            case BACK -> -1;
             default -> 0;
         };
     }

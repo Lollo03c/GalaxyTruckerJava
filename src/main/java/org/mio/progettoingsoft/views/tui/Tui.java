@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.views.tui;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -8,6 +9,9 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -87,6 +91,10 @@ public class Tui implements View {
             case VIEW_DECKS_LIST -> viewDecksList();
 
             case SWITCH_BOOKED -> switchBookedComponents();
+
+            case END_BUILDING -> {
+                System.out.println("Waitint for other players" + RESET);
+            }
 
             case UNABLE_UNCOVERED_COMPONENT -> {
                 System.out.println("Component is already been taken");
@@ -230,6 +238,9 @@ public class Tui implements View {
             System.out.println("3 : View other player's ship");
             if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL))
                 System.out.println("4 : Look at decks");
+            else {
+                System.out.println("4 : end building ship");
+            }
             System.out.print("Make your choice: ");
 
             input = scanner.nextLine();
@@ -322,14 +333,20 @@ public class Tui implements View {
             System.out.print("Insert nickname to look at: ");
             chosenPlayer = scanner.nextLine();
 
-            if (chosenPlayer.isEmpty()) {
+            try {
+                if (chosenPlayer.isEmpty()) {
+                    System.out.println(RED + "Invalid nickname!" + RESET);
+                } else {
+                    controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard().drawShipboard();
+                    break;
+                }
+            }
+            catch (IncorrectFlyBoardException e){
                 System.out.println(RED + "Invalid nickname!" + RESET);
-            } else {
-                break;
             }
         }
 
-        controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard().drawShipboard();
+
         controller.setState(GameState.BUILDING_SHIP);
     }
 
@@ -425,6 +442,42 @@ public class Tui implements View {
     }
 
     private void switchBookedComponents(){
+        List<Integer> possibles = new ArrayList<>();
+
+        List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
+        for (Optional<Integer> optComp : bookedComponents){
+            if (optComp.isEmpty())
+                continue;
+
+            possibles.add(optComp.get());
+            System.out.println("Component #" + optComp.get());
+            new ShipCell(controller.getFlyBoard().getComponentById(optComp.get())).drawCell();
+        }
+
+        int chosenComp;
+        while (true) {
+            System.out.println("Select the component to switch (enter to escape) : ");
+            String string = scanner.nextLine();
+
+            if (string.equals("")) {
+                controller.setState(GameState.COMPONENT_MENU);
+                return;
+            } else {
+                try {
+                    chosenComp = Integer.parseInt(string);
+                    if (!possibles.contains(chosenComp))
+                        throw new NumberFormatException("");
+
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println(RED + "Invalid chosen component" + RESET);
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        controller.bookComponent(possibles.indexOf(chosenComp));
+
 
     }
 }
