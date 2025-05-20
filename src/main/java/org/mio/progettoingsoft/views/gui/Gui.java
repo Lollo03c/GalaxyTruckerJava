@@ -15,6 +15,7 @@ import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
+import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;

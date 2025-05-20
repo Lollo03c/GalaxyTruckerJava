@@ -4,11 +4,13 @@ import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.VirtualServer;
+import org.mio.progettoingsoft.utils.ConnectionInfo;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -18,11 +20,13 @@ public class SocketClient implements Client {
     private ObjectInputStream in;
     private SocketServerHandler serverHandler;
     private final ClientController controller;
+    private final ConnectionInfo connectionInfo;
 
     private final BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
 
-    public SocketClient() {
+    public SocketClient(ConnectionInfo connectionInfo) throws RemoteException {
         controller = ClientController.getInstance();
+        this.connectionInfo = connectionInfo;
     }
 
     /**
@@ -36,7 +40,7 @@ public class SocketClient implements Client {
 
     @Override
     public void connect() throws IOException {
-        socket = new Socket("localhost", 1050);
+        socket = new Socket(connectionInfo.ip(), connectionInfo.socketPort());
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         this.serverHandler = new SocketServerHandler(out,in);

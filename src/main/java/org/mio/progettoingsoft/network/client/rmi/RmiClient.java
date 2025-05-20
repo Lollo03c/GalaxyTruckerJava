@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.network.server.rmi.VirtualServerRmi;
+import org.mio.progettoingsoft.utils.ConnectionInfo;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -23,16 +24,18 @@ public class RmiClient implements VirtualClient, Client {
     private final VirtualServerRmi server;
     private ExecutorService executors = Executors.newFixedThreadPool(4);
     private final ClientController controller;
+    private final ConnectionInfo connectionInfo;
 
-    public RmiClient() throws RemoteException {
+    public RmiClient(ConnectionInfo connectionInfo) throws RemoteException {
         controller = ClientController.getInstance();
+        this.connectionInfo = connectionInfo;
 
-        System.setProperty("java.rmi.server.hostname", "localhost");  // l'IP reale del client sulla rete
+        System.setProperty("java.rmi.server.hostname", connectionInfo.ip());  // l'IP reale del client sulla rete
         UnicastRemoteObject.exportObject(this, 0);
 
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            server = (VirtualServerRmi) registry.lookup("GameSpace");
+            Registry registry = LocateRegistry.getRegistry("localhost", connectionInfo.rmiPort());
+            server = (VirtualServerRmi) registry.lookup(connectionInfo.serverName());
         } catch (NotBoundException e) {
             throw new RuntimeException(e);
         }

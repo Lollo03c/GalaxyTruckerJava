@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.network.server.rmi.RmiServer;
 import org.mio.progettoingsoft.network.server.socket.SocketServer;
+import org.mio.progettoingsoft.utils.ConnectionInfo;
 
 import java.io.IOException;
 
@@ -14,9 +15,9 @@ public class ServerApp implements Runnable {
     private final RmiServer rmiServer;
     private final SocketServer socketServer;
 
-    public ServerApp() {
-        this.rmiServer = new RmiServer();
-        this.socketServer = new SocketServer();
+    public ServerApp(ConnectionInfo connectionInfo) {
+        this.rmiServer = new RmiServer(connectionInfo);
+        this.socketServer = new SocketServer(connectionInfo);
     }
 
     @Override

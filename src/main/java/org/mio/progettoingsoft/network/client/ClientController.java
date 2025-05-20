@@ -8,9 +8,13 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.rmi.RmiClient;
 import org.mio.progettoingsoft.network.client.socket.SocketClient;
 import org.mio.progettoingsoft.network.server.VirtualServer;
+import org.mio.progettoingsoft.utils.ConnectionInfo;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +25,16 @@ public class ClientController {
     private Client client;
     private int tempIdClient;
     private VirtualServer server;
+    private ConnectionInfo connectionInfo;
 
     private ClientController() {
         this.setState(GameState.START);
+        try{
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("configs/net-config.bin"));
+            connectionInfo = (ConnectionInfo) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static synchronized ClientController getInstance() {
@@ -92,7 +103,7 @@ public class ClientController {
     public void connectToServer(boolean isRmi) {
         setState(GameState.WAITING);
         try {
-            client = isRmi ? new RmiClient() : new SocketClient();
+            client = isRmi ? new RmiClient(connectionInfo) : new SocketClient(connectionInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

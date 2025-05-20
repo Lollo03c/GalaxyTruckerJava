@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
+import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.rmi.RemoteException;
@@ -14,25 +15,27 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class RmiServer implements VirtualServerRmi {
     private final ServerController controller;
+    private final ConnectionInfo connectionInfo;
 
-    public RmiServer() {
+    public RmiServer(ConnectionInfo connectionInfo) {
         controller = ServerController.getInstance();
+        this.connectionInfo = connectionInfo;
 
         try {
-            UnicastRemoteObject.exportObject(this, 1099);
+            UnicastRemoteObject.exportObject(this, connectionInfo.rmiPort());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void startServer() {
-        final int portRmi = 1099;
+        final int portRmi = connectionInfo.rmiPort();
         try {
             //192.168.1.147
-            System.setProperty("java.rmi.server.hostname", "localhost");
+            System.setProperty("java.rmi.server.hostname", connectionInfo.ip());
             Registry registry =  LocateRegistry.createRegistry(portRmi);
 
-            registry.rebind("GameSpace", this);
+            registry.rebind(connectionInfo.serverName(), this);
 
             Logger.info("Server RMI running on port " + portRmi);
 

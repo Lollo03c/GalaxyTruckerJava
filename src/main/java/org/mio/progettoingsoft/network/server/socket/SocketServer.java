@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.server.socket;
 
 import org.mio.progettoingsoft.network.messages.Message;
 import org.mio.progettoingsoft.network.server.ServerController;
+import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.io.IOException;
@@ -14,15 +15,17 @@ public class SocketServer {
     BlockingQueue<Message> receivedMessages;
     ServerMessageHandler serverMessageHandler;
     ServerController controller;
+    private final ConnectionInfo connectionInfo;
 
-    public SocketServer() {
+    public SocketServer(ConnectionInfo connectionInfo) {
+        this.connectionInfo = connectionInfo;
         this.receivedMessages = new LinkedBlockingQueue<>();
         this.controller = ServerController.getInstance();
         this.serverMessageHandler = new ServerMessageHandler(this.controller, this.receivedMessages);
     }
 
     public void startServer() throws IOException {
-        final int port = 1050;
+        final int port = connectionInfo.socketPort();
         ServerSocket serverSocket = new ServerSocket(port);
 
         Thread serverMessageThread = new Thread(serverMessageHandler, "message-handler");
