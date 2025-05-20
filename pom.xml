@@ -95,6 +95,53 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- JAR configuration -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <!-- JAR per il server -->
+                    <execution>
+                        <id>make-server-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>server</finalName> <!-- nome file -->
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.mio.progettoingsoft.ServerMain</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+
+                    <!-- JAR per il client -->
+                    <execution>
+                        <id>make-client-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>client</finalName> <!-- nome file -->
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.mio.progettoingsoft.ClientMain</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
