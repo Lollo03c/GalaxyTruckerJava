@@ -1,5 +1,5 @@
-il Client(un nuovo giocatore) si connette al server
-    il server comunica al client se ci sono partite in fase di avvio o meno
+il Client(un nuovo giocatore) si connette al serverController
+    il serverController comunica al client se ci sono partite in fase di avvio o meno
     se non ci sono partite in fase di avvio :
     - il client crea una nuova partita -> createNewGame(numPlayers, ilSuoNickname)
     altrimenti :
@@ -9,34 +9,34 @@ il Client(un nuovo giocatore) si connette al server
 raggiunti i 4 giocatori neccessari alla  partita inizia la fase di costruzione della nave
 COSTRUZIONE DELLA NAVE
     -il client chiede quali componenti sono disponibili (divisi fra coperti e scoperti)
-    -ne pesca uno e comunica al server (controller) quale, che lo blocca cosi che gli altri giocatori non lo possano prendere
+    -ne pesca uno e comunica al serverController (controller) quale, che lo blocca cosi che gli altri giocatori non lo possano prendere
 
         -se lo aggiunge alla sua shipboard, comunica la posizione in cui è stato salvato al controller che modifica il model
     -se lo salva nell'angolo, comunica al controller
-    -se lo scarta comunica al server che cosi lo sposta nei componenti scoperti
+    -se lo scarta comunica al serverController che cosi lo sposta nei componenti scoperti
 
-    -si ripete: il cliente chiede al server i componenti disponibili, fino a quando scade il timer
+    -si ripete: il cliente chiede al serverController i componenti disponibili, fino a quando scade il timer
     -in qualsiasi momento un client può girare la clessidra
 
 VERIFICA DELLE NAVI
-    -alla scadenza del timer il server (controller) verifica se la configurazione dei componenti è valida e in caso negativo
-        il server comunica al client che è sbagliata e gli manda le scelte possibili
-    -il client decide di quali componenti sbarazzarsi e la invia al server, se la configurazione è giusta il server lo comunica
+    -alla scadenza del timer il serverController (controller) verifica se la configurazione dei componenti è valida e in caso negativo
+        il serverController comunica al client che è sbagliata e gli manda le scelte possibili
+    -il client decide di quali componenti sbarazzarsi e la invia al serverController, se la configurazione è giusta il serverController lo comunica
         al client e salva il numero di componenti scartati + il numero dei componenti prenotati ma non usati
-    -si procede quando il server valida le configurazione delle shipBoard di tutti e 4 i giocatori
+    -si procede quando il serverController valida le configurazione delle shipBoard di tutti e 4 i giocatori
 
 INIZIA LA PARTITA
-    -il server chiede al leader di pescare la prossima carta
-    -il leader pesca la carta e il server manda a tutti i giocatori la carta pescata, con i campi che si aspetta di ritorno
-    -da qui in poi ogni messaggio che il server invia al client ha questa forma
+    -il serverController chiede al leader di pescare la prossima carta
+    -il leader pesca la carta e il serverController manda a tutti i giocatori la carta pescata, con i campi che si aspetta di ritorno
+    -da qui in poi ogni messaggio che il serverController invia al client ha questa forma
         -AdvCardType : tipo carta avventura in gioco
         -Player: il player che deve eseguire la scelta
         -la FlyBoard <dove ogni casella o è libera o a associata a qualche ColorPlayer>
 
-    -da qui in poi ogni messaggio che il client invia al server dipende dalla carta avventura, ma hanno tutti in comune
+    -da qui in poi ogni messaggio che il client invia al serverController dipende dalla carta avventura, ma hanno tutti in comune
         advCardType e Player
 
-    -alla fine dell'effetto di ogni carta avventura il server comunica sempre a tutti i client la nuova FlyBoard e le 4
+    -alla fine dell'effetto di ogni carta avventura il serverController comunica sempre a tutti i client la nuova FlyBoard e le 4
         shipBoard
 
 DA SERVER A CLIENT
@@ -157,17 +157,17 @@ CREAZIONE PARTITTA
     -se non esiste la partita
         -askGameSettings () -> chiede i settaggi della partita
         -setGameSettings (GameType, numPlayers) -> che tipo di partita creare (volo di prova o volo normale) e con quanti giocatori
-    -setColor(HousingColor) -> il server conferma la creazione della partita e assegna il colore al client
+    -setColor(HousingColor) -> il serverController conferma la creazione della partita e assegna il colore al client
 
 BUILDING SHIP PHASE
-    updateStatus -> il server comunica a tutti i client che e' iniziata la fase di costruzione della nave
+    updateStatus -> il serverController comunica a tutti i client che e' iniziata la fase di costruzione della nave
     -inizia il loop per la costruzione della nava
         -il client ha due scelte
                 1) drawComponent() -> se sceglie un componente coperto
-                2) bookComponent(Component c) -> il client comunica al server cha ha preso in mano c, il modo da non farlo prendere agli altri giocatori
+                2) bookComponent(Component c) -> il client comunica al serverController cha ha preso in mano c, il modo da non farlo prendere agli altri giocatori
 
-        -returnComponent() -> segnale di ack dal server al client per sapere il compoenente scelto e' disponibile
-        -getComponents() -> il server comunica agli altri client i nuovi componenti disponibili (quelli di prima meno quello scelto)
+        -returnComponent() -> segnale di ack dal serverController al client per sapere il compoenente scelto e' disponibile
+        -getComponents() -> il serverController comunica agli altri client i nuovi componenti disponibili (quelli di prima meno quello scelto)
 
         -client ha 3 scelte
             1)addToShipComponent(Component c, int x, int y, int rotations) -> il client comunica che ha aggiungo il
@@ -175,32 +175,32 @@ BUILDING SHIP PHASE
             2)reserveComponent(Component) -> il component e' riservato per quel client e non accessabile agli altri giocatori
             3)unlockComponent(Component) -> il component e' di nuovo disponibile per tutti come scoperto
 
-        -updateView() -> dal server al client
+        -updateView() -> dal serverController al client
         -getComponents()
 
-    -rotateHourGlass() -> in ogni momento puo esserci un segnale asincrono dal client al server per la rotazione della clessidra
-    -il server risponde a tutti i client notificando la rotazione della clessidra
+    -rotateHourGlass() -> in ogni momento puo esserci un segnale asincrono dal client al serverController per la rotazione della clessidra
+    -il serverController risponde a tutti i client notificando la rotazione della clessidra
 
 
 VALIDATE SHIP
-    -updateStatus() -> il server cominica a tutti i client che e' cambia la fase di gioco
+    -updateStatus() -> il serverController cominica a tutti i client che e' cambia la fase di gioco
 
-    -getIncorrectComponent() -> il server comunica ai client i component sbagliati della shipboard()
+    -getIncorrectComponent() -> il serverController comunica ai client i component sbagliati della shipboard()
     -removeComponents() -> il client risponde quali componenti togliere affinche la configurazione sia valida.
         -questo e' il loop finche la configurazione e' valida
 
     -se la nave non e' un unico pezzo (ci sono due o piu' monconi)
-        -getFragments() -> il server fornisce i fragraments disponibili al client
-        -chooseFragment() -> il client dice al server quale fragments ha scelto
+        -getFragments() -> il serverController fornisce i fragraments disponibili al client
+        -chooseFragment() -> il client dice al serverController quale fragments ha scelto
 
-    -ACK correctShip() -> il server notifa al client che la configurazione scelta e' valida
+    -ACK correctShip() -> il serverController notifa al client che la configurazione scelta e' valida
 
 DRAW_ADV_CARD
-    -updateStatus() -> il server comunica al server che e' cambiata fase di gioco
+    -updateStatus() -> il serverController comunica al serverController che e' cambiata fase di gioco
 
     -si entra in loop fino al termine della partita
         -drawCard() -> il leader estrae la carta avventura in cima al mazzo
-        -getCardStart() -> server notifica tutti i client la carta uscita
+        -getCardStart() -> serverController notifica tutti i client la carta uscita
 
         -in base alla carta si fanno cose diverse (vedere le singolo carte per sapere i cambi del relativo json)
 

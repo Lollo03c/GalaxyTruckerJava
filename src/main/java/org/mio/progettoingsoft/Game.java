@@ -101,7 +101,7 @@ public class Game implements GameServer, GameClient {
                 client.setFlyBoard(mode ,colorMap);
                 client.setState(GameState.GAME_START);
                 client.setState(GameState.BUILDING_SHIP);
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

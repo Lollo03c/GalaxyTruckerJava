@@ -9,28 +9,41 @@ import org.mio.progettoingsoft.utils.Logger;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public abstract class Server implements VirtualServer {
+public class ServerController {
+    /**
+     * SINGLETON IMPLEMENTATION
+     * */
+    private static ServerController instance;
 
-    @Override
+    public static ServerController getInstance() {
+        if(instance == null){
+            instance = new ServerController();
+        }
+        return instance;
+    }
+
+    public int addClientToAccept(VirtualClient client) {
+        GameManager gameManager = GameManager.getInstance();
+        return gameManager.addClientToAccept(client);
+    }
+
     public void handleNickname(int idClient, String nickname) {
         GameManager gameManager = GameManager.getInstance();
 
         gameManager.addPlayerToGame(idClient, nickname);
     }
 
-    @Override
     public void handleGameInfo(GameInfo gameInfo, String nickname){
         GameManager gameManager = GameManager.getInstance();
         GameServer game = gameManager.getWaitingGame();
         game.setupGame(gameInfo.mode(), gameInfo.nPlayers());
         try {
             game.getClients().get(nickname).setState(GameState.WAITING_PLAYERS);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
     public void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations){
         GameManager gameManager = GameManager.getInstance();
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
@@ -46,14 +59,13 @@ public abstract class Server implements VirtualServer {
 
                 try {
                     client.addComponent(nickname, idComp, cordinate, rotations);
-                } catch (RemoteException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
     }
 
-    @Override
     public void getCoveredComponent(int idGame, String nickname){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -63,12 +75,11 @@ public abstract class Server implements VirtualServer {
         try {
             client.setInHandComponent(flyBoard.getCoveredComponents().removeLast());
             client.setState(GameState.COMPONENT_MENU);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
     public void discardComponent(int idGame, int idComponent){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -78,13 +89,12 @@ public abstract class Server implements VirtualServer {
             try {
                 client.addUncoveredComponent(idComponent);
             }
-            catch (RemoteException e){
+            catch (Exception e){
 
             }
         }
     }
 
-    @Override
     public void drawUncovered(int idGame, String nickname, Integer idComponent){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -95,7 +105,7 @@ public abstract class Server implements VirtualServer {
             for (VirtualClient client : game.getClients().values()) {
                 try {
                     client.removeUncovered(idComponent);
-                } catch (RemoteException e) {
+                } catch (Exception e) {
 
                 }
             }
@@ -104,20 +114,19 @@ public abstract class Server implements VirtualServer {
                 game.getClients().get(nickname).setInHandComponent(idComponent);
                 game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
             }
-            catch (RemoteException e){
+            catch (Exception e){
 
             }
         }
         else{
             try {
                 game.getClients().get(nickname).setState(GameState.UNABLE_UNCOVERED_COMPONENT);
-            } catch (RemoteException e) {
+            } catch (Exception e) {
 
             }
         }
     }
 
-    @Override
     public void bookDeck(int idGame, String nickname, Integer deckNumber){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -132,7 +141,7 @@ public abstract class Server implements VirtualServer {
                     try{
                         client.removeDeck(deckNumber);
                     }
-                    catch (RemoteException e){
+                    catch (Exception e){
 
                     }
                 }
@@ -140,21 +149,20 @@ public abstract class Server implements VirtualServer {
                 try{
                     game.getClients().get(nickname).setInHandDeck(deckNumber);
                     game.getClients().get(nickname).setState(GameState.VIEW_DECK);
-                } catch (RemoteException e) {
+                } catch (Exception e) {
 
                 }
             }
             else{
                 try{
                     game.getClients().get(nickname).setState(GameState.UNABLE_DECK);
-                } catch (RemoteException e) {
+                } catch (Exception e) {
 
                 }
             }
         }
     }
 
-    @Override
     public void freeDeck(int idGame, String nickname, Integer deckNumber){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -167,14 +175,14 @@ public abstract class Server implements VirtualServer {
                 try {
                     client.addAvailableDeck(deckNumber);
                 }
-                catch (RemoteException e){
+                catch (Exception e){
 
                 }
             }
 
             try {
                 game.getClients().get(nickname).setState(GameState.BUILDING_SHIP);
-            } catch (RemoteException e) {
+            } catch (Exception e) {
 
             }
         }

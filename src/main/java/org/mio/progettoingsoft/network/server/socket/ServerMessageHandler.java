@@ -1,15 +1,16 @@
-package org.mio.progettoingsoft.network.server;
+package org.mio.progettoingsoft.network.server.socket;
 
 import org.mio.progettoingsoft.network.messages.*;
+import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.concurrent.BlockingQueue;
 
 public class ServerMessageHandler implements Runnable {
     private final BlockingQueue<Message> receivedMessages;
-    private final Server server;
+    private final ServerController serverController;
 
-    public ServerMessageHandler(Server server, BlockingQueue<Message> receivedMessages){
-        this.server = server;
+    public ServerMessageHandler(ServerController serverController, BlockingQueue<Message> receivedMessages){
+        this.serverController = serverController;
         this.receivedMessages = receivedMessages;
     }
 
@@ -21,36 +22,36 @@ public class ServerMessageHandler implements Runnable {
 
                 switch (message){
                     case NicknameMessage nicknameMessage -> {
-                        server.handleNickname(nicknameMessage.getIdClient(), nicknameMessage.getNickname());
+                        serverController.handleNickname(nicknameMessage.getIdClient(), nicknameMessage.getNickname());
                     }
 
                     case GameInfoMessage gameInfoMessage -> {
-                        server.handleGameInfo(gameInfoMessage.getGameInfo(), gameInfoMessage.getNickname());
+                        serverController.handleGameInfo(gameInfoMessage.getGameInfo(), gameInfoMessage.getNickname());
                     }
 
                     case ComponentMessage componentMessage -> {
                         switch (componentMessage.getAction()) {
                             case ADD -> {
-                                server.addComponent(componentMessage.getGameId(), componentMessage.getNickname(),
+                                serverController.addComponent(componentMessage.getGameId(), componentMessage.getNickname(),
                                         componentMessage.getIdComp(), componentMessage.getCordinate(), componentMessage.getRotations());
                             }
 
                             case REMOVE -> {}
 
                             case DISCARD -> {
-                                server.discardComponent(componentMessage.getGameId(), componentMessage.getIdComp());
+                                serverController.discardComponent(componentMessage.getGameId(), componentMessage.getIdComp());
                             }
 
                             case COVERED -> {
-                                server.getCoveredComponent(componentMessage.getGameId(), componentMessage.getNickname());
+                                serverController.getCoveredComponent(componentMessage.getGameId(), componentMessage.getNickname());
                             }
                         }
                     }
 
                     case DeckMessage deckMessage -> {
                         switch (deckMessage.getAction()){
-                            case BOOK -> server.bookDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
-                            case UNBOOK -> server.freeDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
+                            case BOOK -> serverController.bookDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
+                            case UNBOOK -> serverController.freeDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
                         }
 
                     }

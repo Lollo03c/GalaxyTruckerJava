@@ -22,8 +22,6 @@ public class ClientMain {
             System.out.println("Start mode not specified");
         }
 
-
-
         ClientApp clientApp = new ClientApp(isGui);
         clientApp.run();
     }

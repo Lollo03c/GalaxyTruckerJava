@@ -4,7 +4,6 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -143,7 +142,7 @@ public class GameManager{
             try {
                 client.wrongNickname();
                 return;
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 //todo bisogna togliere il client
             }
 
@@ -151,7 +150,7 @@ public class GameManager{
 
         try {
             client.setNickname(nickname);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -179,7 +178,7 @@ public class GameManager{
 
                    Logger.info("Added player " + nickname + " to game " + gameToStart.getIdGame());
                }
-               catch (RemoteException e){
+               catch (Exception e){
                    e.printStackTrace();
                }
            }
@@ -195,7 +194,7 @@ public class GameManager{
                    clientsToAccept.remove(idClient);
                    nicknames.add(nickname);
 
-               } catch (RemoteException e) {
+               } catch (Exception e) {
                    e.printStackTrace();
                }
 

@@ -35,22 +35,22 @@ import java.util.Map;
  */
 public interface VirtualClient extends Remote {
 
-    void ping(String msg) throws RemoteException;
-    void setNickname(String nickname) throws RemoteException;
-    void askGameSettings(String nickname) throws RemoteException;
-    void wrongNickname() throws RemoteException;
-    void setGameId(int gameId) throws RemoteException;
+    void ping(String msg) throws Exception;
+    void setNickname(String nickname) throws Exception;
+    void askGameSettings(String nickname) throws Exception;
+    void wrongNickname() throws Exception;
+    void setGameId(int gameId) throws Exception;
 
-    void setState(GameState state) throws RemoteException;
+    void setState(GameState state) throws Exception;
 
-    void setFlyBoard(GameMode mode, Map<String, HousingColor> players) throws RemoteException;
+    void setFlyBoard(GameMode mode, Map<String, HousingColor> players) throws Exception;
 
-    void setInHandComponent(int idComponent) throws RemoteException;
-    void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
-    void addUncoveredComponent(int idComp) throws RemoteException;
-    void removeUncovered(int idComp) throws RemoteException;
+    void setInHandComponent(int idComponent) throws Exception;
+    void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws Exception;
+    void addUncoveredComponent(int idComp) throws Exception;
+    void removeUncovered(int idComp) throws Exception;
 
-    void removeDeck(Integer deckNumber) throws RemoteException;
-    void setInHandDeck(int deck) throws RemoteException;
-    void addAvailableDeck(int deckNumber) throws RemoteException;
+    void removeDeck(Integer deckNumber) throws Exception;
+    void setInHandDeck(int deck) throws Exception;
+    void addAvailableDeck(int deckNumber) throws Exception;
 }

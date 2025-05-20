@@ -1,4 +1,4 @@
-package org.mio.progettoingsoft.network.client;
+package org.mio.progettoingsoft.network.client.socket;
 
 import org.mio.progettoingsoft.network.messages.Message;
 

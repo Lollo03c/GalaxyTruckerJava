@@ -5,6 +5,8 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.network.client.rmi.RmiClient;
+import org.mio.progettoingsoft.network.client.socket.SocketClient;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 
 import java.beans.PropertyChangeListener;
@@ -15,14 +17,14 @@ import java.util.Map;
 public class ClientController {
     private static ClientController instance;
     private Client client;
-
+    private int tempIdClient;
     private VirtualServer server;
 
-    private ClientController(){
+    private ClientController() {
         this.setState(GameState.START);
     }
 
-    public static synchronized ClientController getInstance(){
+    public static synchronized ClientController getInstance() {
         if (instance == null)
             instance = new ClientController();
 
@@ -43,86 +45,98 @@ public class ClientController {
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    public void addPropertyChangeListener(PropertyChangeListener listener){
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
-    public void setGameId(int gameId){
+    public void setGameId(int gameId) {
         this.idGame = gameId;
     }
 
-    public void setState(GameState state){
+    public void setState(GameState state) {
         GameState oldState;
         synchronized (stateLock) {
             oldState = this.gameState;
             this.gameState = state;
         }
-        if(oldState != state){
+        if (oldState != state) {
             support.firePropertyChange("gameState", oldState, state);
             System.out.println(oldState + " -> " + state);
         }
     }
 
-    public GameState getState(){
-        synchronized (stateLock){
+    public GameState getState() {
+        synchronized (stateLock) {
             return gameState;
         }
     }
 
-    public String getNickname(){
+    public String getNickname() {
         return nickname;
     }
 
-    public Object getStateLock(){
+    public Object getStateLock() {
         return stateLock;
     }
 
-    public void setNickname(String nickname){
+    public void setIdClient(int idClient) {
+        this.tempIdClient = idClient;
+    }
+
+    public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public void connectToServer(boolean isRmi){
+    public void connectToServer(boolean isRmi) {
         setState(GameState.WAITING);
         try {
-            Client client = isRmi ? new ClientRmi() : new ClientSocket();
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            client = isRmi ? new RmiClient() : new SocketClient();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        client.connect();
-        setState(GameState.NICKNAME);
-        synchronized (this){
-            this.notifyAll();
+        try {
+            client.connect();
+            server = client.getServer();
+            setState(GameState.NICKNAME);
+            synchronized (this) {
+                this.notifyAll();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void handleNickname(String nickname){
-        client.handleNickname(nickname);
+    public void handleNickname(String nickname) {
+        try {
+            server.handleNickname(tempIdClient, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void setGameInfo(GameInfo gameInfo){
-        client.handleGameInfo(gameInfo, nickname);
+    public void setGameInfo(GameInfo gameInfo) {
+        try {
+            server.handleGameInfo(gameInfo, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public FlyBoard getFlyBoard(){
+    public FlyBoard getFlyBoard() {
         return flyBoard;
     }
 
-    public GameInfo getGameInfo(){
+    public GameInfo getGameInfo() {
         return new GameInfo(idGame, flyBoard.getMode(), flyBoard.getNumPlayers());
     }
 
-    public Object getFlyboardLock(){
+    public Object getFlyboardLock() {
         return flyboardLock;
     }
 
-    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players){
-        synchronized (flyboardLock){
+    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players) {
+        synchronized (flyboardLock) {
             flyBoard = FlyBoard.createFlyBoard(mode, players.keySet());
-
-
             for (Player player : flyBoard.getPlayers()) {
                 HousingColor color = players.get(player.getNickname());
                 player.setHousingColor(color);
@@ -131,109 +145,125 @@ public class ClientController {
         }
     }
 
-    public void handleBuildingShip(int chosen){
-        if (chosen == 1){
-            client.getCoveredComponent(idGame);
-        }
-        else if (chosen == 2){
+    public void handleBuildingShip(int chosen) {
+        if (chosen == 1) {
+            try {
+                server.getCoveredComponent(idGame, nickname);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else if (chosen == 2) {
             setState(GameState.DRAW_UNCOVERED_COMPONENTS);
-        }
-        else if (chosen == 3){
+        } else if (chosen == 3) {
             setState(GameState.VIEW_SHIP_BUILDING);
-        }
-        else if (chosen == 4){
+        } else if (chosen == 4) {
             setState(GameState.VIEW_DECKS_LIST);
         }
     }
 
-    public int getInHandComponent(){
+    public int getInHandComponent() {
         return inHandComponent;
     }
 
-    public ShipBoard getShipBoard(){
+    public ShipBoard getShipBoard() {
         return shipBoard;
     }
 
-    public void addComponent(Cordinate cordinate, int rotations){
+    public void addComponent(Cordinate cordinate, int rotations) {
 
         try {
             shipBoard.addComponentToPosition(inHandComponent, cordinate, rotations);
 
-            client.handleComponent(idGame, nickname, inHandComponent, cordinate, rotations);
+            server.addComponent(idGame, nickname, inHandComponent, cordinate, rotations);
             inHandComponent = -1;
 
             setState(GameState.BUILDING_SHIP);
         } catch (IncorrectShipBoardException e) {
             setState(GameState.ERROR_PLACEMENT);
+        } catch (Exception e) {
+            shipBoard.removeComponent(cordinate);
+            throw new RuntimeException(e);
         }
     }
 
-    public void addOtherComponent(String nickname, int idComp, Cordinate cordinate, int rotations){
+    public void addOtherComponent(String nickname, int idComp, Cordinate cordinate, int rotations) {
         ShipBoard otherShipboard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
 
-        synchronized (otherShipboard){
+        synchronized (otherShipboard) {
             otherShipboard.addComponentToPosition(idComp, cordinate, rotations);
         }
     }
 
-    public void setInHandComponent(int idComp){
+    public void setInHandComponent(int idComp) {
         this.inHandComponent = idComp;
     }
 
-    public void discardComponent(){
-        client.discardComponent(inHandComponent);
+    public void discardComponent() {
+        try {
+            server.discardComponent(idGame, inHandComponent);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         setState(GameState.BUILDING_SHIP);
     }
 
-    public int getIdGame(){
+    public int getIdGame() {
         return idGame;
     }
 
-    public void addUncoveredComponent(int idComp){
+    public void addUncoveredComponent(int idComp) {
         synchronized (flyBoard.getUncoveredComponents()) {
             flyBoard.getUncoveredComponents().add(idComp);
         }
     }
 
-    public void drawCovered(int idComp){
-        client.drawUncovered(idComp);
+    public void drawCovered(int idComp) {
+        try {
+            server.drawUncovered(idGame, nickname, idComp);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void removeUncovered(Integer idComp){
-        synchronized (flyBoard.getUncoveredComponents()){
+    public void removeUncovered(Integer idComp) {
+        synchronized (flyBoard.getUncoveredComponents()) {
             flyBoard.getUncoveredComponents().remove(idComp);
         }
     }
 
-    public void bookDeck(Integer deckNumber){
-        client.bookDeck(deckNumber);
+    public void bookDeck(Integer deckNumber) {
+        try {
+            server.bookDeck(idGame, nickname, deckNumber);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void removeDeck(Integer deckNumber){
+    public void removeDeck(Integer deckNumber) {
         synchronized (flyBoard.getAvailableDecks()) {
             flyBoard.getAvailableDecks().remove(deckNumber);
         }
     }
 
-    public void setInHandDeck(int deckNumber){
+    public void setInHandDeck(int deckNumber) {
         inHandDeck = deckNumber;
     }
 
-    public int getInHandDeck(){
+    public int getInHandDeck() {
         return inHandDeck;
     }
 
-    public void freeDeck(){
-        client.freeDeck(inHandDeck);
-    }
-
-    public void addAvailableDeck(int deckNumber){
-        synchronized (flyBoard.getAvailableDecks()){
-            flyBoard.getAvailableDecks().add(deckNumber);
+    public void freeDeck() {
+        try {
+            server.freeDeck(idGame, nickname, inHandDeck);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void setServer(VirtualServer server){
-        this.server = server;
+    public void addAvailableDeck(int deckNumber) {
+        synchronized (flyBoard.getAvailableDecks()) {
+            flyBoard.getAvailableDecks().add(deckNumber);
+        }
     }
 }
