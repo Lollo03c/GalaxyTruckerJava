@@ -225,13 +225,13 @@ public class ClientController {
         }
     }
 
-    public void drawCovered(int idComp){
-        if (! flyBoard.getUncoveredComponents().contains(idComp)){
+    public void drawCovered(int idComp) {
+        if (!flyBoard.getUncoveredComponents().contains(idComp)) {
             setState(GameState.UNABLE_UNCOVERED_COMPONENT);
             return;
         }
-        try{
-        server.drawUncovered(idGame, nickname, idComp);
+        try {
+            server.drawUncovered(idGame, nickname, idComp);
         } catch (Exception e) {
 
         }
