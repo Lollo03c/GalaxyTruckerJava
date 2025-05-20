@@ -5,8 +5,6 @@ import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
-import org.mio.progettoingsoft.views.tui.ShipCell;
-import org.mio.progettoingsoft.views.tui.VisualShipboard;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
@@ -20,6 +18,11 @@ public class Tui implements View {
 
     private final Object lockView = new Object();
 
+    public static final String RESET = "\u001B[0m";
+    public static final String RED = "\u001B[31m";
+    public static final String BLUE = "\u001B[34m";
+
+    public Tui(){
     private final BlockingQueue<GameState> statesQueue = new LinkedBlockingQueue<>();
 
     public Tui() {
@@ -85,115 +88,313 @@ public class Tui implements View {
         }
     }
 
-
+    /**
+     * First message showed to the client when he starts.
+     * The method asks and waits for the choice (1: RMI, 2: socket)
+     */
     private void printConnectionMenu() {
-        int chosen = -1;
+        int choice = -1;
+        String input = "";
 
-
-        while (chosen == -1) {
+        while (choice < 1 || choice > 2) {
             System.out.println("Select connection type: ");
-            System.out.println("1: RMI");
-            System.out.println("2: Socket");
+            System.out.println("1 : RMI");
+            System.out.println("2 : Socket");
             System.out.print("Make your choice: ");
 
-            try {
-                chosen = Integer.parseInt(scanner.nextLine());
+            input = scanner.nextLine();
 
-                if (chosen < 1 || chosen > 2)
-                    throw new NumberFormatException("");
-            } catch (NumberFormatException e) {
-                chosen = -1;
-                System.out.println("Your action is not valid. Try again\n");
+            try {
+                choice = Integer.parseInt(input);
+
+                if (choice < 1 || choice > 2) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid choice!" + RESET);
             }
         }
 
-
-        boolean isRmi = chosen == 1;
+        boolean isRmi = choice == 1;
         controller.connectToServer(isRmi);
     }
 
+    /**
+     * Message shown to the client after the registration success, asks for the nickname
+     */
     private void askNickname() {
-        System.out.print("Insert your nickname : ");
-        String nickname = scanner.nextLine();
+        String nickname = "";
+
+        while (true) {
+            System.out.print("Insert your nickname: ");
+            nickname = scanner.nextLine();
+
+            if (!nickname.isEmpty()) {
+                break;
+            }
+
+            System.out.println(RED + "Nickname cannot be empty!" + RESET);
+        }
 
         controller.handleNickname(nickname);
     }
 
+    /**
+     * Message to ask the client for game settings (only if the player is the first joining that match)
+     */
     private void printGameModeMenu() {
-        System.out.print("Insert number of players of the game : ");
-        int nPlayers = Integer.parseInt(scanner.nextLine());
+        int nPlayers = -1;
+        int choice = -1;
+        String input = "";
 
-        System.out.println("Decide game mode");
-        System.out.println("1 : Easy Mode");
-        System.out.println("2 : Normal Mode");
-        System.out.print("Select game mode : ");
-        int choice = Integer.parseInt(scanner.nextLine());
+        while (nPlayers < 2 || nPlayers > 4) {
+            System.out.print("Insert number of players of the game (2-4): ");
+
+            input = scanner.nextLine();
+
+            try {
+                nPlayers = Integer.parseInt(input);
+
+                if (nPlayers < 2 || nPlayers > 4) {
+                    System.out.println(RED + "Invalid number of players!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid number of players!" + RESET);
+            }
+        }
+
+        while (choice < 1 || choice > 2) {
+            System.out.println("Select game mode: ");
+            System.out.println("1 : Easy Mode");
+            System.out.println("2 : Normal Mode");
+            System.out.print("Make your choice: ");
+
+            input = scanner.nextLine();
+
+            try {
+                choice = Integer.parseInt(input);
+
+                if (choice < 1 || choice > 2) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid choice!" + RESET);
+            }
+        }
 
         GameInfo gameInfo = new GameInfo(-1, choice == 1 ? GameMode.EASY : GameMode.NORMAL, nPlayers);
         controller.setGameInfo(gameInfo);
     }
 
-    private void printPlayersName() {
-        synchronized (controller.getFlyboardLock()) {
-            FlyBoard flyBoard = controller.getFlyBoard();
-            int count = 1;
+    /**
+     * Message to notify the clients the start of the game
+     * */
+    private void printStartGameInfo() {
+        System.out.println(BLUE + "The game has started!" + RESET);
+        System.out.println("Players:");
 
-            for (Player player : flyBoard.getPlayers()) {
-                System.out.println((count++) + " " + player.getNickname() + " : " + player.getColor());
+        printPlayersName();
+
+        controller.setState(GameState.WAITING);
+    }
+
+    /**
+     * Message to show building ship menu
+     * */
+    private void buildingShipMenu() {
+        System.out.println(BLUE + "It's time to build your ship!" + RESET);
+
+        int choice = -1;
+        String input = "";
+
+        while (choice < 1 || choice > 4) {
+            System.out.println("1 : Pick covered component");
+            System.out.println("2 : Pick uncovered component");
+            System.out.println("3 : View other player's ship");
+            if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL))
+                System.out.println("4 : Look at decks");
+            System.out.print("Make your choice: ");
+
+            input = scanner.nextLine();
+
+            try {
+                choice = Integer.parseInt(input);
+
+                if (choice < 1 || choice > 4) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid choice!" + RESET);
             }
         }
+
+        controller.handleBuildingShip(choice);
     }
 
-    private void buildingShipMenu() {
-        System.out.println("1 : pick covered component");
-        System.out.println("2 : pick uncovered component");
-        System.out.println("3 : view other player's ship");
-
-        int chosen = Integer.parseInt(scanner.nextLine());
-        controller.handleBuildingShip(chosen);
-    }
-
+    /**
+     * Prints the menu to add component, asks for row, column and rotation
+     * */
     private void addComponent() {
-        System.out.println("Insert row : ");
-        int row = Integer.parseInt(scanner.nextLine());
+        String input = "";
 
-        System.out.println("insert column : ");
-        int column = Integer.parseInt(scanner.nextLine());
+        int row = 0;
+        while (row < 5 || row > 9) {
+            System.out.print("Insert row: ");
 
-        System.out.println("insert rotation : ");
-        int rotations = Integer.parseInt(scanner.nextLine());
+            input = scanner.nextLine();
+
+            try {
+                row = Integer.parseInt(input);
+
+                if (row < 5 || row > 9) {
+                    System.out.println(RED + "Invalid row!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid row!" + RESET);
+            }
+        }
+
+        int column = 0;
+        while (column < 4 || column > 10) {
+            System.out.print("Insert column: ");
+
+            input = scanner.nextLine();
+
+            try {
+                column = Integer.parseInt(input);
+
+                if (column < 4 || column > 10) {
+                    System.out.println(RED + "Invalid column!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid column!" + RESET);
+            }
+        }
+
+        int rotation = -1;
+        while (rotation < 0 || rotation > 3) {
+            System.out.print("Insert rotation: ");
+
+            input = scanner.nextLine();
+
+            try {
+                rotation = Integer.parseInt(input);
+
+                if (rotation < 0 || rotation > 3) {
+                    System.out.println(RED + "Invalid rotation!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid rotation!" + RESET);
+            }
+        }
 
         try {
-            controller.addComponent(Cordinate.convertWithOffset(row, column), rotations);
+            controller.addComponent(Cordinate.convertWithOffset(row, column), rotation);
         } catch (InvalidCordinate e) {
             controller.setState(GameState.ERROR_PLACEMENT);
         }
     }
 
     private void viewShipBuilding() {
+        System.out.println("These are the players: ");
         printPlayersName();
-        System.out.print("Insert nickname to look at :");
-        String chosenPlayer = scanner.nextLine();
+
+        String chosenPlayer = "";
+
+        while (true) {
+            System.out.print("Insert nickname to look at: ");
+            chosenPlayer = scanner.nextLine();
+
+            if (chosenPlayer.isEmpty()) {
+                System.out.println(RED + "Invalid nickname!" + RESET);
+            } else {
+                break;
+            }
+        }
+
         controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard().drawShipboard();
         controller.setState(GameState.BUILDING_SHIP);
     }
 
     private void componentMenu() {
-        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();
-        ;
+        System.out.println("This is the component you've drawn:");
+        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();;
         controller.getShipBoard().drawShipboard();
 
-        System.out.println("1 : Insert in the shipboard");
-        System.out.println("2 : Put back in the deck");
-        System.out.println("3 : Save for later");
+        int choice = -1;
+        String input = "";
 
-        int chosenAction = Integer.parseInt(scanner.nextLine());
-        if (chosenAction == 1) {
+        while (choice < 1 || choice > 3) {
+            System.out.println("1 : Insert in the shipboard");
+            System.out.println("2 : Put back in the deck");
+            System.out.println("3 : Save for later");
+            System.out.print("Make your choice: ");
+
+            input = scanner.nextLine();
+
+            try {
+                choice = Integer.parseInt(input);
+
+                if (choice < 1 || choice > 3) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid choice!" + RESET);
+            }
+        }
+
+        if (choice == 1){
             controller.setState(GameState.ADD_COMPONENT);
-        } else if (chosenAction == 2) {
+        }
+        else if (choice == 2){
             controller.discardComponent();
-        } else if (chosenAction == 3) {
+        }
+        else if (choice == 3){
 
+        }
+    }
+
+    private void drawUncoveredComponents() {
+        int count = 1;
+        for (int idComp : controller.getFlyBoard().getUncoveredComponents()){
+            System.out.println("Component #" + idComp);
+            Component component = controller.getFlyBoard().getComponentById(idComp);
+            new ShipCell(component).drawCell();
+        }
+
+        System.out.print("Select component to draw : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        controller.drawCovered(chosen);
+    }
+
+    private void viewDecksList(){
+        System.out.println("Available decks : ");
+        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()){
+            System.out.println("Deck #" + numberDeck);
+        }
+        System.out.print("Choose deck number : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        controller.bookDeck(chosen);
+    }
+
+    private void viewDeck(){
+        System.out.println("hai in mano il deck #" + controller.getInHandDeck());
+        System.out.println("premere invio per continuare");
+
+        String buffer = scanner.nextLine();
+        controller.freeDeck();
+    }
+
+    private void printPlayersName(){
+        synchronized (controller.getFlyboardLock()){
+            FlyBoard flyBoard = controller.getFlyBoard();
+            int count = 1;
+
+            for (Player player : flyBoard.getPlayers()) {
+                System.out.println((count++) + " " + player.getNickname() + " : " + player.getColor());
+            }
         }
     }
 }

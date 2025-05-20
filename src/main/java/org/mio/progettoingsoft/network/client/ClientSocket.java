@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ClientSocket extends Client{
+public class ClientSocket extends Client {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
@@ -88,12 +88,26 @@ public class ClientSocket extends Client{
                         }
                     }
 
+                    case DeckMessage deckMessage -> {
+                        switch (deckMessage.getAction()){
+                            case BOOK -> {
+                                controller.setInHandDeck(deckMessage.getDeckNumber());
+                            }
+
+                            case REMOVE_FROM_CLIENT -> {
+                                controller.removeDeck(deckMessage.getDeckNumber());
+                            }
+
+                            case UNBOOK ->
+                                controller.addAvailableDeck(deckMessage.getDeckNumber());
+                        }
+                    }
+
                     default -> {}
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            ;
         }
     }
 
@@ -128,7 +142,24 @@ public class ClientSocket extends Client{
 
     @Override
     public void discardComponent(int idComponent){
-        Message message = new ComponentMessage(idClient, "", ComponentMessage.Action.DISCARD, idComponent, null, 0);
+        Message message = new ComponentMessage(controller.getIdGame(), "", ComponentMessage.Action.DISCARD, idComponent, null, 0);
+        sendMessage(message);
+    }
+
+    @Override
+    public void drawUncovered(int idComponent){
+        Message message = new ComponentMessage(controller.getIdGame(), controller.getNickname(), ComponentMessage.Action.DRAW_UNCOVERED, idComponent, null, 0);
+        sendMessage(message);
+    }
+
+    @Override
+    public void bookDeck(int deckNumber){
+        Message message = new DeckMessage(controller.getIdGame(), controller.getNickname(), DeckMessage.Action.BOOK, deckNumber);
+        sendMessage(message);
+    }
+
+    public void freeDeck(int deckNumber){
+        Message message = new DeckMessage(controller.getIdGame(), controller.getNickname(), DeckMessage.Action.UNBOOK, deckNumber);
         sendMessage(message);
     }
 }

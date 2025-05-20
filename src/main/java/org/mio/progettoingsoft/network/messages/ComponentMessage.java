@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public final class ComponentMessage extends Message {
     public enum Action implements Serializable {
-        ADD, REMOVE, COVERED, DISCARD, ADD_UNCOVERED;
+        ADD, REMOVE, COVERED, DISCARD, ADD_UNCOVERED, DRAW_UNCOVERED;
     }
 
     private final Action action;

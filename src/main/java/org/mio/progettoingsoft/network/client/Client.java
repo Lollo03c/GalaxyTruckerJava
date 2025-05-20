@@ -3,19 +3,15 @@ package org.mio.progettoingsoft.network.client;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
-import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.rmi.RemoteException;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
-public abstract class Client implements VirtualClient{
+public abstract class Client implements VirtualClient {
     protected ClientController controller = ClientController.getInstance();
     private ExecutorService executors = Executors.newFixedThreadPool(4);
 
@@ -28,6 +24,9 @@ public abstract class Client implements VirtualClient{
     public abstract void getCoveredComponent(int idGame);
     public abstract void handleComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations);
     public abstract void discardComponent(int idComponent);
+    public abstract void drawUncovered(int idComponent);
+    public abstract void bookDeck(int deckNumber);
+    public abstract void freeDeck(int deckNumber);
 
     @Override
     public void setNickname(String nickname) throws RemoteException{
@@ -84,10 +83,31 @@ public abstract class Client implements VirtualClient{
     }
 
     @Override
-    public void addUnoveredComponent(int idComp) throws RemoteException{
+    public void addUncoveredComponent(int idComp) throws RemoteException{
         executors.submit(() -> {
             controller.addUncoveredComponent(idComp);
         });
+    }
+
+    @Override
+    public void removeUncovered(int idComp) throws RemoteException{
+        executors.submit(() ->
+            controller.removeUncovered(idComp)
+        );
+    }
+
+    @Override
+    public void removeDeck(Integer deckNumber) throws RemoteException{
+        executors.submit(() -> controller.removeDeck(deckNumber));
+    }
+
+    @Override
+    public void setInHandDeck(int deck){
+        executors.submit(() -> controller.setInHandDeck(deck));
+    }
+
+    public void addAvailableDeck(int deckNumber){
+        executors.submit(() -> controller.addAvailableDeck(deckNumber));
     }
 
 

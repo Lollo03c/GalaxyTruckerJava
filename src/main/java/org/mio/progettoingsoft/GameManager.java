@@ -1,10 +1,8 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.exceptions.IncorrectClientException;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
-import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -71,9 +69,10 @@ public class GameManager{
      *          Optional.of(Game) an optional containing the current waiting game
      */
     public synchronized GameServer getWaitingGame(){
-        if (waitingGame == null)
+        if (waitingGame == null) {
             waitingGame = new Game(getNextGameIdToStart());
-
+            Logger.debug("Created new waiting game.");
+        }
         return waitingGame;
     }
 
@@ -93,6 +92,9 @@ public class GameManager{
             }
             int idClient = nextIdPlayer.getAndIncrement();
             clientsToAccept.put(idClient, client);
+
+            Logger.debug("Client " + idClient + " connected to server.");
+
             return idClient;
     }
 
@@ -174,9 +176,8 @@ public class GameManager{
                    gameToStart.addPlayer(nickname, client);
                    clientsToAccept.remove(idClient);
                    nicknames.add(nickname);
-                   System.out.println(nickname + gameToStart.getIdGame());
-                   return;
 
+                   Logger.info("Added player " + nickname + " to game " + gameToStart.getIdGame());
                }
                catch (RemoteException e){
                    e.printStackTrace();
@@ -188,7 +189,8 @@ public class GameManager{
                    client.setState(GameState.WAITING_PLAYERS);
 
                    gameToStart.addPlayer(nickname, client);
-                   System.out.println(nickname + gameToStart.getIdGame());
+
+                   Logger.info("Added player " + nickname + " to game " + gameToStart.getIdGame());
 
                    clientsToAccept.remove(idClient);
                    nicknames.add(nickname);
@@ -205,11 +207,7 @@ public class GameManager{
                    new Thread(ready::startGame).start();
                }
            }
-
-
         }
-
-
     }
 
     public AtomicBoolean getCreatingGame(){

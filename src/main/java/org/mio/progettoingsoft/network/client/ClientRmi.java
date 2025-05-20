@@ -1,13 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
-import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
-import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 
 import java.rmi.NotBoundException;
@@ -15,10 +9,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Map;
 
-public class ClientRmi extends Client implements VirtualClient{
-    private VirtualServer server;
+public class ClientRmi extends Client {
+    private final VirtualServer server;
 
     public ClientRmi() throws RemoteException {
         System.setProperty("java.rmi.server.hostname", "localhost");  // l'IP reale del client sulla rete
@@ -27,14 +20,8 @@ public class ClientRmi extends Client implements VirtualClient{
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             server = (VirtualServer) registry.lookup("GameSpace");
-
-//            System.out.println("connesso al server Rmi");
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
         } catch (NotBoundException e) {
             throw new RuntimeException(e);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -101,4 +88,33 @@ public class ClientRmi extends Client implements VirtualClient{
         }
     }
 
+    @Override
+    public void drawUncovered(int idComponent){
+        try{
+            server.drawUncovered(controller.getIdGame(), controller.getNickname(), idComponent);
+        }
+        catch (RemoteException e){
+
+        }
+    }
+
+    @Override
+    public void bookDeck(int deckNumber){
+        try{
+            server.bookDeck(controller.getIdGame(),controller.getNickname(), deckNumber);
+        }
+        catch (RemoteException e){
+
+        }
+    }
+
+    @Override
+    public void freeDeck(int deckNumber){
+        try{
+            server.freeDeck(controller.getIdGame(), controller.getNickname(), controller.getInHandDeck());
+        }
+        catch (RemoteException e){
+
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.network.messages.Message;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -8,13 +9,11 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ServerApp implements Runnable{
+public class ServerApp implements Runnable {
 
-    private Server server;
     @Override
     public void run(){
         startRmiServer();
@@ -31,7 +30,7 @@ public class ServerApp implements Runnable{
             ServerRMI rmiServer = new ServerRMI();
             registry.rebind("GameSpace", rmiServer);
 
-            System.out.println("Server RMI running on port " + portRmi);
+            Logger.info("Server RMI running on port " + portRmi);
 
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -43,6 +42,8 @@ public class ServerApp implements Runnable{
 
         try {
             ServerSocket serverSocket = new ServerSocket(port);
+
+            Logger.info("Server Socket running on port " + port);
 
             Server socketServer = new SocketServer();
 

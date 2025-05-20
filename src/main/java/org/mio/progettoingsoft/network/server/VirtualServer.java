@@ -19,4 +19,7 @@ public interface VirtualServer extends Remote {
     void getCoveredComponent(int idGame, String nickname) throws RemoteException;
     void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException;
     void discardComponent(int idGame, int idComponent) throws RemoteException;
+    void drawUncovered(int idGame, String nickname, Integer idComponent) throws RemoteException;
+    void bookDeck(int idGame, String nickname, Integer deckNumber) throws RemoteException;
+    void freeDeck(int idGame, String nickname, Integer deckNumber) throws RemoteException;
 }

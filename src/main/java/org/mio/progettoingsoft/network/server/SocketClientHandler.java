@@ -15,7 +15,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 
-public class SocketClientHandler extends Server implements Runnable{
+public class SocketClientHandler extends Server implements Runnable {
     private final Socket clientSocket;
     private final BlockingQueue<Message> receivedMessages;
 

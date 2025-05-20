@@ -46,6 +46,14 @@ public class ServerMessageHandler implements Runnable {
                             }
                         }
                     }
+
+                    case DeckMessage deckMessage -> {
+                        switch (deckMessage.getAction()){
+                            case BOOK -> server.bookDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
+                            case UNBOOK -> server.freeDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
+                        }
+
+                    }
                     default -> {}
                 }
             } catch (InterruptedException e) {
