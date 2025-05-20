@@ -109,10 +109,6 @@ public abstract class FlyBoard implements FlyBoardServer {
         throw new IncorrectFlyBoardException("");
     }
 
-    public GameMode getMode() {
-        return mode;
-    }
-
     public int getNumPlayers(){
         return players.size();
     }
