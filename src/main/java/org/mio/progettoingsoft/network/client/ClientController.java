@@ -2,13 +2,9 @@ package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
-import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.views.tui.ShipCell;
-import org.mio.progettoingsoft.views.tui.VisualShipboard;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -16,8 +12,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientController {
     private static ClientController instance;
@@ -34,7 +28,7 @@ public class ClientController {
         return instance;
     }
 
-    private GameState gameState = GameState.START;
+    private GameState gameState;
     private final Object stateLock = new Object();
     private final Object flyboardLock = new Object();
     FlyBoard flyBoard;
@@ -57,10 +51,14 @@ public class ClientController {
     }
 
     public void setState(GameState state){
+        GameState oldState;
         synchronized (stateLock) {
-            GameState oldState = this.gameState;
+            oldState = this.gameState;
             this.gameState = state;
+        }
+        if(oldState != state){
             support.firePropertyChange("gameState", oldState, state);
+            System.out.println(oldState + " -> " + state);
         }
     }
 
@@ -105,11 +103,15 @@ public class ClientController {
     }
 
     public void setGameInfo(GameInfo gameInfo){
-        client.handleGameInfo(gameInfo);
+        client.handleGameInfo(gameInfo, nickname);
     }
 
     public FlyBoard getFlyBoard(){
         return flyBoard;
+    }
+
+    public GameInfo getGameInfo(){
+        return new GameInfo(idGame, flyBoard.getMode(), flyBoard.getNumPlayers());
     }
 
     public Object getFlyboardLock(){

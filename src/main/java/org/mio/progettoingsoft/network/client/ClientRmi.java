@@ -1,13 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.exceptions.IncorrectNameException;
-import org.mio.progettoingsoft.exceptions.SetGameModeException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
-import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 
 import java.rmi.NotBoundException;
@@ -15,7 +9,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Map;
 
 public class ClientRmi extends Client implements VirtualClient{
     private VirtualServer server;
@@ -62,10 +55,9 @@ public class ClientRmi extends Client implements VirtualClient{
     }
 
     @Override
-    public void handleGameInfo(GameInfo gameInfo){
-
+    public void handleGameInfo(GameInfo gameInfo, String nickname){
         try {
-            server.handleGameInfo(gameInfo);
+            server.handleGameInfo(gameInfo, nickname);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

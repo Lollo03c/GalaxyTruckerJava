@@ -100,6 +100,14 @@ public abstract class FlyBoard implements FlyBoardServer {
         throw new IncorrectFlyBoardException("");
     }
 
+    public GameMode getMode() {
+        return mode;
+    }
+
+    public int getNumPlayers(){
+        return players.size();
+    }
+
     public Optional<Player> getPlayerByColor(HousingColor colorPlayerEnum){
         return scoreBoard.stream()
                 .filter(p -> p.getColor().equals(colorPlayerEnum))

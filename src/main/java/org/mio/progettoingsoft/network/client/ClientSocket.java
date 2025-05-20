@@ -1,7 +1,6 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.messages.*;
 
@@ -109,8 +108,8 @@ public class ClientSocket extends Client{
     }
 
     @Override
-    public void handleGameInfo(GameInfo gameInfo){
-        Message message = new GameInfoMessage(-1, "", gameInfo);
+    public void handleGameInfo(GameInfo gameInfo, String nickname){
+        Message message = new GameInfoMessage(-1, nickname, gameInfo);
         sendMessage(message);
     }
 

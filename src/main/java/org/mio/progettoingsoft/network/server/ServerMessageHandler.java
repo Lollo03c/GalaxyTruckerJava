@@ -25,7 +25,7 @@ public class ServerMessageHandler implements Runnable {
                     }
 
                     case GameInfoMessage gameInfoMessage -> {
-                        server.handleGameInfo(gameInfoMessage.getGameInfo());
+                        server.handleGameInfo(gameInfoMessage.getGameInfo(), gameInfoMessage.getNickname());
                     }
 
                     case ComponentMessage componentMessage -> {
