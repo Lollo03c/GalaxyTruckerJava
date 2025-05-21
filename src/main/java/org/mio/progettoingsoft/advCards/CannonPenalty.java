@@ -68,5 +68,10 @@ public abstract class CannonPenalty extends Penalty {
         }
         return hitComponent;
     }
+
+    @Override
+    public Direction getDirection() {
+        return direction;
+    }
 }
 

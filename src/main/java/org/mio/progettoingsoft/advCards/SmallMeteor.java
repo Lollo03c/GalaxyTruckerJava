@@ -12,7 +12,10 @@ public class SmallMeteor extends Meteor {
     public SmallMeteor(Direction direction) {
         super(direction);
     }
-
+    @Override
+    public String toString(){
+        return "Small meteor";
+    }
     @Override
     public void hit(Player player, int value) {
 //        ShipBoard board = player.getShipBoard();

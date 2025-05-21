@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 
@@ -18,5 +19,9 @@ public abstract class Penalty {
 
     public int getAmount(){
         throw new RuntimeException("This penalty has no amount");
+    }
+
+    public Direction getDirection() {
+        throw new RuntimeException("This penalty has no direction");
     }
 }

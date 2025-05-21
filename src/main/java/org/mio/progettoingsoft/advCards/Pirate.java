@@ -34,10 +34,10 @@ public class Pirate extends AdvancedEnemy{
         return strength;
     }
 
-//    @Override
-//    public List<CannonPenalty> getCannonPenalty(){
-//        return cannons;
-//    }
+    @Override
+    public List<CannonPenalty> getCannonPenalty(){
+        return cannons;
+    }
 
     public static Pirate loadPirate(JsonNode node){
         int id = node.path("id").asInt();

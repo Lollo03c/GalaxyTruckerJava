@@ -37,6 +37,16 @@ public class Slaver extends AdvancedEnemy{
     }
 
     @Override
+    public int getDaysLost() {
+        return daysLost;
+    }
+
+    @Override
+    public int getStrength(){
+        return strength;
+    }
+
+    @Override
     public void start(){
         playersToPlay = new ArrayList<>(flyBoard.getScoreBoard());
         iterator = playersToPlay.iterator();

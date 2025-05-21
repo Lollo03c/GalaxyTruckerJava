@@ -14,9 +14,11 @@ public class AbandonedStation extends AdventureCard {
     private int crewNeeded;
     private List<GoodType> goods;
 
-    public AbandonedStation(int id, int level, List<GoodType> goods) {
+    public AbandonedStation(int id, int level, List<GoodType> goods, int daysLost, int crewNeeded) {
         super(id, level, AdvCardType.ABANDONED_STATION);
         this.goods = goods;
+        this.daysLost = daysLost;
+        this.crewNeeded = crewNeeded;
     }
     
     public static AbandonedStation loadAbandonedStation(JsonNode node) {
@@ -29,10 +31,12 @@ public class AbandonedStation extends AdventureCard {
         for (JsonNode good : goodsNode) {
             goods.add(GoodType.stringToGoodType(good.asText()));
         }
-        
-        return new AbandonedStation(id, level, goods);
+
+        return new AbandonedStation(id, level, goods, daysLost,crewNeeded);
+
     }
 
+    @Override
     public int getCrewNeeded(){
         return crewNeeded;
     }

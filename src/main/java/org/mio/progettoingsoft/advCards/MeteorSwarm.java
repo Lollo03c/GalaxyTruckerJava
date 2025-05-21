@@ -26,9 +26,9 @@ public class MeteorSwarm extends AdventureCard {
         return new MeteorSwarm(id, level, meteors);
     }
 
-//    @Override
-//    public List<Meteor> getMeteors(){
-//        return this.meteors;
-//    }
+    @Override
+    public List<Meteor> getMeteors(){
+        return this.meteors;
+    }
 
 }

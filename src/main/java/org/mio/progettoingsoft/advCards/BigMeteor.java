@@ -86,4 +86,9 @@ public class BigMeteor extends Meteor {
         }
 
     }
+
+    @Override
+    public String toString(){
+        return "Big meteor";
+    }
 }

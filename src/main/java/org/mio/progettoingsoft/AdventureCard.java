@@ -1,8 +1,13 @@
 package org.mio.progettoingsoft;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
+import org.mio.progettoingsoft.advCards.CombatLine;
+import org.mio.progettoingsoft.advCards.Meteor;
+import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
+import org.mio.progettoingsoft.views.tui.VisualCard;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,12 +38,18 @@ public abstract class AdventureCard {
     public int getLevel(){
         return level;
     }
+
+    public void drawCard(){
+        VisualCard visual = new VisualCard(this);
+        visual.drawCard();
+    }
+
     public int getId(){ return id; }
     public AdvCardType getType(){return type;}
 
-//    public List<Meteor> getMeteors() throws BadParameterException{
-//        throw new BadParameterException("La carta selezionata non contiene meteoriti: " + this.getType());
-//    }
+    public List<Meteor> getMeteors() {
+        throw new BadParameterException("La carta selezionata non contiene meteoriti: " + this.getType());
+   }
 
     public int getDaysLost() throws BadParameterException {
         throw new BadParameterException("La carta selezionata non implica perdita di giorni: " + this.getType());
@@ -68,17 +79,17 @@ public abstract class AdventureCard {
         throw new BadParameterException("La carta selezionata non fornisce crediti: " + this.getType());
     }
 
-//    public List<CannonPenalty> getCannonPenalty() throws BadParameterException{
-//        throw new BadParameterException("La carta selezionata non contiene cannonate: " + this.getType());
-//    }
+    public List<CannonPenalty> getCannonPenalty() throws BadParameterException{
+        throw new BadParameterException("La carta selezionata non contiene cannonate: " + this.getType());
+    }
 
-//    public List<Planet> getPlanets() throws BadParameterException {
-//        throw new BadParameterException("La carta selezionata non contiene pianeti: " + this.getType());
-//    }
+    public List<Planet> getPlanets() throws BadParameterException {
+        throw new BadParameterException("La carta selezionata non contiene pianeti: " + this.getType());
+    }
 
-//    public List<CombatLine> getLines() throws BadParameterException {
-//        throw new BadParameterException("La carta selezionata non contiene linee di combattimento: " + this.getType());
-//    }
+    public List<CombatLine> getLines() throws BadParameterException {
+        throw new BadParameterException("La carta selezionata non contiene linee di combattimento: " + this.getType());
+    }
     public void start(){}
 
     public /*abstract*/ void applyEffect(String json) throws Exception{

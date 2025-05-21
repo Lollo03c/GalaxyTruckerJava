@@ -11,4 +11,12 @@ public enum Criterion {
             default -> Criterion.CREW;
         };
     }
+
+    public String criterionToString() {
+        return switch (this) {
+            case CREW -> "Crew";
+            case FIRE_POWER -> "Fire power";
+            case ENGINE_POWER -> "Engine power";
+        };
+    }
 }
