@@ -142,6 +142,7 @@ public class Tui implements View {
 
         boolean isRmi = choice == 1;
         controller.connectToServer(isRmi);
+        clearConsole();
     }
 
     /**
@@ -162,6 +163,7 @@ public class Tui implements View {
         }
 
         controller.handleNickname(nickname);
+        clearConsole();
     }
 
     /**
@@ -209,6 +211,7 @@ public class Tui implements View {
 
         GameInfo gameInfo = new GameInfo(-1, choice == 1 ? GameMode.EASY : GameMode.NORMAL, nPlayers);
         controller.setGameInfo(gameInfo);
+        clearConsole();
     }
 
     /**
@@ -257,6 +260,7 @@ public class Tui implements View {
         }
 
         controller.handleBuildingShip(choice);
+        clearConsole();
     }
 
     /**
@@ -321,6 +325,7 @@ public class Tui implements View {
         } catch (InvalidCordinate e) {
             controller.setState(GameState.ERROR_PLACEMENT);
         }
+        clearConsole();
     }
 
     private void viewShipBuilding() {
@@ -477,7 +482,9 @@ public class Tui implements View {
         }
 
         controller.bookComponent(possibles.indexOf(chosenComp));
+    }
 
-
+    private void clearConsole() {
+        System.out.print("\033[H\033[2J");
     }
 }
