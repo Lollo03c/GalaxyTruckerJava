@@ -17,7 +17,6 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.FlyBoardServer;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The Flyboard
@@ -141,6 +140,14 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public Component getComponentById(int idComp){
         return components.get(idComp);
+    }
+
+    public List<String> getNicknameList() {
+        List<String> usernameList = new ArrayList<>();
+        for(Player player : players){
+            usernameList.add(player.getNickname());
+        }
+        return usernameList;
     }
 
     public Integer drawComponent() throws NoMoreComponentsException {

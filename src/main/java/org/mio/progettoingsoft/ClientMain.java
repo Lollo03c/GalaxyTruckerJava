@@ -43,21 +43,16 @@ public class ClientMain {
                 choice = in.nextInt();
             } catch (Exception e) {
                 choice = 0;
+                in.nextLine();
             }
         }
         isGui = choice == 1;
-        String ip = "localhost";
+        String ip = "localhost"; /* or ip = args[0] */
         int socketPort = 1050, rmiPort = 1099;
         String serverName = "GameSpace";
         if(IPValidator.isIPValid(ip)) {
             ConnectionInfo connectionInfo = new ConnectionInfo(ip, socketPort, rmiPort, serverName);
-            try{
-                ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("configs/net-config.bin"));
-                o.writeObject(connectionInfo);
-            }catch(IOException e){
-                System.out.println(e.getMessage());
-            }
-            ClientApp clientApp = new ClientApp(isGui);
+            ClientApp clientApp = new ClientApp(isGui, connectionInfo);
             clientApp.run();
         }else{
             System.out.println("IP not valid");

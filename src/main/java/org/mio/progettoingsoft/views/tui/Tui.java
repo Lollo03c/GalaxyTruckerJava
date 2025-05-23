@@ -210,7 +210,7 @@ public class Tui implements View {
         }
 
         GameInfo gameInfo = new GameInfo(-1, choice == 1 ? GameMode.EASY : GameMode.NORMAL, nPlayers);
-        controller.setGameInfo(gameInfo);
+        controller.handleGameInfo(gameInfo);
         clearConsole();
     }
 
@@ -357,7 +357,7 @@ public class Tui implements View {
 
     private void componentMenu() {
         System.out.println("This is the component you've drawn:");
-        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();;
+        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();
         controller.getShipBoard().drawShipboard();
 
         int choice = -1;

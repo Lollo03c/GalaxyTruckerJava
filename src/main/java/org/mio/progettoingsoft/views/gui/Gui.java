@@ -1,33 +1,54 @@
 package org.mio.progettoingsoft.views.gui;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import org.mio.progettoingsoft.Game;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
+import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
-import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Gui extends Application implements View {
 
     private final ClientController controller;
+    private final BlockingQueue<GameState> statesQueue = new LinkedBlockingQueue<>();
+
+    private final String imgPath = "/images/";
+    private final String tilesRelPath = "tiles/GT-new_tiles_16_for web";
+    private final String imgExtension = ".jpg";
+
     private Stage stage;
     private StackPane root;
-    private final BlockingQueue<GameState> statesQueue = new LinkedBlockingQueue<>();
+    private BorderPane shipViewBorderPane;
+    private HBox shipTopBox;
+    private HBox shipTilesDeckBox;
+    private HBox shipAdvDeckBox;
+    private VBox shipRightColumn;
+    private VBox inHandBox;
+    private ImageView inHandImageView;
+    private VBox viewOtherPlayersBox;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -53,6 +74,8 @@ public class Gui extends Application implements View {
         this.stage.setTitle("Galaxy Trucker");
         this.stage.setScene(new Scene(root, 1000, 600));
         this.updateGui(GameState.START);
+        this.stage.setMaximized(true);
+        shipViewBorderPane = new BorderPane();
         this.stage.show();
         Thread thread = new Thread(() -> {
             try {
@@ -70,12 +93,13 @@ public class Gui extends Application implements View {
 
     private void updateGui(GameState state) {
         switch (state) {
-            case START -> firstView();
+            case START -> firstView() /*buildingShipView()*/;
             case WAITING -> loadingView();
             case NICKNAME -> nicknameRequestView();
             case GAME_MODE -> askForSettingsView();
             case WAITING_PLAYERS -> waitingForPlayersView();
             case BUILDING_SHIP -> buildingShipView();
+            case COMPONENT_MENU -> addComponentView();
             default -> genericErrorView(state);
         }
         stage.show();
@@ -180,8 +204,8 @@ public class Gui extends Application implements View {
         root.getChildren().clear();
         VBox box = new VBox(10);
         Label waitingLabel = new Label("Waiting for players!");
-        Label gameInfoLabel = new Label("Game info:");
-        box.getChildren().addAll(waitingLabel, gameInfoLabel);
+//        Label gameInfoLabel = new Label("Game info:");
+//        box.getChildren().addAll(waitingLabel, gameInfoLabel);
 //        HBox gameInfoBox = new HBox(10);
 //        gameInfoBox.setAlignment(Pos.CENTER);
 //        GameInfo info = controller.getGameInfo();
@@ -189,19 +213,140 @@ public class Gui extends Application implements View {
 //        Label gameModeLabel = new Label("Game mode: " + info.mode());
 //        gameInfoBox.getChildren().addAll(nPlayersLabel, gameModeLabel);
 //        box.getChildren().add(gameInfoBox);
+        box.getChildren().add(waitingLabel);
         root.getChildren().add(box);
     }
 
     private void buildingShipView(){
         root.getChildren().clear();
-        Label shipLabel = new Label("Qua dovremmo costruire la nave");
+        /* ----------------------- TOP BOX ----------------------- */
+        shipTopBox = new HBox();
+        /* Tiles decks */
+        shipTilesDeckBox = new HBox(15);
+        shipTilesDeckBox.setPadding(new Insets(20));
+        shipTilesDeckBox.setAlignment(Pos.CENTER);
+        shipTilesDeckBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
+        HBox.setHgrow(shipTilesDeckBox, Priority.ALWAYS);
+        // tiles buttons may be replaced by the tile back
+        Button coveredDeck = new Button("Covered Deck");
+        Button uncoveredDeck = new Button("Uncovered Deck");
+        List<Button> tilesDeckButtons = new ArrayList<>();
+        tilesDeckButtons.add(coveredDeck);
+        tilesDeckButtons.add(uncoveredDeck);
+        for (Button button : tilesDeckButtons) {
+            button.setPrefWidth(100);
+            button.prefHeightProperty().bind(coveredDeck.widthProperty());
+            button.setWrapText(true);
+            button.setTextAlignment(TextAlignment.CENTER);
+        }
+        coveredDeck.setOnAction(event -> drawCoveredComponent());
+        uncoveredDeck.setOnAction(event -> chooseUncoveredComponent());
+        shipTilesDeckBox.getChildren().addAll(coveredDeck, uncoveredDeck);
+
+        /* Adventure cards decks */
+        shipAdvDeckBox = new HBox(10);
+        shipAdvDeckBox.setPadding(new Insets(20));
+        shipAdvDeckBox.setAlignment(Pos.CENTER);
+        shipAdvDeckBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
+        HBox.setHgrow(shipAdvDeckBox, Priority.ALWAYS);
+        Button advDeck1 = new Button("Adventure card deck 1");
+        Button advDeck2 = new Button("Adventure card deck 2");
+        Button advDeck3 = new Button("Adventure card deck 3");
+        List<Button> advDeckButtons = new ArrayList<>();
+        advDeckButtons.add(advDeck1);
+        advDeckButtons.add(advDeck2);
+        advDeckButtons.add(advDeck3);
+        for (Button button : advDeckButtons) {
+            /* buttons style */
+        }
+        shipAdvDeckBox.getChildren().addAll(advDeck1, advDeck2, advDeck3);
+
+        /* Time management commands */
+        HBox hourglassBox = new HBox(10);
+        hourglassBox.setPadding(new Insets(20));
+        hourglassBox.setAlignment(Pos.CENTER);
+        hourglassBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
+        HBox.setHgrow(hourglassBox, Priority.ALWAYS);
+        Label hourglassLabel = new Label("Hourglass");
+        hourglassBox.getChildren().addAll(hourglassLabel);
+
+        shipTopBox.getChildren().addAll(shipTilesDeckBox, shipAdvDeckBox, hourglassBox);
+        shipTopBox.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
+        shipViewBorderPane.setTop(shipTopBox);
+
+        /* ----------------------- RIGHT COLUMN ----------------------- */
+        shipRightColumn = new VBox(10);
+        shipRightColumn.setPadding(new Insets(20));
+        shipRightColumn.setAlignment(Pos.CENTER);
+        shipRightColumn.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, null)));
+        /* List of button with other player's name */
+        viewOtherPlayersBox = new VBox(5);
+        viewOtherPlayersBox.setPadding(new Insets(10));
+        List<String> nicknameList = /*controller.getFlyBoard().getNicknameList();*/ new ArrayList<>(List.of("Stefano", "Andrea"));
+        for(String nickname : nicknameList) {
+            if(!nickname.equals(controller.getNickname())) {
+                Button butt = new Button("Show " + nickname + "'s shipboard");
+                butt.setTextAlignment(TextAlignment.CENTER);
+                butt.setWrapText(true);
+                butt.setOnAction(event -> lookAtOtherShipboard(nickname));
+                viewOtherPlayersBox.getChildren().add(butt);
+            }
+        }
+        /* Box with commands for the in hand component (and the component itself) */
+        inHandBox = new VBox(5);
+        inHandBox.setPadding(new Insets(10));
+        inHandBox.setAlignment(Pos.CENTER);
+        /* Component */
+        String tmpResourcePath = imgPath + tilesRelPath + "157" + imgExtension;
+        Image inHandImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+        inHandImageView = new ImageView(inHandImage);
+        inHandBox.getChildren().addAll(inHandImageView);
+        /* Commands */
+        TilePane buttonBox = new TilePane();
+        Button placeButton = new Button("Place component");
+        Button discardButton = new Button("Discard component");
+        Button bookButton = new Button("Book component");
+        Button rotateButton = new Button("Rotate component");
+        buttonBox.getChildren().addAll(placeButton, discardButton, bookButton, rotateButton);
+        inHandBox.getChildren().addAll(buttonBox);
+        inHandBox.setDisable(true);
+        shipRightColumn.getChildren().addAll(viewOtherPlayersBox, inHandBox);
+
+        shipViewBorderPane.setRight(shipRightColumn);
+
+        root.getChildren().add(shipViewBorderPane);
+    }
+
+    private void addComponentView(){
+        shipViewBorderPane.setDisable(true);
+        Component inHand = controller.getInHandComponentObject();
+        int idComponent = inHand.getId();
+        VBox vBox = new VBox();
+        vBox.setPadding(new Insets(20));
+        vBox.setAlignment(Pos.CENTER);
+        Label label = new Label("You got this component:");
+        String tmpResourcePath = imgPath + tilesRelPath + (idComponent != 1 ? idComponent : "") + imgExtension;
+        System.out.println(tmpResourcePath);
+        Image image = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+        ImageView imageView = new ImageView(image);
+        vBox.getChildren().addAll(label, imageView);
+        root.getChildren().add(vBox);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+        pause.setOnFinished(event -> {
+            root.getChildren().remove(vBox);
+            shipViewBorderPane.setDisable(false);
+            shipTilesDeckBox.setDisable(true);
+            shipAdvDeckBox.setDisable(true);
+            inHandBox.setDisable(false);
+        });
+        pause.play();
     }
 
     /*
      * Callback routines section
      */
 
-    // TODO: dovremmo poter lasciar scegliere al client l'ip e la porta del server (lo facciamo lato UI oppure in fase di lancio dell'applicazione?)
     private void connectToServer(boolean isRmi) {
         controller.connectToServer(isRmi);
     }
@@ -217,6 +362,24 @@ public class Gui extends Application implements View {
 
     private void handleGameInfo(int nPlayers, boolean isNormal){
         GameInfo info = new GameInfo(-1, isNormal ? GameMode.NORMAL : GameMode.EASY, nPlayers);
-        controller.setGameInfo(info);
+        controller.handleGameInfo(info);
+    }
+
+    private void drawCoveredComponent() {
+        controller.handleBuildingShip(1);
+    }
+
+    private void chooseUncoveredComponent(){
+        controller.handleBuildingShip(2);
+    }
+
+    private void lookAtOtherShipboard(String nickname) {
+        Label lab = new Label("Ok: " + nickname);
+        root.getChildren().add(lab);
+        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+        pause.setOnFinished(event -> {
+            root.getChildren().remove(lab);
+        });
+        pause.play();
     }
 }

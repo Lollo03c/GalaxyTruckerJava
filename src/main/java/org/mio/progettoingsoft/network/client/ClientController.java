@@ -9,38 +9,35 @@ import org.mio.progettoingsoft.network.client.rmi.RmiClient;
 import org.mio.progettoingsoft.network.client.socket.SocketClient;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.rmi.RemoteException;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class ClientController {
     private static ClientController instance;
     private Client client;
     private int tempIdClient;
     private VirtualServer server;
-    private ConnectionInfo connectionInfo;
+    private final ConnectionInfo connectionInfo;
 
-    private ClientController() {
+    private ClientController(ConnectionInfo connectionInfo) {
         this.setState(GameState.START);
-        try{
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("configs/net-config.bin"));
-            connectionInfo = (ConnectionInfo) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        this.connectionInfo = connectionInfo;
+    }
+
+    public static void create(ConnectionInfo connectionInfo){
+        if(instance == null){
+            instance = new ClientController(connectionInfo);
+        }else{
+            throw new RuntimeException("Client controller already exists");
         }
     }
 
     public static synchronized ClientController getInstance() {
         if (instance == null)
-            instance = new ClientController();
-
+            throw new RuntimeException("Client controller not created");
         return instance;
     }
 
@@ -74,7 +71,7 @@ public class ClientController {
         }
         if (oldState != state) {
             support.firePropertyChange("gameState", oldState, state);
-            System.out.println(oldState + " -> " + state);
+            Logger.debug("State changed from " + oldState + " to " + state);
         }
     }
 
@@ -98,41 +95,6 @@ public class ClientController {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public void connectToServer(boolean isRmi) {
-        setState(GameState.WAITING);
-        try {
-            client = isRmi ? new RmiClient(connectionInfo) : new SocketClient(connectionInfo);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            client.connect();
-            server = client.getServer();
-            setState(GameState.NICKNAME);
-            synchronized (this) {
-                this.notifyAll();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void handleNickname(String nickname) {
-        try {
-            server.handleNickname(tempIdClient, nickname);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void setGameInfo(GameInfo gameInfo) {
-        try {
-            server.handleGameInfo(gameInfo, nickname);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public FlyBoard getFlyBoard() {
@@ -182,6 +144,10 @@ public class ClientController {
 
     public int getInHandComponent() {
         return inHandComponent;
+    }
+
+    public Component getInHandComponentObject() {
+        return flyBoard.getComponentById(inHandComponent);
     }
 
     public ShipBoard getShipBoard() {
@@ -305,5 +271,44 @@ public class ClientController {
         shipBoard.swapBookComponent(inHandComponent, posToRemove);
         inHandComponent = idComp;
         setState(GameState.COMPONENT_MENU);
+    }
+
+    /*
+     * Methods called by the view to handle the input and communicate with the server
+     */
+
+    public void connectToServer(boolean isRmi) {
+        setState(GameState.WAITING);
+        try {
+            client = isRmi ? new RmiClient(connectionInfo) : new SocketClient(connectionInfo);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            client.connect();
+            server = client.getServer();
+            setState(GameState.NICKNAME);
+            synchronized (this) {
+                this.notifyAll();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void handleNickname(String nickname) {
+        try {
+            server.handleNickname(tempIdClient, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void handleGameInfo(GameInfo gameInfo) {
+        try {
+            server.handleGameInfo(gameInfo, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -8,7 +8,8 @@ import org.mio.progettoingsoft.views.View;
 public class ClientApp implements Runnable{
     private final View view;
 
-    public ClientApp(boolean isGui) {
+    public ClientApp(boolean isGui, ConnectionInfo connectionInfo) {
+        ClientController.create(connectionInfo);
         view = isGui ? new Gui() : new Tui();
     }
 
