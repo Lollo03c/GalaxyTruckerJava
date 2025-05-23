@@ -339,6 +339,7 @@ public class Gui extends Application implements View {
             shipTilesDeckBox.setDisable(true);
             shipAdvDeckBox.setDisable(true);
             inHandBox.setDisable(false);
+            inHandImageView.setImage(image);
         });
         pause.play();
     }
