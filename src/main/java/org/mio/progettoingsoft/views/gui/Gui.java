@@ -18,18 +18,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -41,9 +40,13 @@ public class Gui extends Application implements View {
 
     private final String imgPath = "/images/";
     private final String tilesRelPath = "tiles/GT-new_tiles_16_for web";
+    private final String cardboardsRelPath = "cardboards/";
     private final String imgExtension = ".jpg";
 
-    private int tmpRotation;
+    private final Map<Cordinate, StackPane> cordToStackPanes = new HashMap<>();
+    private final Map <Cordinate, ImageView> cordToImageViews = new HashMap<>();
+    private boolean isComponentBoxClickable = false;
+    private ComponentAction componentAction = ComponentAction.ERR;
 
     private Stage stage;
     private StackPane root;
@@ -59,6 +62,9 @@ public class Gui extends Application implements View {
     private VBox viewOtherPlayersBox;
     private Stage uncoveredComponentModalStage;
     private TilePane uncoveredComponentsTilePane;
+    private GridPane shipboardGrid;
+    private VBox shipboardGridContainer;
+    private BorderPane shipboardBorderPane;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -103,7 +109,7 @@ public class Gui extends Application implements View {
 
     private void updateGui(GameState state) {
         switch (state) {
-            case START -> firstView()/*buildingShipView()*/;
+            case START -> firstView() /*buildingShipView()*/;
             case WAITING -> loadingView();
             case NICKNAME -> nicknameRequestView(false);
             case ERROR_NICKNAME -> nicknameRequestView(true);
@@ -157,7 +163,7 @@ public class Gui extends Application implements View {
         nicknameBox.setAlignment(Pos.CENTER);
         HBox box = new HBox(10);
         box.setAlignment(Pos.CENTER);
-        if(isWrong){
+        if (isWrong) {
             errorNicknameLabel = new Label("Nickname already take! Try again");
             nicknameBox.getChildren().addAll(errorNicknameLabel);
         }
@@ -239,6 +245,7 @@ public class Gui extends Application implements View {
     private void buildingShipView() {
         if (firstBuilding) {
             root.getChildren().clear();
+
             /* ----------------------- TOP BOX ----------------------- */
             shipTopBox = new HBox();
             /* Tiles decks */
@@ -304,6 +311,7 @@ public class Gui extends Application implements View {
             viewOtherPlayersBox = new VBox(5);
             viewOtherPlayersBox.setPadding(new Insets(10));
 
+
             List<Player> playerList;
             synchronized (controller.getFlyboardLock()) {
                 playerList = controller.getFlyBoard().getPlayers();
@@ -336,6 +344,11 @@ public class Gui extends Application implements View {
             buttonBox.setHgap(5);
             buttonBox.setVgap(10);
             Button placeButton = new Button("Place component");
+            placeButton.setOnAction(event ->{
+                componentAction = ComponentAction.ADD;
+                inHandBox.setDisable(true);
+                isComponentBoxClickable = true;
+            });
             Button discardButton = new Button("Discard component");
             discardButton.setOnAction(event -> {
                 controller.discardComponent();
@@ -352,6 +365,93 @@ public class Gui extends Application implements View {
 
             shipRightColumn.getChildren().addAll(viewOtherPlayersBox, inHandBox);
             shipViewBorderPane.setRight(shipRightColumn);
+
+            /* ------------ SHIPBOARD CONTAINER ------------*/
+
+            shipboardBorderPane = new BorderPane();
+
+            /* shipboard tiles grid */
+            shipboardGridContainer = new VBox(10);
+            shipboardGridContainer.setAlignment(Pos.CENTER);
+            VBox.setVgrow(shipboardGridContainer, Priority.NEVER);
+            shipboardGridContainer.setPadding(new Insets(10, 0, 10, 0));
+            shipboardGrid = new GridPane();
+            shipboardGrid.setAlignment(Pos.CENTER);
+
+            tmpResourcePath = imgPath + cardboardsRelPath + "cardboard-1b" + imgExtension;
+            Image shipboardImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+            /*shipboardGrid.setBackground(
+                    new Background(
+                            new BackgroundImage(
+                                    shipboardImage,
+                                    BackgroundRepeat.NO_REPEAT,
+                                    BackgroundRepeat.NO_REPEAT,
+                                    BackgroundPosition.CENTER,
+                                    new BackgroundSize(100, 100, true, true, true, false)
+                            )
+                    )
+            );*/
+
+            int cabinId;
+            synchronized (controller.getShipboardLock()) {
+                ShipBoard ship = controller.getShipBoard();
+                Optional<Component>[][] matrix = ship.getComponentsMatrix();
+                cabinId = 157;
+                if (matrix[2][3].isPresent())
+                    cabinId = matrix[2][3].get().getId();
+            }
+            tmpResourcePath = imgPath + tilesRelPath + cabinId + imgExtension;
+            /* design of cell borders */
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (!(
+                            (i == 0 && j == 0) ||
+                                    (i == 0 && j == 1) ||
+                                    (i == 1 && j == 0) ||
+                                    (i == 0 && j == 3) ||
+                                    (i == 1 && j == 6) ||
+                                    (i == 4 && j == 3)
+                    )) {
+                        StackPane sp = new StackPane();
+                        if ((i == 0) && (j == 5 || j == 6)) {
+                            sp.setStyle("-fx-border-color: black; -fx-border-width: 3;");
+                        } else {
+                            sp.setStyle("-fx-border-color: gray; -fx-border-width: 1;");
+                        }
+                        final int r = i, c = j;
+                        ImageView imgView = new ImageView();
+                        if(i == 2 && j ==3){
+                            imgView.setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
+                        }
+                        imgView.setFitHeight(110);
+                        imgView.setFitWidth(110);
+                        imgView.setPreserveRatio(true);
+                        sp.setOnMouseClicked(event -> spComponentAction(r,c));
+                        sp.getChildren().add(imgView);
+                        sp.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                        shipboardGrid.add(sp, j, i);
+                        cordToStackPanes.put(new Cordinate(i, j), sp);
+                        cordToImageViews.put(new Cordinate(i, j), imgView);
+                    }
+                }
+            }
+
+            /* creating 5 rows and 7 columns with specified size */
+            for (int i = 0; i < 5; i++) {
+                RowConstraints rowConstraints = new RowConstraints();
+                rowConstraints.setPrefHeight(120);
+                shipboardGrid.getRowConstraints().add(rowConstraints);
+            }
+            for (int j = 0; j < 7; j++) {
+                ColumnConstraints columnConstraints = new ColumnConstraints();
+                columnConstraints.setPrefWidth(120);
+                shipboardGrid.getColumnConstraints().add(columnConstraints);
+            }
+
+            shipboardGridContainer.getChildren().addAll(shipboardGrid);
+            shipboardBorderPane.setCenter(shipboardGridContainer);
+            shipViewBorderPane.setCenter(shipboardBorderPane);
+
             shipViewBorderPane.setDisable(false);
 
             root.getChildren().add(shipViewBorderPane);
@@ -359,13 +459,43 @@ public class Gui extends Application implements View {
             uncoveredComponentModalStage = new Stage();
 
             firstBuilding = false;
-        }else{
+        } else {
             String tmpResourcePath = imgPath + tilesRelPath + "157" + imgExtension;
             Image inHandImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             inHandImageView.setImage(inHandImage);
+            inHandImageView.setRotate(0);
             shipViewBorderPane.setDisable(false);
             shipTilesDeckBox.setDisable(false);
             shipAdvDeckBox.setDisable(false);
+            inHandBox.setDisable(true);
+            componentAction = ComponentAction.ERR;
+            isComponentBoxClickable = false;
+            fillShipboard();
+        }
+    }
+
+    private void fillShipboard(){
+        /*
+        ShipBoard ship = new ShipBoardNormal(HousingColor.BLUE, new FlyBoardNormal(new HashSet<>(Set.of("Stefano", "Andrea"))));
+        ship.addComponentToPosition(7, new Cordinate(1,5),0);
+        ship.addComponentToPosition(46, new Cordinate(2,5),0);
+        ship.addComponentToPosition(92, new Cordinate(3,5),0);
+        ship.addComponentToPosition(24, new Cordinate(1,2),0);
+        ship.addComponentToPosition(100, new Cordinate(1,3),0);
+        Optional<Integer>[][] idMatrix = ship.getComponentIdsMatrix();*/
+        Optional<Integer>[][] idMatrix;
+        Optional<Integer>[][] rotationsMatrix;
+
+        synchronized (controller.getShipboardLock()) {
+            idMatrix = controller.getShipBoard().getComponentIdsMatrix();
+            rotationsMatrix = controller.getShipBoard().getComponentRotationsMatrix();
+        }
+        for(Cordinate cord : cordToImageViews.keySet()){
+            if(idMatrix[cord.getRow()][cord.getColumn()].isPresent() && rotationsMatrix[cord.getRow()][cord.getColumn()].isPresent()){
+                String tmpResourcePath = imgPath + tilesRelPath + idMatrix[cord.getRow()][cord.getColumn()].get() + imgExtension;
+                cordToImageViews.get(cord).setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
+                cordToImageViews.get(cord).setRotate(rotationsMatrix[cord.getRow()][cord.getColumn()].get() * 90);
+            }
         }
     }
 
@@ -395,18 +525,18 @@ public class Gui extends Application implements View {
         root.getChildren().add(vBox);
     }
 
-    private void unableUncoveredView(){
+    private void unableUncoveredView() {
         StackPane sp = new StackPane();
         sp.getChildren().add(new Label("This component is no more available"));
         sp.setAlignment(Pos.CENTER);
-        sp.setPadding(new Insets(10,20,10,20));
+        sp.setPadding(new Insets(10, 20, 10, 20));
         uncoveredComponentModalStage = new Stage();
         uncoveredComponentModalStage.setScene(new Scene(sp));
         uncoveredComponentModalStage.show();
         uncoveredComponentModalStage.setResizable(false);
-        System.out.println("test");
         uncoveredComponentModalStage.setOnCloseRequest(event -> controller.setState(GameState.BUILDING_SHIP));
     }
+
     /*
      * Callback routines section
      */
@@ -443,7 +573,7 @@ public class Gui extends Application implements View {
         List<Integer> componentIdList = fly.getUncoveredComponents();
 
         uncoveredComponentsTilePane = new TilePane();
-        if(!componentIdList.isEmpty()) {
+        if (!componentIdList.isEmpty()) {
             for (Integer componentId : componentIdList) {
                 String tmpResourcePath = imgPath + tilesRelPath + (componentId != 1 ? componentId : "") + imgExtension;
                 Image tileImage = new Image(this.getClass().getResource(tmpResourcePath).toExternalForm());
@@ -453,7 +583,7 @@ public class Gui extends Application implements View {
                 tileImageView.setOnMouseClicked(event -> chooseComponentFromUncovered(componentId));
                 uncoveredComponentsTilePane.getChildren().add(tileImageView);
             }
-        }else{
+        } else {
             uncoveredComponentsTilePane.getChildren().add(new Label("No uncovered components"));
         }
         /* ------------- UNCOVERED COMPONENT CONTAINER ----------- */
@@ -491,4 +621,19 @@ public class Gui extends Application implements View {
         });
         pause.play();
     }
+
+    private void spComponentAction(int i, int j){
+        if(isComponentBoxClickable){
+            switch(componentAction){
+                case ComponentAction.ADD -> {
+                    controller.addComponent(new Cordinate(i,j), controller.getTmpRotation());
+                }
+                default ->{}
+            }
+        }
+    }
+}
+
+enum ComponentAction{
+    ADD, ERR
 }

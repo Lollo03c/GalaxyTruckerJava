@@ -11,6 +11,8 @@ import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.network.server.rmi.VirtualServerRmi;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -30,11 +32,15 @@ public class RmiClient implements VirtualClient, Client {
         controller = ClientController.getInstance();
         this.connectionInfo = connectionInfo;
 
-        System.setProperty("java.rmi.server.hostname", connectionInfo.ip());  // l'IP reale del client sulla rete
+        try {
+            System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
         UnicastRemoteObject.exportObject(this, 0);
 
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", connectionInfo.rmiPort());
+            Registry registry = LocateRegistry.getRegistry(connectionInfo.ip(), connectionInfo.rmiPort());
             server = (VirtualServerRmi) registry.lookup(connectionInfo.serverName());
         } catch (NotBoundException e) {
             throw new RuntimeException(e);

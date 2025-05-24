@@ -44,6 +44,7 @@ public class ClientController {
     private GameState gameState;
     private final Object stateLock = new Object();
     private final Object flyboardLock = new Object();
+    private final Object shipboardLock = new Object();
     FlyBoard flyBoard;
     ShipBoard shipBoard;
 
@@ -110,6 +111,10 @@ public class ClientController {
         return flyboardLock;
     }
 
+    public Object getShipboardLock(){
+        return shipboardLock;
+    }
+
     public void setFlyBoard(GameMode mode, Map<String, HousingColor> players) {
         synchronized (flyboardLock) {
             flyBoard = FlyBoard.createFlyBoard(mode, players.keySet());
@@ -156,6 +161,7 @@ public class ClientController {
 
             server.addComponent(idGame, nickname, inHandComponent, cordinate, rotations);
             inHandComponent = -1;
+            resetTmpRotation();
 
             setState(GameState.BUILDING_SHIP);
         } catch (IncorrectShipBoardException e) {

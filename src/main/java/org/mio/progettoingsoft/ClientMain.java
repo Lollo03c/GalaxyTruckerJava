@@ -47,7 +47,13 @@ public class ClientMain {
             }
         }
         isGui = choice == 1;
-        String ip = "localhost"; /* or ip = args[0] */
+        String ip;
+        if(args.length > 0) {
+            ip = args[0];
+        }else{
+            System.out.println("No server ip specified, using localhost");
+            ip = "127.0.0.1";
+        }
         int socketPort = 1050, rmiPort = 1099;
         String serverName = "GameSpace";
         if(IPValidator.isIPValid(ip)) {

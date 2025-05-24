@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 public abstract class ShipBoard {
     private final Optional<Component>[][] shipComponents;
+    private final Optional<Integer> [][] rotationMatrix;
 
     private List<Optional<Integer>> bookedComponents;
 
@@ -67,13 +68,16 @@ public abstract class ShipBoard {
         offsetCol = 4;
 
         shipComponents = new Optional[rows][columns];
+        rotationMatrix = new Optional[rows][columns];
         bookedComponents = new ArrayList<>();
         bookedComponents.add(Optional.empty());
         bookedComponents.add(Optional.empty());
 
         for (int i = 0; i < rows; i++)
-            for (int j = 0; j < columns; j++)
+            for (int j = 0; j < columns; j++) {
                 shipComponents[i][j] = Optional.empty();
+                rotationMatrix[i][j] = Optional.empty();
+            }
 
 
         // Add to bannedCoordinates all the cells where components cannot be placed
@@ -220,14 +224,15 @@ public abstract class ShipBoard {
 
         Component component = flyBoard.getComponentById(componentId);
         component.rotate(angle);
-
+        /*
         boolean validPosition = cordinate.equals(new Cordinate(2, 3)) ||
                 !getAdjacent(cordinate).values().isEmpty();
 
         if (!validPosition)
-            throw new IncorrectShipBoardException("Not adjacent components");
+            throw new IncorrectShipBoardException("Not adjacent components");*/
 
         shipComponents[cordinate.getRow()][cordinate.getColumn()] = Optional.of(component);
+        rotationMatrix[cordinate.getRow()][cordinate.getColumn()] = Optional.of(angle);
     }
 
 
@@ -309,6 +314,34 @@ public abstract class ShipBoard {
 
     public Optional<Component>[][] getComponentsMatrix() {
         return shipComponents;
+    }
+
+    public Optional<Integer>[][] getComponentIdsMatrix() {
+        Optional<Integer>[][] matrix = new Optional[rows][columns];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if(shipComponents[i][j].isPresent()){
+                    matrix[i][j] = Optional.of(shipComponents[i][j].get().getId());
+                }else{
+                    matrix[i][j] = Optional.empty();
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public Optional<Integer>[][] getComponentRotationsMatrix(){
+        Optional<Integer>[][] matrix = new Optional[rows][columns];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if(rotationMatrix[i][j].isPresent()){
+                    matrix[i][j] = Optional.of(rotationMatrix[i][j].get());
+                }else{
+                    matrix[i][j] = Optional.empty();
+                }
+            }
+        }
+        return matrix;
     }
 
 
