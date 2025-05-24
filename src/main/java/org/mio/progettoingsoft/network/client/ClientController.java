@@ -52,6 +52,7 @@ public class ClientController {
 
     private int inHandComponent;
     private int inHandDeck;
+    private int tmpRotation;
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
@@ -120,28 +121,6 @@ public class ClientController {
         }
     }
 
-    public void handleBuildingShip(int chosen) {
-        if (chosen == 1) {
-            try {
-                server.getCoveredComponent(idGame, nickname);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else if (chosen == 2) {
-            setState(GameState.DRAW_UNCOVERED_COMPONENTS);
-        } else if (chosen == 3) {
-            setState(GameState.VIEW_SHIP_BUILDING);
-        }
-        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.NORMAL)) {
-            setState(GameState.VIEW_DECKS_LIST);
-        }
-        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.EASY)){
-            //server.playerReady()
-            setState(GameState.END_BUILDING);
-
-        }
-    }
-
     public int getInHandComponent() {
         return inHandComponent;
     }
@@ -154,8 +133,24 @@ public class ClientController {
         return shipBoard;
     }
 
-    public void addComponent(Cordinate cordinate, int rotations) {
+    public void increaseTmpRotation() {
+        if(tmpRotation < 3){
+            tmpRotation++;
+        }else {
+            tmpRotation = 0;
+        }
+    }
 
+    public void resetTmpRotation(){
+        tmpRotation = 0;
+
+    }
+
+    public int getTmpRotation() {
+        return tmpRotation;
+    }
+
+    public void addComponent(Cordinate cordinate, int rotations) {
         try {
             shipBoard.addComponentToPosition(inHandComponent, cordinate, rotations);
 
@@ -202,7 +197,7 @@ public class ClientController {
         }
     }
 
-    public void drawCovered(int idComp) {
+    public void drawUncovered(int idComp) {
         if (!flyBoard.getUncoveredComponents().contains(idComp)) {
             setState(GameState.UNABLE_UNCOVERED_COMPONENT);
             return;
@@ -210,7 +205,7 @@ public class ClientController {
         try {
             server.drawUncovered(idGame, nickname, idComp);
         } catch (Exception e) {
-
+            throw new RuntimeException(e);
         }
     }
 
@@ -309,6 +304,28 @@ public class ClientController {
             server.handleGameInfo(gameInfo, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void handleBuildingShip(int chosen) {
+        if (chosen == 1) {
+            try {
+                server.getCoveredComponent(idGame, nickname);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else if (chosen == 2) {
+            setState(GameState.DRAW_UNCOVERED_COMPONENTS);
+        } else if (chosen == 3) {
+            setState(GameState.VIEW_SHIP_BUILDING);
+        }
+        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.NORMAL)) {
+            setState(GameState.VIEW_DECKS_LIST);
+        }
+        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.EASY)){
+            //server.playerReady()
+            setState(GameState.END_BUILDING);
+
         }
     }
 }

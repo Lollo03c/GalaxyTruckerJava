@@ -106,7 +106,7 @@ public class ServerController {
                 try {
                     client.removeUncovered(idComponent);
                 } catch (Exception e) {
-
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -115,7 +115,7 @@ public class ServerController {
                 game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
             }
             catch (Exception e){
-
+                throw new RuntimeException(e);
             }
         }
         else{

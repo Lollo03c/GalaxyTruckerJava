@@ -26,11 +26,14 @@ public class Tui implements View {
     public static final String RED = "\u001B[31m";
     public static final String BLUE = "\u001B[34m";
 
+    private boolean firstBuilding;
+
     private final BlockingQueue<GameState> statesQueue = new LinkedBlockingQueue<>();
 
     public Tui() {
         controller = ClientController.getInstance();
         controller.addPropertyChangeListener(this);
+        this.firstBuilding = true;
     }
 
     @Override
@@ -223,14 +226,19 @@ public class Tui implements View {
 
         printPlayersName();
 
-        controller.setState(GameState.WAITING);
+        //controller.setState(GameState.WAITING);
     }
 
     /**
      * Message to show building ship menu
      * */
     private void buildingShipMenu() {
-        System.out.println(BLUE + "It's time to build your ship!" + RESET);
+        if(firstBuilding){
+            printStartGameInfo();
+            System.out.println(BLUE + "It's time to build your ship!" + RESET);
+            firstBuilding = false;
+        }
+
 
         int choice = -1;
         String input = "";
@@ -413,7 +421,7 @@ public class Tui implements View {
         if (chosen == -1)
             controller.setState(GameState.BUILDING_SHIP);
         else
-            controller.drawCovered(chosen);
+            controller.drawUncovered(chosen);
     }
 
     private void viewDecksList(){
