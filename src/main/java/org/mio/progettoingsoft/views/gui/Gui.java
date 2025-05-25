@@ -19,9 +19,6 @@ import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.model.FlyBoardNormal;
-import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
@@ -44,9 +41,8 @@ public class Gui extends Application implements View {
     private final String imgExtension = ".jpg";
 
     private final Map<Cordinate, StackPane> cordToStackPanes = new HashMap<>();
-    private final Map <Cordinate, ImageView> cordToImageViews = new HashMap<>();
+    private final Map<Cordinate, ImageView> cordToImageViews = new HashMap<>();
     private boolean isComponentBoxClickable = false;
-    private ComponentAction componentAction = ComponentAction.ERR;
 
     private Stage stage;
     private StackPane root;
@@ -65,6 +61,8 @@ public class Gui extends Application implements View {
     private GridPane shipboardGrid;
     private VBox shipboardGridContainer;
     private BorderPane shipboardBorderPane;
+    private Button backButton;
+    private Label hintLabel;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -116,8 +114,10 @@ public class Gui extends Application implements View {
             case GAME_MODE -> askForSettingsView();
             case WAITING_PLAYERS -> waitingForPlayersView();
             case BUILDING_SHIP -> buildingShipView();
-            case COMPONENT_MENU -> addComponentView();
+            case COMPONENT_MENU -> newComponentView();
             case UNABLE_UNCOVERED_COMPONENT -> unableUncoveredView();
+            case ADD_COMPONENT -> placeComponentView();
+            case SWITCH_BOOKED -> switchBookedComponentsView();
             default -> genericErrorView(state);
         }
         stage.show();
@@ -344,16 +344,17 @@ public class Gui extends Application implements View {
             buttonBox.setHgap(5);
             buttonBox.setVgap(10);
             Button placeButton = new Button("Place component");
-            placeButton.setOnAction(event ->{
-                componentAction = ComponentAction.ADD;
-                inHandBox.setDisable(true);
-                isComponentBoxClickable = true;
+            placeButton.setOnAction(event -> {
+                controller.setState(GameState.ADD_COMPONENT);
             });
             Button discardButton = new Button("Discard component");
             discardButton.setOnAction(event -> {
                 controller.discardComponent();
             });
             Button bookButton = new Button("Book component");
+            bookButton.setOnAction(event -> {
+                controller.bookComponent();
+            });
             Button rotateButton = new Button("Rotate component");
             rotateButton.setOnAction(event -> {
                 controller.increaseTmpRotation();
@@ -420,13 +421,13 @@ public class Gui extends Application implements View {
                         }
                         final int r = i, c = j;
                         ImageView imgView = new ImageView();
-                        if(i == 2 && j ==3){
+                        if (i == 2 && j == 3) {
                             imgView.setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
                         }
                         imgView.setFitHeight(110);
                         imgView.setFitWidth(110);
                         imgView.setPreserveRatio(true);
-                        sp.setOnMouseClicked(event -> spComponentAction(r,c));
+                        sp.setOnMouseClicked(event -> spComponentAction(r, c));
                         sp.getChildren().add(imgView);
                         sp.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                         shipboardGrid.add(sp, j, i);
@@ -451,6 +452,30 @@ public class Gui extends Application implements View {
             shipboardGridContainer.getChildren().addAll(shipboardGrid);
             shipboardBorderPane.setCenter(shipboardGridContainer);
             shipViewBorderPane.setCenter(shipboardBorderPane);
+            /* Button to put back in hand the component (sfter trying to place or book */
+            backButton = new Button("Put back in hand");
+            backButton.setOnAction(event -> {
+                controller.setState(GameState.COMPONENT_MENU);
+            });
+            backButton.setVisible(false);
+            backButton.setWrapText(true);
+            backButton.setTextAlignment(TextAlignment.CENTER);
+            VBox box = new VBox();
+            box.setPrefWidth(130);
+            box.setAlignment(Pos.CENTER);
+            box.setPadding(new Insets(0, 10, 0, 0));
+            box.getChildren().addAll(backButton);
+            shipboardBorderPane.setRight(box);
+
+            /* Label to give hint for placement */
+            HBox topShipBox = new HBox();
+            topShipBox.setAlignment(Pos.CENTER);
+            topShipBox.setPadding(new Insets(10, 10, 10, 10));
+            topShipBox.setPrefHeight(50);
+            hintLabel = new Label();
+            hintLabel.setVisible(false);
+            topShipBox.getChildren().add(hintLabel);
+            shipboardBorderPane.setTop(topShipBox);
 
             shipViewBorderPane.setDisable(false);
 
@@ -468,13 +493,14 @@ public class Gui extends Application implements View {
             shipTilesDeckBox.setDisable(false);
             shipAdvDeckBox.setDisable(false);
             inHandBox.setDisable(true);
-            componentAction = ComponentAction.ERR;
             isComponentBoxClickable = false;
+            backButton.setVisible(false);
+            hintLabel.setVisible(false);
             fillShipboard();
         }
     }
 
-    private void fillShipboard(){
+    private void fillShipboard() {
         /*
         ShipBoard ship = new ShipBoardNormal(HousingColor.BLUE, new FlyBoardNormal(new HashSet<>(Set.of("Stefano", "Andrea"))));
         ship.addComponentToPosition(7, new Cordinate(1,5),0);
@@ -485,21 +511,35 @@ public class Gui extends Application implements View {
         Optional<Integer>[][] idMatrix = ship.getComponentIdsMatrix();*/
         Optional<Integer>[][] idMatrix;
         Optional<Integer>[][] rotationsMatrix;
+        List<Optional<Integer>> bookedComponents;
 
         synchronized (controller.getShipboardLock()) {
             idMatrix = controller.getShipBoard().getComponentIdsMatrix();
             rotationsMatrix = controller.getShipBoard().getComponentRotationsMatrix();
+            bookedComponents = controller.getShipBoard().getBookedComponents();
         }
-        for(Cordinate cord : cordToImageViews.keySet()){
-            if(idMatrix[cord.getRow()][cord.getColumn()].isPresent() && rotationsMatrix[cord.getRow()][cord.getColumn()].isPresent()){
-                String tmpResourcePath = imgPath + tilesRelPath + idMatrix[cord.getRow()][cord.getColumn()].get() + imgExtension;
-                cordToImageViews.get(cord).setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
-                cordToImageViews.get(cord).setRotate(rotationsMatrix[cord.getRow()][cord.getColumn()].get() * 90);
+        for (Cordinate cord : cordToImageViews.keySet()) {
+            if (!cord.equals(new Cordinate(0, 5)) && !cord.equals(new Cordinate(0, 6))) {
+                if (idMatrix[cord.getRow()][cord.getColumn()].isPresent() && rotationsMatrix[cord.getRow()][cord.getColumn()].isPresent()) {
+                    String tmpResourcePath = imgPath + tilesRelPath + idMatrix[cord.getRow()][cord.getColumn()].get() + imgExtension;
+                    cordToImageViews.get(cord).setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
+                    cordToImageViews.get(cord).setRotate(rotationsMatrix[cord.getRow()][cord.getColumn()].get() * 90);
+                }
+            }else{
+                if(cord.equals(new Cordinate(0,5)) && bookedComponents.get(0).isPresent()){
+                    String tmpResourcePath = imgPath + tilesRelPath + bookedComponents.get(0).get() + imgExtension;
+                    Image img = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+                    cordToImageViews.get(cord).setImage(img);
+                } else if (cord.equals(new Cordinate(0,6)) && bookedComponents.get(1).isPresent()){
+                    String tmpResourcePath = imgPath + tilesRelPath + bookedComponents.get(1).get() + imgExtension;
+                    Image img = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+                    cordToImageViews.get(cord).setImage(img);
+                }
             }
         }
     }
 
-    private void addComponentView() {
+    private void newComponentView() {
         shipViewBorderPane.setDisable(true);
         Component inHand = controller.getInHandComponentObject();
         int idComponent = inHand.getId();
@@ -523,6 +563,9 @@ public class Gui extends Application implements View {
         });
         vBox.getChildren().addAll(label, imageView, okButton);
         root.getChildren().add(vBox);
+        backButton.setVisible(false);
+        hintLabel.setVisible(false);
+        fillShipboard();
     }
 
     private void unableUncoveredView() {
@@ -535,6 +578,22 @@ public class Gui extends Application implements View {
         uncoveredComponentModalStage.show();
         uncoveredComponentModalStage.setResizable(false);
         uncoveredComponentModalStage.setOnCloseRequest(event -> controller.setState(GameState.BUILDING_SHIP));
+    }
+
+    private void placeComponentView() {
+        backButton.setVisible(true);
+        inHandBox.setDisable(true);
+        isComponentBoxClickable = true;
+        hintLabel.setText("Click on the empty cell where you want to insert the component");
+        hintLabel.setVisible(true);
+    }
+
+    private void switchBookedComponentsView(){
+        backButton.setVisible(true);
+        inHandBox.setDisable(true);
+        isComponentBoxClickable = true;
+        hintLabel.setText("Click on the booked component you want to replace");
+        hintLabel.setVisible(true);
     }
 
     /*
@@ -622,18 +681,21 @@ public class Gui extends Application implements View {
         pause.play();
     }
 
-    private void spComponentAction(int i, int j){
-        if(isComponentBoxClickable){
-            switch(componentAction){
-                case ComponentAction.ADD -> {
-                    controller.addComponent(new Cordinate(i,j), controller.getTmpRotation());
+    private void spComponentAction(int i, int j) {
+        if (isComponentBoxClickable) {
+            GameState state = controller.getState();
+            switch (state) {
+                case ADD_COMPONENT -> {
+                    if (!((i == 0) && ((j == 5) || (j == 6))))
+                        controller.addComponent(new Cordinate(i, j), controller.getTmpRotation());
                 }
-                default ->{}
+                case SWITCH_BOOKED -> {
+                    if((i == 0) && ((j == 5) || (j == 6)))
+                        controller.bookComponent(j == 5 ? 0 : 1);
+                }
+                default -> {
+                }
             }
         }
     }
-}
-
-enum ComponentAction{
-    ADD, ERR
 }
