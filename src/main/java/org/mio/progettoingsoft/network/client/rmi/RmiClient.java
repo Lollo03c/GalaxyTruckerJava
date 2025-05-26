@@ -113,7 +113,7 @@ public class RmiClient implements VirtualClient, Client {
     @Override
     public void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException{
         executors.submit(() ->
-                controller.addOtherComponent(nickname, idComp, cordinate, rotations)
+                controller.addOtherPlayersComponent(nickname, idComp, cordinate, rotations)
         );
     }
 

@@ -140,24 +140,26 @@ public class ServerController {
                 for (VirtualClient client : game.getClients().values()){
                     try{
                         client.removeDeck(deckNumber);
+                        Logger.debug("removed deck " + deckNumber + " from client " + client);
                     }
                     catch (Exception e){
-
+                        throw new RuntimeException(e);
                     }
                 }
 
                 try{
                     game.getClients().get(nickname).setInHandDeck(deckNumber);
                     game.getClients().get(nickname).setState(GameState.VIEW_DECK);
+                    Logger.debug("Set deck " + deckNumber + " to " + nickname);
                 } catch (Exception e) {
-
+                    throw new RuntimeException(e);
                 }
             }
             else{
                 try{
                     game.getClients().get(nickname).setState(GameState.UNABLE_DECK);
                 } catch (Exception e) {
-
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -170,20 +172,21 @@ public class ServerController {
         synchronized (flyBoard.getAvailableDecks()){
             List<Integer> availableDecks = flyBoard.getAvailableDecks();
             availableDecks.add(deckNumber);
+            Logger.debug("Free deck " + deckNumber + ".");
 
             for (VirtualClient client : game.getClients().values()){
                 try {
                     client.addAvailableDeck(deckNumber);
                 }
                 catch (Exception e){
-
+                    throw new RuntimeException(e);
                 }
             }
 
             try {
                 game.getClients().get(nickname).setState(GameState.BUILDING_SHIP);
             } catch (Exception e) {
-
+                throw new RuntimeException(e);
             }
         }
     }

@@ -316,6 +316,9 @@ public abstract class ShipBoard {
         return shipComponents;
     }
 
+    /**
+     * @return a NEW matrix of optionals: empty if the position doesn't contain a component, the id of the component if present
+     */
     public Optional<Integer>[][] getComponentIdsMatrix() {
         Optional<Integer>[][] matrix = new Optional[rows][columns];
         for (int i = 0; i < rows; i++) {
@@ -330,6 +333,11 @@ public abstract class ShipBoard {
         return matrix;
     }
 
+
+    /**
+     * used only for the GUI rendering
+     * @return a NEW matrix of optional: empty if the position doesn't contain a component, the rotation of the component (related to the image) if present
+     */
     public Optional<Integer>[][] getComponentRotationsMatrix(){
         Optional<Integer>[][] matrix = new Optional[rows][columns];
         for (int i = 0; i < rows; i++) {

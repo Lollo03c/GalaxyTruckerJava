@@ -8,6 +8,7 @@ import org.mio.progettoingsoft.components.*;
 import java.io.File;
 import java.io.IOException;
 
+import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.CannotAddPlayerException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NoMoreComponentsException;
@@ -427,6 +428,12 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public List<Integer> getAvailableDecks(){
         return availableDecks;
+    }
+
+    public List<Integer> getAdvDeckByIndex(int index){
+        if(index < 0 || index >= littleDecks.size())
+            throw new BadParameterException("Index out of decks list bound");
+        return new ArrayList<>(littleDecks.get(index));
     }
 
 }

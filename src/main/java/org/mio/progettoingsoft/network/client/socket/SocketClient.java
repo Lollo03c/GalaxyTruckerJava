@@ -92,7 +92,7 @@ public class SocketClient implements Client {
                             case REMOVE -> {
                             }
                             case ADD ->
-                                    controller.addOtherComponent(componentMessage.getNickname(), componentMessage.getIdComp(),
+                                    controller.addOtherPlayersComponent(componentMessage.getNickname(), componentMessage.getIdComp(),
                                             componentMessage.getCordinate(), componentMessage.getRotations());
 
 

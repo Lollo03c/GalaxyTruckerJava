@@ -115,17 +115,6 @@ public class ClientController {
         return shipboardLock;
     }
 
-    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players) {
-        synchronized (flyboardLock) {
-            flyBoard = FlyBoard.createFlyBoard(mode, players.keySet());
-            for (Player player : flyBoard.getPlayers()) {
-                HousingColor color = players.get(player.getNickname());
-                player.setHousingColor(color);
-            }
-            shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-        }
-    }
-
     public int getInHandComponent() {
         return inHandComponent;
     }
@@ -155,84 +144,12 @@ public class ClientController {
         return tmpRotation;
     }
 
-    public void addComponent(Cordinate cordinate, int rotations) {
-        try {
-            shipBoard.addComponentToPosition(inHandComponent, cordinate, rotations);
-
-            server.addComponent(idGame, nickname, inHandComponent, cordinate, rotations);
-            inHandComponent = -1;
-            resetTmpRotation();
-
-            setState(GameState.BUILDING_SHIP);
-        } catch (IncorrectShipBoardException e) {
-            setState(GameState.ERROR_PLACEMENT);
-        } catch (Exception e) {
-            shipBoard.removeComponent(cordinate);
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void addOtherComponent(String nickname, int idComp, Cordinate cordinate, int rotations) {
-        ShipBoard otherShipboard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-
-        synchronized (otherShipboard) {
-            otherShipboard.addComponentToPosition(idComp, cordinate, rotations);
-        }
-    }
-
     public void setInHandComponent(int idComp) {
         this.inHandComponent = idComp;
     }
 
-    public void discardComponent() {
-        try {
-            server.discardComponent(idGame, inHandComponent);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        setState(GameState.BUILDING_SHIP);
-    }
-
     public int getIdGame() {
         return idGame;
-    }
-
-    public void addUncoveredComponent(int idComp) {
-        synchronized (flyBoard.getUncoveredComponents()) {
-            flyBoard.getUncoveredComponents().add(idComp);
-        }
-    }
-
-    public void drawUncovered(int idComp) {
-        if (!flyBoard.getUncoveredComponents().contains(idComp)) {
-            setState(GameState.UNABLE_UNCOVERED_COMPONENT);
-            return;
-        }
-        try {
-            server.drawUncovered(idGame, nickname, idComp);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void removeUncovered(Integer idComp) {
-        synchronized (flyBoard.getUncoveredComponents()) {
-            flyBoard.getUncoveredComponents().remove(idComp);
-        }
-    }
-
-    public void bookDeck(Integer deckNumber) {
-        try {
-            server.bookDeck(idGame, nickname, deckNumber);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void removeDeck(Integer deckNumber) {
-        synchronized (flyBoard.getAvailableDecks()) {
-            flyBoard.getAvailableDecks().remove(deckNumber);
-        }
     }
 
     public void setInHandDeck(int deckNumber) {
@@ -243,11 +160,38 @@ public class ClientController {
         return inHandDeck;
     }
 
-    public void freeDeck() {
-        try {
-            server.freeDeck(idGame, nickname, inHandDeck);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    /*
+     * methods called by the server to update the game state (and the model)
+     */
+
+    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players) {
+        synchronized (flyboardLock) {
+            flyBoard = FlyBoard.createFlyBoard(mode, players.keySet());
+            for (Player player : flyBoard.getPlayers()) {
+                HousingColor color = players.get(player.getNickname());
+                player.setHousingColor(color);
+            }
+            shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        }
+    }
+
+    public void addUncoveredComponent(int idComp) {
+        synchronized (flyBoard.getUncoveredComponents()) {
+            flyBoard.getUncoveredComponents().add(idComp);
+        }
+    }
+
+    public void removeUncovered(Integer idComp) {
+        synchronized (flyBoard.getUncoveredComponents()) {
+            flyBoard.getUncoveredComponents().remove(idComp);
+        }
+    }
+
+    public void addOtherPlayersComponent(String nickname, int idComp, Cordinate cordinate, int rotations) {
+        ShipBoard otherShipboard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+
+        synchronized (otherShipboard) {
+            otherShipboard.addComponentToPosition(idComp, cordinate, rotations);
         }
     }
 
@@ -257,21 +201,10 @@ public class ClientController {
         }
     }
 
-    public void bookComponent(){
-        try {
-            flyBoard.getPlayerByUsername(nickname).getShipBoard().addBookedComponent(inHandComponent);
-            setState(GameState.BUILDING_SHIP);
-        } catch (IncorrectShipBoardException e) {
-            setState(GameState.SWITCH_BOOKED);
+    public void removeDeck(Integer deckNumber) {
+        synchronized (flyBoard.getAvailableDecks()) {
+            flyBoard.getAvailableDecks().remove(deckNumber);
         }
-    }
-
-    public void bookComponent(int posToRemove){
-        int idComp = shipBoard.getBookedComponents().get(posToRemove).get();
-
-        shipBoard.swapBookComponent(inHandComponent, posToRemove);
-        inHandComponent = idComp;
-        setState(GameState.COMPONENT_MENU);
     }
 
     /*
@@ -334,4 +267,76 @@ public class ClientController {
 
         }
     }
+
+    public void drawUncovered(int idComp) {
+        if (!flyBoard.getUncoveredComponents().contains(idComp)) {
+            setState(GameState.UNABLE_UNCOVERED_COMPONENT);
+            return;
+        }
+        try {
+            server.drawUncovered(idGame, nickname, idComp);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addComponent(Cordinate cordinate, int rotations) {
+        try {
+            shipBoard.addComponentToPosition(inHandComponent, cordinate, rotations);
+
+            server.addComponent(idGame, nickname, inHandComponent, cordinate, rotations);
+            inHandComponent = -1;
+            resetTmpRotation();
+
+            setState(GameState.BUILDING_SHIP);
+        } catch (IncorrectShipBoardException e) {
+            setState(GameState.ERROR_PLACEMENT);
+        } catch (Exception e) {
+            shipBoard.removeComponent(cordinate);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void bookComponent(){
+        try {
+            flyBoard.getPlayerByUsername(nickname).getShipBoard().addBookedComponent(inHandComponent);
+            setState(GameState.BUILDING_SHIP);
+        } catch (IncorrectShipBoardException e) {
+            setState(GameState.SWITCH_BOOKED);
+        }
+    }
+
+    public void bookComponent(int posToRemove){
+        int idComp = shipBoard.getBookedComponents().get(posToRemove).get();
+
+        shipBoard.swapBookComponent(inHandComponent, posToRemove);
+        inHandComponent = idComp;
+        setState(GameState.COMPONENT_MENU);
+    }
+
+    public void discardComponent() {
+        try {
+            server.discardComponent(idGame, inHandComponent);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        setState(GameState.BUILDING_SHIP);
+    }
+
+    public void bookDeck(Integer deckNumber) {
+        try {
+            server.bookDeck(idGame, nickname, deckNumber);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void freeDeck() {
+        try {
+            server.freeDeck(idGame, nickname, inHandDeck);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
