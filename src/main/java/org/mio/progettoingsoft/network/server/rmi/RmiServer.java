@@ -8,36 +8,31 @@ import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class RmiServer implements VirtualServerRmi {
+public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     private final ServerController controller;
     private final ConnectionInfo connectionInfo;
 
-    public RmiServer(ConnectionInfo connectionInfo) {
-        controller = ServerController.getInstance();
+    public RmiServer(ConnectionInfo connectionInfo) throws RemoteException {
+        super(); // automatic export of UnicastRemoteObject
+        this.controller = ServerController.getInstance();
         this.connectionInfo = connectionInfo;
-
-        try {
-            UnicastRemoteObject.exportObject(this, connectionInfo.rmiPort());
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void startServer() {
-        final int portRmi = connectionInfo.rmiPort();
         try {
-            //192.168.1.147
-            System.setProperty("java.rmi.server.hostname", connectionInfo.ip());
-            Registry registry =  LocateRegistry.createRegistry(portRmi);
+            System.setProperty("java.rmi.server.hostname", connectionInfo.getIpHost());
 
-            registry.rebind(connectionInfo.serverName(), this);
+            Registry registry =  LocateRegistry.createRegistry(connectionInfo.getRmiPort());
+            registry.rebind(connectionInfo.getServerName(), this);
 
-            Logger.info("Server RMI running on port " + portRmi);
+            Logger.info("SERVER RMI STARTED | Port: " + connectionInfo.getRmiPort() + " | IP: " + connectionInfo.getIpHost() + " | Server: " + connectionInfo.getServerName());
 
         } catch (RemoteException e) {
             throw new RuntimeException(e);

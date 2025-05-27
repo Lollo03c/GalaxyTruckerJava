@@ -25,14 +25,13 @@ public class SocketServer {
     }
 
     public void startServer() throws IOException {
-        final int port = connectionInfo.socketPort();
-        ServerSocket serverSocket = new ServerSocket(port);
+        ServerSocket serverSocket = new ServerSocket(connectionInfo.getSocketPort());
 
         Thread serverMessageThread = new Thread(serverMessageHandler, "message-handler");
         serverMessageThread.setDaemon(true);
         serverMessageThread.start();
 
-        Logger.info("Server Socket running on port " + port);
+        Logger.info("SERVER SOCKET STARTED | Port: " + connectionInfo.getSocketPort() + " | IP: " + connectionInfo.getIpHost() + " | Server: " + connectionInfo.getServerName());
 
         while (true){
             Socket clientSocket = serverSocket.accept();

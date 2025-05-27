@@ -40,7 +40,7 @@ public class SocketClient implements Client {
 
     @Override
     public void connect() throws IOException {
-        socket = new Socket(connectionInfo.ip(), connectionInfo.socketPort());
+        socket = new Socket(connectionInfo.getIpHost(), connectionInfo.getSocketPort());
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
         this.serverHandler = new SocketServerHandler(out,in);

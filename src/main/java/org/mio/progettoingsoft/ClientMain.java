@@ -22,19 +22,10 @@ public class ClientMain {
      * java -jar {nome-artifact} {IP-address}
      */
     public static void main(String[] args) {
+        System.out.println("[Galaxy Truckers | Client]");
+
         boolean isGui;
 
-        /* SCELTA UI IN FASE DI LANCIO */
-        /*
-        if (argsList.contains("--cli"))
-            isGui = false;
-        else if (argsList.contains("--gui"))
-            isGui = true;
-        else {
-            System.out.println("Start mode not specified");
-        }*/
-
-        /*SCELTA UI DOPO IL LANCIO*/
         Scanner in = new Scanner(System.in);
         int choice = 0;
         while(choice != 1 && choice != 2) {
@@ -47,22 +38,22 @@ public class ClientMain {
             }
         }
         isGui = choice == 1;
+
         String ip;
         if(args.length > 0) {
             ip = args[0];
-        }else{
-            System.out.println("No server ip specified, using localhost");
+            while (!IPValidator.isIPValid(ip)) {
+                System.out.print("Invalid IP! Please try again: ");
+                ip = in.nextLine();
+            }
+        } else {
+            // default IP
             ip = "127.0.0.1";
         }
-        int socketPort = 1050, rmiPort = 1099;
-        String serverName = "GameSpace";
-        if(IPValidator.isIPValid(ip)) {
-            ConnectionInfo connectionInfo = new ConnectionInfo(ip, socketPort, rmiPort, serverName);
-            ClientApp clientApp = new ClientApp(isGui, connectionInfo);
-            clientApp.run();
-        }else{
-            System.out.println("IP not valid");
-        }
+
+        ConnectionInfo connectionInfo = new ConnectionInfo(ip);
+        ClientApp clientApp = new ClientApp(isGui, connectionInfo);
+        clientApp.run();
     }
 }
 

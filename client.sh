@@ -2,9 +2,10 @@
 
 set -e
 
-# Default: 1 client, no server
+# Default: 1 client, no server, localhost IP
 NUM_CLIENTS=1
 START_SERVER=false
+SERVER_IP="127.0.0.1"
 
 # Parsing degli argomenti
 for arg in "$@"; do
@@ -12,6 +13,8 @@ for arg in "$@"; do
     NUM_CLIENTS=$arg
   elif [[ "$arg" == "--server" ]]; then
     START_SERVER=true
+  elif [[ "$arg" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    SERVER_IP=$arg
   fi
 done
 
@@ -44,13 +47,13 @@ launch_terminal() {
 # Avvio server se richiesto
 if [ "$START_SERVER" = true ]; then
   echo "🟢 Avvio server..."
-  launch_terminal "java -jar $SERVER_JAR"
+  launch_terminal "java -jar $SERVER_JAR $SERVER_IP"
 fi
 
 # Avvio client
-echo "🚀 Avvio $NUM_CLIENTS client..."
+echo "🚀 Avvio $NUM_CLIENTS client con IP $SERVER_IP..."
 for ((i=1; i<=NUM_CLIENTS; i++)); do
-  launch_terminal "java -jar $CLIENT_JAR"
+  launch_terminal "java -jar $CLIENT_JAR $SERVER_IP"
 done
 
 echo "✅ Avvio completato!"

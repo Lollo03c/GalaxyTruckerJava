@@ -47,13 +47,14 @@ Script: `client.sh`
 #### Usage
 
 ```bash
-./client.sh [number_of_clients] [--server]
+./client.sh [number_of_clients] [--server] [ip_address]
 ````
 
 #### Examples
 
 * `./client.sh` — builds the project and launches 1 client
 * `./client.sh 2 --server` — builds the project, launches the server and 2 clients
+* `./client.sh 2 --server 127.0.0.1` — builds the project, launches the server and 2 clients on 127.0.0.1 address
 
 #### First time setup
 

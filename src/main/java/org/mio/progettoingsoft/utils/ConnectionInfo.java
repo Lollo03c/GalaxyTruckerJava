@@ -1,7 +1,30 @@
 package org.mio.progettoingsoft.utils;
 
-import java.io.Serializable;
+public class ConnectionInfo {
+    // COSTANT INFO
+    private final int rmiPort = 1099;
+    private final int socketPort = 1050;
+    private final String serverName = "GalaxyTruckerServer";
 
-public record ConnectionInfo(String ip, int socketPort, int rmiPort, String serverName) implements Serializable {
+    private final String ipHost;
 
+    public ConnectionInfo(String ipHost) {
+        this.ipHost = ipHost;
+    }
+
+    public int getRmiPort() {
+        return rmiPort;
+    }
+
+    public int getSocketPort() {
+        return socketPort;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public String getIpHost() {
+        return ipHost;
+    }
 }

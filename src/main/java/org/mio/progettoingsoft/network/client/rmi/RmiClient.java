@@ -11,8 +11,6 @@ import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.network.server.rmi.VirtualServerRmi;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -22,26 +20,22 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class RmiClient implements VirtualClient, Client {
+public class RmiClient extends UnicastRemoteObject implements VirtualClient, Client {
     private final VirtualServerRmi server;
     private ExecutorService executors = Executors.newFixedThreadPool(4);
     private final ClientController controller;
     private final ConnectionInfo connectionInfo;
 
     public RmiClient(ConnectionInfo connectionInfo) throws RemoteException {
-        controller = ClientController.getInstance();
+        super();
+        this.controller = ClientController.getInstance();
         this.connectionInfo = connectionInfo;
 
-        try {
-            System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-        UnicastRemoteObject.exportObject(this, 0);
+        System.setProperty("java.rmi.server.hostname", connectionInfo.getIpHost());
 
         try {
-            Registry registry = LocateRegistry.getRegistry(connectionInfo.ip(), connectionInfo.rmiPort());
-            server = (VirtualServerRmi) registry.lookup(connectionInfo.serverName());
+            Registry registry = LocateRegistry.getRegistry(connectionInfo.getIpHost(), connectionInfo.getRmiPort());
+            server = (VirtualServerRmi) registry.lookup(connectionInfo.getServerName());
         } catch (NotBoundException e) {
             throw new RuntimeException(e);
         }
