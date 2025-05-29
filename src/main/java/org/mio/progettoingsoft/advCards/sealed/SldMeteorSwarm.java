@@ -23,6 +23,11 @@ public final class SldMeteorSwarm extends SldAdvCard{
     }
 
     @Override
+    public List<Meteor> getMeteors() {
+        return meteors;
+    }
+
+    @Override
     public void finish(FlyBoard board) {
 
     }

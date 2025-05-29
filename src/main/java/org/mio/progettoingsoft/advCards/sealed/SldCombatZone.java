@@ -27,6 +27,11 @@ public final class SldCombatZone extends SldAdvCard {
     }
 
     @Override
+    public List<CombatLine> getLines() {
+        return lines;
+    }
+
+    @Override
     public String getCardName() {
         return "Combat Zone";
     }

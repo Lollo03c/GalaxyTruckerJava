@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CombatZone extends AdventureCard {
+    @Override
     public List<CombatLine> getLines() {
         return lines;
     }

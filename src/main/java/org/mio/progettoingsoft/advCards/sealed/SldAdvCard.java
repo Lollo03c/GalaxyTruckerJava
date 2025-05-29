@@ -2,7 +2,13 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
+import org.mio.progettoingsoft.advCards.CombatLine;
+import org.mio.progettoingsoft.advCards.Meteor;
+import org.mio.progettoingsoft.advCards.Planet;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.views.tui.VisualCard;
 
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +49,56 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         this.id = id;
         this.level = level;
         this.state = CardState.IDLE;
+    }
+
+    public int getId() {return id;}
+
+    public int getLevel() {return level;}
+
+    public List<CombatLine> getLines() {
+        throw new RuntimeException("this card doesn't have combat lines");
+    }
+
+    public int getCrewNeeded()throws Exception{
+        throw new Exception("this card doesn't need crew");
+    }
+
+    public List<Meteor> getMeteors() {
+        throw new RuntimeException("this card doesn't have meteors");
+    }
+
+    public List<CannonPenalty> getCannonPenalty(){
+        throw new RuntimeException("this card doesn't have cannon penalties");
+    }
+
+    public int getStolenGoods(){
+        throw new RuntimeException("this card doesn't have stolen goods");
+    }
+
+    public List<GoodType> getGoods(){
+        throw new RuntimeException("this card doesn't have goods");
+    }
+    public int getCrewLost(){
+        throw new RuntimeException("this card doesn't have crew lost");
+    }
+    public int getCredits(){
+        throw new RuntimeException("this card doesn't have credits");
+    }
+
+    public int getDaysLost(){
+        throw new RuntimeException("this card doesn't have days lost");
+    }
+
+    public int getStrength(){
+        throw new RuntimeException("this card doesn't have strength");
+    }
+    public List<Planet> getPlanets(){
+        throw new RuntimeException("this card doesn't have planets");
+    }
+
+    public void drawCard(){
+        VisualCard visual = new VisualCard(this);
+        visual.drawCard();
     }
 }
 

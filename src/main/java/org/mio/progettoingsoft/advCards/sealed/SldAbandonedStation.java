@@ -23,6 +23,19 @@ public final class SldAbandonedStation extends SldAdvCard {
     }
 
     @Override
+    public List<GoodType> getGoods(){
+        return goods;
+    }
+
+    @Override
+    public int getDaysLost() {return daysLost;}
+
+    @Override
+    public int getCrewNeeded(){
+        return crewNeeded;
+    }
+
+    @Override
     public String getCardName() {
         return "Abandoned Station";
     }

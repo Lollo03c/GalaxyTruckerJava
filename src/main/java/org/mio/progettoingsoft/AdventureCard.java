@@ -39,10 +39,10 @@ public abstract class AdventureCard {
         return level;
     }
 
-    public void drawCard(){
+    /*public void drawCard(){
         VisualCard visual = new VisualCard(this);
         visual.drawCard();
-    }
+    }*/
 
     public int getId(){ return id; }
     public AdvCardType getType(){return type;}

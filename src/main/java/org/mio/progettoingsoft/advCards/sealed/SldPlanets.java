@@ -24,6 +24,14 @@ public final class SldPlanets extends SldAdvCard {
     }
 
     @Override
+    public List<Planet> getPlanets(){
+        return planets;
+    }
+
+    @Override
+    public int getDaysLost(){return daysLost;}
+
+    @Override
     public String getCardName() {
         return "Planets";
     }

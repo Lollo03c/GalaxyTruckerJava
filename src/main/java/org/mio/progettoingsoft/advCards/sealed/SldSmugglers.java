@@ -24,6 +24,20 @@ public final class SldSmugglers extends SldAdvCard {
     }
 
     @Override
+    public int getStrength() {
+        return strength;
+    }
+
+    @Override
+    public int getDaysLost() {return daysLost;}
+
+    @Override
+    public List<GoodType> getGoods() { return goods; }
+
+    @Override
+    public int getStolenGoods(){ return stolenGoods; }
+
+    @Override
     public String getCardName() {
         return "Smugglers";
     }

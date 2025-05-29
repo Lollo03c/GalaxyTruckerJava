@@ -25,6 +25,19 @@ public final class SldAbandonedShip extends SldAdvCard {
         this.crewLost = crewLost;
     }
 
+    @Override
+    public int getCrewLost() {
+        return crewLost;
+    }
+
+    @Override
+    public int getDaysLost() {
+        return daysLost;
+    }
+
+    @Override
+    public int getCredits() {return credits;}
+
     // it initializes the list of players that can play the card (crew > crewLost) and set the card state CREW_REMOVE_CHOICE
     public void init(FlyBoard board) {
 //        if (board.getState() != GameState.DRAW_CARD) {

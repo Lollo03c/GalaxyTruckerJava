@@ -11,18 +11,34 @@ public final class SldSlavers extends SldAdvCard {
     private final int strength;
     private final int credits;
     private final int daysLost;
+    private final int crewLost;
 
     @Override
     public String getCardName() {
         return "Slavers";
     }
 
-    public SldSlavers(int id, int level, int strength, int credits, int daysLost) {
+    public SldSlavers(int id, int level, int strength, int daysLost, int credits, int crewLost) {
         super(id, level);
+        this.crewLost = crewLost;
         this.strength = strength;
         this.credits = credits;
         this.daysLost = daysLost;
     }
+
+    @Override
+    public int getStrength(){return strength;}
+
+    @Override
+    public int getCrewLost(){ return crewLost; }
+
+    @Override
+    public int getCredits(){ return credits; }
+
+    @Override
+    public int getDaysLost( ){return daysLost;}
+
+
 
     public void init(FlyBoard board) {
 //        if (board.getState() != GameState.DRAW_CARD) {

@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.AdvCardType;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.advCards.*;
+import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 
 import java.util.ArrayList;
@@ -20,52 +21,52 @@ public class VisualCard {
     public static final String PURPLE = "\u001B[35m";
     public static final String ORANGE = "\u001B[38;5;208m";
 
-    private AdventureCard card;
+    private SldAdvCard card;
     private final static int numRows = 15;
     private final static int numCols = 30;
     private int level = 2;
     ColoredChar[][] mat;
-    public VisualCard(AdventureCard card) {
+    public VisualCard(SldAdvCard card) {
         this.card = card;
         mat = new ColoredChar[numRows][numCols];
-        AdvCardType type = card.getType();
-        switch (type) {
-            case OPEN_SPACE -> {
+        //AdvCardType type = card.getType();
+        switch (card) {
+            case SldOpenSpace o -> {
                 paint(BLUE);
             }
-            case STARDUST -> {
+            case SldStardust s -> {
                 paint(YELLOW);
             }
-            case PLANETS -> {
+            case SldPlanets  p-> {
                 paint(GREEN);
                 computePlanet();
             }
-            case SLAVER -> {
+            case SldSlavers s-> {
                 paint(PURPLE);
                 computeSlaver();
             }
-            case SMUGGLERS -> {
+            case SldSmugglers s-> {
                 paint(PURPLE);
                 computeSmugglers();
             }
-            case PIRATE -> {
+            case SldPirates p-> {
                 paint(PURPLE);
                 computePirate();
             }
-            case METEOR_SWARM -> {
+            case SldMeteorSwarm m-> {
                 paint(ORANGE);
                 computeMetorSwarm();
             }
-            case COMBAT_ZONE -> {
+            case SldCombatZone c-> {
                 paint(RED);
                 computeCombateZone();
             }
-            case EPIDEMIC -> paint(YELLOW);
-            case ABANDONED_SHIP ->{
+            case SldEpidemic e-> paint(YELLOW);
+            case SldAbandonedShip a->{
                 paint(WHITE);
                 computeAbandonedShip();
             }
-            case ABANDONED_STATION -> {
+            case SldAbandonedStation a-> {
                 paint(WHITE);
                 computeAbandonedStation();
             }
@@ -76,13 +77,19 @@ public class VisualCard {
         computeName();
     }
 
-    private void computeAbandonedStation(){
+    private void computeAbandonedStation() {
         daysLost();
         computeObtainedGoods();
-        int crewNeeded = card.getCrewNeeded();
-        String disp = "Crew needed: " + crewNeeded;
-        for(int i = 0; i < disp.length(); i++){
-            mat[4][2+i].setChar(disp.charAt(i));
+        try {
+            int crewNeeded = card.getCrewNeeded();
+            String disp = "Crew needed: " + crewNeeded;
+            for(int i = 0; i < disp.length(); i++){
+                mat[4][2+i].setChar(disp.charAt(i));
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -332,7 +339,7 @@ public class VisualCard {
     }
 
     public void computeName(){
-        String name = card.getType().getValue();
+        String name = card.getCardName();
         int usableCols = numCols - 2;
         int startCol = 1 + (usableCols - name.length()) / 2;
 
@@ -379,14 +386,15 @@ public class VisualCard {
         penalties.add(new LightCannon(Direction.FRONT));
         penalties.add(new LightCannon(Direction.BACK));
         penalties.add(new HeavyCannon(Direction.LEFT));
-        AdventureCard card4 = new Pirate(1,2,7,5,penalties,5);
-        VisualCard visualCard = new VisualCard(card4);
+        SldAdvCard sld = new SldPirates(1,2,7,5,5,penalties);
+        VisualCard visualCard = new VisualCard(sld);
         visualCard.drawCard();
         List<Meteor> meteors = new ArrayList<>();
         meteors.add(new BigMeteor(Direction.FRONT));
         meteors.add(new BigMeteor(Direction.BACK));
         meteors.add(new SmallMeteor(Direction.LEFT));
-        AdventureCard card5 = new MeteorSwarm(1,1,meteors);
+        //AdventureCard card5 = new MeteorSwarm(1,1,meteors);
+        SldAdvCard card5 = new SldMeteorSwarm(1,1,meteors);
         VisualCard visualCard2 = new VisualCard(card5);
         visualCard2.drawCard();
         List<Penalty> pen2 = new ArrayList<>();
@@ -402,13 +410,13 @@ public class VisualCard {
         combatLines.add(new CombatLine(Criterion.CREW,pen));
         combatLines.add(new CombatLine(Criterion.FIRE_POWER,pen2));
         combatLines.add(new CombatLine(Criterion.ENGINE_POWER,pen3));
-        AdventureCard card9 = new CombatZone(1,1,combatLines);
+        SldAdvCard card9 = new SldCombatZone(1,1,combatLines);
         VisualCard visualCard9 = new VisualCard(card9);
         visualCard9.drawCard();
-        AdventureCard card10 = new AbandonedShip(1,1,5,9,3);
+        SldAdvCard card10 = new SldAbandonedShip(1,1,4,5,2);
         VisualCard visualCard10 = new VisualCard(card10);
         visualCard10.drawCard();
-        AdventureCard card11 = new AbandonedStation(1,1,goods,5,8);
+        SldAdvCard card11 = new SldAbandonedStation(1,1,3,5,goods);
         VisualCard visualCard11 = new VisualCard(card11);
         visualCard11.drawCard();
     }
