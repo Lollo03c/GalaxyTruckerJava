@@ -18,4 +18,5 @@ public interface VirtualServer extends Remote {
     void drawUncovered(int idGame, String nickname, int idComponent) throws Exception;
     void bookDeck(int idGame, String nickname, int deckNumber) throws Exception;
     void freeDeck(int idGame, String nickname, int deckNumber) throws Exception;
+    void applyStardust(int idGame, String nickname) ;
 }

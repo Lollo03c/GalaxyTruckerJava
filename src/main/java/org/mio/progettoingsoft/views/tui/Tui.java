@@ -88,6 +88,10 @@ public class Tui implements View {
                 System.out.println("Deck is already been taken");
                 controller.setState(GameState.BUILDING_SHIP);
             }
+            case STARDUST -> {
+                System.out.println("STARDUST was drown");
+                controller.applyStardust();
+            }
 
             case VIEW_DECK -> viewDeck();
 

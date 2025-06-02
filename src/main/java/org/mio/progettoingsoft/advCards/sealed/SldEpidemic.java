@@ -16,7 +16,8 @@ public final class SldEpidemic extends SldAdvCard {
     }
 
     // all players have to play the card, so all of them are added to the list
-    public void init(FlyBoard board){
+    public void init(Game game){
+        FlyBoard board = game.getFlyboard();
 //        if(board.getState() != GameState.DRAW_CARD){
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }

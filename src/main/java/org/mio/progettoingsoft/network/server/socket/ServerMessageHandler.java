@@ -55,6 +55,9 @@ public class ServerMessageHandler implements Runnable {
                         }
 
                     }
+                    case StardustMessage stardustMessage -> {
+                        serverController.applyStardust(stardustMessage.getGameId());
+                    }
                     default -> {}
                 }
             } catch (InterruptedException e) {

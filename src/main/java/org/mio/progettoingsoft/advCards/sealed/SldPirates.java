@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 
 import java.util.List;
@@ -27,7 +28,8 @@ public final class SldPirates extends SldAdvCard{
     }
 
     @Override
-    public void init(FlyBoard board) {
+    public void init(Game game) {
+        FlyBoard board = game.getFlyboard();
     }
 
     @Override

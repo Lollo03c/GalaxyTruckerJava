@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
@@ -24,7 +25,8 @@ public final class SldOpenSpace extends SldAdvCard {
     // identifies all the players with no power (only the ones with no engines and no double engines/no batteries to
     // activate them), they will be removed by the finish method (still to be implemented)
     // sets the card state to ENGINE_CHOICE (to accept calls by the players)
-    public void init(FlyBoard board) {
+    public void init(Game game) {
+        FlyBoard board = game.getFlyboard();
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }

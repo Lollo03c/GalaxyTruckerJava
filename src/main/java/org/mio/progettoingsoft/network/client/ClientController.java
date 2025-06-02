@@ -83,6 +83,10 @@ public class ClientController {
         }
     }
 
+    public void applyStardust(){
+        server.applyStardust(idGame,nickname);
+    }
+
     public String getNickname() {
         return nickname;
     }

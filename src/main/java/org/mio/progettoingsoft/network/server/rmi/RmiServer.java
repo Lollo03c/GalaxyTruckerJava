@@ -87,4 +87,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     public void freeDeck(int idGame, String nickname, int deckNumber) throws RemoteException {
         controller.freeDeck(idGame, nickname, deckNumber);
     }
+
+    @Override
+    public void applyStardust(int idGame, String nickname){
+        controller.applyStardust(idGame);
+    }
 }

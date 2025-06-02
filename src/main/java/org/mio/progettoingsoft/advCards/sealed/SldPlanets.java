@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.Planet;
@@ -37,7 +38,8 @@ public final class SldPlanets extends SldAdvCard {
     }
 
     @Override
-    public void init(FlyBoard board) {
+    public void init(Game game) {
+        FlyBoard board = game.getFlyboard();
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }

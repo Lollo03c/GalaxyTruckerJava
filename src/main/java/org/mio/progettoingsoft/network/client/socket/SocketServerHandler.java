@@ -80,4 +80,15 @@ public class SocketServerHandler implements VirtualServerSocket {
         out.flush();
         out.reset();
     }
+
+    @Override
+    public void applyStardust(int idGame, String nickname) {
+        Message message = new StardustMessage(idGame, nickname);
+        try{
+            sendMessage(message);
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
 }

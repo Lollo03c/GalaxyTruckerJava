@@ -1,9 +1,6 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 
@@ -39,7 +36,8 @@ public final class SldAbandonedShip extends SldAdvCard {
     public int getCredits() {return credits;}
 
     // it initializes the list of players that can play the card (crew > crewLost) and set the card state CREW_REMOVE_CHOICE
-    public void init(FlyBoard board) {
+    public void init(Game game) {
+        FlyBoard board = game.getFlyboard();
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }

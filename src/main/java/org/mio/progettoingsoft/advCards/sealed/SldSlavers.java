@@ -40,7 +40,8 @@ public final class SldSlavers extends SldAdvCard {
 
 
 
-    public void init(FlyBoard board) {
+    public void init(Game game) {
+        FlyBoard board = game.getFlyboard();
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }

@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.CombatLine;
@@ -24,7 +25,7 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     public abstract String getCardName();
 
     // this method must be called right after drawing the card, it sets the game state CARD_EFFECT
-    public abstract void init(FlyBoard board);
+    public abstract void init(Game game);
 
     // this method must be called right after applying the effect of the card on ALL the available players, it sets the game state DRAW_CARD
     public abstract void finish(FlyBoard board);

@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -8,6 +9,7 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 public class ServerController {
     /**
@@ -93,6 +95,18 @@ public class ServerController {
 
             }
         }
+    }
+
+    public void applyStardust(int idGame){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyboard = game.getFlyboard();
+        List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
+        for (Player p : reversedScoreboard){
+            int exposedConnectors = p.getShipBoard().getExposedConnectors();
+            flyboard.moveDays(p, -exposedConnectors);
+        }
+        //TODO  da fare che pesca una nuova carta e cambia lo stato, ora come ora la Flyboard ha ancora le AdvCard
+        // SldAdvCard newCard = flyboard.drawAdventureCard();
     }
 
     public void drawUncovered(int idGame, String nickname, Integer idComponent){
