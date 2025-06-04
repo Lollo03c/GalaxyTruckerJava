@@ -1,9 +1,11 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.advCards.Stardust;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +20,13 @@ public final class SldStardust extends SldAdvCard{
         return "Stardust";
     }
 
+    public static SldStardust loadStardust(JsonNode node){
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+
+        return new SldStardust(level, id);
+    }
+
     @Override
     public void init(Game game) {
         FlyBoard board = game.getFlyboard();
@@ -29,9 +38,9 @@ public final class SldStardust extends SldAdvCard{
     }
 
     public void applyEffect(FlyBoard board) {
-        if(this.state != CardState.APPLYING){
+        /*if(this.state != CardState.APPLYING){
             throw new IllegalStateException("Illegal state: " + this.state);
-        }
+        }*/
         List<Player> playersReverse = new ArrayList<>(board.getScoreBoard());
         Collections.reverse(playersReverse);
         for (Player player : playersReverse) {

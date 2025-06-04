@@ -1,9 +1,12 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
+import org.mio.progettoingsoft.advCards.Pirate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SldPirates extends SldAdvCard{
@@ -17,6 +20,21 @@ public final class SldPirates extends SldAdvCard{
         this.credits = credits;
         this.daysLost = daysLost;
         this.cannons = cannons;
+    }
+
+    public static SldPirates loadPirate(JsonNode node){
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+        int strength = node.path("strength").asInt();
+        int daysLost = node.path("daysLost").asInt();
+        List<CannonPenalty> cannons = new ArrayList<>();
+        JsonNode cannonsNode = node.path("cannons");
+        for (JsonNode cannon : cannonsNode) {
+            cannons.add(CannonPenalty.stringToCannonPenalty(cannon.get(1).asText(),cannon.get(0).asText()));
+        }
+        int reward = node.path("reward").asInt();
+
+        return new SldPirates(id, level, daysLost, strength, reward, cannons);
     }
 
     @Override

@@ -1,7 +1,14 @@
 package org.mio.progettoingsoft.network.messages;
 
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+
 public final class StardustMessage extends Message {
-    public StardustMessage(int idGame, String nickname) {
+    private final SldStardust card;
+    public StardustMessage(int idGame, String nickname, SldStardust card) {
         super(idGame, nickname);
+        this.card = card;
+    }
+    public SldStardust getCard() {
+        return card;
     }
 }

@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Slaver;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 
@@ -16,6 +18,17 @@ public final class SldSlavers extends SldAdvCard {
     @Override
     public String getCardName() {
         return "Slavers";
+    }
+
+    public static SldSlavers loadSlaver(JsonNode node){
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+        int strength = node.path("strength").asInt();
+        int daysLost = node.path("daysLost").asInt();
+        int reward = node.path("reward").asInt();
+        int crewLost = node.path("crewLost").asInt();
+
+        return new SldSlavers(id, level, strength, daysLost, reward, crewLost);
     }
 
     public SldSlavers(int id, int level, int strength, int daysLost, int credits, int crewLost) {

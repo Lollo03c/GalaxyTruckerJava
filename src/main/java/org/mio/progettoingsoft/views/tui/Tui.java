@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.views.tui;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -89,8 +91,10 @@ public class Tui implements View {
                 controller.setState(GameState.BUILDING_SHIP);
             }
             case STARDUST -> {
+                // la riga successiva è da eliminare e passargli la carta pescata
+                SldStardust card = new SldStardust(1,1);
                 System.out.println("STARDUST was drown");
-                controller.applyStardust();
+                controller.applyStardust(card);
             }
 
             case VIEW_DECK -> viewDeck();

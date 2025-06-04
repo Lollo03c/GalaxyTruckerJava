@@ -2,6 +2,7 @@ package org.mio.progettoingsoft;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.components.*;
 
 
@@ -47,7 +48,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     protected final List<Player> players;
 
     private Map<Integer, Component> components = loadComponentMap();
-    protected Map<Integer, AdventureCard> adventureCards = loadAdventureCard();
+    protected Map<Integer, SldAdvCard> sldAdvCards = loadSldAdvCard();
 
     private HourGlass hourGlass;
 
@@ -62,7 +63,8 @@ public abstract class FlyBoard implements FlyBoardServer {
 
 
         deck = new ArrayList<>();
-        deck.addAll(adventureCards.keySet());
+        deck.addAll(sldAdvCards.keySet());
+        //deck.addAll(adventureCards.keySet());
         Collections.shuffle(deck);
 
         buildLittleDecks();
@@ -185,8 +187,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         throw new NoMoreComponentsException("It's not possible to remove the component.");
     }
 
-    public AdventureCard getAdventureCardById(int id) {
-        return adventureCards.get(id);
+    public SldAdvCard getSldAdvCardByID(int id) {
+        return sldAdvCards.get(id);
     }
 
     // adds a player with the passed user and color (for the main housing), throws an exc if necessary
@@ -306,9 +308,9 @@ public abstract class FlyBoard implements FlyBoardServer {
         Collections.shuffle(deck);
     }
 
-    public AdventureCard drawAdventureCard() {
+    public SldAdvCard drawSldAdvCard() {
         int idCard = deck.removeLast();
-        return getAdventureCardById(idCard);
+        return getSldAdvCardByID(idCard);
     }
 
     public boolean isDeckEmpty() {
@@ -403,6 +405,12 @@ public abstract class FlyBoard implements FlyBoardServer {
      * @return the list of all the Adventure Cards based on the {@link GameMode} of the game
      */
     protected abstract Map<Integer, AdventureCard> loadAdventureCard();
+
+    /**
+     *
+     * @return the list of all the SldAdv Cards based on the {@link GameMode} of the game
+     */
+    protected abstract Map<Integer, SldAdvCard> loadSldAdvCard();
 
     /**
      *

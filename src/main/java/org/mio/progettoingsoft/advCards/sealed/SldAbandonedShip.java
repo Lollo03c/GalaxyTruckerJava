@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.AbandonedShip;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 
@@ -34,6 +36,16 @@ public final class SldAbandonedShip extends SldAdvCard {
 
     @Override
     public int getCredits() {return credits;}
+
+    public static SldAbandonedShip loadAbandonedShip(JsonNode node){
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+        int daysLost = node.path("daysLost").asInt();
+        int credits = node.path("credits").asInt();
+        int crewLost = node.path("crewLost").asInt();
+
+        return new SldAbandonedShip(id, level, daysLost, credits, crewLost);
+    }
 
     // it initializes the list of players that can play the card (crew > crewLost) and set the card state CREW_REMOVE_CHOICE
     public void init(Game game) {

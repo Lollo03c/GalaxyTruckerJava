@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -83,8 +84,13 @@ public class ClientController {
         }
     }
 
-    public void applyStardust(){
-        server.applyStardust(idGame,nickname);
+    public void applyStardust(SldStardust card){
+        try {
+            server.applyStardust(idGame, nickname,card);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getNickname() {

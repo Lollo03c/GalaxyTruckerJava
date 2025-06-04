@@ -1,10 +1,12 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.Planet;
+import org.mio.progettoingsoft.advCards.Planets;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
@@ -22,6 +24,19 @@ public final class SldPlanets extends SldAdvCard {
         super(id, level);
         this.daysLost = daysLost;
         this.planets = planets;
+    }
+
+    public static SldPlanets loadPlanets(JsonNode node){
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+        int daysLost = node.path("daysLost").asInt();
+        List<Planet> planets = new ArrayList<>();
+        JsonNode planetsNode = node.path("planets");
+        for(JsonNode planet : planetsNode) {
+            planets.add(Planet.stringToPlanet(planet));
+        }
+
+        return new SldPlanets(id, level, daysLost, planets);
     }
 
     @Override

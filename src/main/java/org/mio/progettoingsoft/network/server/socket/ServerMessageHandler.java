@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network.server.socket;
 
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.ServerController;
 
@@ -56,7 +57,7 @@ public class ServerMessageHandler implements Runnable {
 
                     }
                     case StardustMessage stardustMessage -> {
-                        serverController.applyStardust(stardustMessage.getGameId());
+                        serverController.applyStardust(stardustMessage.getGameId(), stardustMessage.getCard());
                     }
                     default -> {}
                 }

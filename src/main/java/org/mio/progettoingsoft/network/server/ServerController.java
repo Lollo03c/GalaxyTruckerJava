@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -97,7 +98,7 @@ public class ServerController {
         }
     }
 
-    public void applyStardust(int idGame){
+    public void applyStardust(int idGame, SldStardust card){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyboard = game.getFlyboard();
         List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
@@ -105,8 +106,14 @@ public class ServerController {
             int exposedConnectors = p.getShipBoard().getExposedConnectors();
             flyboard.moveDays(p, -exposedConnectors);
         }
-        //TODO  da fare che pesca una nuova carta e cambia lo stato, ora come ora la Flyboard ha ancora le AdvCard
-        // SldAdvCard newCard = flyboard.drawAdventureCard();
+
+        SldAdvCard nextCard = flyboard.drawSldAdvCard();
+        String type = nextCard.getCardName().toUpperCase();
+        GameState next = GameState.stringToGameState(type);
+        //TODO settare il Gamestate allo stato della carta pescata
+        //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
+        //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
+
     }
 
     public void drawUncovered(int idGame, String nickname, Integer idComponent){

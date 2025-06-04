@@ -1,13 +1,11 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.advCards.CombatLine;
-import org.mio.progettoingsoft.advCards.Criterion;
-import org.mio.progettoingsoft.advCards.Penalty;
-import org.mio.progettoingsoft.advCards.PenaltyType;
+import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
@@ -25,6 +23,29 @@ public final class SldCombatZone extends SldAdvCard {
     public SldCombatZone(int id, int level, List<CombatLine> lines) {
         super(id, level);
         this.lines = new ArrayList<>(lines);
+    }
+
+    public static SldCombatZone loadCombatZone(JsonNode node) {
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+        List<CombatLine> combatLines = new ArrayList<>();
+        List<Penalty> cannonPenalties = new ArrayList<>();
+        JsonNode criterionsNode = node.path("criterion");
+        JsonNode penaltyNode = node.path("penalty");
+        for (int j = 0; j < criterionsNode.size(); j++) {
+            if (penaltyNode.get(j).get(0).asText().equals("cannonsPenalty")) {
+                for (JsonNode cannonsPenalty : penaltyNode.get(j).get(1)) {
+                    cannonPenalties.add(CannonPenalty.stringToCannonPenalty(cannonsPenalty.get(1).asText(), cannonsPenalty.get(0).asText()));
+                }
+                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), cannonPenalties));
+            } else {
+                List<Penalty> penaltyList = new ArrayList<>();
+                penaltyList.add(LoseSomethingPenalty.stringToPenalty(penaltyNode.get(j).get(0).asText(), penaltyNode.get(j).get(1).asInt()));
+                combatLines.add(new CombatLine(Criterion.stringToCriterion(criterionsNode.get(j).asText()), penaltyList));
+            }
+        }
+
+        return new SldCombatZone(id, level, combatLines);
     }
 
     @Override

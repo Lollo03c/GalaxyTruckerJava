@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.server.rmi;
 
 
 import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
@@ -89,7 +90,7 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void applyStardust(int idGame, String nickname){
-        controller.applyStardust(idGame);
+    public void applyStardust(int idGame, String nickname, SldStardust card) throws RemoteException {
+        controller.applyStardust(idGame, card);
     }
 }

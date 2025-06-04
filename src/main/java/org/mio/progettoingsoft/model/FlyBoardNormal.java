@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.*;
+import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
 
@@ -125,19 +126,90 @@ public class FlyBoardNormal extends FlyBoard {
         int countLevel2 = 0;
 
         List<Integer> levelOneCards = copyDeck.stream()
-                .filter(id -> adventureCards.get(id).getLevel() == 1)
+                .filter(id -> sldAdvCards.get(id).getLevel() == 1)
                 .toList();
 
         for (int i = 0; i < 3; i++)
             littleDecks.get(i).add(levelOneCards.get(i));
 
         List<Integer> levelTwoCards = copyDeck.stream()
-                .filter(id -> adventureCards.get(id).getLevel() == 2)
+                .filter(id -> sldAdvCards.get(id).getLevel() == 2)
                 .toList();
 
         for (int i = 0; i < 6; i++)
             littleDecks.get(i / 2).add(levelTwoCards.get(i));
 
 
+    }
+
+    @Override
+    protected Map<Integer, SldAdvCard> loadSldAdvCard() {
+        List<SldAdvCard> loadedCards = new ArrayList<>();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
+
+            for (int i = 0; i < rootNode.size(); i++) {
+                String type = rootNode.get(i).path("type").asText();
+
+                switch (type) {
+                    case "SLAVERS":
+                        loadedCards.add(SldSlavers.loadSlaver(rootNode.get(i)));
+                        break;
+
+                    case "SMUGGLERS":
+                        loadedCards.add(SldSmugglers.loadSmugglers(rootNode.get(i)));
+                        break;
+
+                    case "PIRATE":
+                        loadedCards.add(SldPirates.loadPirate(rootNode.get(i)));
+                        break;
+
+                    case "STARDUST":
+                        loadedCards.add(SldStardust.loadStardust(rootNode.get(i)));
+                        break;
+
+                    case "EPIDEMIC":
+                        loadedCards.add(SldEpidemic.loadEpidemic(rootNode.get(i)));
+                        break;
+
+                    case "OPENSPACE":
+                        loadedCards.add(SldOpenSpace.loadOpenSpace(rootNode.get(i)));
+                        break;
+
+                    case "METEORSWARM":
+                        loadedCards.add(SldMeteorSwarm.loadMeteorSwarm(rootNode.get(i)));
+                        break;
+
+                    case "PLANETS":
+                        loadedCards.add(SldPlanets.loadPlanets(rootNode.get(i)));
+                        break;
+
+                    case "COMBATZONE":
+                        loadedCards.add(SldCombatZone.loadCombatZone(rootNode.get(i)));
+                        break;
+
+                    case "ABANDONEDSHIP":
+                        loadedCards.add(SldAbandonedShip.loadAbandonedShip(rootNode.get(i)));
+                        break;
+
+                    case "ABANDONEDSTATION":
+                        loadedCards.add(SldAbandonedStation.loadAbandonedStation(rootNode.get(i)));
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Map<Integer, SldAdvCard> advCardsMap = new HashMap<>();
+        for (SldAdvCard card : loadedCards){
+            advCardsMap.put(card.getId(), card);
+        }
+
+
+        return advCardsMap;
     }
 }

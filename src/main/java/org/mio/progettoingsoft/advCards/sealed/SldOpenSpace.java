@@ -1,9 +1,11 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.advCards.OpenSpace;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
@@ -16,6 +18,13 @@ public final class SldOpenSpace extends SldAdvCard {
 
     public SldOpenSpace(int id, int level) {
         super(id, level);
+    }
+
+    public static SldOpenSpace loadOpenSpace(JsonNode node){
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+
+        return new SldOpenSpace(id, level);
     }
 
     public String getCardName() {

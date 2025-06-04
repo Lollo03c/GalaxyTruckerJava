@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Epidemic;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -13,6 +15,13 @@ public final class SldEpidemic extends SldAdvCard {
 
     public String getCardName(){
         return "Epidemic";
+    }
+
+    public static SldEpidemic loadEpidemic(JsonNode node) {
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+
+        return new SldEpidemic(id, level);
     }
 
     // all players have to play the card, so all of them are added to the list

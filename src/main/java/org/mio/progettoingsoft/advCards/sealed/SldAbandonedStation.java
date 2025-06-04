@@ -1,9 +1,11 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.advCards.AbandonedStation;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 
@@ -21,6 +23,21 @@ public final class SldAbandonedStation extends SldAdvCard {
         this.daysLost = daysLost;
         this.crewNeeded = crewNeeded;
         this.goods = goods;
+    }
+
+    public static SldAbandonedStation loadAbandonedStation(JsonNode node) {
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+        int daysLost = node.path("daysLost").asInt();
+        int crewNeeded = node.path("crewNeeded").asInt();
+        List<GoodType> goods = new ArrayList<>();
+        JsonNode goodsNode = node.path("goods");
+        for (JsonNode good : goodsNode) {
+            goods.add(GoodType.stringToGoodType(good.asText()));
+        }
+
+        return new SldAbandonedStation(id, level,  daysLost,crewNeeded, goods);
+
     }
 
     @Override

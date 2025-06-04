@@ -1,13 +1,16 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.advCards.Smugglers;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SldSmugglers extends SldAdvCard {
@@ -136,6 +139,21 @@ public final class SldSmugglers extends SldAdvCard {
         }else{
             throw new BadPlayerException("The player " + player.getNickname() + " cannot confirm goods placement at the moment");
         }
+    }
+
+    public static SldSmugglers loadSmugglers(JsonNode node){
+        int id = node.path("id").asInt();
+        int level = node.path("level").asInt();
+        int strength = node.path("strength").asInt();
+        int daysLost = node.path("daysLost").asInt();
+        List<GoodType> rewards = new ArrayList<>();
+        JsonNode rewardNode = node.path("reward");
+        for (JsonNode reward : rewardNode) {
+            rewards.add(GoodType.stringToGoodType(reward.asText()));
+        }
+        int stolenGoods = node.path("goodsLost").asInt();
+
+        return new SldSmugglers(id, level, stolenGoods, rewards, strength, daysLost);
     }
 
     @Override

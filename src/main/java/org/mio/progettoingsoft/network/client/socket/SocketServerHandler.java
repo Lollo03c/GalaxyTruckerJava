@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client.socket;
 
 import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.socket.VirtualServerSocket;
@@ -82,8 +83,8 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void applyStardust(int idGame, String nickname) {
-        Message message = new StardustMessage(idGame, nickname);
+    public void applyStardust(int idGame, String nickname, SldStardust card) {
+        Message message = new StardustMessage(idGame, nickname, card);
         try{
             sendMessage(message);
         }
