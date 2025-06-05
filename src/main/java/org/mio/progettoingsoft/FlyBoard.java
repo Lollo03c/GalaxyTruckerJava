@@ -83,6 +83,8 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
     protected abstract void buildLittleDecks();
+    public abstract void setLittleDecks(List<List<Integer>> decks);
+    public abstract List<List<Integer>> getLittleDecks();
 
     /**
      *
@@ -443,5 +445,6 @@ public abstract class FlyBoard implements FlyBoardServer {
             throw new BadParameterException("Index out of decks list bound");
         return new ArrayList<>(littleDecks.get(index));
     }
+
 
 }

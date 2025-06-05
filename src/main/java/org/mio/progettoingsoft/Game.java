@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -95,10 +96,11 @@ public class Game implements GameServer, GameClient {
                         Player::getNickname,
                         Player::getColor
                 ));
+        List<List<Integer>> decks = flyboard.getLittleDecks();
 
         for (VirtualClient client : clients.values()){
             try {
-                client.setFlyBoard(mode ,colorMap);
+                client.setFlyBoard(mode ,colorMap, decks);
                 client.setState(GameState.GAME_START);
                 client.setState(GameState.BUILDING_SHIP);
             } catch (Exception e) {

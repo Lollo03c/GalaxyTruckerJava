@@ -8,6 +8,7 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,7 +44,7 @@ public interface VirtualClient extends Remote {
 
     void setState(GameState state) throws Exception;
 
-    void setFlyBoard(GameMode mode, Map<String, HousingColor> players) throws Exception;
+    void setFlyBoard(GameMode mode, Map<String, HousingColor> players, List<List<Integer>> decks) throws Exception;
 
     void setInHandComponent(int idComponent) throws Exception;
     void addComponent(String nickname, int idComp, Cordinate cordinate, int rotations) throws Exception;

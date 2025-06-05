@@ -16,12 +16,10 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.scene.paint.Color;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
-import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
@@ -167,6 +165,7 @@ public class Gui extends Application implements View {
             case SWITCH_BOOKED -> switchBookedComponentsView();
             case VIEW_DECK -> inspectDeckView(true);
             case UNABLE_DECK -> inspectDeckView(false);
+
             default -> genericErrorView(state);
         }
         stage.show();
@@ -365,7 +364,6 @@ public class Gui extends Application implements View {
                 Button advDeckButton = new Button("Adventure card deck " + (i + 1));
                 advDeckButton.setOnAction(event -> {
                     controller.bookDeck(i);
-                    Logger.debug("Booking deck " + i + ".");
                 });
                 shipAdvDeckBox.getChildren().add(advDeckButton);
             }
@@ -805,7 +803,7 @@ public class Gui extends Application implements View {
         List<Optional<Integer>> bookedComponents;
         synchronized (controller.getFlyboardLock()) {
             idMatrix = controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getComponentIdsMatrix();
-            rotationsMatrix = controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getComponentIdsMatrix();
+            rotationsMatrix = controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getComponentRotationsMatrix();
             bookedComponents = new ArrayList<>(controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getBookedComponents());
         }
         fillShipboard(idMatrix, rotationsMatrix, bookedComponents, otherPlayerShipCordToImg);
@@ -917,8 +915,6 @@ public class Gui extends Application implements View {
                     String tmpResourcePath = IMG_PATH + TILES_REL_PATH + bookedComponents.get(1).get() + IMG_EXTENSION;
                     Image img = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
                     map.get(cord).setImage(img);
-                } else {
-                    Logger.debug("No booked component found");
                 }
             }
         }

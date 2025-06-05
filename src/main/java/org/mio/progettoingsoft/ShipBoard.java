@@ -207,14 +207,12 @@ public abstract class ShipBoard {
         return adjacents;
     }
 
-    /**
-     * add the {@link Component} with given id, to the given rotation, after rotates it
-     *
-     * @param componentId the id of the {@link Component} to insert
-     * @param cordinate the position where to insert id
-     * @param angle the angle to rotate
-     * @throws IncorrectShipBoardException if the cordinate is invalid
-     */
+    /// add the [Component] with given id, to the given rotation, after rotates it
+    ///
+    /// @param componentId the id of the [Component] to insert
+    /// @param cordinate the position where to insert id
+    /// @param angle the angle to rotate
+    /// @throws IncorrectShipBoardException if the cordinate is invalid
     public void addComponentToPosition(int componentId, Cordinate cordinate, int angle) throws IncorrectShipBoardException {
         if (bannedCoordinates.contains(cordinate))
             throw new IncorrectShipBoardException("Cannot insert in this cordinate");

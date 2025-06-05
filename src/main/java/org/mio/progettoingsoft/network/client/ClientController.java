@@ -14,6 +14,7 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 import java.util.Map;
 
 public class ClientController {
@@ -74,7 +75,6 @@ public class ClientController {
         }
         if (oldState != state) {
             support.firePropertyChange("gameState", oldState, state);
-            Logger.debug("State changed from " + oldState + " to " + state);
         }
     }
 
@@ -174,7 +174,7 @@ public class ClientController {
      * methods called by the server to update the game state (and the model)
      */
 
-    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players) {
+    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players, List<List<Integer>> decks) {
         synchronized (flyboardLock) {
             flyBoard = FlyBoard.createFlyBoard(mode, players.keySet());
             for (Player player : flyBoard.getPlayers()) {
@@ -182,6 +182,9 @@ public class ClientController {
                 player.setHousingColor(color);
             }
             shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+            if(mode == GameMode.NORMAL){
+                flyBoard.setLittleDecks(decks);
+            }
         }
     }
 
