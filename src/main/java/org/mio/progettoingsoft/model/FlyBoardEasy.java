@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardEasy;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
@@ -194,5 +195,15 @@ public class FlyBoardEasy extends FlyBoard {
     @Override
     protected void buildLittleDecks(){
 
+    }
+
+    @Override
+    public List<List<Integer>> getLittleDecks(){
+        throw new IncorrectFlyBoardException("No little decks available");
+    }
+
+    @Override
+    public void setLittleDecks(List<List<Integer>> decks){
+        throw new IncorrectFlyBoardException("No little decks to set");
     }
 }

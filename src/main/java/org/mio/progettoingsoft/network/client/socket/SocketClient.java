@@ -83,7 +83,7 @@ public class SocketClient implements Client {
                     }
 
                     case FlyBoardMessage flyBoardMessage -> {
-                        controller.setFlyBoard(flyBoardMessage.getMode(), flyBoardMessage.getPlayers());
+                        controller.setFlyBoard(flyBoardMessage.getMode(), flyBoardMessage.getPlayers(), flyBoardMessage.getDecks());
                     }
 
                     case ComponentMessage componentMessage -> {

@@ -143,6 +143,23 @@ public class FlyBoardNormal extends FlyBoard {
     }
 
     @Override
+    public void setLittleDecks(List<List<Integer>> decks){
+        this.littleDecks = new ArrayList<>();
+        for(List<Integer> deck : decks){
+            littleDecks.add(new ArrayList<>(deck));
+        }
+    }
+
+    @Override
+    public List<List<Integer>> getLittleDecks(){
+        List<List<Integer>> decks = new ArrayList<>();
+        for(List<Integer> deck : littleDecks){
+            decks.add(new ArrayList<>(deck));
+        }
+        return decks;
+    }
+
+    @Override
     protected Map<Integer, SldAdvCard> loadSldAdvCard() {
         List<SldAdvCard> loadedCards = new ArrayList<>();
 

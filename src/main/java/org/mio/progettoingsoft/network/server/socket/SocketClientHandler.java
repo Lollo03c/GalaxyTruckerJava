@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
@@ -100,8 +101,8 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
-    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players) throws IOException {
-        Message message = new FlyBoardMessage(-1, "", mode, players);
+    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players, List<List<Integer>> decks) throws IOException {
+        Message message = new FlyBoardMessage(-1, "", mode, players, decks);
         sendMessage(message);
     }
 

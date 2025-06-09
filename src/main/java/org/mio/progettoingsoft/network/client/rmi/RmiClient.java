@@ -16,6 +16,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -98,9 +99,9 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
-    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players) throws RemoteException{
+    public void setFlyBoard(GameMode mode, Map<String, HousingColor> players, List<List<Integer>> decks) throws RemoteException{
         executors.submit(() ->
-                controller.setFlyBoard(mode, players)
+                controller.setFlyBoard(mode, players, decks)
         );
     }
 
