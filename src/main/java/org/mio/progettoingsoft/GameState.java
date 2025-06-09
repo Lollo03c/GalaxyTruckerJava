@@ -11,7 +11,11 @@ public enum GameState implements Serializable {
     ERROR_NICKNAME, ERROR_PLACEMENT, UNABLE_UNCOVERED_COMPONENT, UNABLE_DECK, WRONG_POSITION,
 
     STARDUST, SLAVERS , ABANDONEDSHIP, ABANDONEDSTATION, COMBATZONE, EPIDEMIC, METEORSWARM, OPENSPACE, PIRATES, PLANETS,
-    SMUGGLERS;
+    SMUGGLERS,
+
+    ENGINE_CHOICE
+
+    ;
 
     public static GameState stringToGameState(String string){
         switch(string){

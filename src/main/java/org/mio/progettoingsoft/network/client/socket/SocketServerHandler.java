@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
-import java.util.List;
 
 public class SocketServerHandler implements VirtualServerSocket {
     private final ObjectOutputStream out;
@@ -116,6 +115,16 @@ public class SocketServerHandler implements VirtualServerSocket {
             e.printStackTrace();
         }
         //controller.choosePlace(idGame, nickname, place);
+    }
+
+    @Override
+    public void activateDoubleEngine(int idGame, String nickname, int number) throws RemoteException{
+        Message message = new DoubleEngineMessage(idGame, nickname, number);
+        try{
+            sendMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

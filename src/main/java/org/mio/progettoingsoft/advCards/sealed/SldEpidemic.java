@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.advCards.sealed;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.Epidemic;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -25,7 +26,7 @@ public final class SldEpidemic extends SldAdvCard {
     }
 
     // all players have to play the card, so all of them are added to the list
-    public void init(Game game){
+    public void init(GameServer game){
         FlyBoard board = game.getFlyboard();
 //        if(board.getState() != GameState.DRAW_CARD){
 //            throw new IllegalStateException("Illegal state: " + board.getState());

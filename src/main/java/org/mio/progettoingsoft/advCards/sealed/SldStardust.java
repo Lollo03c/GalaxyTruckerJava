@@ -2,10 +2,10 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.Stardust;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public final class SldStardust extends SldAdvCard{
     }
 
     @Override
-    public void init(Game game) {
+    public void init(GameServer game) {
         FlyBoard board = game.getFlyboard();
 //        if(board.getState() != GameState.DRAW_CARD){
 //            throw new IllegalStateException("Illegal state: " + board.getState());
