@@ -101,11 +101,12 @@ public class ServerController {
     public void applyStardust(int idGame, SldStardust card){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyboard = game.getFlyboard();
-        List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
+        card.applyEffect(flyboard);
+        /*List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
         for (Player p : reversedScoreboard){
             int exposedConnectors = p.getShipBoard().getExposedConnectors();
             flyboard.moveDays(p, -exposedConnectors);
-        }
+        }*/
 
         SldAdvCard nextCard = flyboard.drawSldAdvCard();
         String type = nextCard.getCardName().toUpperCase();
