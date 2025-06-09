@@ -4,7 +4,9 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
+import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
@@ -235,12 +237,17 @@ public class ServerController {
     public void choosePlace(int idGame, String nickname, int place) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
-        synchronized (flyBoard.getCircuit()){
-            Logger.error("NOT IMPLEMENTED: choose place " + place);
+        GameState state;
+        try {
+            flyBoard.addPlayerToCircuit(nickname, place);
+            state = GameState.END_BUILDING;
+        }catch(BadParameterException e){
+            state = GameState.WRONG_POSITION;
         }
+
         VirtualClient client = game.getClients().get(nickname);
         try {
-            client.setState(GameState.END_BUILDING);
+            client.setState(state);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

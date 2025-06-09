@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
+import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
@@ -68,9 +69,13 @@ public class Tui implements View {
 
             case GAME_MODE -> printGameModeMenu();
             case GAME_START -> {
-                System.out.println("partita iniziata");
+                System.out.println("game started");
                 printPlayersName();
                 controller.setState(GameState.WAITING);
+            }
+            case WRONG_POSITION -> {
+                System.out.println(RED + "Current position is already occupied" + RESET);
+                controller.setState(GameState.CHOOSE_POSITION);
             }
 
             case BUILDING_SHIP -> {
@@ -166,22 +171,26 @@ public class Tui implements View {
 
     private void printChoosePosition(){
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
-        System.out.println("In which of these available position do you want to start ?" + availablePlaces);
-        for ( Integer i : availablePlaces){
-            System.out.println(i);
-        }
         String input = "";
         int choice = -1;
-        input = scanner.nextLine();
-
-        try {
-            choice = Integer.parseInt(input);
-
-            if (!availablePlaces.contains(choice)) {
+        int k = 0;
+        while (!availablePlaces.contains(choice)) {
+            controller.getFlyBoard().drawCircuit();
+            System.out.println("In which of these available position do you want to start ?" );
+            for ( Integer i : availablePlaces){
+                k = FlyBoardNormal.indexToPosition(i);
+                System.out.println(k);
+            }
+            input = scanner.nextLine();
+            try {
+                choice = Integer.parseInt(input);
+                choice = FlyBoardNormal.positionToIndex(choice);
+                if (!availablePlaces.contains(choice)) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
                 System.out.println(RED + "Invalid choice!" + RESET);
             }
-        } catch (Exception e) {
-            System.out.println(RED + "Invalid choice!" + RESET);
         }
         controller.choosePlace(choice);
     }
