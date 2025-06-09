@@ -129,6 +129,23 @@ public abstract class FlyBoard implements FlyBoardServer {
         return circuit;
     }
 
+    public List<Integer> getAvailableStartingPositions(){
+        List<Integer> availablePlaces = new ArrayList<>();
+        synchronized (this.getCircuit()) {
+            List<Optional<Player>> circ = this.getCircuit();
+            for (Integer i : new ArrayList<>(List.of(0, 1, 3, 6))) {
+                if (circ.get(i).isEmpty()) {
+                    availablePlaces.add(i);
+                }
+            }
+        }
+        return availablePlaces;
+    }
+
+    public boolean isReadyToAdventure(){
+        return this.getScoreBoard().size() == this.getNumPlayers();
+    }
+
     public List<Player> getScoreBoard() {
         return scoreBoard;
     }
@@ -237,6 +254,7 @@ public abstract class FlyBoard implements FlyBoardServer {
         }
         this.getScoreBoard().remove(player);
         this.getScoreBoard().add(numPlayersAhead, player);
+        this.circuit.set(index, Optional.of(player));
         player.setRunning(true);
     }
 

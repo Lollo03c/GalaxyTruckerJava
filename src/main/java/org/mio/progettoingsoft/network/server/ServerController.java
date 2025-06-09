@@ -217,15 +217,7 @@ public class ServerController {
     public void endBuild(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
-        List<Integer> availablePlaces = new ArrayList<>();
-        synchronized (flyBoard.getCircuit()) {
-            List<Optional<Player>> circ = flyBoard.getCircuit();
-            for (Integer i : new ArrayList<>(List.of(0, 1, 3, 6))) {
-                if (circ.get(i).isEmpty()) {
-                    availablePlaces.add(i);
-                }
-            }
-        }
+        List<Integer> availablePlaces = flyBoard.getAvailableStartingPositions();
         VirtualClient client = game.getClients().get(nickname);
         try {
             client.setAvailablePlaces(availablePlaces);
@@ -239,14 +231,21 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         GameState state;
+        VirtualClient client = game.getClients().get(nickname);
         try {
             flyBoard.addPlayerToCircuit(nickname, place);
-            state = GameState.END_BUILDING;
-        }catch(BadParameterException e){
+            if(flyBoard.isReadyToAdventure())
+                state = GameState.DRAW_CARD;
+            else
+                state = GameState.END_BUILDING;
+        } catch (BadParameterException e) {
+            try {
+                client.setAvailablePlaces(flyBoard.getAvailableStartingPositions());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             state = GameState.WRONG_POSITION;
         }
-
-        VirtualClient client = game.getClients().get(nickname);
         try {
             client.setState(state);
         } catch (Exception e) {

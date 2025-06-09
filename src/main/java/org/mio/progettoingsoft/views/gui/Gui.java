@@ -172,6 +172,7 @@ public class Gui extends Application implements View {
             case CHOOSE_POSITION -> choosePositionView(false);
             case WRONG_POSITION -> choosePositionView(true);
             case END_BUILDING -> waitingForAdventureStartView();
+            case DRAW_CARD -> drawCardView();
 
             default -> genericErrorView(state);
         }
@@ -834,6 +835,8 @@ public class Gui extends Application implements View {
         Logger.debug(tmpResourcePath);
         Image circuitImage = new Image(this.getClass().getResource(tmpResourcePath).toExternalForm());
         ImageView circuitImageView = new ImageView(circuitImage);
+        circuitImageView.setPreserveRatio(true);
+        circuitImageView.setFitWidth(tilesSideLength * 8);
 
         Label choosePlaceLabel = new Label("Choose the position you want to occupy");
 
@@ -864,6 +867,12 @@ public class Gui extends Application implements View {
         VBox box = new VBox();
         box.setAlignment(Pos.CENTER);
         box.getChildren().add(new Label("Waiting for adventure start"));
+        root.getChildren().add(box);
+    }
+
+    private void drawCardView(){
+        root.getChildren().clear();
+
     }
 
     /*
