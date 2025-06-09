@@ -2,8 +2,10 @@ package org.mio.progettoingsoft.network.server.rmi;
 
 
 import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.model.enums.GameInfo;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
@@ -102,5 +104,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     @Override
     public void applyStardust(int idGame, String nickname, SldStardust card) throws RemoteException {
         controller.applyStardust(idGame, card);
+    }
+
+    public void activateDoubleEngine(int idGame, String nickname, int number) throws RemoteException{
+        controller.activateDoubleEngine(idGame, nickname, number);
     }
 }

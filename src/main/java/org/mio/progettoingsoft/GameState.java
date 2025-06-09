@@ -13,7 +13,11 @@ public enum GameState implements Serializable {
     DRAW_CARD, CARD_EFFECT,
 
     STARDUST, SLAVERS , ABANDONEDSHIP, ABANDONEDSTATION, COMBATZONE, EPIDEMIC, METEORSWARM, OPENSPACE, PIRATES, PLANETS,
-    SMUGGLERS;
+    SMUGGLERS,
+
+    ENGINE_CHOICE
+
+    ;
 
     public static GameState stringToGameState(String string){
         switch(string){

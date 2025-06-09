@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
@@ -58,6 +59,8 @@ public class ClientController {
     private int inHandComponent;
     private int inHandDeck;
     private int tmpRotation;
+
+    private SldAdvCard card;
 
     private List<Integer> availablePlacesOnCircuit;
 
@@ -196,6 +199,10 @@ public class ClientController {
                 flyBoard.setLittleDecks(decks);
             }
         }
+    }
+
+    private void setCard(SldAdvCard card){
+        this.card = card;
     }
 
     public void addUncoveredComponent(int idComp) {
@@ -388,5 +395,18 @@ public class ClientController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void activateDoubleEngine(int number){
+        try{
+            server.activateDoubleEngine(idGame, nickname, number);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void advancePlayer(String nickname, int steps){
+        Player player = flyBoard.getPlayerByUsername(nickname);
+        flyBoard.moveDays(player, steps);
     }
 }

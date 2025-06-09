@@ -65,6 +65,11 @@ public class ServerMessageHandler implements Runnable {
                     case ChoosePlacementMessage choosePlacementMessage -> {
                         serverController.choosePlace(choosePlacementMessage.getGameId(), choosePlacementMessage.getNickname(), choosePlacementMessage.getPlace());
                     }
+
+                    case DoubleEngineMessage doubleEngineMessage -> {
+                        serverController.activateDoubleEngine(doubleEngineMessage.getGameId(), doubleEngineMessage.getNickname(), doubleEngineMessage.getNumber());
+                    }
+
                     default -> {}
                 }
             } catch (InterruptedException e) {

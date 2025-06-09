@@ -131,6 +131,8 @@ public class Tui implements View {
                 System.out.println("Invalid Position. Try again.\n\n");
                 controller.setState(GameState.ADD_COMPONENT);
             }
+
+            case ENGINE_CHOICE -> engineChoice();
         }
     }
 
@@ -535,6 +537,18 @@ public class Tui implements View {
         }
 
         controller.bookComponent(possibles.indexOf(chosenComp));
+    }
+
+    private void engineChoice(){
+        ShipBoard shipBoard = controller.getShipBoard();
+
+        int maxAvailable = Integer.max(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());
+        System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : ");
+        int activated = scanner.nextInt();
+        //todo da controllare l'input
+
+        controller.activateDoubleEngine(activated);
+
     }
 
     private void clearConsole() {

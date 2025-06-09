@@ -1,6 +1,10 @@
 package org.mio.progettoingsoft;
 
+import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.client.VirtualClient;
+
 public class GameController {
     private GameServer game;
 
@@ -9,14 +13,27 @@ public class GameController {
 
     }
 
-    public void setGame(Game game){
+    public void setGame(GameServer game){
         this.game = game;
     }
 
 
-    public void update(GameState gameState){
-        switch (gameState){
+    public void update(SldAdvCard card){
+        Player player = card.getActualPlayer();
+        String username = player.getNickname();
+
+        VirtualClient client = game.getClients().get(username);
+        CardState cardState = card.getState();
+
+        switch (cardState){
 //            case BUILDING_SHIP -> broadcast(new StartGameMessage(game.getIdGame()));
+            case ENGINE_CHOICE -> {
+                try{
+                    client.setState(GameState.ENGINE_CHOICE);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             default -> {}
         }

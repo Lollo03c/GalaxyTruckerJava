@@ -50,6 +50,8 @@ public abstract class FlyBoard implements FlyBoardServer {
     private Map<Integer, Component> components = loadComponentMap();
     protected Map<Integer, SldAdvCard> sldAdvCards = loadSldAdvCard();
 
+    private SldAdvCard playedCard;
+
     private HourGlass hourGlass;
 
 
@@ -330,6 +332,8 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public SldAdvCard drawSldAdvCard() {
         int idCard = deck.removeLast();
+        playedCard = getSldAdvCardByID(idCard);
+
         return getSldAdvCardByID(idCard);
     }
 
@@ -462,6 +466,10 @@ public abstract class FlyBoard implements FlyBoardServer {
         if(index < 0 || index >= littleDecks.size())
             throw new BadParameterException("Index out of decks list bound");
         return new ArrayList<>(littleDecks.get(index));
+    }
+
+    public SldAdvCard getPlayedCard(){
+        return playedCard;
     }
 
 

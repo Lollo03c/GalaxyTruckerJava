@@ -8,6 +8,7 @@ import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.AbandonedStation;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,7 +60,7 @@ public final class SldAbandonedStation extends SldAdvCard {
     }
 
     @Override
-    public void init(Game game) {
+    public void init(GameServer game) {
         FlyBoard board = game.getFlyboard();
 
 //        if (board.getState() != GameState.DRAW_CARD) {

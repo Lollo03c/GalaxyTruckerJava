@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -248,6 +249,35 @@ public class ServerController {
             client.setState(state);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void activateDoubleEngine(int idGame, String  nickname, int number){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        SldAdvCard card = flyBoard.getPlayedCard();
+
+        //todo da controllare che il player sia quello giusto
+
+        switch (card){
+            case SldOpenSpace openSpace -> {
+                openSpace.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), number);
+
+                int nSteps = 2 * number + flyBoard.getPlayerByUsername(nickname).getShipBoard().getBaseEnginePower();
+
+                //nofica l'avanzamento del player agli avversari
+                for (VirtualClient client : game.getClients().values()){
+                    try {
+                        client.advancePlayer(nickname, nSteps);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            default -> {
+                Logger.error("carta non valida per effetto activeDoubleEngine");
+            }
         }
     }
 }

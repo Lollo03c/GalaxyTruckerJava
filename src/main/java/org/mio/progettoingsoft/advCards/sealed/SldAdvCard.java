@@ -9,7 +9,7 @@ import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
-import org.mio.progettoingsoft.views.tui.VisualCard;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,13 +22,17 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     protected Iterator<Player> playerIterator;
     protected CardState state;
 
+    protected GameServer game;
+
     public abstract String getCardName();
 
     // this method must be called right after drawing the card, it sets the game state CARD_EFFECT
-    public abstract void init(Game game);
+    public abstract void init(GameServer game);
 
     // this method must be called right after applying the effect of the card on ALL the available players, it sets the game state DRAW_CARD
-    public abstract void finish(FlyBoard board);
+    public void finish(FlyBoard board){
+
+    }
 
     public CardState getState() {return state;}
 
@@ -97,9 +101,14 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card doesn't have planets");
     }
 
-    public void drawCard(){
-        VisualCard visual = new VisualCard(this);
-        visual.drawCard();
+//    public void drawCard() {
+//        VisualCard visual = new VisualCard(this);
+//        visual.drawCard();
+//    }
+
+    protected void setState(CardState state, GameServer game){
+        this.state = state;
+        game.getController().update(this);
     }
 }
 

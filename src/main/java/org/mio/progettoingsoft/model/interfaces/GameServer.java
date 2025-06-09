@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.model.interfaces;
 
 import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.GameController;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
@@ -20,5 +21,6 @@ public interface GameServer {
 //    void addReceivedMessage(Message message);
 
     FlyBoard getFlyboard();
+    GameController getController();
 
 }

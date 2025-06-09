@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.Slaver;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ public final class SldSlavers extends SldAdvCard {
 
 
 
-    public void init(Game game) {
+    public void init(GameServer game) {
         FlyBoard board = game.getFlyboard();
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());

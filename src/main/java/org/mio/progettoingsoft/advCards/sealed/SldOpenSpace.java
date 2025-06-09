@@ -2,13 +2,13 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.OpenSpace;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +34,11 @@ public final class SldOpenSpace extends SldAdvCard {
     // identifies all the players with no power (only the ones with no engines and no double engines/no batteries to
     // activate them), they will be removed by the finish method (still to be implemented)
     // sets the card state to ENGINE_CHOICE (to accept calls by the players)
-    public void init(Game game) {
-        FlyBoard board = game.getFlyboard();
+    public void init(GameServer game) {
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }
+        FlyBoard board = game.getFlyboard();
         noPowerPlayers = board.getScoreBoard().stream()
                 .filter(player ->
                         player.getShipBoard().getBaseEnginePower() == 0 &&
@@ -49,13 +49,13 @@ public final class SldOpenSpace extends SldAdvCard {
         this.allowedPlayers = new ArrayList<>(board.getScoreBoard());
         allowedPlayers.removeAll(noPowerPlayers);
         this.playerIterator = allowedPlayers.iterator();
+
         if (this.playerIterator.hasNext()) {
             actualPlayer = this.playerIterator.next();
+            setState(CardState.ENGINE_CHOICE, game);
         } else {
             throw new RuntimeException("No allowed players");
         }
-//        board.setState(GameState.CARD_EFFECT);
-        this.state = CardState.ENGINE_CHOICE;
     }
 
     // must be called right after init with the right player
@@ -85,12 +85,13 @@ public final class SldOpenSpace extends SldAdvCard {
 //            player.getShipBoard().removeEnergy(numDoubleEngines);
             int base = player.getShipBoard().getBaseEnginePower();
             int power = base + numDoubleEngines * 2;
+
             board.moveDays(actualPlayer, power);
             if (playerIterator.hasNext()) {
                 actualPlayer = playerIterator.next();
-                this.state = CardState.ENGINE_CHOICE;
+                setState(CardState.ENGINE_CHOICE, game);
             } else {
-                this.state = CardState.FINALIZED;
+                setState(CardState.FINALIZED, game);
             }
 
         } else {

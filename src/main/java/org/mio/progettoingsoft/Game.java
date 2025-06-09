@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 public class Game implements GameServer, GameClient {
     private FlyBoard flyboard;
-    private final int idGame;
+    private int idGame;
     private GameMode mode;
     private int numPlayers;
 
@@ -132,6 +132,11 @@ public class Game implements GameServer, GameClient {
 //
 //        }
 //    }
+
+    @Override
+    public GameController getController(){
+        return gameController;
+    }
 
 
 

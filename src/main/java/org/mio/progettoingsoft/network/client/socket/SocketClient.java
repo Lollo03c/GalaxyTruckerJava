@@ -12,6 +12,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SocketClient implements Client {
@@ -23,6 +25,8 @@ public class SocketClient implements Client {
     private final ConnectionInfo connectionInfo;
 
     private final BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
+
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public SocketClient(ConnectionInfo connectionInfo) throws RemoteException {
         controller = ClientController.getInstance();
@@ -116,6 +120,10 @@ public class SocketClient implements Client {
                     case AvailablePlacesMessage availablePlacesMessage -> {
                         controller.setAvailablePlaces(availablePlacesMessage.getAvailablePlaces());
                     }
+
+                    case AdvancePlayerMessage advancePlayerMessage ->
+                        executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps()));
+
                     default -> {
                     }
                 }

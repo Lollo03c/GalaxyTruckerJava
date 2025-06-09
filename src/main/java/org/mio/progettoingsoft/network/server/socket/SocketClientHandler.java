@@ -154,4 +154,10 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         sendMessage(message);
     }
 
+    @Override
+    public void advancePlayer(String nickname, int steps) throws IOException{
+        Message message = new AdvancePlayerMessage(0, nickname, steps);
+        sendMessage(message);
+    }
+
 }

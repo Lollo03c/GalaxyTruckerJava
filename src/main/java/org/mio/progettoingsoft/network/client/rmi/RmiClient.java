@@ -153,4 +153,8 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
             controller.setAvailablePlaces(availablePlaces);
         });
     }
+
+    public void advancePlayer(String nickname, int steps) throws RemoteException{
+        executors.submit(() -> controller.advancePlayer(nickname, steps));
+    }
 }
