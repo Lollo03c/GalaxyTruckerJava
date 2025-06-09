@@ -113,7 +113,9 @@ public class SocketClient implements Client {
                             case UNBOOK -> controller.addAvailableDeck(deckMessage.getDeckNumber());
                         }
                     }
-
+                    case AvailablePlacesMessage availablePlacesMessage -> {
+                        controller.setAvailablePlaces(availablePlacesMessage.getAvailablePlaces());
+                    }
                     default -> {
                     }
                 }

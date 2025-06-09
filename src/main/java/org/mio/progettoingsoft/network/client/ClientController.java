@@ -14,6 +14,7 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,10 +30,10 @@ public class ClientController {
         this.connectionInfo = connectionInfo;
     }
 
-    public static void create(ConnectionInfo connectionInfo){
-        if(instance == null){
+    public static void create(ConnectionInfo connectionInfo) {
+        if (instance == null) {
             instance = new ClientController(connectionInfo);
-        }else{
+        } else {
             throw new RuntimeException("Client controller already exists");
         }
     }
@@ -47,6 +48,7 @@ public class ClientController {
     private final Object stateLock = new Object();
     private final Object flyboardLock = new Object();
     private final Object shipboardLock = new Object();
+    private final Object listLock = new Object();
     FlyBoard flyBoard;
     ShipBoard shipBoard;
 
@@ -56,6 +58,8 @@ public class ClientController {
     private int inHandComponent;
     private int inHandDeck;
     private int tmpRotation;
+
+    private List<Integer> availablePlacesOnCircuit;
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
@@ -75,6 +79,7 @@ public class ClientController {
         }
         if (oldState != state) {
             support.firePropertyChange("gameState", oldState, state);
+            Logger.debug(oldState + " -> " + state);
         }
     }
 
@@ -84,17 +89,22 @@ public class ClientController {
         }
     }
 
-    public void applyStardust(SldStardust card){
+    public void applyStardust(SldStardust card) {
         try {
-            server.applyStardust(idGame, nickname,card);
-        }
-        catch (Exception e) {
+            server.applyStardust(idGame, nickname, card);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public String getNickname() {
         return nickname;
+    }
+
+    public List<Integer> getAvailablePlacesOnCircuit() {
+        synchronized (listLock) {
+            return new ArrayList<>(availablePlacesOnCircuit);
+        }
     }
 
     public Object getStateLock() {
@@ -121,7 +131,7 @@ public class ClientController {
         return flyboardLock;
     }
 
-    public Object getShipboardLock(){
+    public Object getShipboardLock() {
         return shipboardLock;
     }
 
@@ -138,14 +148,14 @@ public class ClientController {
     }
 
     public void increaseTmpRotation() {
-        if(tmpRotation < 3){
+        if (tmpRotation < 3) {
             tmpRotation++;
-        }else {
+        } else {
             tmpRotation = 0;
         }
     }
 
-    public void resetTmpRotation(){
+    public void resetTmpRotation() {
         tmpRotation = 0;
 
     }
@@ -182,7 +192,7 @@ public class ClientController {
                 player.setHousingColor(color);
             }
             shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-            if(mode == GameMode.NORMAL){
+            if (mode == GameMode.NORMAL) {
                 flyBoard.setLittleDecks(decks);
             }
         }
@@ -217,6 +227,12 @@ public class ClientController {
     public void removeDeck(Integer deckNumber) {
         synchronized (flyBoard.getAvailableDecks()) {
             flyBoard.getAvailableDecks().remove(deckNumber);
+        }
+    }
+
+    public void setAvailablePlaces(List<Integer> availablePlaces) {
+        synchronized (listLock) {
+            this.availablePlacesOnCircuit = availablePlaces;
         }
     }
 
@@ -260,6 +276,7 @@ public class ClientController {
     }
 
     public void handleBuildingShip(int chosen) {
+        System.out.println("choice : " + chosen);
         if (chosen == 1) {
             try {
                 server.getCoveredComponent(idGame, nickname);
@@ -270,14 +287,19 @@ public class ClientController {
             setState(GameState.DRAW_UNCOVERED_COMPONENTS);
         } else if (chosen == 3) {
             setState(GameState.VIEW_SHIP_BUILDING);
-        }
-        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.NORMAL)) {
+        } else if (chosen == 4 && flyBoard.getMode().equals(GameMode.NORMAL)) {
             setState(GameState.VIEW_DECKS_LIST);
-        }
-        else if (chosen == 4 && flyBoard.getMode().equals(GameMode.EASY)){
+        } else if (chosen == 4 && flyBoard.getMode().equals(GameMode.EASY)) {
             //server.playerReady()
             setState(GameState.END_BUILDING);
-
+        } else if (chosen == 5) {
+            try {
+                server.endBuild(idGame, nickname);
+                System.out.println("ho modificato");
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -310,7 +332,7 @@ public class ClientController {
         }
     }
 
-    public void bookComponent(){
+    public void bookComponent() {
         try {
             flyBoard.getPlayerByUsername(nickname).getShipBoard().addBookedComponent(inHandComponent);
             setState(GameState.BUILDING_SHIP);
@@ -319,7 +341,7 @@ public class ClientController {
         }
     }
 
-    public void bookComponent(int posToRemove){
+    public void bookComponent(int posToRemove) {
         int idComp = shipBoard.getBookedComponents().get(posToRemove).get();
 
         shipBoard.swapBookComponent(inHandComponent, posToRemove);
@@ -352,4 +374,19 @@ public class ClientController {
         }
     }
 
+    public void endBuild() {
+        try {
+            server.endBuild(idGame, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void choosePlace(int place) {
+        try {
+            server.choosePlace(idGame, nickname, place);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

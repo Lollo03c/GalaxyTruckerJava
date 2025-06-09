@@ -9,6 +9,8 @@ import org.mio.progettoingsoft.network.server.socket.VirtualServerSocket;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.rmi.RemoteException;
+import java.util.List;
 
 public class SocketServerHandler implements VirtualServerSocket {
     private final ObjectOutputStream out;
@@ -92,4 +94,28 @@ public class SocketServerHandler implements VirtualServerSocket {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void endBuild(int idGame, String nickname) throws Exception{
+        Message message = new EndBuildMessage(idGame, nickname);
+        try{
+            sendMessage(message);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void choosePlace(int idGame, String nickname, int place) throws RemoteException {
+        Message message = new ChoosePlacementMessage( idGame, nickname,  place);
+        try{
+            sendMessage(message);
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        //controller.choosePlace(idGame, nickname, place);
+    }
+
 }

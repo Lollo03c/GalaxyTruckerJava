@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft.views.tui;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+import javafx.scene.control.Button;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
@@ -62,8 +64,7 @@ public class Tui implements View {
         switch (state) {
             case START -> printConnectionMenu();
             case NICKNAME -> askNickname();
-            case WAITING -> {
-            }
+            case WAITING -> {}
 
             case GAME_MODE -> printGameModeMenu();
             case GAME_START -> {
@@ -102,9 +103,13 @@ public class Tui implements View {
             case VIEW_DECKS_LIST -> viewDecksList();
 
             case SWITCH_BOOKED -> switchBookedComponents();
-
+            case CHOOSE_POSITION -> {
+                System.out.println("Choose position");
+                printChoosePosition();
+            }
             case END_BUILDING -> {
-                System.out.println("Waitint for other players" + RESET);
+                System.out.println("Waiting for other players" + RESET);
+
             }
 
             case UNABLE_UNCOVERED_COMPONENT -> {
@@ -154,6 +159,29 @@ public class Tui implements View {
         boolean isRmi = choice == 1;
         controller.connectToServer(isRmi);
         clearConsole();
+    }
+
+
+    private void printChoosePosition(){
+        List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
+        System.out.println("In which of these available position do you want to start ?" + availablePlaces);
+        for ( Integer i : availablePlaces){
+            System.out.println(i);
+        }
+        String input = "";
+        int choice = -1;
+        input = scanner.nextLine();
+
+        try {
+            choice = Integer.parseInt(input);
+
+            if (!availablePlaces.contains(choice)) {
+                System.out.println(RED + "Invalid choice!" + RESET);
+            }
+        } catch (Exception e) {
+            System.out.println(RED + "Invalid choice!" + RESET);
+        }
+        controller.choosePlace(choice);
     }
 
     /**
@@ -246,17 +274,17 @@ public class Tui implements View {
             System.out.println(BLUE + "It's time to build your ship!" + RESET);
             firstBuilding = false;
         }
-
-
         int choice = -1;
         String input = "";
 
-        while (choice < 1 || choice > 4) {
+        while (choice < 1 || choice > 5) {
             System.out.println("1 : Pick covered component");
             System.out.println("2 : Pick uncovered component");
             System.out.println("3 : View other player's ship");
-            if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL))
+            if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL)) {
                 System.out.println("4 : Look at decks");
+                System.out.println("5 : End ship building");
+            }
             else {
                 System.out.println("4 : end building ship");
             }
@@ -267,14 +295,14 @@ public class Tui implements View {
             try {
                 choice = Integer.parseInt(input);
 
-                if (choice < 1 || choice > 4) {
+                if (choice < 1 || choice > 5) {
                     System.out.println(RED + "Invalid choice!" + RESET);
                 }
             } catch (Exception e) {
                 System.out.println(RED + "Invalid choice!" + RESET);
             }
-        }
 
+        }
         controller.handleBuildingShip(choice);
         clearConsole();
     }

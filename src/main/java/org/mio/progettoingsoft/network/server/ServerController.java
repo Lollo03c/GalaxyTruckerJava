@@ -8,18 +8,21 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ServerController {
     /**
      * SINGLETON IMPLEMENTATION
-     * */
+     */
     private static ServerController instance;
 
     public static ServerController getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new ServerController();
         }
         return instance;
@@ -36,7 +39,7 @@ public class ServerController {
         gameManager.addPlayerToGame(idClient, nickname);
     }
 
-    public void handleGameInfo(GameInfo gameInfo, String nickname){
+    public void handleGameInfo(GameInfo gameInfo, String nickname) {
         GameManager gameManager = GameManager.getInstance();
         GameServer game = gameManager.getWaitingGame();
         game.setupGame(gameInfo.mode(), gameInfo.nPlayers());
@@ -47,7 +50,7 @@ public class ServerController {
         }
     }
 
-    public void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations){
+    public void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) {
         GameManager gameManager = GameManager.getInstance();
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
 
@@ -56,8 +59,8 @@ public class ServerController {
 
         Logger.debug(nickname + " added component " + idComp);
 
-        for (Player player : game.getFlyboard().getPlayers()){
-            if (!player.getNickname().equals(nickname)){
+        for (Player player : game.getFlyboard().getPlayers()) {
+            if (!player.getNickname().equals(nickname)) {
                 VirtualClient client = game.getClients().get(player.getNickname());
 
                 try {
@@ -69,7 +72,7 @@ public class ServerController {
         }
     }
 
-    public void getCoveredComponent(int idGame, String nickname){
+    public void getCoveredComponent(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
@@ -83,22 +86,21 @@ public class ServerController {
         }
     }
 
-    public void discardComponent(int idGame, int idComponent){
+    public void discardComponent(int idGame, int idComponent) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         flyBoard.addUncoveredComponent(idComponent);
 
-        for (VirtualClient client : game.getClients().values()){
+        for (VirtualClient client : game.getClients().values()) {
             try {
                 client.addUncoveredComponent(idComponent);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
     }
 
-    public void applyStardust(int idGame, SldStardust card){
+    public void applyStardust(int idGame, SldStardust card) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyboard = game.getFlyboard();
         card.applyEffect(flyboard);
@@ -117,7 +119,7 @@ public class ServerController {
 
     }
 
-    public void drawUncovered(int idGame, String nickname, Integer idComponent){
+    public void drawUncovered(int idGame, String nickname, Integer idComponent) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
@@ -135,12 +137,10 @@ public class ServerController {
             try {
                 game.getClients().get(nickname).setInHandComponent(idComponent);
                 game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-        else{
+        } else {
             try {
                 game.getClients().get(nickname).setState(GameState.UNABLE_UNCOVERED_COMPONENT);
             } catch (Exception e) {
@@ -149,36 +149,34 @@ public class ServerController {
         }
     }
 
-    public void bookDeck(int idGame, String nickname, Integer deckNumber){
+    public void bookDeck(int idGame, String nickname, Integer deckNumber) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
-        synchronized (flyBoard.getAvailableDecks()){
+        synchronized (flyBoard.getAvailableDecks()) {
             List<Integer> availableDecks = flyBoard.getAvailableDecks();
 
             boolean removed = availableDecks.remove(deckNumber);
 
-            if (removed){
-                for (VirtualClient client : game.getClients().values()){
-                    try{
+            if (removed) {
+                for (VirtualClient client : game.getClients().values()) {
+                    try {
                         client.removeDeck(deckNumber);
                         Logger.debug("removed deck " + deckNumber + " from client " + client);
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
 
-                try{
+                try {
                     game.getClients().get(nickname).setInHandDeck(deckNumber);
                     game.getClients().get(nickname).setState(GameState.VIEW_DECK);
                     Logger.debug("Set deck " + deckNumber + " to " + nickname);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            }
-            else{
-                try{
+            } else {
+                try {
                     game.getClients().get(nickname).setState(GameState.UNABLE_DECK);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -187,20 +185,19 @@ public class ServerController {
         }
     }
 
-    public void freeDeck(int idGame, String nickname, Integer deckNumber){
+    public void freeDeck(int idGame, String nickname, Integer deckNumber) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
-        synchronized (flyBoard.getAvailableDecks()){
+        synchronized (flyBoard.getAvailableDecks()) {
             List<Integer> availableDecks = flyBoard.getAvailableDecks();
             availableDecks.add(deckNumber);
             Logger.debug("Free deck " + deckNumber + ".");
 
-            for (VirtualClient client : game.getClients().values()){
+            for (VirtualClient client : game.getClients().values()) {
                 try {
                     client.addAvailableDeck(deckNumber);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -210,6 +207,41 @@ public class ServerController {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public void endBuild(int idGame, String nickname) {
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        List<Integer> availablePlaces = new ArrayList<>();
+        synchronized (flyBoard.getCircuit()) {
+            List<Optional<Player>> circ = flyBoard.getCircuit();
+            for (Integer i : new ArrayList<>(List.of(0, 1, 3, 6))) {
+                if (circ.get(i).isEmpty()) {
+                    availablePlaces.add(i);
+                }
+            }
+        }
+        VirtualClient client = game.getClients().get(nickname);
+        try {
+            client.setAvailablePlaces(availablePlaces);
+            client.setState(GameState.CHOOSE_POSITION);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void choosePlace(int idGame, String nickname, int place) {
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        synchronized (flyBoard.getCircuit()){
+            Logger.error("NOT IMPLEMENTED: choose place " + place);
+        }
+        VirtualClient client = game.getClients().get(nickname);
+        try {
+            client.setState(GameState.END_BUILDING);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -147,4 +147,11 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         Message message = new DeckMessage(0, "", DeckMessage.Action.UNBOOK, deckNumber);
         sendMessage(message);
     }
+
+    @Override
+    public void setAvailablePlaces(List<Integer> availablePlaces) throws Exception{
+        Message message = new AvailablePlacesMessage(0, "", availablePlaces);
+        sendMessage(message);
+    }
+
 }

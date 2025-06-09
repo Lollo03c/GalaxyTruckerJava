@@ -59,6 +59,12 @@ public class ServerMessageHandler implements Runnable {
                     case StardustMessage stardustMessage -> {
                         serverController.applyStardust(stardustMessage.getGameId(), stardustMessage.getCard());
                     }
+                    case EndBuildMessage endBuildMessage -> {
+                        serverController.endBuild(endBuildMessage.getGameId(), endBuildMessage.getNickname());
+                    }
+                    case ChoosePlacementMessage choosePlacementMessage -> {
+                        serverController.choosePlace(choosePlacementMessage.getGameId(), choosePlacementMessage.getNickname(), choosePlacementMessage.getPlace());
+                    }
                     default -> {}
                 }
             } catch (InterruptedException e) {

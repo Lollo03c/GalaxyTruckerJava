@@ -90,6 +90,16 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
+    public void endBuild(int idGame, String nickname) throws RemoteException {
+        controller.endBuild(idGame, nickname);
+    }
+
+    @Override
+    public void choosePlace(int idGame, String nickname, int place) throws RemoteException {
+        controller.choosePlace(idGame, nickname, place);
+    }
+
+    @Override
     public void applyStardust(int idGame, String nickname, SldStardust card) throws RemoteException {
         controller.applyStardust(idGame, card);
     }

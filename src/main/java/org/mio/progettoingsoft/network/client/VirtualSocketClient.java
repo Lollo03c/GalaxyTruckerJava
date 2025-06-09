@@ -13,6 +13,9 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
+/*NOT USED CLASS*/
+
+/*
 public class VirtualSocketClient implements VirtualClient {
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
@@ -35,7 +38,7 @@ public class VirtualSocketClient implements VirtualClient {
 
     /**
      * Metodi derivati da VirtualClient, ovvero i metodi che vengono chiamati dal server
-     */
+
 
     @Override
     public void ping(String msg) throws RemoteException {
@@ -120,3 +123,5 @@ public class VirtualSocketClient implements VirtualClient {
         sendMessage(message);
     }
 }
+
+*/

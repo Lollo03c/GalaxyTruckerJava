@@ -147,4 +147,10 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     public void addAvailableDeck(int deckNumber){
         executors.submit(() -> controller.addAvailableDeck(deckNumber));
     }
+
+    public void setAvailablePlaces(List<Integer> availablePlaces){
+        executors.submit(() -> {
+            controller.setAvailablePlaces(availablePlaces);
+        });
+    }
 }

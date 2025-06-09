@@ -20,6 +20,7 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
+import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
@@ -42,7 +43,8 @@ public class Gui extends Application implements View {
     private static final String TILES_REL_PATH = "tiles/GT-new_tiles_16_for web";
     private static final String CARDBOARDS_REL_PATH = "cardboards/";
     private static final String ADC_CARD_REL_PATH = "advCards/GT-cards_";
-    private static final String IMG_EXTENSION = ".jpg";
+    private static final String IMG_JPG_EXTENSION = ".jpg";
+    private static final String IMG_PNG_EXTENSION = ".png";
 
     /*
      * utility fields used for the scene building
@@ -84,8 +86,10 @@ public class Gui extends Application implements View {
     private GridPane shipboardGrid;
     private Button backButton;
     private Label hintLabel;
-    // modal stage
+    // modal stage for other player ship displaying
     private Stage otherPlayerShipStage;
+    // modal stage for position choosing
+    private Stage choosePositionStage;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -165,6 +169,9 @@ public class Gui extends Application implements View {
             case SWITCH_BOOKED -> switchBookedComponentsView();
             case VIEW_DECK -> inspectDeckView(true);
             case UNABLE_DECK -> inspectDeckView(false);
+            case CHOOSE_POSITION -> choosePositionView(false);
+            case WRONG_POSITION -> choosePositionView(true);
+            case END_BUILDING -> waitingForAdventureStartView();
 
             default -> genericErrorView(state);
         }
@@ -374,8 +381,9 @@ public class Gui extends Application implements View {
             hourglassBox.setPadding(new Insets(20));
             hourglassBox.setAlignment(Pos.CENTER);
             HBox.setHgrow(hourglassBox, Priority.ALWAYS);
-            Label hourglassLabel = new Label("Hourglass");
-            hourglassBox.getChildren().addAll(hourglassLabel);
+            Button endBuildBtn = new Button("Ship Ready!");
+            endBuildBtn.setOnAction(event -> endBuild());
+            hourglassBox.getChildren().addAll(endBuildBtn);
 
             shipTopBox.getChildren().addAll(shipTilesDeckBox, shipAdvDeckBox, hourglassBox);
             shipViewBorderPane.setTop(shipTopBox);
@@ -398,7 +406,7 @@ public class Gui extends Application implements View {
                     Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
                     butt.setTextAlignment(TextAlignment.CENTER);
                     butt.setWrapText(true);
-                    butt.setOnAction(event -> lookAtOtherShipboard(player.getNickname()));
+                    butt.setOnAction(event -> lookAtOtherShipboardView(player.getNickname()));
                     viewOtherPlayersBox.getChildren().add(butt);
                 }
             }
@@ -410,7 +418,7 @@ public class Gui extends Application implements View {
             inHandBox.setAlignment(Pos.CENTER);
 
             /* Component */
-            String tmpResourcePath = IMG_PATH + TILES_REL_PATH + "157" + IMG_EXTENSION;
+            String tmpResourcePath = IMG_PATH + TILES_REL_PATH + "157" + IMG_JPG_EXTENSION;
             Image inHandImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             inHandImageView = new ImageView(inHandImage);
             inHandBox.getChildren().addAll(inHandImageView);
@@ -452,7 +460,7 @@ public class Gui extends Application implements View {
             shipboardGrid = new GridPane();
             shipboardGrid.setAlignment(Pos.CENTER);
             shipboardGrid.setPadding(shipPadding);
-            tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-1b" + IMG_EXTENSION;
+            tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-1b" + IMG_JPG_EXTENSION;
             Image shipboardImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             shipboardGrid.setBackground(
                     new Background(
@@ -474,7 +482,7 @@ public class Gui extends Application implements View {
                 if (matrix[2][3].isPresent())
                     cabinId = matrix[2][3].get().getId();
             }
-            tmpResourcePath = IMG_PATH + TILES_REL_PATH + cabinId + IMG_EXTENSION;
+            tmpResourcePath = IMG_PATH + TILES_REL_PATH + cabinId + IMG_JPG_EXTENSION;
             /*
              * design of cells: every enabled cell (both ship slots and book slots) has a stackPane which contains an
              * imageView where the component image will be placed
@@ -549,7 +557,7 @@ public class Gui extends Application implements View {
             firstBuilding = false;
         } else {
             // else it is necessary only to reinitialize some view components
-            String tmpResourcePath = IMG_PATH + TILES_REL_PATH + "157" + IMG_EXTENSION;
+            String tmpResourcePath = IMG_PATH + TILES_REL_PATH + "157" + IMG_JPG_EXTENSION;
             Image inHandImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             inHandImageView.setImage(inHandImage);
             inHandImageView.setRotate(0);
@@ -583,7 +591,7 @@ public class Gui extends Application implements View {
         shipViewBorderPane.setDisable(true);
         Component inHand = controller.getInHandComponentObject();
         int idComponent = inHand.getId();
-        String tmpResourcePath = IMG_PATH + TILES_REL_PATH + (idComponent != 1 ? idComponent : "") + IMG_EXTENSION;
+        String tmpResourcePath = IMG_PATH + TILES_REL_PATH + (idComponent != 1 ? idComponent : "") + IMG_JPG_EXTENSION;
         Image image = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
         shipViewBorderPane.setDisable(false);
         shipTilesDeckBox.setDisable(true);
@@ -618,7 +626,7 @@ public class Gui extends Application implements View {
         uncoveredComponentsTilePane = new TilePane();
         if (!componentIdList.isEmpty()) {
             for (Integer componentId : componentIdList) {
-                String tmpResourcePath = IMG_PATH + TILES_REL_PATH + (componentId != 1 ? componentId : "") + IMG_EXTENSION;
+                String tmpResourcePath = IMG_PATH + TILES_REL_PATH + (componentId != 1 ? componentId : "") + IMG_JPG_EXTENSION;
                 Image tileImage = new Image(this.getClass().getResource(tmpResourcePath).toExternalForm());
                 ImageView tileImageView = new ImageView(tileImage);
                 tileImageView.setFitHeight(100);
@@ -710,7 +718,7 @@ public class Gui extends Application implements View {
                 advList = new ArrayList<>(controller.getFlyBoard().getAdvDeckByIndex(controller.getInHandDeck()));
             }
             for (Integer advCardId : advList) {
-                String tmpResourcePath = IMG_PATH + ADC_CARD_REL_PATH + advCardId + IMG_EXTENSION;
+                String tmpResourcePath = IMG_PATH + ADC_CARD_REL_PATH + advCardId + IMG_JPG_EXTENSION;
                 ImageView imgView = new ImageView(new Image(this.getClass().getResource(tmpResourcePath).toExternalForm()));
                 imgView.setFitHeight(250);
                 imgView.setPreserveRatio(true);
@@ -741,7 +749,7 @@ public class Gui extends Application implements View {
      * displays a modal window that shows the requested player's shipboard, the view is rendered the same way as the user's one
      * @param nickname: nickname of the chosen player
      */
-    private void lookAtOtherShipboard(String nickname) {
+    private void lookAtOtherShipboardView(String nickname) {
         Map<Cordinate, ImageView> otherPlayerShipCordToImg = new HashMap<>();
         otherPlayerShipStage = new Stage();
         otherPlayerShipStage.initModality(Modality.APPLICATION_MODAL);
@@ -756,7 +764,7 @@ public class Gui extends Application implements View {
         GridPane otherPlayerShipGrid = new GridPane();
         otherPlayerShipGrid.setAlignment(Pos.CENTER);
         otherPlayerShipGrid.setPadding(shipPadding);
-        String tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-1b" + IMG_EXTENSION;
+        String tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-1b" + IMG_JPG_EXTENSION;
         Image shipboardImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
         otherPlayerShipGrid.setBackground(
                 new Background(
@@ -807,6 +815,55 @@ public class Gui extends Application implements View {
             bookedComponents = new ArrayList<>(controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getBookedComponents());
         }
         fillShipboard(idMatrix, rotationsMatrix, bookedComponents, otherPlayerShipCordToImg);
+    }
+
+    private void choosePositionView(boolean isError){
+        choosePositionStage = new Stage();
+        choosePositionStage.initModality(Modality.APPLICATION_MODAL);
+
+        VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(10, 10, 10, 10));
+
+        if(isError){
+            Label errorLabel = new Label("Previously chosen position is no more available!");
+            box.getChildren().add(errorLabel);
+        }
+
+        String tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-5" + IMG_PNG_EXTENSION;
+        Logger.debug(tmpResourcePath);
+        Image circuitImage = new Image(this.getClass().getResource(tmpResourcePath).toExternalForm());
+        ImageView circuitImageView = new ImageView(circuitImage);
+
+        Label choosePlaceLabel = new Label("Choose the position you want to occupy");
+
+        HBox choosePlaceBox = new HBox();
+        choosePlaceBox.setAlignment(Pos.CENTER);
+        choosePlaceBox.setPadding(new Insets(10, 10, 10, 10));
+        List<Integer> avlPlaces = controller.getAvailablePlacesOnCircuit();
+        for(Integer i : avlPlaces){
+            String text = "Position n. ";
+            switch(i){
+                case 0 -> text += 4;
+                case 1 -> text += 3;
+                case 3 -> text += 2;
+                case 6 -> text += 1;
+            }
+            Button btn = new Button(text);
+            btn.setOnAction(e -> choosePlace(i));
+            choosePlaceBox.getChildren().add(btn);
+        }
+
+        box.getChildren().addAll(circuitImageView, choosePlaceLabel, choosePlaceBox);
+        stage.setScene(new Scene(box));
+        stage.show();
+    }
+
+    private void waitingForAdventureStartView(){
+        root.getChildren().clear();
+        VBox box = new VBox();
+        box.setAlignment(Pos.CENTER);
+        box.getChildren().add(new Label("Waiting for adventure start"));
     }
 
     /*
@@ -886,6 +943,15 @@ public class Gui extends Application implements View {
         }
     }
 
+    private void endBuild(){
+        controller.endBuild();
+    }
+
+    private void choosePlace(int place){
+        choosePositionStage.close();
+        controller.choosePlace(place);
+    }
+
     /*
      * utility methods
      */
@@ -902,17 +968,17 @@ public class Gui extends Application implements View {
         for (Cordinate cord : map.keySet()) {
             if (!cord.equals(new Cordinate(0, 5)) && !cord.equals(new Cordinate(0, 6))) {
                 if (idMatrix[cord.getRow()][cord.getColumn()].isPresent() && rotationsMatrix[cord.getRow()][cord.getColumn()].isPresent()) {
-                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + idMatrix[cord.getRow()][cord.getColumn()].get() + IMG_EXTENSION;
+                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + idMatrix[cord.getRow()][cord.getColumn()].get() + IMG_JPG_EXTENSION;
                     map.get(cord).setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
                     map.get(cord).setRotate(rotationsMatrix[cord.getRow()][cord.getColumn()].get() * 90);
                 }
             } else {
                 if (cord.equals(new Cordinate(0, 5)) && bookedComponents.get(0).isPresent()) {
-                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + bookedComponents.get(0).get() + IMG_EXTENSION;
+                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + bookedComponents.get(0).get() + IMG_JPG_EXTENSION;
                     Image img = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
                     map.get(cord).setImage(img);
                 } else if (cord.equals(new Cordinate(0, 6)) && bookedComponents.get(1).isPresent()) {
-                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + bookedComponents.get(1).get() + IMG_EXTENSION;
+                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + bookedComponents.get(1).get() + IMG_JPG_EXTENSION;
                     Image img = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
                     map.get(cord).setImage(img);
                 }

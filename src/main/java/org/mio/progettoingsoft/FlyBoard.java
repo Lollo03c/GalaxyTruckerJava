@@ -212,31 +212,37 @@ public abstract class FlyBoard implements FlyBoardServer {
 
 
     // adds a player to the circuit: it must be used ONLY for initialization
-//    public void addPlayerToCircuit(String username, int index){
-//        if(index > getCircuit().size() || index < 0){
-//            throw new BadParameterException("Index out of circuit range");
-//        }
-//        if(this.getPlayerByUsername(username).isEmpty()){
-//            throw new RuntimeException("This player doesn't exist");
-//        }
-//        if(getCircuit().get(index).isPresent()){
-//            throw new RuntimeException("This place is occupied");
-//        }
-//        if(this.getPlayerByUsername(username).get().isRunning()){
-//            throw new RuntimeException("This player is already running");
-//        }
-//        Player p = this.getPlayerByUsername(username).get();
-//        this.getCircuit().add(index, Optional.of(p));
-//        int numPlayersAhead = 0;
-//        for(int i = index + 1; i < getCircuit().size(); i++){
-//            if(getCircuit().get(i).isPresent()){
-//                numPlayersAhead++;
-//            }
-//        }
-//        this.getScoreBoard().remove(p);
-//        this.getScoreBoard().add(numPlayersAhead, p);
-//        this.getPlayerByUsername(username).get().setRunning(true);
-//    }
+    public void addPlayerToCircuit(String nickname, int index){
+        if(index > getCircuit().size() || index < 0){
+            throw new BadParameterException("Index out of circuit range");
+        }
+
+        Player player;
+        try{
+            player = getPlayerByUsername(nickname);
+        } catch (IncorrectFlyBoardException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+        if(getCircuit().get(index).isPresent()){
+            throw new RuntimeException("This place is occupied");
+        }
+        if(player.isRunning()){
+            throw new RuntimeException("This player is already running");
+        }
+        this.getCircuit().add(index, Optional.of(player));
+        int numPlayersAhead = 0;
+        for(int i = index + 1; i < getCircuit().size(); i++){
+            if(getCircuit().get(i).isPresent()){
+                numPlayersAhead++;
+            }
+        }
+        this.getScoreBoard().remove(player);
+        this.getScoreBoard().add(numPlayersAhead, player);
+        player.setRunning(true);
+    }
 
     //    private  List<Optional<Player>> circuit;
     //    list da 24 celle

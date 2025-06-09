@@ -54,4 +54,6 @@ public interface VirtualClient extends Remote {
     void removeDeck(Integer deckNumber) throws Exception;
     void setInHandDeck(int deck) throws Exception;
     void addAvailableDeck(int deckNumber) throws Exception;
+
+    void setAvailablePlaces(List<Integer> availablePlaces) throws Exception;
 }
