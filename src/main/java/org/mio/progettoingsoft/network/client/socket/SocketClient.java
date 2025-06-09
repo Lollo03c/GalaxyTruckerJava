@@ -78,6 +78,10 @@ public class SocketClient implements Client {
                         controller.setState(stateMessage.getState());
                     }
 
+                    case CardStateMessage cardStateMessage ->{
+                        executor.submit(() -> controller.setCardState(cardStateMessage.getState()));
+                    }
+
                     case NicknameMessage nicknameMessage -> {
                         controller.setNickname(nicknameMessage.getNickname());
                     }
@@ -124,6 +128,7 @@ public class SocketClient implements Client {
                     case AdvancePlayerMessage advancePlayerMessage ->
                         executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps()));
 
+                    case AddCreditsMessage addCreditsMessage -> executor.submit(() -> controller.addCredits(addCreditsMessage.getCredits()));
                     default -> {
                     }
                 }

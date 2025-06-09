@@ -133,6 +133,8 @@ public class Tui implements View {
             }
 
             case ENGINE_CHOICE -> engineChoice();
+
+            case CREW_REMOVE_CHOICE -> crewRemove();
         }
     }
 
@@ -548,6 +550,23 @@ public class Tui implements View {
         //todo da controllare l'input
 
         controller.activateDoubleEngine(activated);
+
+    }
+
+    private void crewRemove(){
+        SldAdvCard card = controller.getPlayedCard();
+        System.out.println("Do you want to accept the card effect (y/n) : " );
+
+        String choice = scanner.nextLine();
+        //todo controllo input
+
+        if (choice.equals("n")){
+
+            //todo comunicare al server di passare al prossimo player
+            return;
+        }
+
+
 
     }
 

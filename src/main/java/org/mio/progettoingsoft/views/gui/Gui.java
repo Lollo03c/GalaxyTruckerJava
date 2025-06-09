@@ -931,6 +931,9 @@ public class Gui extends Application implements View {
             switch (state) {
                 case ADD_COMPONENT -> {
                     if (!((i == 0) && ((j == 5) || (j == 6))))
+                        Logger.debug("ComponentId :" + controller.getInHandComponent());
+                        Logger.debug("Rotation : " + controller.getTmpRotation());
+                        Logger.debug("Cordinate : " + "(" + i + ", " + j + ")");
                         controller.addComponent(new Cordinate(i, j), controller.getTmpRotation());
                 }
                 case SWITCH_BOOKED -> {

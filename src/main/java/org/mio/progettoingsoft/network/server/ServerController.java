@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
@@ -253,6 +254,24 @@ public class ServerController {
         }
     }
 
+    public void drawCard(int idGame){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
+        SldAdvCard card = flyBoard.drawSldAdvCard();
+        for (VirtualClient client : game.getClients().values()){
+            try {
+                client.setPlayedCard(card.getId());
+                //todo da settare lo stato al client
+            }
+            catch (Exception e){
+
+            }
+        }
+
+        card.init(game);
+    }
+
     public void activateDoubleEngine(int idGame, String  nickname, int number){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -262,11 +281,8 @@ public class ServerController {
 
         switch (card){
             case SldOpenSpace openSpace -> {
-                openSpace.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), number);
-
-                int nSteps = 2 * number + flyBoard.getPlayerByUsername(nickname).getShipBoard().getBaseEnginePower();
-
                 //nofica l'avanzamento del player agli avversari
+                int nSteps = 2 * number + flyBoard.getPlayerByUsername(nickname).getShipBoard().getBaseEnginePower();
                 for (VirtualClient client : game.getClients().values()){
                     try {
                         client.advancePlayer(nickname, nSteps);
@@ -274,6 +290,40 @@ public class ServerController {
                         throw new RuntimeException(e);
                     }
                 }
+
+                //passa al prossimo giocatore
+                openSpace.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), number);
+            }
+
+            default -> {
+                Logger.error("carta non valida per effetto activeDoubleEngine");
+            }
+        }
+    }
+
+    public void crewLost(int idGame, String nickname, List<Cordinate> housingCordinates){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        SldAdvCard card = flyBoard.getPlayedCard();
+
+        switch (card){
+            case SldAbandonedShip abandonedShip -> {
+                for (String nick : game.getClients().keySet()){
+                    VirtualClient client = game.getClients().get(nick);
+
+                    try {
+                        client.crewLost(nickname, housingCordinates);
+                        client.advancePlayer(nickname, -card.getDaysLost());
+
+                        if (nick.equals(nickname))
+                            client.addCredits(card.getCredits());
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                abandonedShip.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), true, housingCordinates);
             }
 
             default -> {

@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.client.rmi;
 
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.Client;
@@ -99,6 +100,11 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
+    public void setCardState(CardState state) throws RemoteException{
+        executors.submit(() -> controller.setCardState(state));
+    }
+
+    @Override
     public void setFlyBoard(GameMode mode, Map<String, HousingColor> players, List<List<Integer>> decks) throws RemoteException{
         executors.submit(() ->
                 controller.setFlyBoard(mode, players, decks)
@@ -157,4 +163,19 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     public void advancePlayer(String nickname, int steps) throws RemoteException{
         executors.submit(() -> controller.advancePlayer(nickname, steps));
     }
+
+    public void setPlayedCard(int idCard) throws RemoteException{
+        executors.submit(() -> controller.setCard(idCard));
+    }
+
+    @Override
+    public void addCredits(int credits) throws RemoteException{
+        executors.submit(() -> controller.addCredits(credits));
+    }
+
+    @Override
+    public void crewLost(String nickname, List<Cordinate> housingCordinates) throws RemoteException{
+        executors.submit(() -> controller.crewLost(nickname,housingCordinates));
+    }
+
 }

@@ -52,7 +52,7 @@ public final class SldOpenSpace extends SldAdvCard {
 
         if (this.playerIterator.hasNext()) {
             actualPlayer = this.playerIterator.next();
-            setState(CardState.ENGINE_CHOICE, game);
+            setState(actualPlayer, CardState.ENGINE_CHOICE, game);
         } else {
             throw new RuntimeException("No allowed players");
         }
@@ -89,9 +89,9 @@ public final class SldOpenSpace extends SldAdvCard {
             board.moveDays(actualPlayer, power);
             if (playerIterator.hasNext()) {
                 actualPlayer = playerIterator.next();
-                setState(CardState.ENGINE_CHOICE, game);
+                setState(actualPlayer, CardState.ENGINE_CHOICE, game);
             } else {
-                setState(CardState.FINALIZED, game);
+                setState(actualPlayer, CardState.FINALIZED, game);
             }
 
         } else {

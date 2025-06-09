@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.server.socket;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -101,6 +102,12 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
+    public void setCardState(CardState state) throws IOException{
+        Message message = new CardStateMessage(0, "", state);
+        sendMessage(message);
+    }
+
+    @Override
     public void setFlyBoard(GameMode mode, Map<String, HousingColor> players, List<List<Integer>> decks) throws IOException {
         Message message = new FlyBoardMessage(-1, "", mode, players, decks);
         sendMessage(message);
@@ -159,5 +166,24 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         Message message = new AdvancePlayerMessage(0, nickname, steps);
         sendMessage(message);
     }
+
+    @Override
+    public void setPlayedCard(int idCard) throws IOException{
+        Message message = new DrawCardMessage(0, "", idCard);
+        sendMessage(message);
+    }
+
+    @Override
+    public void addCredits(int credits) throws IOException{
+        Message message = new AddCreditsMessage(0, "", credits);
+        sendMessage(message);
+    }
+
+    @Override
+    public void crewLost(String nickname, List<Cordinate> housingCordinates)throws IOException{
+        Message message = new CrewLostMessage(0,nickname,housingCordinates);
+        sendMessage(message);
+    }
+
 
 }

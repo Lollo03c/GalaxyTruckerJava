@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.HousingColor;
@@ -46,10 +47,13 @@ public class ClientController {
     }
 
     private GameState gameState;
+    private CardState cardState;
     private final Object stateLock = new Object();
     private final Object flyboardLock = new Object();
     private final Object shipboardLock = new Object();
     private final Object listLock = new Object();
+    private final Object cardStateLock = new Object();
+
     FlyBoard flyBoard;
     ShipBoard shipBoard;
 
@@ -89,6 +93,24 @@ public class ClientController {
     public GameState getState() {
         synchronized (stateLock) {
             return gameState;
+        }
+    }
+
+    public void setCardState(CardState state){
+        CardState oldState;
+        synchronized (cardStateLock) {
+            oldState = this.cardState;
+            this.cardState = state;
+        }
+        if (oldState != state) {
+            support.firePropertyChange("cardState", oldState, state);
+            Logger.debug("CARD: " + oldState + " -> " + state);
+        }
+    }
+
+    public CardState getCardState(){
+        synchronized (cardStateLock) {
+            return cardState;
         }
     }
 
@@ -201,8 +223,12 @@ public class ClientController {
         }
     }
 
-    private void setCard(SldAdvCard card){
-        this.card = card;
+    public void setCard(int idCard){
+        this.card = flyBoard.getSldAdvCardByID(idCard);
+    }
+
+    public SldAdvCard getPlayedCard(){
+        return card;
     }
 
     public void addUncoveredComponent(int idComp) {
@@ -408,5 +434,16 @@ public class ClientController {
     public void advancePlayer(String nickname, int steps){
         Player player = flyBoard.getPlayerByUsername(nickname);
         flyBoard.moveDays(player, steps);
+    }
+
+    public void addCredits(int credits){
+        flyBoard.getPlayerByUsername(nickname).addCredits(credits);
+    }
+
+    public void crewLost(String nickname, List<Cordinate> housingCordinates){
+        ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        for(Cordinate cord : housingCordinates){
+            ship.getOptComponentByCord(cord).get().removeGuest();
+        }
     }
 }
