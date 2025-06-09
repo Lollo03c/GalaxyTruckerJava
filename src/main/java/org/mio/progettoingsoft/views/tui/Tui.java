@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
+import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
@@ -170,15 +171,18 @@ public class Tui implements View {
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
         String input = "";
         int choice = -1;
+        int k = 0;
         while (!availablePlaces.contains(choice)) {
+            controller.getFlyBoard().drawCircuit();
             System.out.println("In which of these available position do you want to start ?" );
             for ( Integer i : availablePlaces){
-                System.out.println(i);
+                k = FlyBoardNormal.indexToPosition(i);
+                System.out.println(k);
             }
             input = scanner.nextLine();
             try {
                 choice = Integer.parseInt(input);
-
+                choice = FlyBoardNormal.positionToIndex(choice);
                 if (!availablePlaces.contains(choice)) {
                     System.out.println(RED + "Invalid choice!" + RESET);
                 }

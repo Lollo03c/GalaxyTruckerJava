@@ -22,6 +22,36 @@ public class FlyBoardNormal extends FlyBoard {
         super(GameMode.NORMAL, nicknames);
     }
 
+    public static int indexToPosition(int index) {
+        int i;
+        switch(index){
+            case 0 -> i=4;
+            case 1 -> i=3;
+            case 3 -> i=2;
+            case 6 -> i=1;
+            default -> {
+                i=0;
+                System.out.println("Error in indexToPosition : incorrect index");
+            }
+        }
+        return i;
+    }
+
+    public static int positionToIndex(int position){
+        int i;
+        switch(position){
+            case 4  -> i = 0;
+            case 3  -> i = 1;
+            case 2  -> i = 3;
+            case 1  -> i = 6;
+            default -> {
+                i=0;
+                System.out.println("Error in positionToIndex : incorrect index");
+            }
+        }
+        return i;
+    }
+
 
     @Override
     protected Map<Integer, AdventureCard> loadAdventureCard() {
