@@ -233,10 +233,14 @@ public class ServerController {
         VirtualClient client = game.getClients().get(nickname);
         try {
             flyBoard.addPlayerToCircuit(nickname, place);
-            if(flyBoard.isReadyToAdventure())
-                state = GameState.DRAW_CARD;
-            else
-                state = GameState.END_BUILDING;
+            for(VirtualClient c : game.getClients().values()) {
+                try {
+                    c.addOtherPlayerToCircuit(nickname, place);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            state = GameState.END_BUILDING;
         } catch (BadParameterException e) {
             try {
                 client.setAvailablePlaces(flyBoard.getAvailableStartingPositions());
@@ -247,9 +251,15 @@ public class ServerController {
         }
         try {
             client.setState(state);
+            if(flyBoard.isReadyToAdventure()) {
+                for (VirtualClient c : game.getClients().values()) {
+                    c.setState(GameState.DRAW_CARD);
+                }
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public void activateDoubleEngine(int idGame, String  nickname, int number){

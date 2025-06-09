@@ -154,6 +154,14 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         });
     }
 
+    @Override
+    public void addOtherPlayerToCircuit(String nickname, int place) throws Exception {
+        executors.submit(() -> {
+            controller.addOtherPlayerToCircuit(nickname, place);
+        });
+    }
+
+
     public void advancePlayer(String nickname, int steps) throws RemoteException{
         executors.submit(() -> controller.advancePlayer(nickname, steps));
     }

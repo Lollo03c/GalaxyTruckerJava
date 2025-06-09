@@ -245,7 +245,7 @@ public abstract class FlyBoard implements FlyBoardServer {
         if(player.isRunning()){
             throw new BadParameterException("This player is already running");
         }
-        this.getCircuit().add(index, Optional.of(player));
+        this.getCircuit().set(index, Optional.of(player));
         int numPlayersAhead = 0;
         for(int i = index + 1; i < getCircuit().size(); i++){
             if(getCircuit().get(i).isPresent()){
@@ -254,7 +254,6 @@ public abstract class FlyBoard implements FlyBoardServer {
         }
         this.getScoreBoard().remove(player);
         this.getScoreBoard().add(numPlayersAhead, player);
-        this.circuit.set(index, Optional.of(player));
         player.setRunning(true);
     }
 

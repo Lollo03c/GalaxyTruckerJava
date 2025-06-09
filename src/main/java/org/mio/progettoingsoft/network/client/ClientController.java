@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.HousingColor;
@@ -18,6 +19,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ClientController {
     private static ClientController instance;
@@ -46,10 +48,12 @@ public class ClientController {
     }
 
     private GameState gameState;
+    private CardState cardState;
     private final Object stateLock = new Object();
     private final Object flyboardLock = new Object();
     private final Object shipboardLock = new Object();
     private final Object listLock = new Object();
+    private final Object cardStateLock = new Object();
     FlyBoard flyBoard;
     ShipBoard shipBoard;
 
@@ -91,6 +95,26 @@ public class ClientController {
             return gameState;
         }
     }
+
+    public void setCardState(CardState state){
+        CardState oldState;
+        synchronized (cardStateLock) {
+            oldState = this.cardState;
+            this.cardState = state;
+        }
+        if (oldState != state) {
+            support.firePropertyChange("cardState", oldState, state);
+            Logger.debug("CARD: " + oldState + " -> " + state);
+        }
+    }
+
+    public CardState getCardState(){
+        synchronized (cardStateLock) {
+            return cardState;
+        }
+    }
+
+
 
     public void applyStardust(SldStardust card) {
         try {
@@ -243,6 +267,14 @@ public class ClientController {
         }
     }
 
+    public void addOtherPlayerToCircuit(String nickname, int place){
+        synchronized (flyboardLock){
+            flyBoard.addPlayerToCircuit(nickname, place);
+        }
+        support.firePropertyChange("circuit", null, place);
+        //TODO IMPLEMENTARE L'AGGIORNAMENTO DELLA GUI/TUI
+    }
+
     /*
      * Methods called by the view to handle the input and communicate with the server
      */
@@ -365,6 +397,25 @@ public class ClientController {
         setState(GameState.BUILDING_SHIP);
     }
 
+    public void getBooked(int index){
+        int ret = -1;
+        if(index == 0 || index == 1){
+            synchronized (shipboardLock) {
+                if(shipBoard.getBookedComponents().get(index).isPresent()) {
+                    inHandComponent = shipBoard.getBookedComponents().get(index).get();
+                    if(index == 0){
+                        shipBoard.getBookedComponents().remove(index);
+                        shipBoard.getBookedComponents().add(Optional.empty());
+                    }else{
+                        shipBoard.getBookedComponents().set(index, Optional.empty());
+                    }
+
+                    setState(GameState.COMPONENT_MENU);
+                }
+            }
+        }
+    }
+
     public void bookDeck(Integer deckNumber) {
         try {
             server.bookDeck(idGame, nickname, deckNumber);
@@ -397,6 +448,10 @@ public class ClientController {
         }
     }
 
+    public void drawNewAdvCard(){
+
+    }
+
     public void activateDoubleEngine(int number){
         try{
             server.activateDoubleEngine(idGame, nickname, number);
@@ -408,5 +463,9 @@ public class ClientController {
     public void advancePlayer(String nickname, int steps){
         Player player = flyBoard.getPlayerByUsername(nickname);
         flyBoard.moveDays(player, steps);
+    }
+
+    public void leaveFlight(){
+        throw new RuntimeException("NOT IMPLEMENTED YET");
     }
 }

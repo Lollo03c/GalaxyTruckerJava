@@ -47,7 +47,7 @@ public class SocketClient implements Client {
         socket = new Socket(connectionInfo.getIpHost(), connectionInfo.getSocketPort());
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
-        this.serverHandler = new SocketServerHandler(out,in);
+        this.serverHandler = new SocketServerHandler(out, in);
 
         ClientMessageReceiver clientMessageReceiver = new ClientMessageReceiver(in, receivedMessages);
         Thread serverMessageThread = new Thread(clientMessageReceiver, "message-receiver");
@@ -122,8 +122,13 @@ public class SocketClient implements Client {
                     }
 
                     case AdvancePlayerMessage advancePlayerMessage ->
-                        executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps()));
+                            executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps()));
 
+                    case AddPlayerMessage addPlayerMessage -> {
+                        executor.submit(() -> {
+                            controller.addOtherPlayerToCircuit(addPlayerMessage.getOtherPlayerNickname(), addPlayerMessage.getPlace());
+                        });
+                    }
                     default -> {
                     }
                 }

@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
@@ -42,7 +43,7 @@ public class Gui extends Application implements View {
     private static final String IMG_PATH = "/images/";
     private static final String TILES_REL_PATH = "tiles/GT-new_tiles_16_for web";
     private static final String CARDBOARDS_REL_PATH = "cardboards/";
-    private static final String ADC_CARD_REL_PATH = "advCards/GT-cards_";
+    private static final String ADV_CARD_REL_PATH = "advCards/GT-cards_";
     private static final String IMG_JPG_EXTENSION = ".jpg";
     private static final String IMG_PNG_EXTENSION = ".png";
 
@@ -74,6 +75,7 @@ public class Gui extends Application implements View {
     private HBox shipTilesDeckBox;
     private HBox shipAdvDeckBox;
     private VBox shipRightColumn;
+    private VBox topBuildingShipBox;
     private VBox inHandBox;
     private ImageView inHandImageView;
     private VBox viewOtherPlayersBox;
@@ -86,10 +88,13 @@ public class Gui extends Application implements View {
     private GridPane shipboardGrid;
     private Button backButton;
     private Label hintLabel;
+    private Label errorLabel;
     // modal stage for other player ship displaying
     private Stage otherPlayerShipStage;
     // modal stage for position choosing
     private Stage choosePositionStage;
+    // view components for the circuit and card activation
+    private BorderPane adventureBorderPane;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -104,8 +109,22 @@ public class Gui extends Application implements View {
      */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("gameState")) {
-            statesQueue.add((GameState) evt.getNewValue());
+        switch (evt.getPropertyName()) {
+            case "gameState" -> statesQueue.add((GameState) evt.getNewValue());
+            case "circuit" -> {
+                if (controller.getState() == GameState.DRAW_CARD || controller.getState() == GameState.CARD_EFFECT) {
+                    while (!statesQueue.isEmpty()) {
+                        synchronized (statesQueue) {
+                            try {
+                                statesQueue.wait();
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                    updateCircuit((int) evt.getOldValue(), (int) evt.getNewValue());
+                }
+            }
         }
     }
 
@@ -134,12 +153,18 @@ public class Gui extends Application implements View {
         this.stage.show();
         screenHeight = Screen.getPrimary().getBounds().getHeight();
         screenWidth = Screen.getPrimary().getBounds().getWidth();
+        tilesSideLength = Math.min(screenHeight / 9, screenWidth / 16);
         this.updateGui(GameState.START);
         Thread thread = new Thread(() -> {
             try {
                 while (true) {
                     GameState state = statesQueue.take();
                     Platform.runLater(() -> updateGui(state));
+                    if (statesQueue.isEmpty()) {
+                        synchronized (statesQueue) {
+                            statesQueue.notifyAll();
+                        }
+                    }
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -156,7 +181,7 @@ public class Gui extends Application implements View {
      */
     private void updateGui(GameState state) {
         switch (state) {
-            case START -> firstView() /*buildingShipView()*/;
+            case START -> firstView() /*buildingShipView()*/ /*advStartedView()*/;
             case WAITING -> loadingView();
             case NICKNAME -> nicknameRequestView(false);
             case ERROR_NICKNAME -> nicknameRequestView(true);
@@ -165,18 +190,23 @@ public class Gui extends Application implements View {
             case BUILDING_SHIP -> buildingShipView();
             case COMPONENT_MENU -> newComponentView();
             case UNABLE_UNCOVERED_COMPONENT -> unableUncoveredView();
-            case ADD_COMPONENT -> placeComponentView();
+            case ADD_COMPONENT -> placeComponentView(false);
+            case ERROR_PLACEMENT -> placeComponentView(true);
             case SWITCH_BOOKED -> switchBookedComponentsView();
             case VIEW_DECK -> inspectDeckView(true);
             case UNABLE_DECK -> inspectDeckView(false);
             case CHOOSE_POSITION -> choosePositionView(false);
             case WRONG_POSITION -> choosePositionView(true);
             case END_BUILDING -> waitingForAdventureStartView();
-            case DRAW_CARD -> drawCardView();
+            case DRAW_CARD -> advStartedView();
 
             default -> genericErrorView(state);
         }
         stage.show();
+    }
+
+    private void updateCircuit(int oldPos, int newPos) {
+
     }
 
     /*
@@ -540,14 +570,15 @@ public class Gui extends Application implements View {
             shipboardBorderPane.setRight(box);
 
             /* Label to give hint for placement */
-            HBox topShipBox = new HBox();
-            topShipBox.setAlignment(Pos.CENTER);
-            topShipBox.setPadding(new Insets(10, 10, 10, 10));
-            topShipBox.setPrefHeight(50);
+            topBuildingShipBox = new VBox();
+            topBuildingShipBox.setAlignment(Pos.CENTER);
+            topBuildingShipBox.setPadding(new Insets(10, 10, 10, 10));
+            topBuildingShipBox.setPrefHeight(50);
             hintLabel = new Label();
+            errorLabel = new Label();
             hintLabel.setVisible(false);
-            topShipBox.getChildren().add(hintLabel);
-            shipboardBorderPane.setTop(topShipBox);
+            topBuildingShipBox.getChildren().addAll(hintLabel, errorLabel);
+            shipboardBorderPane.setTop(topBuildingShipBox);
 
             shipViewBorderPane.setDisable(false);
 
@@ -567,7 +598,6 @@ public class Gui extends Application implements View {
             shipTilesDeckBox.setDisable(false);
             shipAdvDeckBox.setDisable(false);
             inHandBox.setDisable(true);
-            isComponentBoxClickable = false;
             backButton.setVisible(false);
             hintLabel.setVisible(false);
 
@@ -582,6 +612,7 @@ public class Gui extends Application implements View {
             }
             fillShipboard(idMatrix, rotationsMatrix, bookedComponents, cordToImageViews);
         }
+        isComponentBoxClickable = true;
     }
 
     /**
@@ -680,12 +711,19 @@ public class Gui extends Application implements View {
     /**
      * called when the user click the "place" button, it shows a hint label and enable the click on the components slots
      */
-    private void placeComponentView() {
+    private void placeComponentView(boolean isError) {
         backButton.setVisible(true);
         inHandBox.setDisable(true);
         isComponentBoxClickable = true;
         hintLabel.setText("Click on the empty cell where you want to insert the component");
         hintLabel.setVisible(true);
+        errorLabel.setVisible(false);
+        if (isError) {
+            errorLabel.setVisible(true);
+            errorLabel.setText("You cannot place a component in an occupied position!");
+            newComponentView();
+        }
+
     }
 
     /**
@@ -704,6 +742,7 @@ public class Gui extends Application implements View {
      * view shown when the user tries to inspect an adv card deck.
      * if available the deck is shown in a modal window, else it is written a message to wait
      * !!attention!! client-side the deck management is not already implemented (the visualized decks are different for every client)
+     *
      * @param isAvailable: indicates if show the deck or the error message
      */
     private void inspectDeckView(boolean isAvailable) {
@@ -719,7 +758,7 @@ public class Gui extends Application implements View {
                 advList = new ArrayList<>(controller.getFlyBoard().getAdvDeckByIndex(controller.getInHandDeck()));
             }
             for (Integer advCardId : advList) {
-                String tmpResourcePath = IMG_PATH + ADC_CARD_REL_PATH + advCardId + IMG_JPG_EXTENSION;
+                String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + advCardId + IMG_JPG_EXTENSION;
                 ImageView imgView = new ImageView(new Image(this.getClass().getResource(tmpResourcePath).toExternalForm()));
                 imgView.setFitHeight(250);
                 imgView.setPreserveRatio(true);
@@ -748,6 +787,7 @@ public class Gui extends Application implements View {
 
     /**
      * displays a modal window that shows the requested player's shipboard, the view is rendered the same way as the user's one
+     *
      * @param nickname: nickname of the chosen player
      */
     private void lookAtOtherShipboardView(String nickname) {
@@ -818,7 +858,7 @@ public class Gui extends Application implements View {
         fillShipboard(idMatrix, rotationsMatrix, bookedComponents, otherPlayerShipCordToImg);
     }
 
-    private void choosePositionView(boolean isError){
+    private void choosePositionView(boolean isError) {
         choosePositionStage = new Stage();
         choosePositionStage.initModality(Modality.APPLICATION_MODAL);
 
@@ -826,7 +866,7 @@ public class Gui extends Application implements View {
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(10, 10, 10, 10));
 
-        if(isError){
+        if (isError) {
             Label errorLabel = new Label("Previously chosen position is no more available!");
             box.getChildren().add(errorLabel);
         }
@@ -844,9 +884,9 @@ public class Gui extends Application implements View {
         choosePlaceBox.setAlignment(Pos.CENTER);
         choosePlaceBox.setPadding(new Insets(10, 10, 10, 10));
         List<Integer> avlPlaces = controller.getAvailablePlacesOnCircuit();
-        for(Integer i : avlPlaces){
+        for (Integer i : avlPlaces) {
             String text = "Position n. ";
-            switch(i){
+            switch (i) {
                 case 0 -> text += 4;
                 case 1 -> text += 3;
                 case 3 -> text += 2;
@@ -862,7 +902,7 @@ public class Gui extends Application implements View {
         choosePositionStage.show();
     }
 
-    private void waitingForAdventureStartView(){
+    private void waitingForAdventureStartView() {
         root.getChildren().clear();
         VBox box = new VBox();
         box.setAlignment(Pos.CENTER);
@@ -870,9 +910,74 @@ public class Gui extends Application implements View {
         root.getChildren().add(box);
     }
 
-    private void drawCardView(){
+    private void advStartedView() {
         root.getChildren().clear();
+        adventureBorderPane = new BorderPane();
+        adventureBorderPane.setPadding(new Insets(10, 10, 10, 10));
 
+        /* top button container */
+        HBox topBox = new HBox(50);
+        topBox.setAlignment(Pos.CENTER);
+        List<Player> playerList;
+        synchronized (controller.getFlyboardLock()) {
+            playerList = new ArrayList<>(controller.getFlyBoard().getPlayers());
+        }
+        for (Player player : playerList) {
+            if (!player.getNickname().equals(controller.getNickname())) {
+                Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
+                butt.setTextAlignment(TextAlignment.CENTER);
+                butt.setWrapText(true);
+                butt.setOnAction(event -> lookAtOtherShipboardView(player.getNickname()));
+                topBox.getChildren().add(butt);
+            }
+        }
+        adventureBorderPane.setTop(topBox);
+
+        /* bottom button container */
+        HBox bottomBox = new HBox(50);
+        topBox.setAlignment(Pos.CENTER);
+        Button showShipBtn = new Button("Show your shipboard");
+        //showShipBtn.setOnAction(evt -> lookAtOtherShipboardView(controller.getNickname()));
+        bottomBox.getChildren().addAll(showShipBtn);
+        adventureBorderPane.setBottom(bottomBox);
+
+        /* right column container */
+        VBox rightColumn = new VBox(20);
+        rightColumn.setAlignment(Pos.CENTER);
+        rightColumn.setPadding(new Insets(10, 10, 10, 10));
+        VBox cardContainer = new VBox(10);
+        cardContainer.setAlignment(Pos.CENTER);
+        cardContainer.setPadding(new Insets(10, 10, 10, 10));
+        String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
+        Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+        ImageView cardImageView = new ImageView(cardBackImage);
+        cardImageView.setFitHeight(tilesSideLength * 3);
+        cardImageView.setPreserveRatio(true);
+        Button drawCardButton = new Button("Draw new card");
+        drawCardButton.setOnAction(evt -> {
+            drawNewAdvCard();
+        });
+        drawCardButton.setVisible(false);
+        cardContainer.getChildren().addAll(cardImageView, drawCardButton);
+        Button leaveFlightBtn = new Button("Leave the flight");
+        leaveFlightBtn.setOnAction(evt -> {
+            leaveFlightConfirm();
+        });
+        rightColumn.getChildren().addAll(cardContainer, leaveFlightBtn);
+        adventureBorderPane.setRight(rightColumn);
+
+        /* circuit visualisation region */
+        VBox center = new VBox(20);
+        center.setAlignment(Pos.CENTER);
+        tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-5" + IMG_PNG_EXTENSION;
+        Image circuitImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+        ImageView circuitImageView = new ImageView(circuitImage);
+        circuitImageView.setFitHeight(tilesSideLength * 6.5);
+        circuitImageView.setPreserveRatio(true);
+        center.getChildren().addAll(circuitImageView);
+        adventureBorderPane.setCenter(center);
+
+        root.getChildren().add(adventureBorderPane);
     }
 
     /*
@@ -881,6 +986,7 @@ public class Gui extends Application implements View {
 
     /**
      * forwards the request of connection to the controller
+     *
      * @param isRmi: true: rmi connetcion, false: socket connection
      */
     private void connectToServer(boolean isRmi) {
@@ -889,6 +995,7 @@ public class Gui extends Application implements View {
 
     /**
      * verify if the input is ok, then forwards the nicnkame input to the controller
+     *
      * @param nickname: nickname chosen by the user
      */
     private void handleNickname(String nickname) {
@@ -904,6 +1011,7 @@ public class Gui extends Application implements View {
 
     /**
      * forwards the input of the game settings
+     *
      * @param nPlayers: numbero of plater chosen
      * @param isNormal: true: normal game mode, false: easy game mode
      */
@@ -921,6 +1029,7 @@ public class Gui extends Application implements View {
 
     /**
      * forward to the controller the request to choose an uncovered component
+     *
      * @param componentId: id of the chosen component
      */
     private void chooseComponentFromUncovered(int componentId) {
@@ -932,6 +1041,7 @@ public class Gui extends Application implements View {
     /// if the click on the component is enabled, execute different instructions based on the state.
     /// - ADD_COMPONENT: forwards to the controller the request to add a component in the clicked position
     /// - SWITCH_BOOKED: forwards to the controller the request to swap a component with a booked one
+    ///
     /// @param i: row index of the clicked cell
     /// @param j: column of the clicked cell
     private void spComponentAction(int i, int j) {
@@ -946,19 +1056,53 @@ public class Gui extends Application implements View {
                     if ((i == 0) && ((j == 5) || (j == 6)))
                         controller.bookComponent(j == 5 ? 0 : 1);
                 }
+                case BUILDING_SHIP -> {
+                    if (i == 0) {
+                        if (j == 5) {
+                            controller.getBooked(0);
+                        } else if (j == 6) {
+                            controller.getBooked(1);
+                        }
+                    }
+                }
                 default -> {
                 }
             }
         }
     }
 
-    private void endBuild(){
+    private void endBuild() {
         controller.endBuild();
     }
 
-    private void choosePlace(int place){
+    private void choosePlace(int place) {
         choosePositionStage.close();
         controller.choosePlace(place);
+    }
+
+    private void drawNewAdvCard() {
+        controller.drawNewAdvCard();
+    }
+
+    private void leaveFlightConfirm() {
+        Stage alertStage = new Stage();
+        alertStage.setTitle("Leave the flight");
+        alertStage.initModality(Modality.APPLICATION_MODAL);
+        alertStage.setResizable(false);
+        VBox center = new VBox(10);
+        center.setAlignment(Pos.CENTER);
+        Label alertLabel = new Label("Do you want to leave the flight?");
+        HBox btnBox = new HBox(15);
+        btnBox.setAlignment(Pos.CENTER);
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.setOnAction(evt -> {
+            alertStage.close();
+        });
+        Button confirmBtn = new Button("Confirm");
+        confirmBtn.setOnAction(evt -> {
+            alertStage.close();
+            controller.leaveFlight();
+        });
     }
 
     /*
@@ -967,10 +1111,11 @@ public class Gui extends Application implements View {
 
     /**
      * place the images of the components in the shipboard grid based on the parameters given
-     * @param idMatrix: matrix of component ids
-     * @param rotationsMatrix: matrix of rotations of the components
+     *
+     * @param idMatrix:         matrix of component ids
+     * @param rotationsMatrix:  matrix of rotations of the components
      * @param bookedComponents: booked components to show
-     * @param map: map that link coordinates with the related imageView
+     * @param map:              map that link coordinates with the related imageView
      */
     private void fillShipboard(Optional<Integer>[][] idMatrix, Optional<Integer>[][] rotationsMatrix, List<Optional<Integer>> bookedComponents, Map<Cordinate, ImageView> map) {
 
@@ -981,23 +1126,40 @@ public class Gui extends Application implements View {
                     map.get(cord).setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
                     map.get(cord).setRotate(rotationsMatrix[cord.getRow()][cord.getColumn()].get() * 90);
                 }
-            } else {
-                if (cord.equals(new Cordinate(0, 5)) && bookedComponents.get(0).isPresent()) {
-                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + bookedComponents.get(0).get() + IMG_JPG_EXTENSION;
-                    Image img = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
-                    map.get(cord).setImage(img);
-                } else if (cord.equals(new Cordinate(0, 6)) && bookedComponents.get(1).isPresent()) {
-                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + bookedComponents.get(1).get() + IMG_JPG_EXTENSION;
-                    Image img = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
-                    map.get(cord).setImage(img);
+            }
+        }
+        refreshBooked(bookedComponents, map);
+    }
+
+    private void refreshBooked(List<Optional<Integer>> bookedComponents, Map<Cordinate, ImageView> map) {
+        String tmpResourcePath1 = "", tmpResourcePath2 = "";
+        for (Cordinate cord : map.keySet()) {
+            if (cord.equals(new Cordinate(0, 5))) {
+                if (bookedComponents.get(0).isPresent()) {
+                    tmpResourcePath1 = IMG_PATH + TILES_REL_PATH + (bookedComponents.get(0).get() == 1 ? "" : bookedComponents.get(0).get()) + IMG_JPG_EXTENSION;
+                    Image img1 = new Image(getClass().getResource(tmpResourcePath1).toExternalForm());
+                    map.get(cord).setImage(img1);
+                } else {
+                    map.get(cord).setImage(null);
+                }
+            }
+            if (cord.equals(new Cordinate(0, 6))) {
+                if (bookedComponents.get(1).isPresent()) {
+                    tmpResourcePath2 = IMG_PATH + TILES_REL_PATH + (bookedComponents.get(1).get() == 1 ? "" : bookedComponents.get(1).get()) + IMG_JPG_EXTENSION;
+                    Image img2 = new Image(getClass().getResource(tmpResourcePath2).toExternalForm());
+                    map.get(cord).setImage(img2);
+                } else {
+                    map.get(cord).setImage(null);
                 }
             }
         }
+
     }
 
     /**
      * set the passed tilesHeight to the rows and columns of the grid
-     * @param grid: shipboard grid to apply the constraints to
+     *
+     * @param grid:        shipboard grid to apply the constraints to
      * @param tilesHeight: side length of the cells
      */
     private void setGridConstraints(GridPane grid, double tilesHeight) {
