@@ -68,9 +68,13 @@ public class Tui implements View {
 
             case GAME_MODE -> printGameModeMenu();
             case GAME_START -> {
-                System.out.println("partita iniziata");
+                System.out.println("game started");
                 printPlayersName();
                 controller.setState(GameState.WAITING);
+            }
+            case WRONG_POSITION -> {
+                System.out.println(RED + "Current position is already occupied" + RESET);
+                controller.setState(GameState.CHOOSE_POSITION);
             }
 
             case BUILDING_SHIP -> {
@@ -164,22 +168,23 @@ public class Tui implements View {
 
     private void printChoosePosition(){
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
-        System.out.println("In which of these available position do you want to start ?" + availablePlaces);
-        for ( Integer i : availablePlaces){
-            System.out.println(i);
-        }
         String input = "";
         int choice = -1;
-        input = scanner.nextLine();
+        while (!availablePlaces.contains(choice)) {
+            System.out.println("In which of these available position do you want to start ?" );
+            for ( Integer i : availablePlaces){
+                System.out.println(i);
+            }
+            input = scanner.nextLine();
+            try {
+                choice = Integer.parseInt(input);
 
-        try {
-            choice = Integer.parseInt(input);
-
-            if (!availablePlaces.contains(choice)) {
+                if (!availablePlaces.contains(choice)) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
                 System.out.println(RED + "Invalid choice!" + RESET);
             }
-        } catch (Exception e) {
-            System.out.println(RED + "Invalid choice!" + RESET);
         }
         controller.choosePlace(choice);
     }

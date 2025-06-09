@@ -110,7 +110,7 @@ public abstract class FlyBoard implements FlyBoardServer {
             if (player.getNickname().equals(nickname))
                 return player;
 
-        throw new IncorrectFlyBoardException("");
+        throw new IncorrectFlyBoardException("No such player with this nickname: " + nickname);
     }
 
     public int getNumPlayers(){
@@ -212,25 +212,19 @@ public abstract class FlyBoard implements FlyBoardServer {
 
 
     // adds a player to the circuit: it must be used ONLY for initialization
-    public void addPlayerToCircuit(String nickname, int index){
+    public synchronized void addPlayerToCircuit(String nickname, int index){
         if(index > getCircuit().size() || index < 0){
             throw new BadParameterException("Index out of circuit range");
         }
 
         Player player;
-        try{
-            player = getPlayerByUsername(nickname);
-        } catch (IncorrectFlyBoardException e) {
-            throw new RuntimeException(e);
-        }
-
-
+        player = getPlayerByUsername(nickname);
 
         if(getCircuit().get(index).isPresent()){
-            throw new RuntimeException("This place is occupied");
+            throw new BadParameterException("This place is occupied");
         }
         if(player.isRunning()){
-            throw new RuntimeException("This player is already running");
+            throw new BadParameterException("This player is already running");
         }
         this.getCircuit().add(index, Optional.of(player));
         int numPlayersAhead = 0;

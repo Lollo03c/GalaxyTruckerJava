@@ -855,8 +855,8 @@ public class Gui extends Application implements View {
         }
 
         box.getChildren().addAll(circuitImageView, choosePlaceLabel, choosePlaceBox);
-        stage.setScene(new Scene(box));
-        stage.show();
+        choosePositionStage.setScene(new Scene(box));
+        choosePositionStage.show();
     }
 
     private void waitingForAdventureStartView(){
