@@ -16,7 +16,7 @@ public enum GameState implements Serializable {
     SMUGGLERS,
 
     //la seguente riga e' poi da eliminare (vede Stefano)
-    CARD_EFFECT, CREW_REMOVE_CHOICE,
+     CREW_REMOVE_CHOICE,
 
     ENGINE_CHOICE
 

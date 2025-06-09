@@ -80,7 +80,38 @@ public class ShipBoardNormal extends ShipBoard {
         return shipBoard;
     }
 
+    public static ShipBoard BuildThird(){
+        Set<String> nicks = new HashSet<>();
+        nicks.add("anto");
+        nicks.add("lollo");
+
+        FlyBoard flyBoard = new FlyBoardNormal(nicks);
+        ShipBoard shipBoard = new ShipBoardNormal(HousingColor.GREEN, flyBoard);
+
+        shipBoard.addComponentToPosition(82, new Cordinate(4, 0), 0);
+        shipBoard.addComponentToPosition(20, new Cordinate(3, 0), 1);
+        shipBoard.addComponentToPosition(26, new Cordinate(2, 0), 2);
+        shipBoard.addComponentToPosition(153, new Cordinate(1, 1), 0);
+        shipBoard.addComponentToPosition(65, new Cordinate(2, 1), 0);
+        shipBoard.addComponentToPosition(7, new Cordinate(2, 2), 3);
+        shipBoard.addComponentToPosition(31, new Cordinate(3, 2), 2);
+        shipBoard.addComponentToPosition(79, new Cordinate(4, 2), 0);
+        shipBoard.addComponentToPosition(111, new Cordinate(1, 3), 0);
+
+        shipBoard.addComponentToPosition(6, new Cordinate(3,3), 1);
+        shipBoard.addComponentToPosition(120, new Cordinate(0,4), 0);
+        shipBoard.addComponentToPosition(67, new Cordinate(1,4), 0);
+        shipBoard.addComponentToPosition(4, new Cordinate(3,4), 0);
+        shipBoard.addComponentToPosition(49, new Cordinate(2,5), 2);
+        shipBoard.addComponentToPosition(37, new Cordinate(3,5), 0);
+        shipBoard.addComponentToPosition(94, new Cordinate(4,5), 0);
+        shipBoard.addComponentToPosition(135, new Cordinate(2,6), 0);
+        shipBoard.addComponentToPosition(145, new Cordinate(3,6), 0);
+        shipBoard.drawShipboard();
+        return shipBoard;
+    }
+
     public static void main(String[] args) {
-        ShipBoard ship = BuildFirst();
+        ShipBoard ship = BuildThird();
     }
 }
