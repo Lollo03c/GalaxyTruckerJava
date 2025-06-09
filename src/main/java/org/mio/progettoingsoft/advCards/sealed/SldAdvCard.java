@@ -106,7 +106,8 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
 //        visual.drawCard();
 //    }
 
-    protected void setState(CardState state, GameServer game){
+    protected void setState(Player player, CardState state, GameServer game){
+        this.actualPlayer = player;
         this.state = state;
         game.getController().update(this);
     }

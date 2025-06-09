@@ -47,7 +47,7 @@ public class SocketClient implements Client {
         socket = new Socket(connectionInfo.getIpHost(), connectionInfo.getSocketPort());
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
-        this.serverHandler = new SocketServerHandler(out, in);
+        this.serverHandler = new SocketServerHandler(out,in);
 
         ClientMessageReceiver clientMessageReceiver = new ClientMessageReceiver(in, receivedMessages);
         Thread serverMessageThread = new Thread(clientMessageReceiver, "message-receiver");
@@ -76,6 +76,10 @@ public class SocketClient implements Client {
                     }
                     case StateMessage stateMessage -> {
                         controller.setState(stateMessage.getState());
+                    }
+
+                    case CardStateMessage cardStateMessage ->{
+                        executor.submit(() -> controller.setCardState(cardStateMessage.getState()));
                     }
 
                     case NicknameMessage nicknameMessage -> {
@@ -129,6 +133,7 @@ public class SocketClient implements Client {
                             controller.addOtherPlayerToCircuit(addPlayerMessage.getOtherPlayerNickname(), addPlayerMessage.getPlace());
                         });
                     }
+                    case AddCreditsMessage addCreditsMessage -> executor.submit(() -> controller.addCredits(addCreditsMessage.getCredits()));
                     default -> {
                     }
                 }

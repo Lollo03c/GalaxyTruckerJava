@@ -225,8 +225,12 @@ public class ClientController {
         }
     }
 
-    private void setCard(SldAdvCard card){
-        this.card = card;
+    public void setCard(int idCard){
+        this.card = flyBoard.getSldAdvCardByID(idCard);
+    }
+
+    public SldAdvCard getPlayedCard(){
+        return card;
     }
 
     public void addUncoveredComponent(int idComp) {
@@ -467,5 +471,16 @@ public class ClientController {
 
     public void leaveFlight(){
         throw new RuntimeException("NOT IMPLEMENTED YET");
+    }
+
+    public void addCredits(int credits){
+        flyBoard.getPlayerByUsername(nickname).addCredits(credits);
+    }
+
+    public void crewLost(String nickname, List<Cordinate> housingCordinates){
+        ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        for(Cordinate cord : housingCordinates){
+            ship.getOptComponentByCord(cord).get().removeGuest();
+        }
     }
 }

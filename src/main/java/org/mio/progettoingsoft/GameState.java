@@ -15,6 +15,9 @@ public enum GameState implements Serializable {
     STARDUST, SLAVERS , ABANDONEDSHIP, ABANDONEDSTATION, COMBATZONE, EPIDEMIC, METEORSWARM, OPENSPACE, PIRATES, PLANETS,
     SMUGGLERS,
 
+    //la seguente riga e' poi da eliminare (vede Stefano)
+     CREW_REMOVE_CHOICE,
+
     ENGINE_CHOICE
 
     ;

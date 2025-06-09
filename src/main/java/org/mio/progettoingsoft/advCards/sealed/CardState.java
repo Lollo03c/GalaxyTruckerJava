@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
-public enum CardState {
+import java.io.Serializable;
+
+public enum CardState implements Serializable {
     CREW_REMOVE_CHOICE, ENGINE_CHOICE, DRILL_CHOICE, ACCEPTATION_CHOICE, COMPARING, FINALIZED, GOODS_PLACEMENT, APPLY_HEAVY_CANNON, APPLY_LIGHT_CANNON, APPLYING, PART_CHOICE, PART_REMOVING_DONE, REMOVE_GOODS, PLANET_CHOICE, IDLE
 }

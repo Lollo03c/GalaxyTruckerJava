@@ -181,6 +181,10 @@ public abstract class Component {
         return Collections.emptyList();
     }
 
+    public void removeGuest() throws IncorrectShipBoardException{
+        throw new IncorrectShipBoardException("not a housing");
+    }
+
     /**
      * remove the {@link GuestType} given from the housing, throws the exception if the operation cannot be done
      * @param type {@link GuestType} to remove

@@ -69,6 +69,14 @@ public class Housing extends Component {
     }
 
     @Override
+    public void removeGuest() throws IncorrectShipBoardException{
+        if (guests.isEmpty())
+            throw new IncorrectShipBoardException("housing is empty");
+
+        guests.removeLast();
+    }
+
+    @Override
     public void removeGuest(GuestType type) throws IncorrectShipBoardException{
         if (!guests.contains(type))
             throw new IncorrectShipBoardException("guest not hosted in the housing");

@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.advCards.AbandonedShip;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import java.util.List;
 
@@ -54,23 +55,23 @@ public final class SldAbandonedShip extends SldAdvCard {
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }
-//        this.state = CardState.CREW_REMOVE_CHOICE;
 //        board.setState(GameState.CARD_EFFECT);
-//        this.allowedPlayers = board.getScoreBoard().stream()
-//                .filter(player -> player.getShipBoard().getQuantityGuests() > this.crewLost)
-//                .toList();
-//        this.playerIterator = allowedPlayers.iterator();
-//        if (playerIterator.hasNext()) {
-//            actualPlayer = playerIterator.next();
-//        } else {
-//            throw new RuntimeException("No players allowed");
-//        }
+        this.allowedPlayers = board.getScoreBoard().stream()
+                .filter(player -> player.getShipBoard().getQuantityGuests() >= this.crewLost)
+                .toList();
+
+        this.playerIterator = allowedPlayers.iterator();
+        if (playerIterator.hasNext()) {
+            setState(playerIterator.next(), CardState.CREW_REMOVE_CHOICE, game);
+        } else {
+            throw new RuntimeException("No players allowed");
+        }
     }
 
     // must be called after the init with the right player
     // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
     // else, it does nothing, and it's ready for another call with the next player
-    public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Integer[]> housingCordinatesList) {
+    public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Cordinate> housingCordinatesList) {
 ////        if (this.state != CardState.CREW_REMOVE_CHOICE || board.getState() != GameState.CARD_EFFECT) {
 //            throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
 //        }
@@ -90,18 +91,17 @@ public final class SldAbandonedShip extends SldAdvCard {
         this.state = CardState.APPLYING;
         if (player.equals(actualPlayer)) {
             if (wantsToActivate) {
-                for (int i = 0; i < housingCordinatesList.size(); i++) {
-                    int row = housingCordinatesList.get(i)[0];
-                    int col = housingCordinatesList.get(i)[1];
-                    board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard().getOptComponentByCord(new Cordinate(row, col)).get().removeGuest(null);
+                for (Cordinate cord : housingCordinatesList) {
+                    board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard().getOptComponentByCord(cord).get().removeGuest();
                 }
                 board.moveDays(board.getPlayerByUsername(actualPlayer.getNickname()), -this.daysLost);
                 board.getPlayerByUsername(actualPlayer.getNickname()).addCredits(this.credits);
+
                 this.state = CardState.FINALIZED;
             } else {
                 if (playerIterator.hasNext()) {
-                    actualPlayer = playerIterator.next();
-                    this.state = CardState.CREW_REMOVE_CHOICE;
+
+                    setState(playerIterator.next(), CardState.CREW_REMOVE_CHOICE, game);
                 } else {
                     this.state = CardState.FINALIZED;
                 }
