@@ -19,6 +19,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -42,6 +43,7 @@ public class Gui extends Application implements View {
 
     private final ClientController controller;
     private final BlockingQueue<GameState> statesQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Pair<Integer, Integer>> circuitMovesQueue = new LinkedBlockingQueue<>();
 
     private static final String IMG_PATH = "/images/";
     private static final String TILES_REL_PATH = "tiles/GT-new_tiles_16_for web";
@@ -68,6 +70,40 @@ public class Gui extends Application implements View {
     private final Map<Cordinate, ImageView> cordToImageViews = new HashMap<>();
     // indicates if the click on a component is enabled (for placement or for being removed from booked)
     private boolean isComponentBoxClickable = false;
+    // list of coordinates for placement of rocket on the circuit
+    private final List<Point2D> coordList = new ArrayList<>(List.of(
+            new Point2D(0.2448, 0.2375),
+            new Point2D(0.3138, 0.1861),
+            new Point2D(0.3886, 0.1569),
+            new Point2D(0.4627, 0.1472),
+            new Point2D(0.5359, 0.1458),
+            new Point2D(0.6116, 0.1625),
+            new Point2D(0.6856, 0.1944),
+            new Point2D(0.7546, 0.2417),
+            new Point2D(0.8210, 0.3181),
+            new Point2D(0.8665, 0.4333),
+            new Point2D(0.8597, 0.5806),
+            new Point2D(0.8101, 0.6861),
+            new Point2D(0.7453, 0.7583),
+            new Point2D(0.6730, 0.8000),
+            new Point2D(0.5998, 0.8264),
+            new Point2D(0.5241, 0.8417),
+            new Point2D(0.4484, 0.8417),
+            new Point2D(0.3718, 0.8236),
+            new Point2D(0.2995, 0.7931),
+            new Point2D(0.2280, 0.7444),
+            new Point2D(0.1649, 0.6694),
+            new Point2D(0.1195, 0.5514),
+            new Point2D(0.1279, 0.4083),
+            new Point2D(0.1775, 0.3056)
+    ));
+    // map from Housing color to actual color
+    private final Map<HousingColor, Color> housingColors = new HashMap<>(Map.of(
+            HousingColor.BLUE, Color.BLUE,
+            HousingColor.RED, Color.RED,
+            HousingColor.GREEN, Color.GREEN,
+            HousingColor.YELLOW, Color.YELLOW
+    ));
 
     private Stage stage;
     private StackPane root;
@@ -100,6 +136,9 @@ public class Gui extends Application implements View {
     private Stage choosePositionStage;
     // view components for the circuit and card activation
     private BorderPane adventureBorderPane;
+    // circuit view components
+    private Pane circlesLayer;
+    private ImageView circuitImageView;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -107,7 +146,7 @@ public class Gui extends Application implements View {
     }
 
     /**
-     * method called when a property changes, at the moment is used only in response to state changes
+     * method called when a property changes, at the moment is used only in response to game state changes and circuit changes
      *
      * @param evt A PropertyChangeEvent object describing the event source
      *            and the property that has changed.
@@ -115,19 +154,12 @@ public class Gui extends Application implements View {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
+            // the game state changes: usually the view changes, sometimes has some small modifications
             case "gameState" -> statesQueue.add((GameState) evt.getNewValue());
+            // the circuit changes (only in the right game states): the circuit view is updated
             case "circuit" -> {
                 if (controller.getState() == GameState.DRAW_CARD || controller.getState() == GameState.CARD_EFFECT) {
-                    while (!statesQueue.isEmpty()) {
-                        synchronized (statesQueue) {
-                            try {
-                                statesQueue.wait();
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                    updateCircuit((int) evt.getOldValue(), (int) evt.getNewValue());
+                    circuitMovesQueue.add(new Pair<>((int) evt.getOldValue(), (int) evt.getNewValue()));
                 }
             }
         }
@@ -208,10 +240,6 @@ public class Gui extends Application implements View {
             default -> genericErrorView(state);
         }
         stage.show();
-    }
-
-    private void updateCircuit(int oldPos, int newPos) {
-
     }
 
     /*
@@ -715,6 +743,8 @@ public class Gui extends Application implements View {
 
     /**
      * called when the user click the "place" button, it shows a hint label and enable the click on the components slots
+     *
+     * @param isError: has to be set true if the user tries to place a component in an occupied slot
      */
     private void placeComponentView(boolean isError) {
         backButton.setVisible(true);
@@ -723,12 +753,13 @@ public class Gui extends Application implements View {
         hintLabel.setText("Click on the empty cell where you want to insert the component");
         hintLabel.setVisible(true);
         errorLabel.setVisible(false);
+        // if previously the user tried to place the component in an occupied slot, the view notifies it and re-show
+        // the "new component" view that allow the user to place the component
         if (isError) {
             errorLabel.setVisible(true);
             errorLabel.setText("You cannot place a component in an occupied position!");
             newComponentView();
         }
-
     }
 
     /**
@@ -863,6 +894,11 @@ public class Gui extends Application implements View {
         fillShipboard(idMatrix, rotationsMatrix, bookedComponents, otherPlayerShipCordToImg);
     }
 
+    /**
+     * this method creates and shows a modal stage to ask the user in which position he wants to be placed on the circuit,
+     * it is shown when the user decides to stop building or when the time ends
+     * @param isError: true if the previously chosen position was already occupied
+     */
     private void choosePositionView(boolean isError) {
         choosePositionStage = new Stage();
         choosePositionStage.initModality(Modality.APPLICATION_MODAL);
@@ -877,7 +913,6 @@ public class Gui extends Application implements View {
         }
 
         String tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-5" + IMG_PNG_EXTENSION;
-        Logger.debug(tmpResourcePath);
         Image circuitImage = new Image(this.getClass().getResource(tmpResourcePath).toExternalForm());
         ImageView circuitImageView = new ImageView(circuitImage);
         circuitImageView.setPreserveRatio(true);
@@ -915,6 +950,11 @@ public class Gui extends Application implements View {
         root.getChildren().add(box);
     }
 
+    /**
+     * view that is shown when it's time to start the actual game, the view displays the circuit (with the players) and
+     * some buttons: top buttons allow the user to look at other player's ship, bottom button allows the user to look at his ship,
+     * the right column shows some details about the match and the playing card and allows the user to leave the flight
+     */
     private void advStartedView() {
         if (firstAdventureStart) {
             root.getChildren().clear();
@@ -924,7 +964,6 @@ public class Gui extends Application implements View {
             /* top button container */
             HBox topBox = new HBox(50);
             topBox.setAlignment(Pos.CENTER);
-
             List<Player> playerList;
             synchronized (controller.getFlyboardLock()) {
                 playerList = new ArrayList<>(controller.getFlyBoard().getPlayers());
@@ -938,27 +977,21 @@ public class Gui extends Application implements View {
                     topBox.getChildren().add(butt);
                 }
             }
-
-            /*topBox.getChildren().addAll(
-                    new Button("giocatore 1"),
-                    new Button("giocatore 2"),
-                    new Button("giocatore 3")
-            );*/
-
             adventureBorderPane.setTop(topBox);
 
             /* bottom button container */
             HBox bottomBox = new HBox(50);
-            topBox.setAlignment(Pos.CENTER);
+            bottomBox.setAlignment(Pos.CENTER);
             Button showShipBtn = new Button("Show your shipboard");
             showShipBtn.setOnAction(evt -> lookAtOtherShipboardView(controller.getNickname()));
             bottomBox.getChildren().addAll(showShipBtn);
             adventureBorderPane.setBottom(bottomBox);
 
-            /* right column container */
+            /* right column */
             VBox rightColumn = new VBox(20);
             rightColumn.setAlignment(Pos.CENTER);
             rightColumn.setPadding(new Insets(10, 10, 10, 10));
+
             VBox cardContainer = new VBox(10);
             cardContainer.setAlignment(Pos.CENTER);
             cardContainer.setPadding(new Insets(10, 10, 10, 10));
@@ -973,73 +1006,68 @@ public class Gui extends Application implements View {
             });
             drawCardButton.setVisible(false);
             cardContainer.getChildren().addAll(cardImageView, drawCardButton);
+
             Button leaveFlightBtn = new Button("Leave the flight");
             leaveFlightBtn.setOnAction(evt -> {
                 leaveFlightConfirm();
             });
             rightColumn.getChildren().addAll(cardContainer, leaveFlightBtn);
+
             adventureBorderPane.setRight(rightColumn);
 
             /* circuit visualisation region */
+
+            /*
+             * the circuit is made of two components, layered in a stack pane:
+             * - circuitImageView: contains the circuit image
+             * - circlesLayer: contains the circles that represent the player's rocket on the circuit
+            */
             VBox center = new VBox(20);
             center.setAlignment(Pos.CENTER);
             StackPane imgContainer = new StackPane();
-            Pane circlesLayer = new Pane();
+            circlesLayer = new Pane();
             tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-5" + IMG_PNG_EXTENSION;
             Image circuitImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
-            ImageView circuitImageView = new ImageView(circuitImage);
+            circuitImageView = new ImageView(circuitImage);
             circuitImageView.setFitHeight(tilesSideLength * 6);
             circuitImageView.setPreserveRatio(true);
-
+            // the width of the circle layer is fixed to the width of the circuit image
             circlesLayer.setMinWidth(circuitImageView.getBoundsInParent().getWidth());
             circlesLayer.setPrefWidth(circuitImageView.getBoundsInParent().getWidth());
             circlesLayer.setMaxWidth(circuitImageView.getBoundsInParent().getWidth());
             imgContainer.getChildren().addAll(circuitImageView, circlesLayer);
             center.getChildren().add(imgContainer);
 
-            /* only for testing and cell positioning */
-            List<Point2D> coordList = new ArrayList<>(List.of(
-                    new Point2D(0.2448, 0.2375),
-                    new Point2D(0.3138, 0.1861),
-                    new Point2D(0.3886, 0.1569),
-                    new Point2D(0.4627, 0.1472),
-                    new Point2D(0.5359, 0.1458),
-                    new Point2D(0.6116, 0.1625),
-                    new Point2D(0.6856, 0.1944),
-                    new Point2D(0.7546, 0.2417),
-                    new Point2D(0.8210, 0.3181),
-                    new Point2D(0.8665, 0.4333),
-                    new Point2D(0.8597, 0.5806),
-                    new Point2D(0.8101, 0.6861),
-                    new Point2D(0.7453, 0.7583),
-                    new Point2D(0.6730, 0.8000),
-                    new Point2D(0.5998, 0.8264),
-                    new Point2D(0.5241, 0.8417),
-                    new Point2D(0.4484, 0.8417),
-                    new Point2D(0.3718, 0.8236),
-                    new Point2D(0.2995, 0.7931),
-                    new Point2D(0.2280, 0.7444),
-                    new Point2D(0.1649, 0.6694),
-                    new Point2D(0.1195, 0.5514),
-                    new Point2D(0.1279, 0.4083),
-                    new Point2D(0.1775, 0.3056)
-            ));
-
-            for(Point2D coord : coordList){
-                double x = coord.getX() * circuitImageView.getBoundsInParent().getWidth();
-                double y = coord.getY() * circuitImageView.getBoundsInParent().getHeight();
-                Circle circle = new Circle(10, Color.BLUE);
-                circle.setLayoutX(x);
-                circle.setLayoutY(y);
-                circlesLayer.getChildren().add(circle);
-            }
-
-            /* end of section */
+            //circuit initialization
+            updateCircuit();
 
             adventureBorderPane.setCenter(center);
 
             root.getChildren().add(adventureBorderPane);
             firstAdventureStart = false;
+
+            /*
+             * thread that check the circuitMovesQueue for changes in the circuit and, if there isn't any pending game state,
+             * updates the circuit view, else it waits until the state states are made
+             */
+            Thread circuitUpdater = new Thread(() -> {
+                while(true){
+                    try {
+                        Pair<Integer, Integer> p = circuitMovesQueue.take();
+                        while(!statesQueue.isEmpty()){
+                            synchronized (statesQueue) {
+                                statesQueue.wait();
+                            }
+                        }
+                        Platform.runLater(this::updateCircuit);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            circuitUpdater.setDaemon(true);
+            circuitUpdater.start();
+
         }
     }
 
@@ -1105,7 +1133,7 @@ public class Gui extends Application implements View {
      * if the click on the component is enabled, execute different instructions based on the state.
      * - ADD_COMPONENT: forwards to the controller the request to add a component in the clicked position
      * - SWITCH_BOOKED: forwards to the controller the request to swap a component with a booked one
-     *
+     * - BUILDING_SHIP: allows the user to take and place the clicked booked component
      * @param i: row index of the clicked cell
      * @param j: column of the clicked cell
      */
@@ -1139,19 +1167,32 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * forwards to the controller the request to end build
+     */
     private void endBuild() {
         controller.endBuild();
     }
 
+    /**
+     * forwards to the controller the chosen place for the adventure starting
+     * @param place: the chosen place
+     */
     private void choosePlace(int place) {
         choosePositionStage.close();
         controller.choosePlace(place);
     }
 
+    /**
+     * forwards the controller the request to draw the new adventure card
+     */
     private void drawNewAdvCard() {
         controller.drawNewAdvCard();
     }
 
+    /**
+     * creates a modal stage that asks for a confirm to leave the flight, if the user wants to, it calls the "leaveFlight" controller method
+     */
     private void leaveFlightConfirm() {
         Stage alertStage = new Stage();
         alertStage.setTitle("Leave the flight");
@@ -1171,6 +1212,10 @@ public class Gui extends Application implements View {
             alertStage.close();
             controller.leaveFlight();
         });
+        btnBox.getChildren().addAll(cancelBtn, confirmBtn);
+        center.getChildren().addAll(alertLabel, btnBox);
+        alertStage.setScene(new Scene(center));
+        alertStage.show();
     }
 
     /*
@@ -1199,6 +1244,12 @@ public class Gui extends Application implements View {
         refreshBooked(bookedComponents, map);
     }
 
+    /**
+     * updates the booked components in the shipboard view
+     *
+     * @param bookedComponents: booked components to show
+     * @param map:map that link coordinates with the related imageView
+     */
     private void refreshBooked(List<Optional<Integer>> bookedComponents, Map<Cordinate, ImageView> map) {
         String tmpResourcePath1 = "", tmpResourcePath2 = "";
         for (Cordinate cord : map.keySet()) {
@@ -1240,6 +1291,24 @@ public class Gui extends Application implements View {
             ColumnConstraints columnConstraints = new ColumnConstraints();
             columnConstraints.setPrefWidth(tilesHeight);
             grid.getColumnConstraints().add(columnConstraints);
+        }
+    }
+
+    /**
+     * clear the circle layer for the circuit, then place the circle of the player in the right position
+     */
+    private void updateCircuit() {
+        List<Optional<Player>> circuit = new ArrayList<>(controller.getCircuit());
+        circlesLayer.getChildren().clear();
+        for (int i = 0; i < coordList.size(); i++) {
+            if (circuit.get(i).isPresent()) {
+                double x = coordList.get(i).getX() * circuitImageView.getBoundsInParent().getWidth();
+                double y = coordList.get(i).getY() * circuitImageView.getBoundsInParent().getHeight();
+                Circle circle = new Circle(7, housingColors.get(circuit.get(i).get().getColor()));
+                circle.setLayoutX(x);
+                circle.setLayoutY(y);
+                circlesLayer.getChildren().add(circle);
+            }
         }
     }
 }

@@ -86,7 +86,6 @@ public class ClientController {
         }
         if (oldState != state) {
             support.firePropertyChange("gameState", oldState, state);
-            Logger.debug(oldState + " -> " + state);
         }
     }
 
@@ -96,7 +95,7 @@ public class ClientController {
         }
     }
 
-    public void setCardState(CardState state){
+    public void setCardState(CardState state) {
         CardState oldState;
         synchronized (cardStateLock) {
             oldState = this.cardState;
@@ -108,12 +107,11 @@ public class ClientController {
         }
     }
 
-    public CardState getCardState(){
+    public CardState getCardState() {
         synchronized (cardStateLock) {
             return cardState;
         }
     }
-
 
 
     public void applyStardust(SldStardust card) {
@@ -207,6 +205,12 @@ public class ClientController {
         return inHandDeck;
     }
 
+    public List<Optional<Player>> getCircuit() {
+        synchronized (flyboardLock) {
+            return flyBoard.getCircuit();
+        }
+    }
+
     /*
      * methods called by the server to update the game state (and the model)
      */
@@ -225,11 +229,11 @@ public class ClientController {
         }
     }
 
-    public void setCard(int idCard){
+    public void setCard(int idCard) {
         this.card = flyBoard.getSldAdvCardByID(idCard);
     }
 
-    public SldAdvCard getPlayedCard(){
+    public SldAdvCard getPlayedCard() {
         return card;
     }
 
@@ -267,16 +271,25 @@ public class ClientController {
 
     public void setAvailablePlaces(List<Integer> availablePlaces) {
         synchronized (listLock) {
-            this.availablePlacesOnCircuit = availablePlaces;
+            this.availablePlacesOnCircuit = new ArrayList<>(availablePlaces);
         }
     }
 
-    public void addOtherPlayerToCircuit(String nickname, int place){
-        synchronized (flyboardLock){
+    public void addOtherPlayerToCircuit(String nickname, int place) {
+        synchronized (flyboardLock) {
             flyBoard.addPlayerToCircuit(nickname, place);
         }
-        support.firePropertyChange("circuit", null, place);
-        //TODO IMPLEMENTARE L'AGGIORNAMENTO DELLA GUI/TUI
+    }
+
+    public void advancePlayer(String nickname, int steps) {
+        int oldPos, newPos;
+        synchronized (flyboardLock) {
+            Player player = flyBoard.getPlayerByUsername(nickname);
+            oldPos = flyBoard.getPlayerPositionOnCircuit(nickname);
+            flyBoard.moveDays(player, steps);
+            newPos = flyBoard.getPlayerPositionOnCircuit(nickname);
+        }
+        support.firePropertyChange("circuit",oldPos,newPos);
     }
 
     /*
@@ -339,8 +352,7 @@ public class ClientController {
             try {
                 server.endBuild(idGame, nickname);
                 System.out.println("ho modificato");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -401,16 +413,16 @@ public class ClientController {
         setState(GameState.BUILDING_SHIP);
     }
 
-    public void getBooked(int index){
+    public void getBooked(int index) {
         int ret = -1;
-        if(index == 0 || index == 1){
+        if (index == 0 || index == 1) {
             synchronized (shipboardLock) {
-                if(shipBoard.getBookedComponents().get(index).isPresent()) {
+                if (shipBoard.getBookedComponents().get(index).isPresent()) {
                     inHandComponent = shipBoard.getBookedComponents().get(index).get();
-                    if(index == 0){
+                    if (index == 0) {
                         shipBoard.getBookedComponents().remove(index);
                         shipBoard.getBookedComponents().add(Optional.empty());
-                    }else{
+                    } else {
                         shipBoard.getBookedComponents().set(index, Optional.empty());
                     }
 
@@ -452,34 +464,37 @@ public class ClientController {
         }
     }
 
-    public void drawNewAdvCard(){
+    public void drawNewAdvCard() {
 
     }
 
-    public void activateDoubleEngine(int number){
-        try{
+    public void activateDoubleEngine(int number) {
+        try {
             server.activateDoubleEngine(idGame, nickname, number);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void advancePlayer(String nickname, int steps){
-        Player player = flyBoard.getPlayerByUsername(nickname);
-        flyBoard.moveDays(player, steps);
+
+
+    public void leaveFlight() {
+        try {
+            server.leaveFlight(idGame, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void leaveFlight(){
-        throw new RuntimeException("NOT IMPLEMENTED YET");
+    public void addCredits(int credits) {
+        synchronized (flyboardLock) {
+            flyBoard.getPlayerByUsername(nickname).addCredits(credits);
+        }
     }
 
-    public void addCredits(int credits){
-        flyBoard.getPlayerByUsername(nickname).addCredits(credits);
-    }
-
-    public void crewLost(String nickname, List<Cordinate> housingCordinates){
+    public void crewLost(String nickname, List<Cordinate> housingCordinates) {
         ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-        for(Cordinate cord : housingCordinates){
+        for (Cordinate cord : housingCordinates) {
             ship.getOptComponentByCord(cord).get().removeGuest();
         }
     }

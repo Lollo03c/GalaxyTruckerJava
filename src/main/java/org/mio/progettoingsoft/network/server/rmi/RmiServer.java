@@ -106,7 +106,13 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         controller.applyStardust(idGame, card);
     }
 
+    @Override
     public void activateDoubleEngine(int idGame, String nickname, int number) throws RemoteException{
         controller.activateDoubleEngine(idGame, nickname, number);
+    }
+
+    @Override
+    public void leaveFlight(int idGame, String nickname) throws RemoteException {
+        controller.leaveFlight(idGame, nickname);
     }
 }

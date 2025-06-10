@@ -24,4 +24,6 @@ public interface VirtualServer extends Remote {
     void applyStardust(int idGame, String nickname, SldStardust card) throws Exception;
 
     void activateDoubleEngine(int idGame, String nickname, int number) throws Exception;
+
+    void leaveFlight(int idGame, String nickname) throws Exception;
 }

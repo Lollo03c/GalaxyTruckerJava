@@ -250,6 +250,7 @@ public class ServerController {
             }
             state = GameState.WRONG_POSITION;
         }
+
         try {
             client.setState(state);
             if(flyBoard.isReadyToAdventure()) {
@@ -337,6 +338,22 @@ public class ServerController {
 
             default -> {
                 Logger.error("carta non valida per effetto activeDoubleEngine");
+            }
+        }
+    }
+
+    public void leaveFlight(int idGame, String nickname){
+        //TODO: this is only for testing of the circuit update, this must be replaced with the actual functionality
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        flyBoard.moveDays(flyBoard.getPlayerByUsername(nickname), 4);
+
+        for (String nick : game.getClients().keySet()){
+            VirtualClient client = game.getClients().get(nick);
+            try {
+                client.advancePlayer(nickname, 4);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     }

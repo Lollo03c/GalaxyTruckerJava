@@ -72,17 +72,6 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
-    /**
-     * utility method used to send messages to the server
-     *
-     * @param message
-     */
-    private void sendMessage(Message message) throws IOException {
-        out.writeObject(message);
-        out.flush();
-        out.reset();
-    }
-
     @Override
     public void applyStardust(int idGame, String nickname, SldStardust card) {
         Message message = new StardustMessage(idGame, nickname, card);
@@ -95,36 +84,38 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void endBuild(int idGame, String nickname) throws Exception{
+    public void endBuild(int idGame, String nickname) throws IOException{
         Message message = new EndBuildMessage(idGame, nickname);
-        try{
-            sendMessage(message);
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
+        sendMessage(message);
     }
 
     @Override
-    public void choosePlace(int idGame, String nickname, int place) throws RemoteException {
+    public void choosePlace(int idGame, String nickname, int place) throws IOException {
         Message message = new ChoosePlacementMessage( idGame, nickname,  place);
-        try{
-            sendMessage(message);
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-        //controller.choosePlace(idGame, nickname, place);
+        sendMessage(message);
     }
 
     @Override
-    public void activateDoubleEngine(int idGame, String nickname, int number) throws RemoteException{
+    public void activateDoubleEngine(int idGame, String nickname, int number) throws IOException{
         Message message = new DoubleEngineMessage(idGame, nickname, number);
-        try{
-            sendMessage(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sendMessage(message);
+    }
+
+    @Override
+    public void leaveFlight(int idGame, String nickname) throws IOException {
+        Message message = new LeaveMessage(idGame, nickname);
+        sendMessage(message);
+    }
+
+    /**
+     * utility method used to send messages to the server
+     *
+     * @param message
+     */
+    private void sendMessage(Message message) throws IOException {
+        out.writeObject(message);
+        out.flush();
+        out.reset();
     }
 
 }

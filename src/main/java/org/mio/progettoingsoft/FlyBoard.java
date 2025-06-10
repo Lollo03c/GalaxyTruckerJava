@@ -142,6 +142,10 @@ public abstract class FlyBoard implements FlyBoardServer {
         return availablePlaces;
     }
 
+    public int getPlayerPositionOnCircuit(String nickname){
+        return circuit.indexOf(Optional.of(getPlayerByUsername(nickname)));
+    }
+
     public boolean isReadyToAdventure(){
         return this.getScoreBoard().size() == this.getNumPlayers();
     }

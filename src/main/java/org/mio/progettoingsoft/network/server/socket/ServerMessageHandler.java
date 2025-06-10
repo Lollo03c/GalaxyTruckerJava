@@ -70,6 +70,10 @@ public class ServerMessageHandler implements Runnable {
                         serverController.activateDoubleEngine(doubleEngineMessage.getGameId(), doubleEngineMessage.getNickname(), doubleEngineMessage.getNumber());
                     }
 
+                    case LeaveMessage leaveMessage -> {
+                        serverController.leaveFlight(leaveMessage.getGameId(), leaveMessage.getNickname());
+                    }
+
                     default -> {}
                 }
             } catch (InterruptedException e) {
