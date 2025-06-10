@@ -225,6 +225,8 @@ public class Gui extends Application implements View {
             case GAME_MODE -> askForSettingsView();
             case WAITING_PLAYERS -> waitingForPlayersView();
             case BUILDING_SHIP -> buildingShipView();
+            case CHOICE_BUILT -> choiceBuiltView(false);
+            case INVALID_SHIP_CHOICE -> choiceBuiltView(true);
             case COMPONENT_MENU -> newComponentView();
             case UNABLE_UNCOVERED_COMPONENT -> unableUncoveredView();
             case ADD_COMPONENT -> placeComponentView(false);
@@ -512,6 +514,12 @@ public class Gui extends Application implements View {
             shipRightColumn.getChildren().addAll(viewOtherPlayersBox, inHandBox);
             shipViewBorderPane.setRight(shipRightColumn);
 
+            /* TESTING SECTION */
+            Button loadShipBtn = new Button("Load built-in shipboard");
+            loadShipBtn.setOnAction(evt -> controller.setState(GameState.CHOICE_BUILT));
+            shipRightColumn.getChildren().addAll(loadShipBtn);
+            /* END TESTING SECTION */
+
             /* ------------ SHIPBOARD CONTAINER ------------*/
 
             shipboardBorderPane = new BorderPane();
@@ -646,6 +654,38 @@ public class Gui extends Application implements View {
             fillShipboard(idMatrix, rotationsMatrix, bookedComponents, cordToImageViews);
         }
         isComponentBoxClickable = true;
+    }
+
+    private void choiceBuiltView(boolean isError){
+        Stage choiceBuiltStage = new Stage();
+        choiceBuiltStage.setTitle("Built view");
+        choiceBuiltStage.setResizable(false);
+        choiceBuiltStage.initModality(Modality.APPLICATION_MODAL);
+        VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(10, 10, 10, 10));
+        if(isError){
+            Label errLabel = new Label("The previously chosen ship is no more available");
+            box.getChildren().add(errLabel);
+        }
+        List<Integer> list;
+        synchronized (controller.getFlyboardLock()) {
+            list = new ArrayList<>(controller.getFlyBoard().getAvailableConstructedShips());
+        }
+        HBox btnBox = new HBox(15);
+        btnBox.setAlignment(Pos.CENTER);
+        btnBox.setPadding(new Insets(30, 30, 30, 30));
+        for(Integer i : list){
+            Button builtButton = new Button("Built " + i);
+            builtButton.setOnAction(event -> {
+                choiceBuiltStage.close();
+                controller.builtDefault(i);
+            });
+            btnBox.getChildren().add(builtButton);
+        }
+        box.getChildren().addAll(btnBox);
+        choiceBuiltStage.setScene(new Scene(box));
+        choiceBuiltStage.show();
     }
 
     /**
@@ -1235,9 +1275,11 @@ public class Gui extends Application implements View {
         for (Cordinate cord : map.keySet()) {
             if (!cord.equals(new Cordinate(0, 5)) && !cord.equals(new Cordinate(0, 6))) {
                 if (idMatrix[cord.getRow()][cord.getColumn()].isPresent() && rotationsMatrix[cord.getRow()][cord.getColumn()].isPresent()) {
-                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + idMatrix[cord.getRow()][cord.getColumn()].get() + IMG_JPG_EXTENSION;
+                    String tmpResourcePath = IMG_PATH + TILES_REL_PATH + (idMatrix[cord.getRow()][cord.getColumn()].get() == 1 ? "" : idMatrix[cord.getRow()][cord.getColumn()].get()) + IMG_JPG_EXTENSION;
                     map.get(cord).setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
                     map.get(cord).setRotate(rotationsMatrix[cord.getRow()][cord.getColumn()].get() * 90);
+                }else{
+                    map.get(cord).setImage(null);
                 }
             }
         }

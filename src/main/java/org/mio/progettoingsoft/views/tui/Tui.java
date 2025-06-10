@@ -1,7 +1,5 @@
 package org.mio.progettoingsoft.views.tui;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import javafx.scene.control.Button;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
@@ -99,8 +97,13 @@ public class Tui implements View {
                 controller.setState(GameState.BUILDING_SHIP);
             }
 
-            case CHOOCE_BUILT -> {
+            case CHOICE_BUILT -> {
                 chooseBuiltShip();
+            }
+
+            case INVALID_SHIP_CHOICE -> {
+                System.out.println("Invalid ship choice");
+                controller.setState(GameState.CHOICE_BUILT);
             }
 
             case STARDUST -> {
@@ -597,7 +600,7 @@ public class Tui implements View {
             controller.builtDefault(chosen);
         }
         catch (Exception e){
-            controller.setState(GameState.CHOOCE_BUILT);
+            controller.setState(GameState.INVALID_SHIP_CHOICE);
         }
 
     }

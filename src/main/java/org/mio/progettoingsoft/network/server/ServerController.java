@@ -216,7 +216,7 @@ public class ServerController {
     }
 
     public void takeBuild(int idGame, String nickname, int indexShip){
-        Logger.debug(nickname + " assaigned to ship " + indexShip);
+        Logger.debug(nickname + " assigned to ship " + indexShip);
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
@@ -237,7 +237,7 @@ public class ServerController {
             try {
                 game.getClients().get(nickname).setState(GameState.INVALID_SHIP_CHOICE);
             } catch (Exception ex) {
-
+                throw new RuntimeException(ex);
             }
         }
 

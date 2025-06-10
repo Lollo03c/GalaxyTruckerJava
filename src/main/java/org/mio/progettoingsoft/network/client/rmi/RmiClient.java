@@ -156,7 +156,7 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
 
     @Override
     public void setBuiltShip(String nickname, int indexBuild) throws RemoteException{
-        executors.submit(() -> controller.assaignBuild(nickname, indexBuild));
+        executors.submit(() -> controller.assignBuild(nickname, indexBuild));
     }
 
     public void setAvailablePlaces(List<Integer> availablePlaces){

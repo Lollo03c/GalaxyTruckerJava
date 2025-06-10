@@ -517,14 +517,10 @@ public abstract class FlyBoard implements FlyBoardServer {
                     player = p;
 
             switch (index) {
-                case 1:
-                    player.setShipBoard(ShipBoardNormal.buildFirst());
-                case 2:
-                    player.setShipBoard(ShipBoardNormal.buildSecond());
-                case 3:
-                    player.setShipBoard(ShipBoardNormal.buildThird());
-                case 4:
-                    player.setShipBoard(ShipBoardNormal.buildFourth());
+                case 1 -> player.setShipBoard(ShipBoardNormal.buildFirst());
+                case 2 -> player.setShipBoard(ShipBoardNormal.buildSecond());
+                case 3 -> player.setShipBoard(ShipBoardNormal.buildThird());
+                case 4 -> player.setShipBoard(ShipBoardNormal.buildFourth());
             }
         }
     }

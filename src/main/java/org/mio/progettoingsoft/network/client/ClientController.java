@@ -10,7 +10,6 @@ import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.rmi.RmiClient;
 import org.mio.progettoingsoft.network.client.socket.SocketClient;
-import org.mio.progettoingsoft.network.messages.BuildShipMessage;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
@@ -362,7 +361,7 @@ public class ClientController {
             }
         }
         else if (chosen == 7){
-            setState(GameState.CHOOCE_BUILT);
+            setState(GameState.CHOICE_BUILT);
         }
     }
 
@@ -472,7 +471,7 @@ public class ClientController {
         }
     }
 
-    public void assaignBuild(String nick, int indexBuild){
+    public void assignBuild(String nick, Integer indexBuild){
         Logger.debug(nick + "assaigned to ship " + indexBuild);
         flyBoard.getAvailableConstructedShips().remove(indexBuild);
 
