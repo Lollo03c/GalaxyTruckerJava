@@ -99,6 +99,10 @@ public class Tui implements View {
                 controller.setState(GameState.BUILDING_SHIP);
             }
 
+            case CHOOCE_BUILT -> {
+                chooseBuiltShip();
+            }
+
             case STARDUST -> {
                 // la riga successiva è da eliminare e passargli la carta pescata
                 SldStardust card = new SldStardust(1,1);
@@ -303,6 +307,7 @@ public class Tui implements View {
         if (mode.equals(GameMode.NORMAL)) {
             System.out.println("5 : Look at decks");
             System.out.println("6 : End ship building");
+            System.out.println("7 : Load automatic shipboard");
         }
         else {
             System.out.println("5 : end building ship");
@@ -317,7 +322,7 @@ public class Tui implements View {
             if (choice < 1) {
                 throw new Exception("");
             }
-            else if (mode.equals(GameMode.NORMAL) && choice > 6){
+            else if (mode.equals(GameMode.NORMAL) && choice > 7){
                 throw new Exception("");
             }
             else if (mode.equals(GameMode.EASY) && choice > 5){
@@ -573,6 +578,28 @@ public class Tui implements View {
         }
 
         controller.bookComponent(possibles.indexOf(chosenComp));
+    }
+
+    private void chooseBuiltShip(){
+        System.out.println("Available built ships setup" );
+        synchronized (controller.getFlyBoard().getAvailableConstructedShips()) {
+            for (int index : controller.getFlyBoard().getAvailableConstructedShips())
+                System.out.println(index);
+        }
+
+        try{
+            int chosen;
+            chosen = Integer.parseInt(scanner.nextLine());
+
+            if (! controller.getFlyBoard().getAvailableConstructedShips().contains(chosen))
+                throw new Exception("");
+
+            controller.builtDefault(chosen);
+        }
+        catch (Exception e){
+            controller.setState(GameState.CHOOCE_BUILT);
+        }
+
     }
 
     private void engineChoice(){

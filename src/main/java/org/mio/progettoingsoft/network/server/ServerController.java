@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
@@ -212,6 +213,35 @@ public class ServerController {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public void takeBuild(int idGame, String nickname, int indexShip){
+        Logger.debug(nickname + " assaigned to ship " + indexShip);
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
+        try{
+            flyBoard.takeCostructedShip(nickname, indexShip);
+
+            for (VirtualClient client : game.getClients().values()){
+                try{
+                    client.setBuiltShip(nickname, indexShip);
+                }
+                catch (Exception e ){
+                    throw new RuntimeException(e);
+                }
+            }
+
+
+        } catch (IncorrectFlyBoardException e) {
+            try {
+                game.getClients().get(nickname).setState(GameState.INVALID_SHIP_CHOICE);
+            } catch (Exception ex) {
+
+            }
+        }
+
+
     }
 
     public void endBuild(int idGame, String nickname) {

@@ -2,7 +2,7 @@ package org.mio.progettoingsoft.network.messages;
 
 import java.io.Serializable;
 
-public sealed abstract class Message  implements Serializable permits AddCreditsMessage, AddPlayerMessage, AdvancePlayerMessage, AvailablePlacesMessage, CardStateMessage, ChoosePlacementMessage, ComponentMessage, CrewLostMessage, DeckMessage, DoubleEngineMessage, DrawCardMessage, EndBuildMessage, FlyBoardMessage, GameIdMessage, GameInfoMessage, LeaveMessage, NicknameMessage, StardustMessage, StateMessage, WelcomeMessage {
+public sealed abstract class Message  implements Serializable permits AddCreditsMessage, AddPlayerMessage, AdvancePlayerMessage, AvailablePlacesMessage, BuildShipMessage, CardStateMessage, ChoosePlacementMessage, ComponentMessage, CrewLostMessage, DeckMessage, DoubleEngineMessage, DrawCardMessage, EndBuildMessage, FlyBoardMessage, GameIdMessage, GameInfoMessage, LeaveMessage, NicknameMessage, StardustMessage, StateMessage, WelcomeMessage {
 
     private final int gameId;
     private final String nickname;

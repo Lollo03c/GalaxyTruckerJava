@@ -57,6 +57,8 @@ public interface VirtualClient extends Remote {
     void setInHandDeck(int deck) throws Exception;
     void addAvailableDeck(int deckNumber) throws Exception;
 
+    void setBuiltShip(String nickname, int indexBuild) throws Exception;
+
     void setAvailablePlaces(List<Integer> availablePlaces) throws Exception;
     void addOtherPlayerToCircuit(String nickname, int place) throws Exception;
 

@@ -55,6 +55,8 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     private HourGlass hourGlass;
 
+    private final List<Integer> availableConstructedShips;
+
 
 
     protected FlyBoard(GameMode mode, Set<String> nicknames) {
@@ -84,6 +86,9 @@ public abstract class FlyBoard implements FlyBoardServer {
         }
 
         circuit = createCircuite();
+
+        availableConstructedShips = new ArrayList<>();
+        availableConstructedShips.addAll(List.of(1, 2, 3, 4));
 
     }
 
@@ -492,4 +497,38 @@ public abstract class FlyBoard implements FlyBoardServer {
             getPlayerByUsername(nickname).copyShipboard(ships.next());
         }
     }
+
+    public List<Integer> getAvailableConstructedShips(){
+        synchronized (availableConstructedShips) {
+            return availableConstructedShips;
+        }
+    }
+
+
+    public void takeCostructedShip(String nickname, Integer index) throws IncorrectFlyBoardException{
+        synchronized (availableConstructedShips) {
+            if (! availableConstructedShips.remove(index)){
+                throw new IncorrectFlyBoardException("");
+            }
+
+            Player player = null;
+            for (Player p : players)
+                if (p.getNickname().equals(nickname))
+                    player = p;
+
+            switch (index) {
+                case 1:
+                    player.setShipBoard(ShipBoardNormal.buildFirst());
+                case 2:
+                    player.setShipBoard(ShipBoardNormal.buildSecond());
+                case 3:
+                    player.setShipBoard(ShipBoardNormal.buildThird());
+                case 4:
+                    player.setShipBoard(ShipBoardNormal.buildFourth());
+            }
+        }
+    }
+
+
+    public abstract ShipBoard getBuiltShip(int index);
 }

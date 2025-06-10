@@ -256,4 +256,16 @@ public class FlyBoardNormal extends FlyBoard {
 
         return advCardsMap;
     }
+
+    @Override
+    public ShipBoard getBuiltShip(int index){
+       switch (index){
+           case 1 : return ShipBoardNormal.buildFirst();
+           case 2 : return ShipBoardNormal.buildSecond();
+           case 3 : return ShipBoardNormal.buildThird();
+           case 4 : return ShipBoardNormal.buildFourth();
+       }
+
+       return null;
+    }
 }

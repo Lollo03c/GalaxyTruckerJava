@@ -156,6 +156,12 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
+    public void setBuiltShip(String nickname, int indexBuild) throws IOException{
+        Message message = new BuildShipMessage(0, nickname, indexBuild);
+        sendMessage(message);
+    }
+
+    @Override
     public void setAvailablePlaces(List<Integer> availablePlaces) throws Exception{
         Message message = new AvailablePlacesMessage(0, "", availablePlaces);
         sendMessage(message);

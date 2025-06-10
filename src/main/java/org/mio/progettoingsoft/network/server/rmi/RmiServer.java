@@ -92,6 +92,11 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
+    public void takeBuild(int idGame, String nickname, int indexShip) throws RemoteException{
+        controller.takeBuild(idGame, nickname, indexShip);
+    }
+
+    @Override
     public void endBuild(int idGame, String nickname) throws RemoteException {
         controller.endBuild(idGame, nickname);
     }

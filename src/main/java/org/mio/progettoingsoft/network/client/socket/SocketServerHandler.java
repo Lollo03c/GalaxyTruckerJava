@@ -73,6 +73,23 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
+    public void takeBuild(int idGame, String nickname, int indexShip) throws IOException{
+        Message message = new BuildShipMessage(idGame, nickname, indexShip);
+        sendMessage(message);
+    }
+
+    /**
+     * utility method used to send messages to the server
+     *
+     * @param message
+     */
+    private void sendMessage(Message message) throws IOException {
+        out.writeObject(message);
+        out.flush();
+        out.reset();
+    }
+
+    @Override
     public void applyStardust(int idGame, String nickname, SldStardust card) {
         Message message = new StardustMessage(idGame, nickname, card);
         try{

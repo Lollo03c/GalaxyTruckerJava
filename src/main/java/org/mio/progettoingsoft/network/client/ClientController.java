@@ -1,17 +1,16 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.OpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
-import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.rmi.RmiClient;
 import org.mio.progettoingsoft.network.client.socket.SocketClient;
+import org.mio.progettoingsoft.network.messages.BuildShipMessage;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
@@ -22,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ClientController {
     private static ClientController instance;
@@ -364,6 +361,9 @@ public class ClientController {
                 throw new RuntimeException(e);
             }
         }
+        else if (chosen == 7){
+            setState(GameState.CHOOCE_BUILT);
+        }
     }
 
     public void drawUncovered(int idComp) {
@@ -462,6 +462,26 @@ public class ClientController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void builtDefault(int index){
+        try{
+            server.takeBuild(idGame, nickname, index);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void assaignBuild(String nick, int indexBuild){
+        Logger.debug(nick + "assaigned to ship " + indexBuild);
+        flyBoard.getAvailableConstructedShips().remove(indexBuild);
+
+        if (nick.equals(nickname)) {
+            shipBoard = flyBoard.getBuiltShip(indexBuild);
+            setState(GameState.BUILDING_SHIP);
+        }
+
+        flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(indexBuild));
     }
 
     public void endBuild() {

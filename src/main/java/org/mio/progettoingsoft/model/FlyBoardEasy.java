@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.AdventureCard;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.ShipBoard;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
@@ -205,5 +206,10 @@ public class FlyBoardEasy extends FlyBoard {
     @Override
     public void setLittleDecks(List<List<Integer>> decks){
         throw new IncorrectFlyBoardException("No little decks to set");
+    }
+
+    @Override
+    public ShipBoard getBuiltShip(int index){
+        return null;
     }
 }

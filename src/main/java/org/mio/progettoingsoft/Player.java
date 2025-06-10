@@ -164,4 +164,8 @@ public class Player {
     public void copyShipboard(ShipBoard shipBoard){
         this.shipBoard = shipBoard;
     }
+
+    public void setShipBoard(ShipBoard shipBoard){
+        this.shipBoard = shipBoard;
+    }
 }

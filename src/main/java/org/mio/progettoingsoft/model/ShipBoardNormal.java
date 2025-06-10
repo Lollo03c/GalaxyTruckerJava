@@ -74,13 +74,10 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(51, new Cordinate(3, 6), 3);
         shipBoard.addComponentToPosition(148, new Cordinate(4,6), 0);
 
-
-        shipBoard.drawShipboard();
-
         return shipBoard;
     }
 
-    private static ShipBoard buildSecond(){
+    public static ShipBoard buildSecond(){
         Set<String> nicks = new HashSet<>();
         nicks.add("anto");
         nicks.add("lollo");
@@ -118,11 +115,10 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(16, new Cordinate(4, 5), 3);
         shipBoard.addComponentToPosition(100, new Cordinate(4, 6), 0);
 
-        shipBoard.drawShipboard();
         return shipBoard;
     }
 
-    private static ShipBoard buildThird(){
+    public static ShipBoard buildThird(){
         Set<String> nicks = new HashSet<>();
         nicks.add("anto");
         nicks.add("lollo");
@@ -149,8 +145,12 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(94, new Cordinate(4,5), 0);
         shipBoard.addComponentToPosition(135, new Cordinate(2,6), 0);
         shipBoard.addComponentToPosition(145, new Cordinate(3,6), 0);
-        shipBoard.drawShipboard();
         return shipBoard;
+    }
+
+    public static ShipBoard buildFourth(){
+        //todo da completare
+        return null;
     }
 
     public static List<ShipBoard> getBuilt(){

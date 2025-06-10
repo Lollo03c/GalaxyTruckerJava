@@ -60,6 +60,10 @@ public class ServerMessageHandler implements Runnable {
                         }
 
                     }
+
+                    case BuildShipMessage buildShipMessage -> {
+                        serverController.takeBuild(buildShipMessage.getGameId(), buildShipMessage.getNickname(), buildShipMessage.getIndexShip());
+                    }
                     case StardustMessage stardustMessage -> {
                         serverController.applyStardust(stardustMessage.getGameId(), stardustMessage.getCard());
                     }
