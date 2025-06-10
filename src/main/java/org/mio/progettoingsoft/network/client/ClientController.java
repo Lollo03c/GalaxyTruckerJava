@@ -333,13 +333,17 @@ public class ClientController {
         } else if (chosen == 2) {
             setState(GameState.DRAW_UNCOVERED_COMPONENTS);
         } else if (chosen == 3) {
+            setState(GameState.VIEW_BOOKED);
+        }
+        else if (chosen == 4){
             setState(GameState.VIEW_SHIP_BUILDING);
-        } else if (chosen == 4 && flyBoard.getMode().equals(GameMode.NORMAL)) {
+        }
+        else if (chosen == 5 && flyBoard.getMode().equals(GameMode.NORMAL)) {
             setState(GameState.VIEW_DECKS_LIST);
-        } else if (chosen == 4 && flyBoard.getMode().equals(GameMode.EASY)) {
+        } else if (chosen == 5 && flyBoard.getMode().equals(GameMode.EASY)) {
             //server.playerReady()
             setState(GameState.END_BUILDING);
-        } else if (chosen == 5) {
+        } else if (chosen == 6) {
             try {
                 server.endBuild(idGame, nickname);
                 System.out.println("ho modificato");
@@ -386,6 +390,14 @@ public class ClientController {
         } catch (IncorrectShipBoardException e) {
             setState(GameState.SWITCH_BOOKED);
         }
+    }
+
+    public void choseBookedComponent(int pos){
+        int idComp = shipBoard.getBookedComponents().get(pos - 1).get();
+        shipBoard.removedBookedComponent(pos - 1 );
+
+        inHandComponent = idComp;
+        setState(GameState.COMPONENT_MENU);
     }
 
     public void bookComponent(int posToRemove) {

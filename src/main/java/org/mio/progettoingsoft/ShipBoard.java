@@ -132,6 +132,11 @@ public abstract class ShipBoard {
         return bookedComponents;
     }
 
+    public void removedBookedComponent(int position){
+        shipComponents[0][5 + position] = Optional.empty();
+        bookedComponents.set(position, Optional.empty());
+    }
+
     // activated firepower: tmp property to store the firepower after activating double drills.
     // How to use: askDoubleDrill, set activFP = base + activated, do whatever you need, then set activated = base
     public double getActivatedFirePower() {

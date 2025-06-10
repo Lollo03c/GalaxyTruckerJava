@@ -98,6 +98,7 @@ public class Tui implements View {
                 System.out.println("Deck is already been taken");
                 controller.setState(GameState.BUILDING_SHIP);
             }
+
             case STARDUST -> {
                 // la riga successiva è da eliminare e passargli la carta pescata
                 SldStardust card = new SldStardust(1,1);
@@ -109,6 +110,7 @@ public class Tui implements View {
 
             case VIEW_DECKS_LIST -> viewDecksList();
 
+            case VIEW_BOOKED -> viewBookedComponents();
             case SWITCH_BOOKED -> switchBookedComponents();
             case CHOOSE_POSITION -> {
                 System.out.println("Choose position");
@@ -291,33 +293,42 @@ public class Tui implements View {
         }
         int choice = -1;
         String input = "";
+        GameMode mode = controller.getFlyBoard().getMode();
 
-        while (choice < 1 || choice > 5) {
-            System.out.println("1 : Pick covered component");
-            System.out.println("2 : Pick uncovered component");
-            System.out.println("3 : View other player's ship");
-            if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL)) {
-                System.out.println("4 : Look at decks");
-                System.out.println("5 : End ship building");
-            }
-            else {
-                System.out.println("4 : end building ship");
-            }
-            System.out.print("Make your choice: ");
+        System.out.println("1 : Pick covered component");
+        System.out.println("2 : Pick uncovered component");
+        System.out.println("3 : Pick booked component");
+        System.out.println("4 : View other player's ship");
 
-            input = scanner.nextLine();
-
-            try {
-                choice = Integer.parseInt(input);
-
-                if (choice < 1 || choice > 6) {
-                    System.out.println(RED + "Invalid choice!" + RESET);
-                }
-            } catch (Exception e) {
-                System.out.println(RED + "Invalid choice!" + RESET);
-            }
-
+        if (mode.equals(GameMode.NORMAL)) {
+            System.out.println("5 : Look at decks");
+            System.out.println("6 : End ship building");
         }
+        else {
+            System.out.println("5 : end building ship");
+        }
+        System.out.print("Make your choice: ");
+
+        input = scanner.nextLine();
+
+        try {
+            choice = Integer.parseInt(input);
+
+            if (choice < 1) {
+                throw new Exception("");
+            }
+            else if (mode.equals(GameMode.NORMAL) && choice > 6){
+                throw new Exception("");
+            }
+            else if (mode.equals(GameMode.EASY) && choice > 5){
+                throw new Exception("");
+            }
+        } catch (Exception e) {
+            System.out.println(RED + "Invalid choice!" + RESET);
+            controller.setState(GameState.BUILDING_SHIP);
+            return;
+        }
+
         controller.handleBuildingShip(choice);
         clearConsole();
     }
@@ -468,6 +479,8 @@ public class Tui implements View {
         System.out.print("Select component to draw (-1 to null) : ");
         int chosen = Integer.parseInt(scanner.nextLine());
 
+        //todo controllo dell'input
+
         if (chosen == -1)
             controller.setState(GameState.BUILDING_SHIP);
         else
@@ -502,6 +515,26 @@ public class Tui implements View {
                 System.out.println((count++) + " " + player.getNickname() + " : " + player.getColor());
             }
         }
+    }
+
+    private void viewBookedComponents(){
+        List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
+        int count = 1;
+
+        for (Optional<Integer> booked : bookedComponents){
+            if (booked.isEmpty())
+                continue;
+
+            System.out.println("Component # " + count++);
+            Component component = controller.getFlyBoard().getComponentById(booked.get());
+            new ShipCell(component).drawCell();
+        }
+
+        System.out.print("Select component to draw (-1 to null) : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        //todo controllo dell'input
+        controller.choseBookedComponent(chosen);
     }
 
     private void switchBookedComponents(){
