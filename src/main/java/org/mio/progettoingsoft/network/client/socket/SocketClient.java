@@ -105,6 +105,8 @@ public class SocketClient implements Client {
 
 
                             case ADD_UNCOVERED -> controller.addUncoveredComponent(componentMessage.getIdComp());
+
+                            case DRAW_UNCOVERED -> controller.removeUncovered(componentMessage.getIdComp());
                         }
                     }
 

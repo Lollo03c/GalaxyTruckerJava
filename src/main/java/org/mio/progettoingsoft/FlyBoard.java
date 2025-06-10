@@ -15,6 +15,7 @@ import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NoMoreComponentsException;
 import org.mio.progettoingsoft.model.FlyBoardEasy;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.FlyBoardServer;
 
@@ -61,6 +62,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         this.coveredComponents = new ArrayList<>();
 
         coveredComponents.addAll(components.keySet());
+        coveredComponents.removeAll(List.of(33, 34, 52, 61));
+
         Collections.shuffle(coveredComponents);
 
 
@@ -191,7 +194,9 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     }
     public void addUncoveredComponent(int c) {
-        this.uncoveredComponents.add(c);
+        synchronized (uncoveredComponents) {
+            this.uncoveredComponents.add(c);
+        }
     }
 
     public Integer chooseComponentFromUncoveredByIndex(int index) throws NoMoreComponentsException {
@@ -476,4 +481,15 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
 
+    public void  automaticBuild(){
+        Iterator<String> nickIter = players.stream().map(p -> p.getNickname()).toList().iterator();
+
+        Iterator<ShipBoard> ships = ShipBoardNormal.getBuilt().iterator();
+
+        while (nickIter.hasNext()){
+            String nickname = nickIter.next();
+
+            getPlayerByUsername(nickname).copyShipboard(ships.next());
+        }
+    }
 }
