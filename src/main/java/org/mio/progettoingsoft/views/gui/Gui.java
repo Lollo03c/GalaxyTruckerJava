@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.views.gui;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -12,6 +13,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -53,6 +56,8 @@ public class Gui extends Application implements View {
 
     // true -> first time in the BUILDING_SHIP view
     private boolean firstBuilding = true;
+    //true -> first time in adventure card view
+    private boolean firstAdventureStart = true;
     private double screenHeight;
     private double screenWidth;
     // height given to the tiles in the shipboard grid
@@ -911,73 +916,131 @@ public class Gui extends Application implements View {
     }
 
     private void advStartedView() {
-        root.getChildren().clear();
-        adventureBorderPane = new BorderPane();
-        adventureBorderPane.setPadding(new Insets(10, 10, 10, 10));
+        if (firstAdventureStart) {
+            root.getChildren().clear();
+            adventureBorderPane = new BorderPane();
+            adventureBorderPane.setPadding(new Insets(10, 10, 10, 10));
 
-        /* top button container */
-        HBox topBox = new HBox(50);
-        topBox.setAlignment(Pos.CENTER);
-        List<Player> playerList;
-        synchronized (controller.getFlyboardLock()) {
-            playerList = new ArrayList<>(controller.getFlyBoard().getPlayers());
-        }
-        for (Player player : playerList) {
-            if (!player.getNickname().equals(controller.getNickname())) {
-                Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
-                butt.setTextAlignment(TextAlignment.CENTER);
-                butt.setWrapText(true);
-                butt.setOnAction(event -> lookAtOtherShipboardView(player.getNickname()));
-                topBox.getChildren().add(butt);
+            /* top button container */
+            HBox topBox = new HBox(50);
+            topBox.setAlignment(Pos.CENTER);
+
+            List<Player> playerList;
+            synchronized (controller.getFlyboardLock()) {
+                playerList = new ArrayList<>(controller.getFlyBoard().getPlayers());
             }
+            for (Player player : playerList) {
+                if (!player.getNickname().equals(controller.getNickname())) {
+                    Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
+                    butt.setTextAlignment(TextAlignment.CENTER);
+                    butt.setWrapText(true);
+                    butt.setOnAction(event -> lookAtOtherShipboardView(player.getNickname()));
+                    topBox.getChildren().add(butt);
+                }
+            }
+
+            /*topBox.getChildren().addAll(
+                    new Button("giocatore 1"),
+                    new Button("giocatore 2"),
+                    new Button("giocatore 3")
+            );*/
+
+            adventureBorderPane.setTop(topBox);
+
+            /* bottom button container */
+            HBox bottomBox = new HBox(50);
+            topBox.setAlignment(Pos.CENTER);
+            Button showShipBtn = new Button("Show your shipboard");
+            showShipBtn.setOnAction(evt -> lookAtOtherShipboardView(controller.getNickname()));
+            bottomBox.getChildren().addAll(showShipBtn);
+            adventureBorderPane.setBottom(bottomBox);
+
+            /* right column container */
+            VBox rightColumn = new VBox(20);
+            rightColumn.setAlignment(Pos.CENTER);
+            rightColumn.setPadding(new Insets(10, 10, 10, 10));
+            VBox cardContainer = new VBox(10);
+            cardContainer.setAlignment(Pos.CENTER);
+            cardContainer.setPadding(new Insets(10, 10, 10, 10));
+            String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
+            Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+            ImageView cardImageView = new ImageView(cardBackImage);
+            cardImageView.setFitHeight(tilesSideLength * 3);
+            cardImageView.setPreserveRatio(true);
+            Button drawCardButton = new Button("Draw new card");
+            drawCardButton.setOnAction(evt -> {
+                drawNewAdvCard();
+            });
+            drawCardButton.setVisible(false);
+            cardContainer.getChildren().addAll(cardImageView, drawCardButton);
+            Button leaveFlightBtn = new Button("Leave the flight");
+            leaveFlightBtn.setOnAction(evt -> {
+                leaveFlightConfirm();
+            });
+            rightColumn.getChildren().addAll(cardContainer, leaveFlightBtn);
+            adventureBorderPane.setRight(rightColumn);
+
+            /* circuit visualisation region */
+            VBox center = new VBox(20);
+            center.setAlignment(Pos.CENTER);
+            StackPane imgContainer = new StackPane();
+            Pane circlesLayer = new Pane();
+            tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-5" + IMG_PNG_EXTENSION;
+            Image circuitImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+            ImageView circuitImageView = new ImageView(circuitImage);
+            circuitImageView.setFitHeight(tilesSideLength * 6);
+            circuitImageView.setPreserveRatio(true);
+
+            circlesLayer.setMinWidth(circuitImageView.getBoundsInParent().getWidth());
+            circlesLayer.setPrefWidth(circuitImageView.getBoundsInParent().getWidth());
+            circlesLayer.setMaxWidth(circuitImageView.getBoundsInParent().getWidth());
+            imgContainer.getChildren().addAll(circuitImageView, circlesLayer);
+            center.getChildren().add(imgContainer);
+
+            /* only for testing and cell positioning */
+            List<Point2D> coordList = new ArrayList<>(List.of(
+                    new Point2D(0.2448, 0.2375),
+                    new Point2D(0.3138, 0.1861),
+                    new Point2D(0.3886, 0.1569),
+                    new Point2D(0.4627, 0.1472),
+                    new Point2D(0.5359, 0.1458),
+                    new Point2D(0.6116, 0.1625),
+                    new Point2D(0.6856, 0.1944),
+                    new Point2D(0.7546, 0.2417),
+                    new Point2D(0.8210, 0.3181),
+                    new Point2D(0.8665, 0.4333),
+                    new Point2D(0.8597, 0.5806),
+                    new Point2D(0.8101, 0.6861),
+                    new Point2D(0.7453, 0.7583),
+                    new Point2D(0.6730, 0.8000),
+                    new Point2D(0.5998, 0.8264),
+                    new Point2D(0.5241, 0.8417),
+                    new Point2D(0.4484, 0.8417),
+                    new Point2D(0.3718, 0.8236),
+                    new Point2D(0.2995, 0.7931),
+                    new Point2D(0.2280, 0.7444),
+                    new Point2D(0.1649, 0.6694),
+                    new Point2D(0.1195, 0.5514),
+                    new Point2D(0.1279, 0.4083),
+                    new Point2D(0.1775, 0.3056)
+            ));
+
+            for(Point2D coord : coordList){
+                double x = coord.getX() * circuitImageView.getBoundsInParent().getWidth();
+                double y = coord.getY() * circuitImageView.getBoundsInParent().getHeight();
+                Circle circle = new Circle(10, Color.BLUE);
+                circle.setLayoutX(x);
+                circle.setLayoutY(y);
+                circlesLayer.getChildren().add(circle);
+            }
+
+            /* end of section */
+
+            adventureBorderPane.setCenter(center);
+
+            root.getChildren().add(adventureBorderPane);
+            firstAdventureStart = false;
         }
-        adventureBorderPane.setTop(topBox);
-
-        /* bottom button container */
-        HBox bottomBox = new HBox(50);
-        topBox.setAlignment(Pos.CENTER);
-        Button showShipBtn = new Button("Show your shipboard");
-        //showShipBtn.setOnAction(evt -> lookAtOtherShipboardView(controller.getNickname()));
-        bottomBox.getChildren().addAll(showShipBtn);
-        adventureBorderPane.setBottom(bottomBox);
-
-        /* right column container */
-        VBox rightColumn = new VBox(20);
-        rightColumn.setAlignment(Pos.CENTER);
-        rightColumn.setPadding(new Insets(10, 10, 10, 10));
-        VBox cardContainer = new VBox(10);
-        cardContainer.setAlignment(Pos.CENTER);
-        cardContainer.setPadding(new Insets(10, 10, 10, 10));
-        String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
-        Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
-        ImageView cardImageView = new ImageView(cardBackImage);
-        cardImageView.setFitHeight(tilesSideLength * 3);
-        cardImageView.setPreserveRatio(true);
-        Button drawCardButton = new Button("Draw new card");
-        drawCardButton.setOnAction(evt -> {
-            drawNewAdvCard();
-        });
-        drawCardButton.setVisible(false);
-        cardContainer.getChildren().addAll(cardImageView, drawCardButton);
-        Button leaveFlightBtn = new Button("Leave the flight");
-        leaveFlightBtn.setOnAction(evt -> {
-            leaveFlightConfirm();
-        });
-        rightColumn.getChildren().addAll(cardContainer, leaveFlightBtn);
-        adventureBorderPane.setRight(rightColumn);
-
-        /* circuit visualisation region */
-        VBox center = new VBox(20);
-        center.setAlignment(Pos.CENTER);
-        tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-5" + IMG_PNG_EXTENSION;
-        Image circuitImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
-        ImageView circuitImageView = new ImageView(circuitImage);
-        circuitImageView.setFitHeight(tilesSideLength * 6.5);
-        circuitImageView.setPreserveRatio(true);
-        center.getChildren().addAll(circuitImageView);
-        adventureBorderPane.setCenter(center);
-
-        root.getChildren().add(adventureBorderPane);
     }
 
     /*
@@ -1038,12 +1101,14 @@ public class Gui extends Application implements View {
         uncoveredComponentsTilePane.setVisible(false);
     }
 
-    /// if the click on the component is enabled, execute different instructions based on the state.
-    /// - ADD_COMPONENT: forwards to the controller the request to add a component in the clicked position
-    /// - SWITCH_BOOKED: forwards to the controller the request to swap a component with a booked one
-    ///
-    /// @param i: row index of the clicked cell
-    /// @param j: column of the clicked cell
+    /**
+     * if the click on the component is enabled, execute different instructions based on the state.
+     * - ADD_COMPONENT: forwards to the controller the request to add a component in the clicked position
+     * - SWITCH_BOOKED: forwards to the controller the request to swap a component with a booked one
+     *
+     * @param i: row index of the clicked cell
+     * @param j: column of the clicked cell
+     */
     private void spComponentAction(int i, int j) {
         if (isComponentBoxClickable) {
             GameState state = controller.getState();
@@ -1051,9 +1116,9 @@ public class Gui extends Application implements View {
                 case ADD_COMPONENT -> {
                     if (!((i == 0) && ((j == 5) || (j == 6))))
                         Logger.debug("ComponentId :" + controller.getInHandComponent());
-                        Logger.debug("Rotation : " + controller.getTmpRotation());
-                        Logger.debug("Cordinate : " + "(" + i + ", " + j + ")");
-                        controller.addComponent(new Cordinate(i, j), controller.getTmpRotation());
+                    Logger.debug("Rotation : " + controller.getTmpRotation());
+                    Logger.debug("Cordinate : " + "(" + i + ", " + j + ")");
+                    controller.addComponent(new Cordinate(i, j), controller.getTmpRotation());
                 }
                 case SWITCH_BOOKED -> {
                     if ((i == 0) && ((j == 5) || (j == 6)))
