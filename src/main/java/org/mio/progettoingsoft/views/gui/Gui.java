@@ -897,6 +897,7 @@ public class Gui extends Application implements View {
     /**
      * this method creates and shows a modal stage to ask the user in which position he wants to be placed on the circuit,
      * it is shown when the user decides to stop building or when the time ends
+     *
      * @param isError: true if the previously chosen position was already occupied
      */
     private void choosePositionView(boolean isError) {
@@ -1021,7 +1022,7 @@ public class Gui extends Application implements View {
              * the circuit is made of two components, layered in a stack pane:
              * - circuitImageView: contains the circuit image
              * - circlesLayer: contains the circles that represent the player's rocket on the circuit
-            */
+             */
             VBox center = new VBox(20);
             center.setAlignment(Pos.CENTER);
             StackPane imgContainer = new StackPane();
@@ -1051,10 +1052,10 @@ public class Gui extends Application implements View {
              * updates the circuit view, else it waits until the state states are made
              */
             Thread circuitUpdater = new Thread(() -> {
-                while(true){
+                while (true) {
                     try {
                         Pair<Integer, Integer> p = circuitMovesQueue.take();
-                        while(!statesQueue.isEmpty()){
+                        while (!statesQueue.isEmpty()) {
                             synchronized (statesQueue) {
                                 statesQueue.wait();
                             }
@@ -1134,6 +1135,7 @@ public class Gui extends Application implements View {
      * - ADD_COMPONENT: forwards to the controller the request to add a component in the clicked position
      * - SWITCH_BOOKED: forwards to the controller the request to swap a component with a booked one
      * - BUILDING_SHIP: allows the user to take and place the clicked booked component
+     *
      * @param i: row index of the clicked cell
      * @param j: column of the clicked cell
      */
@@ -1143,10 +1145,7 @@ public class Gui extends Application implements View {
             switch (state) {
                 case ADD_COMPONENT -> {
                     if (!((i == 0) && ((j == 5) || (j == 6))))
-                        Logger.debug("ComponentId :" + controller.getInHandComponent());
-                    Logger.debug("Rotation : " + controller.getTmpRotation());
-                    Logger.debug("Cordinate : " + "(" + i + ", " + j + ")");
-                    controller.addComponent(new Cordinate(i, j), controller.getTmpRotation());
+                        controller.addComponent(new Cordinate(i, j), controller.getTmpRotation());
                 }
                 case SWITCH_BOOKED -> {
                     if ((i == 0) && ((j == 5) || (j == 6)))
@@ -1176,6 +1175,7 @@ public class Gui extends Application implements View {
 
     /**
      * forwards to the controller the chosen place for the adventure starting
+     *
      * @param place: the chosen place
      */
     private void choosePlace(int place) {
@@ -1248,7 +1248,7 @@ public class Gui extends Application implements View {
      * updates the booked components in the shipboard view
      *
      * @param bookedComponents: booked components to show
-     * @param map:map that link coordinates with the related imageView
+     * @param map:map           that link coordinates with the related imageView
      */
     private void refreshBooked(List<Optional<Integer>> bookedComponents, Map<Cordinate, ImageView> map) {
         String tmpResourcePath1 = "", tmpResourcePath2 = "";
