@@ -10,6 +10,7 @@ import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.views.tui.VisualCard;
 
 import java.util.Iterator;
 import java.util.List;
@@ -101,10 +102,11 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card doesn't have planets");
     }
 
-//    public void drawCard() {
-//        VisualCard visual = new VisualCard(this);
-//        visual.drawCard();
-//    }
+    //draw sta per disegna
+    public void drawCard() {
+        VisualCard visual = new VisualCard(this);
+        visual.drawCard();
+    }
 
     protected void setState(Player player, CardState state, GameServer game){
         this.actualPlayer = player;

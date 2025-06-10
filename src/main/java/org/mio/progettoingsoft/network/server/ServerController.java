@@ -7,6 +7,8 @@ import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
+import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.exceptions.NotYourTurnException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
@@ -268,7 +270,7 @@ public class ServerController {
                 try {
                     c.addOtherPlayerToCircuit(nickname, place);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                        throw new RuntimeException(e);
                 }
             }
             state = GameState.END_BUILDING;
@@ -284,8 +286,11 @@ public class ServerController {
         try {
             client.setState(state);
             if(flyBoard.isReadyToAdventure()) {
+                VirtualClient c2 = game.getClients().get(flyBoard.getScoreBoard().getFirst().getNickname());
+                c2.setState(GameState.YOU_CAN_DRAW_CARD);
                 for (VirtualClient c : game.getClients().values()) {
-                    c.setState(GameState.DRAW_CARD);
+                    if(!c.equals(c2))
+                        c.setState(GameState.DRAW_CARD);
                 }
             }
         } catch (Exception e) {
@@ -294,22 +299,29 @@ public class ServerController {
 
     }
 
-    public void drawCard(int idGame){
+    public void drawCard(int idGame, String nickname ){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
-
+        //controllo per vedere se il giocatore è il Leader
+        if(!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))){
+            throw new NotYourTurnException();
+        }
         SldAdvCard card = flyBoard.drawSldAdvCard();
+        System.out.println("pescata la carta " );
+        card.drawCard();
         for (VirtualClient client : game.getClients().values()){
             try {
                 client.setPlayedCard(card.getId());
-                //todo da settare lo stato al client
+                //setto a tutti i client lo stato NEW_CARD, così la mostra a tutti poi lo switch in base al tipo
+                //di carta e al player lo fa il ClientController
+                client.setState(GameState.NEW_CARD);
             }
             catch (Exception e){
 
             }
         }
-
-        card.init(game);
+        //commentato perchè la maggior parte degli init dà problemi
+        //card.init(game);
     }
 
     public void activateDoubleEngine(int idGame, String  nickname, int number){

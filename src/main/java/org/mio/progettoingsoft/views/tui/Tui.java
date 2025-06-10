@@ -65,7 +65,7 @@ public class Tui implements View {
         switch (state) {
             case START -> printConnectionMenu();
             case NICKNAME -> askNickname();
-            case WAITING -> {}
+            case WAITING ->  checkEndBuilding();
 
             case GAME_MODE -> printGameModeMenu();
             case GAME_START -> {
@@ -146,6 +146,12 @@ public class Tui implements View {
             case ENGINE_CHOICE -> engineChoice();
 
             case CREW_REMOVE_CHOICE -> crewRemove();
+
+            case DRAW_CARD -> { printWaitingTheLeader();}
+
+            case YOU_CAN_DRAW_CARD -> printDrawCardMenu();
+
+            case NEW_CARD -> printNewCard();
         }
     }
 
@@ -181,6 +187,14 @@ public class Tui implements View {
         clearConsole();
     }
 
+    private void printWaitingTheLeader(){
+        System.out.println("Waiting for the leader to draw a new card");
+    }
+
+    private void printNewCard(){
+        System.out.println("A new card has been drawn");
+        controller.getPlayedCard().drawCard();
+    }
 
     private void printChoosePosition(){
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
@@ -206,6 +220,17 @@ public class Tui implements View {
             }
         }
         controller.choosePlace(choice);
+    }
+
+    private void printDrawCardMenu() {
+        String input = "";
+        while (!input.equals("d")) {
+            System.out.println("You are the leader! You can draw a Card, type \"d\" to draw a Card");
+            input = scanner.nextLine();
+            if (input.equals("d")) {
+                controller.drawNewAdvCard();
+            }
+        }
     }
 
     /**
@@ -275,6 +300,10 @@ public class Tui implements View {
         GameInfo gameInfo = new GameInfo(-1, choice == 1 ? GameMode.EASY : GameMode.NORMAL, nPlayers);
         controller.handleGameInfo(gameInfo);
         clearConsole();
+    }
+
+    private void checkEndBuilding(){
+
     }
 
     /**
@@ -617,19 +646,30 @@ public class Tui implements View {
 
     }
 
+    private void drawCard(){
+        controller.drawNewAdvCard();
+    }
+
     private void crewRemove(){
         SldAdvCard card = controller.getPlayedCard();
-        System.out.println("Do you want to accept the card effect (y/n) : " );
+        String choice = "";
+        while(!choice.equals("y") && !choice.equals("n")) {
+            System.out.println("Do you want to accept the card effect (y/n) : ");
 
-        String choice = scanner.nextLine();
-        //todo controllo input
+            choice = scanner.nextLine();
+            //todo controllo input
 
-        if (choice.equals("n")){
+            if (choice.equals("n")) {
 
-            //todo comunicare al server di passare al prossimo player
-            return;
+                //todo comunicare al server di passare al prossimo player
+                return;
+            } else if (choice.equals("y")) {
+                //todo far partire il flusso da qui
+
+                return;
+            }
+            System.out.println(RED + "Invalid choice!" + RESET);
         }
-
 
 
     }

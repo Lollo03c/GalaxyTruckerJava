@@ -120,4 +120,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     public void leaveFlight(int idGame, String nickname) throws RemoteException {
         controller.leaveFlight(idGame, nickname);
     }
+
+    @Override
+    public void drawCard(int idGame, String nickname) throws RemoteException {
+        controller.drawCard(idGame, nickname);
+    }
 }

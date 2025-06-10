@@ -28,4 +28,6 @@ public interface VirtualServer extends Remote {
     void activateDoubleEngine(int idGame, String nickname, int number) throws Exception;
 
     void leaveFlight(int idGame, String nickname) throws Exception;
+
+    void drawCard(int idGame, String nickname) throws Exception;
 }

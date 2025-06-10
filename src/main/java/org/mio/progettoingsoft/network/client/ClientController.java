@@ -211,6 +211,10 @@ public class ClientController {
         }
     }
 
+    public void setCardState(){
+        //todo da settare gli stati a tutti i giocatori: switch in base alla carta uscita
+    }
+
     /*
      * methods called by the server to update the game state (and the model)
      */
@@ -355,7 +359,6 @@ public class ClientController {
         } else if (chosen == 6) {
             try {
                 server.endBuild(idGame, nickname);
-                System.out.println("ho modificato");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -500,7 +503,11 @@ public class ClientController {
     }
 
     public void drawNewAdvCard() {
-
+        try{
+            server.drawCard(idGame,nickname);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     public void activateDoubleEngine(int number) {
