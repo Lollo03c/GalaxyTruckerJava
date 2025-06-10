@@ -160,4 +160,8 @@ public class Player {
     public void setRunning(boolean running) {
         this.isRunning = running;
     }
+
+    public void copyShipboard(ShipBoard shipBoard){
+        this.shipBoard = shipBoard;
+    }
 }

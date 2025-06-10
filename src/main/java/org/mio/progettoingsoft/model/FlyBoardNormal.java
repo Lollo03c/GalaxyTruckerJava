@@ -2,10 +2,7 @@ package org.mio.progettoingsoft.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mio.progettoingsoft.AdventureCard;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.model.enums.GameMode;

@@ -67,8 +67,7 @@ public class Tui implements View {
         switch (state) {
             case START -> printConnectionMenu();
             case NICKNAME -> askNickname();
-            case WAITING -> {
-            }
+            case WAITING -> {}
 
             case GAME_MODE -> printGameModeMenu();
             case GAME_START -> {
@@ -101,7 +100,7 @@ public class Tui implements View {
             }
             case STARDUST -> {
                 // la riga successiva è da eliminare e passargli la carta pescata
-                SldStardust card = new SldStardust(1, 1);
+                SldStardust card = new SldStardust(1,1);
                 System.out.println("STARDUST was drown");
                 controller.applyStardust(card);
             }
@@ -174,15 +173,15 @@ public class Tui implements View {
     }
 
 
-    private void printChoosePosition() {
+    private void printChoosePosition(){
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
         String input = "";
         int choice = -1;
         int k = 0;
         while (!availablePlaces.contains(choice)) {
             controller.getFlyBoard().drawCircuit();
-            System.out.println("In which of these available position do you want to start ?");
-            for (Integer i : availablePlaces) {
+            System.out.println("In which of these available position do you want to start ?" );
+            for ( Integer i : availablePlaces){
                 k = FlyBoardNormal.indexToPosition(i);
                 System.out.println(k);
             }
@@ -271,7 +270,7 @@ public class Tui implements View {
 
     /**
      * Message to notify the clients the start of the game
-     */
+     * */
     private void printStartGameInfo() {
         System.out.println(BLUE + "The game has started!" + RESET);
         System.out.println("Players:");
@@ -283,9 +282,9 @@ public class Tui implements View {
 
     /**
      * Message to show building ship menu
-     */
+     * */
     private void buildingShipMenu() {
-        if (firstBuilding) {
+        if(firstBuilding){
             printStartGameInfo();
             System.out.println(BLUE + "It's time to build your ship!" + RESET);
             firstBuilding = false;
@@ -300,7 +299,8 @@ public class Tui implements View {
             if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL)) {
                 System.out.println("4 : Look at decks");
                 System.out.println("5 : End ship building");
-            } else {
+            }
+            else {
                 System.out.println("4 : end building ship");
             }
             System.out.print("Make your choice: ");
@@ -310,7 +310,7 @@ public class Tui implements View {
             try {
                 choice = Integer.parseInt(input);
 
-                if (choice < 1 || choice > 5) {
+                if (choice < 1 || choice > 6) {
                     System.out.println(RED + "Invalid choice!" + RESET);
                 }
             } catch (Exception e) {
@@ -324,7 +324,7 @@ public class Tui implements View {
 
     /**
      * Prints the menu to add component, asks for row, column and rotation
-     */
+     * */
     private void addComponent() {
         String input = "";
 
@@ -440,24 +440,26 @@ public class Tui implements View {
             }
         }
 
-        if (choice == 1) {
+        if (choice == 1){
             controller.setState(GameState.ADD_COMPONENT);
-        } else if (choice == 2) {
+        }
+        else if (choice == 2){
             controller.discardComponent();
-        } else if (choice == 3) {
+        }
+        else if (choice == 3){
             controller.bookComponent();
         }
     }
 
     private void drawUncoveredComponents() {
         int count = 1;
-        if (controller.getFlyBoard().getUncoveredComponents().isEmpty()) {
+        if (controller.getFlyBoard().getUncoveredComponents().isEmpty()){
             System.out.println("No uncovered Components");
             controller.setState(GameState.BUILDING_SHIP);
             return;
         }
 
-        for (int idComp : controller.getFlyBoard().getUncoveredComponents()) {
+        for (int idComp : controller.getFlyBoard().getUncoveredComponents()){
             System.out.println("Component #" + idComp);
             Component component = controller.getFlyBoard().getComponentById(idComp);
             new ShipCell(component).drawCell();
@@ -472,9 +474,9 @@ public class Tui implements View {
             controller.drawUncovered(chosen);
     }
 
-    private void viewDecksList() {
+    private void viewDecksList(){
         System.out.println("Available decks : ");
-        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()) {
+        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()){
             System.out.println("Deck #" + numberDeck);
         }
         System.out.print("Choose deck number : ");
@@ -483,7 +485,7 @@ public class Tui implements View {
         controller.bookDeck(chosen);
     }
 
-    private void viewDeck() {
+    private void viewDeck(){
         System.out.println("hai in mano il deck #" + controller.getInHandDeck());
         System.out.println("premere invio per continuare");
 
@@ -491,8 +493,8 @@ public class Tui implements View {
         controller.freeDeck();
     }
 
-    private void printPlayersName() {
-        synchronized (controller.getFlyboardLock()) {
+    private void printPlayersName(){
+        synchronized (controller.getFlyboardLock()){
             FlyBoard flyBoard = controller.getFlyBoard();
             int count = 1;
 
@@ -502,11 +504,11 @@ public class Tui implements View {
         }
     }
 
-    private void switchBookedComponents() {
+    private void switchBookedComponents(){
         List<Integer> possibles = new ArrayList<>();
 
         List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
-        for (Optional<Integer> optComp : bookedComponents) {
+        for (Optional<Integer> optComp : bookedComponents){
             if (optComp.isEmpty())
                 continue;
 
@@ -540,7 +542,7 @@ public class Tui implements View {
         controller.bookComponent(possibles.indexOf(chosenComp));
     }
 
-    private void engineChoice() {
+    private void engineChoice(){
         ShipBoard shipBoard = controller.getShipBoard();
 
         int maxAvailable = Integer.max(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());

@@ -46,6 +46,10 @@ public class ServerMessageHandler implements Runnable {
                             case COVERED -> {
                                 serverController.getCoveredComponent(componentMessage.getGameId(), componentMessage.getNickname());
                             }
+
+                            case DRAW_UNCOVERED -> {
+                                serverController.drawUncovered(componentMessage.getGameId(), componentMessage.getNickname(), componentMessage.getIdComp());
+                            }
                         }
                     }
 
