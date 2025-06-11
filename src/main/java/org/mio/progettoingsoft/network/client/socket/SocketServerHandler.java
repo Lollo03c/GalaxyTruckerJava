@@ -117,6 +117,7 @@ public class SocketServerHandler implements VirtualServerSocket {
     public void drawCard(int idGame, String nickname) throws IOException {
         // idCard = 1 perchè non mi interessa l'idCard quando mando l'input da client a Server di pescare : mi servirà al ritorno
         Message message = new DrawCardMessage(idGame,nickname,1);
+        sendMessage(message);
     }
 
     /**

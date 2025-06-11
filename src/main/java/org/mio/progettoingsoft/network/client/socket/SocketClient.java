@@ -139,6 +139,12 @@ public class SocketClient implements Client {
                             controller.addOtherPlayerToCircuit(addPlayerMessage.getOtherPlayerNickname(), addPlayerMessage.getPlace());
                         });
                     }
+
+                    case DrawCardMessage drawCardMessage -> {
+                        executor.submit(() -> {
+                            controller.setCard(drawCardMessage.getIdCard());
+                        });
+                    }
                     case AddCreditsMessage addCreditsMessage -> executor.submit(() -> controller.addCredits(addCreditsMessage.getCredits()));
                     default -> {
                     }

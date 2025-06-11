@@ -25,7 +25,6 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
-import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
@@ -139,6 +138,10 @@ public class Gui extends Application implements View {
     // circuit view components
     private Pane circlesLayer;
     private ImageView circuitImageView;
+    // card management components
+    private Button drawCardButton;
+    private Label waitingForLeaderLabel;
+    private ImageView cardImageView;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -237,7 +240,9 @@ public class Gui extends Application implements View {
             case CHOOSE_POSITION -> choosePositionView(false);
             case WRONG_POSITION -> choosePositionView(true);
             case END_BUILDING -> waitingForAdventureStartView();
-            case DRAW_CARD -> advStartedView();
+            case DRAW_CARD -> advStartedView(false);
+            case YOU_CAN_DRAW_CARD -> advStartedView(true);
+            case NEW_CARD -> loadNewCard();
 
             default -> genericErrorView(state);
         }
@@ -983,6 +988,9 @@ public class Gui extends Application implements View {
         choosePositionStage.show();
     }
 
+    /**
+     * waiting view displayed when the player has finished to build his ship but other players are still building
+     */
     private void waitingForAdventureStartView() {
         root.getChildren().clear();
         VBox box = new VBox();
@@ -996,7 +1004,7 @@ public class Gui extends Application implements View {
      * some buttons: top buttons allow the user to look at other player's ship, bottom button allows the user to look at his ship,
      * the right column shows some details about the match and the playing card and allows the user to leave the flight
      */
-    private void advStartedView() {
+    private void advStartedView(boolean isLeader) {
         if (firstAdventureStart) {
             root.getChildren().clear();
             adventureBorderPane = new BorderPane();
@@ -1038,15 +1046,21 @@ public class Gui extends Application implements View {
             cardContainer.setPadding(new Insets(10, 10, 10, 10));
             String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
             Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
-            ImageView cardImageView = new ImageView(cardBackImage);
+            cardImageView = new ImageView(cardBackImage);
             cardImageView.setFitHeight(tilesSideLength * 3);
             cardImageView.setPreserveRatio(true);
-            Button drawCardButton = new Button("Draw new card");
+
+            drawCardButton = new Button("Draw new card");
             drawCardButton.setOnAction(evt -> {
                 drawNewAdvCard();
             });
-            drawCardButton.setVisible(false);
+            drawCardButton.setVisible(isLeader);
             cardContainer.getChildren().addAll(cardImageView, drawCardButton);
+
+            waitingForLeaderLabel = new Label("Wait for the leader to draw a card!");
+            cardContainer.getChildren().addAll(waitingForLeaderLabel);
+            waitingForLeaderLabel.setAlignment(Pos.CENTER);
+            waitingForLeaderLabel.setVisible(!isLeader);
 
             Button leaveFlightBtn = new Button("Leave the flight");
             leaveFlightBtn.setOnAction(evt -> {
@@ -1109,7 +1123,21 @@ public class Gui extends Application implements View {
             circuitUpdater.setDaemon(true);
             circuitUpdater.start();
 
+        }else{
+            waitingForLeaderLabel.setVisible(!isLeader);
+            drawCardButton.setVisible(isLeader);
+            String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
+            Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+            cardImageView.setImage(cardBackImage);
         }
+    }
+
+    private void loadNewCard(){
+        String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + controller.getPlayedCard().getId() + IMG_JPG_EXTENSION;
+        Image cardImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
+        cardImageView.setImage(cardImage);
+        drawCardButton.setVisible(false);
+        waitingForLeaderLabel.setVisible(false);
     }
 
     /*
@@ -1119,14 +1147,14 @@ public class Gui extends Application implements View {
     /**
      * forwards the request of connection to the controller
      *
-     * @param isRmi: true: rmi connetcion, false: socket connection
+     * @param isRmi: true: rmi connection, false: socket connection
      */
     private void connectToServer(boolean isRmi) {
         controller.connectToServer(isRmi);
     }
 
     /**
-     * verify if the input is ok, then forwards the nicnkame input to the controller
+     * verify if the input is ok, then forwards the nickname input to the controller
      *
      * @param nickname: nickname chosen by the user
      */
@@ -1231,7 +1259,7 @@ public class Gui extends Application implements View {
     }
 
     /**
-     * creates a modal stage that asks for a confirm to leave the flight, if the user wants to, it calls the "leaveFlight" controller method
+     * creates a modal stage that asks for a confirmation to leave the flight, if the user wants to, it calls the "leaveFlight" controller method
      */
     private void leaveFlightConfirm() {
         Stage alertStage = new Stage();
