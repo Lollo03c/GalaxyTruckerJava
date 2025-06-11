@@ -97,6 +97,7 @@ public class ClientController {
 
     public void setCardState(CardState state) {
         CardState oldState;
+
         synchronized (cardStateLock) {
             oldState = this.cardState;
             this.cardState = state;
@@ -105,6 +106,8 @@ public class ClientController {
             support.firePropertyChange("cardState", oldState, state);
             Logger.debug("CARD: " + oldState + " -> " + state);
         }
+
+        setState(GameState.CARD_EFFECT);
     }
 
     public CardState getCardState() {
@@ -234,6 +237,7 @@ public class ClientController {
     }
 
     public void setCard(int idCard) {
+        System.out.println(flyBoard);
         this.card = flyBoard.getSldAdvCardByID(idCard);
     }
 
@@ -261,6 +265,10 @@ public class ClientController {
         }
     }
 
+    public void updateState(){
+
+    }
+
     public void addAvailableDeck(int deckNumber) {
         synchronized (flyBoard.getAvailableDecks()) {
             flyBoard.getAvailableDecks().add(deckNumber);
@@ -285,9 +293,13 @@ public class ClientController {
         }
     }
 
-    public void advancePlayer(String nickname, int steps) {
+    public void advancePlayer(String nickname, int steps, int energyToRemove) {
+        Logger.debug(nickname + "moved " + steps);
         int oldPos, newPos;
         synchronized (flyboardLock) {
+            if(this.nickname.equals(nickname)) {
+                shipBoard.removeEnergy(energyToRemove);
+            }
             Player player = flyBoard.getPlayerByUsername(nickname);
             oldPos = flyBoard.getPlayerPositionOnCircuit(nickname);
             flyBoard.moveDays(player, steps);

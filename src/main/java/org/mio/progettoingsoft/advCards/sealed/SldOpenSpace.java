@@ -51,8 +51,7 @@ public final class SldOpenSpace extends SldAdvCard {
         this.playerIterator = allowedPlayers.iterator();
 
         if (this.playerIterator.hasNext()) {
-            actualPlayer = this.playerIterator.next();
-            setState(actualPlayer, CardState.ENGINE_CHOICE, game);
+            setState(this.playerIterator.next(), CardState.ENGINE_CHOICE, game);
         } else {
             throw new RuntimeException("No allowed players");
         }
@@ -62,7 +61,7 @@ public final class SldOpenSpace extends SldAdvCard {
     // starting from the leader, it activates the double engines (if possible) and moves the player
     // if the player is the last, it sets the card state to FINALIZED (to accept only finish calls)
     // else, it sets the card state to ENGINE_CHOICE to accept other calls with next players
-    public void applyEffect(FlyBoard board, Player player, int numDoubleEngines) {
+    public void applyEffect(FlyBoard board, Player player, int numDoubleEngines, GameServer game) {
         if (this.state != CardState.ENGINE_CHOICE) {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
         }
@@ -82,14 +81,13 @@ public final class SldOpenSpace extends SldAdvCard {
             if (numDoubleEngines > actualPlayer.getShipBoard().getDoubleEngine().size()) {
                 throw new BadParameterException("The number of selected engines is more than the actual engines");
             }
-//            player.getShipBoard().removeEnergy(numDoubleEngines);
+            player.getShipBoard().removeEnergy(numDoubleEngines);
             int base = player.getShipBoard().getBaseEnginePower();
             int power = base + numDoubleEngines * 2;
 
             board.moveDays(actualPlayer, power);
             if (playerIterator.hasNext()) {
-                actualPlayer = playerIterator.next();
-                setState(actualPlayer, CardState.ENGINE_CHOICE, game);
+                setState(playerIterator.next(), CardState.ENGINE_CHOICE, game);
             } else {
                 setState(actualPlayer, CardState.FINALIZED, game);
             }

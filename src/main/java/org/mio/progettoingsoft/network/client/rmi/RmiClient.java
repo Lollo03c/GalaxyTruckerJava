@@ -172,9 +172,9 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         });
     }
 
-
-    public void advancePlayer(String nickname, int steps) throws RemoteException{
-        executors.submit(() -> controller.advancePlayer(nickname, steps));
+    @Override
+    public void advancePlayer(String nickname, int steps, int energyToRemove) throws RemoteException{
+        executors.submit(() -> controller.advancePlayer(nickname, steps, energyToRemove));
     }
 
     public void setPlayedCard(int idCard) throws RemoteException{

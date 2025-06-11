@@ -27,7 +27,7 @@ public class Game implements GameServer, GameClient {
     private int numPlayers;
 
     private final BlockingQueue<Object> receivedMessages = new LinkedBlockingQueue<>();
-    private final GameController gameController = new GameController();
+    private final GameController gameController = new GameController(this);
 
     private Map<String, VirtualClient> clients = new HashMap<>();
 

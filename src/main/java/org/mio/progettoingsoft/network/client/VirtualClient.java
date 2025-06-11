@@ -63,7 +63,7 @@ public interface VirtualClient extends Remote {
     void addOtherPlayerToCircuit(String nickname, int place) throws Exception;
 
     void setPlayedCard(int idCard) throws Exception;
-    void advancePlayer(String nickname, int steps) throws Exception;
+    void advancePlayer(String nickname, int steps, int energyToRemove) throws Exception;
     void addCredits(int credits) throws Exception;
     void crewLost(String nickname, List<Cordinate> housingCordinates) throws Exception;
 }

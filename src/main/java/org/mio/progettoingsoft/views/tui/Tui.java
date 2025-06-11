@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
+import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
@@ -143,8 +144,6 @@ public class Tui implements View {
                 controller.setState(GameState.ADD_COMPONENT);
             }
 
-            case ENGINE_CHOICE -> engineChoice();
-
             case CREW_REMOVE_CHOICE -> crewRemove();
 
             case DRAW_CARD -> { printWaitingTheLeader();}
@@ -152,6 +151,8 @@ public class Tui implements View {
             case YOU_CAN_DRAW_CARD -> printDrawCardMenu();
 
             case NEW_CARD -> printNewCard();
+
+            case CARD_EFFECT -> card_effect_switch();
         }
     }
 
@@ -193,7 +194,7 @@ public class Tui implements View {
 
     private void printNewCard(){
         System.out.println("A new card has been drawn");
-        controller.getPlayedCard().drawCard();
+        controller.getPlayedCard().disegnaCard();
     }
 
     private void printChoosePosition(){
@@ -229,6 +230,25 @@ public class Tui implements View {
             input = scanner.nextLine();
             if (input.equals("d")) {
                 controller.drawNewAdvCard();
+            }
+        }
+    }
+
+    public void card_effect_switch(){
+
+        Logger.debug("");
+        Logger.debug(controller.getCardState().toString());
+        switch(controller.getCardState()){
+            case ENGINE_CHOICE-> {
+                Logger.debug("ao");
+                engineChoice();
+            }
+            case FINALIZED -> {
+                System.out.println("The effect of the card is over, this is the actual circuit");
+                controller.getFlyBoard().drawScoreboard();
+                controller.getFlyBoard().drawScoreboard();
+                controller.getFlyBoard().drawCircuit();
+                controller.updateState();
             }
         }
     }
@@ -634,16 +654,20 @@ public class Tui implements View {
 
     }
 
-    private void engineChoice(){
+    private void  engineChoice(){
+        Logger.debug("scegli i motori da attivare");
         ShipBoard shipBoard = controller.getShipBoard();
 
-        int maxAvailable = Integer.max(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());
-        System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : ");
-        int activated = scanner.nextInt();
-        //todo da controllare l'input
-
-        controller.activateDoubleEngine(activated);
-
+        int maxAvailable = Integer.min(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());
+        System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : )");
+        int activated = -1;
+        while(activated < 0 || activated > maxAvailable) {
+            activated = scanner.nextInt();
+            if(activated >= 0 && activated <= maxAvailable)
+                controller.activateDoubleEngine(activated);
+            else
+                System.out.println(RED + "Invalid activated engine" + RESET);
+        }
     }
 
     private void drawCard(){

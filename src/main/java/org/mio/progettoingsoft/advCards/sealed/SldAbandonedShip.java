@@ -71,7 +71,7 @@ public final class SldAbandonedShip extends SldAdvCard {
     // must be called after the init with the right player
     // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
     // else, it does nothing, and it's ready for another call with the next player
-    public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Cordinate> housingCordinatesList) {
+    public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Cordinate> housingCordinatesList, GameServer game) {
 ////        if (this.state != CardState.CREW_REMOVE_CHOICE || board.getState() != GameState.CARD_EFFECT) {
 //            throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
 //        }
@@ -101,7 +101,7 @@ public final class SldAbandonedShip extends SldAdvCard {
             } else {
                 if (playerIterator.hasNext()) {
 
-                    setState(playerIterator.next(), CardState.CREW_REMOVE_CHOICE, game);
+                    setState(playerIterator.next(), CardState.CREW_REMOVE_CHOICE,  game);
                 } else {
                     this.state = CardState.FINALIZED;
                 }

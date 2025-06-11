@@ -7,20 +7,13 @@ import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
-import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 import org.mio.progettoingsoft.exceptions.NotYourTurnException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
-import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.lang.reflect.Array;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class ServerController {
     /**
@@ -117,9 +110,10 @@ public class ServerController {
             flyboard.moveDays(p, -exposedConnectors);
         }*/
 
-        SldAdvCard nextCard = flyboard.drawSldAdvCard();
-        String type = nextCard.getCardName().toUpperCase();
-        GameState next = GameState.stringToGameState(type);
+        //SldAdvCard nextCard = flyboard.drawSldAdvCard();
+        //String type = nextCard.getCardName().toUpperCase();
+        //GameState next = GameState.stringToGameState(type);
+
         //TODO settare il Gamestate allo stato della carta pescata
         //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
         //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
@@ -306,9 +300,11 @@ public class ServerController {
         if(!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))){
             throw new NotYourTurnException();
         }
-        SldAdvCard card = flyBoard.drawSldAdvCard();
-        System.out.println("pescata la carta " );
-        card.drawCard();
+//        SldAdvCard card = flyBoard.drawSldAdvCard();
+        SldAdvCard card = flyBoard.getSldAdvCardByID(5);
+        flyBoard.setPlayedCard(card);
+
+        card.disegnaCard();
         for (VirtualClient client : game.getClients().values()){
             try {
                 client.setPlayedCard(card.getId());
@@ -320,8 +316,8 @@ public class ServerController {
 
             }
         }
-        //commentato perchè la maggior parte degli init dà problemi
-        //card.init(game);
+        card.init(game);
+
     }
 
     public void activateDoubleEngine(int idGame, String  nickname, int number){
@@ -329,7 +325,6 @@ public class ServerController {
         FlyBoard flyBoard = game.getFlyboard();
         SldAdvCard card = flyBoard.getPlayedCard();
 
-        //todo da controllare che il player sia quello giusto
 
         switch (card){
             case SldOpenSpace openSpace -> {
@@ -337,14 +332,14 @@ public class ServerController {
                 int nSteps = 2 * number + flyBoard.getPlayerByUsername(nickname).getShipBoard().getBaseEnginePower();
                 for (VirtualClient client : game.getClients().values()){
                     try {
-                        client.advancePlayer(nickname, nSteps);
+                        client.advancePlayer(nickname, nSteps, number);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
 
                 //passa al prossimo giocatore
-                openSpace.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), number);
+                openSpace.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), number, game);
             }
 
             default -> {
@@ -365,7 +360,7 @@ public class ServerController {
 
                     try {
                         client.crewLost(nickname, housingCordinates);
-                        client.advancePlayer(nickname, -card.getDaysLost());
+                        client.advancePlayer(nickname, -card.getDaysLost(),0);
 
                         if (nick.equals(nickname))
                             client.addCredits(card.getCredits());
@@ -375,7 +370,7 @@ public class ServerController {
                     }
                 }
 
-                abandonedShip.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), true, housingCordinates);
+                abandonedShip.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), true, housingCordinates, game);
             }
 
             default -> {
@@ -393,7 +388,7 @@ public class ServerController {
         for (String nick : game.getClients().keySet()){
             VirtualClient client = game.getClients().get(nick);
             try {
-                client.advancePlayer(nickname, 4);
+                client.advancePlayer(nickname, 4,0);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

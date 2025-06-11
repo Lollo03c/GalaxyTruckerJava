@@ -132,7 +132,7 @@ public class SocketClient implements Client {
                     }
 
                     case AdvancePlayerMessage advancePlayerMessage ->
-                            executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps()));
+                            executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps(), advancePlayerMessage.getEnergyToRemove()));
 
                     case AddPlayerMessage addPlayerMessage -> {
                         executor.submit(() -> {

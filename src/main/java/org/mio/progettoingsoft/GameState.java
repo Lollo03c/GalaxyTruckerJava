@@ -19,7 +19,6 @@ public enum GameState implements Serializable {
     CREW_REMOVE_CHOICE,
 
     ENGINE_CHOICE
-
     ;
 
     public static GameState stringToGameState(String string){

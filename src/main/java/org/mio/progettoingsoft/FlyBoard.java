@@ -343,13 +343,6 @@ public abstract class FlyBoard implements FlyBoardServer {
         Collections.shuffle(deck);
     }
 
-    public SldAdvCard drawSldAdvCard() {
-        int idCard = deck.removeLast();
-        playedCard = getSldAdvCardByID(idCard);
-
-        return getSldAdvCardByID(idCard);
-    }
-
     public boolean isDeckEmpty() {
         return deck.isEmpty();
     }
@@ -483,6 +476,10 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public SldAdvCard getPlayedCard(){
         return playedCard;
+    }
+
+    public void setPlayedCard(SldAdvCard card){
+        this.playedCard = card;
     }
 
 

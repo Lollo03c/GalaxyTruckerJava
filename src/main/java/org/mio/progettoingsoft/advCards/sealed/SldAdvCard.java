@@ -1,7 +1,6 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.CombatLine;
@@ -23,7 +22,6 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     protected Iterator<Player> playerIterator;
     protected CardState state;
 
-    protected GameServer game;
 
     public abstract String getCardName();
 
@@ -102,8 +100,7 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card doesn't have planets");
     }
 
-    //draw sta per disegna
-    public void drawCard() {
+    public void disegnaCard() {
         VisualCard visual = new VisualCard(this);
         visual.drawCard();
     }

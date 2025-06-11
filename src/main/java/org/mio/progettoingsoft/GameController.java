@@ -5,15 +5,13 @@ import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
+import javax.crypto.EncryptedPrivateKeyInfo;
+
 public class GameController {
-    private GameServer game;
+    private final GameServer game;
 
 
-    public GameController() {
-
-    }
-
-    public void setGame(GameServer game){
+    public GameController(GameServer game) {
         this.game = game;
     }
 
@@ -29,7 +27,8 @@ public class GameController {
 //            case BUILDING_SHIP -> broadcast(new StartGameMessage(game.getIdGame()));
             case ENGINE_CHOICE -> {
                 try{
-                    client.setState(GameState.ENGINE_CHOICE);
+                    client.setCardState(CardState.ENGINE_CHOICE);
+
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

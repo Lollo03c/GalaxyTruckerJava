@@ -198,7 +198,6 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(47, new Cordinate(1,4), 1);
         shipBoard.addComponentToPosition(10, new Cordinate(3,1), 1);
         shipBoard.addComponentToPosition(8, new Cordinate(3,4), 2);
-        shipBoard.drawShipboard();
         return shipBoard;
 
     }
@@ -212,6 +211,7 @@ public class ShipBoardNormal extends ShipBoard {
         return shipBoards;
     }
     public static void main(String[] args) {
-        ShipBoard ship = buildFourth();
+        ShipBoard ship = buildThird();
+        ship.drawShipboard();
     }
 }
