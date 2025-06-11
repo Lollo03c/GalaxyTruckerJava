@@ -475,14 +475,12 @@ public class ClientController {
     }
 
     public void assignBuild(String nick, Integer indexBuild){
-        Logger.debug(nick + "assaigned to ship " + indexBuild);
         flyBoard.getAvailableConstructedShips().remove(indexBuild);
 
         if (nick.equals(nickname)) {
             shipBoard = flyBoard.getBuiltShip(indexBuild);
             setState(GameState.BUILDING_SHIP);
         }
-
         flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(indexBuild));
     }
 

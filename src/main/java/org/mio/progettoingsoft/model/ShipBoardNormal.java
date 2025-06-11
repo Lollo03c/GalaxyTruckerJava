@@ -3,6 +3,8 @@ package org.mio.progettoingsoft.model;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.ShipBoard;
+import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.views.tui.VisualShipboardNormal;
@@ -73,6 +75,21 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(128, new Cordinate(2, 6), 0);
         shipBoard.addComponentToPosition(51, new Cordinate(3, 6), 3);
         shipBoard.addComponentToPosition(148, new Cordinate(4,6), 0);
+
+        shipBoard.getOptComponentByCord(new Cordinate(1,2)).get().addGood(GoodType.BLUE);
+        shipBoard.getOptComponentByCord(new Cordinate(1,2)).get().addGood(GoodType.GREEN);
+        shipBoard.getOptComponentByCord(new Cordinate(4,0)).get().addGood(GoodType.BLUE);
+        shipBoard.getOptComponentByCord(new Cordinate(2,4)).get().addGood(GoodType.RED);
+        shipBoard.getOptComponentByCord(new Cordinate(3,5)).get().addGood(GoodType.YELLOW);
+
+        shipBoard.getOptComponentByCord(new Cordinate(3,1)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(3,1)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2,3)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2,3)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(3,3)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2,5)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(3,6)).get().addAllowedGuest(GuestType.PURPLE);
+        shipBoard.getOptComponentByCord(new Cordinate(3,6)).get().addGuest(GuestType.PURPLE);
 
         return shipBoard;
     }

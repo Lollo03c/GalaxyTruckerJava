@@ -15,16 +15,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
+import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
@@ -661,7 +664,7 @@ public class Gui extends Application implements View {
         isComponentBoxClickable = true;
     }
 
-    private void choiceBuiltView(boolean isError){
+    private void choiceBuiltView(boolean isError) {
         Stage choiceBuiltStage = new Stage();
         choiceBuiltStage.setTitle("Built view");
         choiceBuiltStage.setResizable(false);
@@ -669,7 +672,7 @@ public class Gui extends Application implements View {
         VBox box = new VBox(10);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(10, 10, 10, 10));
-        if(isError){
+        if (isError) {
             Label errLabel = new Label("The previously chosen ship is no more available");
             box.getChildren().add(errLabel);
         }
@@ -680,7 +683,7 @@ public class Gui extends Application implements View {
         HBox btnBox = new HBox(15);
         btnBox.setAlignment(Pos.CENTER);
         btnBox.setPadding(new Insets(30, 30, 30, 30));
-        for(Integer i : list){
+        for (Integer i : list) {
             Button builtButton = new Button("Built " + i);
             builtButton.setOnAction(event -> {
                 choiceBuiltStage.close();
@@ -873,6 +876,7 @@ public class Gui extends Application implements View {
      */
     private void lookAtOtherShipboardView(String nickname) {
         Map<Cordinate, ImageView> otherPlayerShipCordToImg = new HashMap<>();
+        Map<Cordinate, StackPane> otherPlayerShipCordToStackPane = new HashMap<>();
         otherPlayerShipStage = new Stage();
         otherPlayerShipStage.initModality(Modality.APPLICATION_MODAL);
         otherPlayerShipStage.setTitle(nickname + "'s shipboard");
@@ -923,6 +927,7 @@ public class Gui extends Application implements View {
                     sp.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                     otherPlayerShipGrid.add(sp, j, i);
                     otherPlayerShipCordToImg.put(new Cordinate(i, j), imgView);
+                    otherPlayerShipCordToStackPane.put(new Cordinate(i, j), sp);
                 }
             }
         }
@@ -937,6 +942,10 @@ public class Gui extends Application implements View {
             bookedComponents = new ArrayList<>(controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getBookedComponents());
         }
         fillShipboard(idMatrix, rotationsMatrix, bookedComponents, otherPlayerShipCordToImg);
+        synchronized (controller.getFlyboardLock()) {
+            ShipBoard ship = controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard();
+            loadComponentSpecificObjects(ship, otherPlayerShipCordToStackPane);
+        }
     }
 
     /**
@@ -1123,7 +1132,7 @@ public class Gui extends Application implements View {
             circuitUpdater.setDaemon(true);
             circuitUpdater.start();
 
-        }else{
+        } else {
             waitingForLeaderLabel.setVisible(!isLeader);
             drawCardButton.setVisible(isLeader);
             String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
@@ -1132,7 +1141,10 @@ public class Gui extends Application implements View {
         }
     }
 
-    private void loadNewCard(){
+    /**
+     * called when a player draws a new card, it shows the card and make draw card commands invisible
+     */
+    private void loadNewCard() {
         String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + controller.getPlayedCard().getId() + IMG_JPG_EXTENSION;
         Image cardImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
         cardImageView.setImage(cardImage);
@@ -1306,7 +1318,7 @@ public class Gui extends Application implements View {
                     String tmpResourcePath = IMG_PATH + TILES_REL_PATH + (idMatrix[cord.getRow()][cord.getColumn()].get() == 1 ? "" : idMatrix[cord.getRow()][cord.getColumn()].get()) + IMG_JPG_EXTENSION;
                     map.get(cord).setImage(new Image(getClass().getResource(tmpResourcePath).toExternalForm()));
                     map.get(cord).setRotate(rotationsMatrix[cord.getRow()][cord.getColumn()].get() * 90);
-                }else{
+                } else {
                     map.get(cord).setImage(null);
                 }
             }
@@ -1343,6 +1355,82 @@ public class Gui extends Application implements View {
             }
         }
 
+    }
+
+    /**
+     * show graphically the content of ENERGY_DEPOT, DEPOT and HOUSING
+     * @param ship: the shipboard to display the content of
+     * @param map: the map of the stack panes where add the icons
+     */
+    private void loadComponentSpecificObjects(ShipBoard ship, Map<Cordinate, StackPane> map) {
+        for (Cordinate cord : map.keySet()) {
+            if (!((cord.getRow() == 0) && (cord.getColumn() == 5 || cord.getColumn() == 6)) && ship.getOptComponentByCord(cord).isPresent()) {
+                Component c = ship.getOptComponentByCord(cord).get();
+                StackPane sp = map.get(cord);
+                switch (c.getType()) {
+                    case ComponentType.ENERGY_DEPOT -> {
+                        Logger.info("Energy: " + c.getEnergyQuantity().toString());
+                        if (c.getEnergyQuantity() > 0) {
+                            VBox vbox = new VBox();
+                            vbox.setPadding(new Insets(tilesSideLength / 10));
+                            vbox.setAlignment(Pos.BOTTOM_CENTER);
+                            HBox hbox = new HBox(tilesSideLength / 14);
+                            hbox.setAlignment(Pos.CENTER);
+                            hbox.setBackground(new Background(new BackgroundFill(
+                                    Color.rgb(255, 255, 255, 0.5),
+                                    null,
+                                    null
+                            )));
+                            hbox.setPadding(new Insets(tilesSideLength / 18));
+                            vbox.getChildren().add(hbox);
+                            for(int i = 0; i < c.getEnergyQuantity(); i++) {
+                                hbox.getChildren().add(new Circle(tilesSideLength / 12, Color.GREEN));
+                            }
+                            sp.getChildren().add(vbox);
+                        }
+                    }
+                    case ComponentType.HOUSING -> {
+                        Logger.info("Guests: " + c.getGuests().toString());
+                        if(!c.getGuests().isEmpty()) {
+                            HBox hbox = new HBox(tilesSideLength / 12);
+                            hbox.setAlignment(Pos.CENTER);
+                            for(int i = 0; i < c.getGuests().size(); i++) {
+                                Color color;
+                                switch(c.getGuests().get(i)){
+                                    case HUMAN -> color = Color.DARKSLATEGREY;
+                                    case PURPLE -> color = Color.FUCHSIA;
+                                    case BROWN -> color = Color.SANDYBROWN;
+                                    default -> color = Color.BLACK;
+                                }
+                                hbox.getChildren().add(new Circle(tilesSideLength / 12, color));
+                            }
+                            sp.getChildren().add(hbox);
+                        }
+                    }
+                    case ComponentType.DEPOT -> {
+                        Logger.info("Goods: " + c.getStoredGoods().toString());
+                        if(!c.getStoredGoods().isEmpty()) {
+                            HBox hbox = new HBox(tilesSideLength / 12);
+                            hbox.setAlignment(Pos.CENTER);
+                            for(int i = 0; i < c.getStoredGoods().size(); i++) {
+                                Color color;
+                                switch(c.getStoredGoods().get(i)){
+                                    case RED -> color = Color.RED;
+                                    case YELLOW -> color = Color.YELLOW;
+                                    case GREEN -> color = Color.GREEN;
+                                    case BLUE -> color = Color.BLUE;
+                                    default -> color = Color.BLACK;
+                                }
+                                hbox.getChildren().add(new Rectangle(tilesSideLength / 6, tilesSideLength / 6, color));
+                            }
+                            sp.getChildren().add(hbox);
+                        }
+                    }
+                    default -> {
+                    }
+                }
+            }
+        }
     }
 
     /**
