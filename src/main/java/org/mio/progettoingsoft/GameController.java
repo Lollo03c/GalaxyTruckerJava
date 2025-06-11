@@ -6,6 +6,9 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import javax.crypto.EncryptedPrivateKeyInfo;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GameController {
     private final GameServer game;
@@ -40,6 +43,32 @@ public class GameController {
                     client.setCardState(CardState.CREW_REMOVE_CHOICE);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
+                }
+            }
+
+            case FINALIZED -> {
+                Map<String,VirtualClient> clients = game.getClients();
+
+                Set<String> nicknames = clients.keySet();
+                String leader = game.getFlyboard().getScoreBoard().getFirst().getNickname();
+                for (String n : nicknames) {
+                    if (n.equals(leader)) {
+                        try {
+                            clients.get(n).setState(GameState.YOU_CAN_DRAW_CARD);
+                        }
+                        catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    else{
+                        try {
+                            clients.get(n).setState(GameState.DRAW_CARD);
+                        }
+                        catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
                 }
             }
 

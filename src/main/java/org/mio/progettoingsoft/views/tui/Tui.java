@@ -189,6 +189,9 @@ public class Tui implements View {
     }
 
     private void printWaitingTheLeader(){
+        System.out.println("The effect of the card is over, this is the actual circuit");
+        controller.getFlyBoard().drawScoreboard();
+        controller.getFlyBoard().drawCircuit();
         System.out.println("Waiting for the leader to draw a new card");
     }
 
@@ -224,6 +227,9 @@ public class Tui implements View {
     }
 
     private void printDrawCardMenu() {
+        System.out.println("The effect of the card is over, this is the actual circuit");
+        controller.getFlyBoard().drawScoreboard();
+        controller.getFlyBoard().drawCircuit();
         String input = "";
         while (!input.equals("d")) {
             System.out.println("You are the leader! You can draw a Card, type \"d\" to draw a Card");
@@ -244,11 +250,7 @@ public class Tui implements View {
                 engineChoice();
             }
             case FINALIZED -> {
-                System.out.println("The effect of the card is over, this is the actual circuit");
-                controller.getFlyBoard().drawScoreboard();
-                controller.getFlyBoard().drawScoreboard();
-                controller.getFlyBoard().drawCircuit();
-                controller.updateState();
+
             }
         }
     }
