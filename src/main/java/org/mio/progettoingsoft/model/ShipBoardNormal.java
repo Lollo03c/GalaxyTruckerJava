@@ -57,6 +57,8 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(109, new Cordinate(1, 1), 3);
         shipBoard.addComponentToPosition(31, new Cordinate(1, 2), 0);
         shipBoard.addComponentToPosition(11, new Cordinate(2, 1), 3);
+        shipBoard.addComponentToPosition(3, new Cordinate(2, 2), 0);
+
         shipBoard.addComponentToPosition(42, new Cordinate(3, 1), 1);
         shipBoard.addComponentToPosition(96, new Cordinate(3, 2), 0);
         shipBoard.addComponentToPosition(39, new Cordinate(3, 3), 0);
