@@ -321,6 +321,7 @@ public class ServerController {
             }
         }
         card.init(game);
+        card.setNextPlayer();
 
     }
 
