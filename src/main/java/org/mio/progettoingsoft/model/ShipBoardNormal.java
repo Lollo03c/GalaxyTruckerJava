@@ -9,10 +9,7 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.views.tui.VisualShipboardNormal;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ShipBoardNormal extends ShipBoard {
 
@@ -45,12 +42,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipboard.drawShipboard();
     }
 
-    public static ShipBoard buildFirst(){
-        Set<String> nicks = new HashSet<>();
-        nicks.add("anto");
-        nicks.add("lollo");
-
-        FlyBoard flyBoard = new FlyBoardNormal(nicks);
+    public static ShipBoard buildFirst(FlyBoard flyBoard){
         ShipBoard shipBoard = new ShipBoardNormal(HousingColor.GREEN, flyBoard);
 
         shipBoard.addComponentToPosition(101, new Cordinate(0, 2), 0);
@@ -96,12 +88,7 @@ public class ShipBoardNormal extends ShipBoard {
         return shipBoard;
     }
 
-    public static ShipBoard buildSecond(){
-        Set<String> nicks = new HashSet<>();
-        nicks.add("anto");
-        nicks.add("lollo");
-
-        FlyBoard flyBoard = new FlyBoardNormal(nicks);
+    public static ShipBoard buildSecond(FlyBoard flyBoard){
         ShipBoard shipBoard = new ShipBoardNormal(HousingColor.RED, flyBoard);
 
         shipBoard.addComponentToPosition(104, new Cordinate(0, 2), 0);
@@ -137,13 +124,8 @@ public class ShipBoardNormal extends ShipBoard {
         return shipBoard;
     }
 
-    public static ShipBoard buildThird(){
-        Set<String> nicks = new HashSet<>();
-        nicks.add("anto");
-        nicks.add("lollo");
-
-        FlyBoard flyBoard = new FlyBoardNormal(nicks);
-        ShipBoard shipBoard = new ShipBoardNormal(HousingColor.GREEN, flyBoard);
+    public static ShipBoard buildThird(FlyBoard flyBoard){
+        ShipBoard shipBoard = new ShipBoardNormal(HousingColor.BLUE, flyBoard);
 
         shipBoard.addComponentToPosition(82, new Cordinate(4, 0), 0);
         shipBoard.addComponentToPosition(20, new Cordinate(3, 0), 1);
@@ -167,13 +149,8 @@ public class ShipBoardNormal extends ShipBoard {
         return shipBoard;
     }
 
-    public static ShipBoard buildFourth(){
-        Set<String> nicks = new HashSet<>();
-        nicks.add("anto");
-        nicks.add("lollo");
-
-        FlyBoard flyBoard = new FlyBoardNormal(nicks);
-        ShipBoard shipBoard = new ShipBoardNormal(HousingColor.GREEN, flyBoard);
+    public static ShipBoard buildFourth(FlyBoard flyBoard){
+        ShipBoard shipBoard = new ShipBoardNormal(HousingColor.YELLOW, flyBoard);
         shipBoard.addComponentToPosition(92, new Cordinate(4, 2), 0);
         shipBoard.addComponentToPosition(113, new Cordinate(1, 3), 0);
         shipBoard.addComponentToPosition(100, new Cordinate(4, 5), 0);
@@ -202,16 +179,9 @@ public class ShipBoardNormal extends ShipBoard {
 
     }
 
-    public static List<ShipBoard> getBuilt(){
-        List<ShipBoard> shipBoards = new ArrayList<>();
-        shipBoards.add(buildFirst());
-        shipBoards.add(buildSecond());
-        shipBoards.add(buildThird());
-
-        return shipBoards;
-    }
     public static void main(String[] args) {
-        ShipBoard ship = buildThird();
+        FlyBoard flyBoard = new FlyBoardNormal(Set.of("anto", "ste"));
+        ShipBoard ship = buildFirst(flyBoard);
         ship.drawShipboard();
     }
 }

@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.client.rmi;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.Client;
@@ -155,8 +156,8 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
-    public void setBuiltShip(String nickname, int indexBuild) throws RemoteException{
-        executors.submit(() -> controller.assignBuild(nickname, indexBuild));
+    public void setBuiltShip(String nickname) throws RemoteException{
+        executors.submit(() -> controller.assignBuild(nickname));
     }
 
     public void setAvailablePlaces(List<Integer> availablePlaces){

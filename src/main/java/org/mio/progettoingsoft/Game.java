@@ -91,6 +91,9 @@ public class Game implements GameServer, GameClient {
     public void startGame(){
 
         flyboard = FlyBoard.createFlyBoard(mode, clients.keySet());
+
+        gameController.registerListener();
+
         Map<String, HousingColor> colorMap = flyboard.getPlayers().stream()
                 .collect(Collectors.toMap(
                         Player::getNickname,

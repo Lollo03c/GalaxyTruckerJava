@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.client;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -57,7 +58,7 @@ public interface VirtualClient extends Remote {
     void setInHandDeck(int deck) throws Exception;
     void addAvailableDeck(int deckNumber) throws Exception;
 
-    void setBuiltShip(String nickname, int indexBuild) throws Exception;
+    void setBuiltShip(String nickname) throws Exception;
 
     void setAvailablePlaces(List<Integer> availablePlaces) throws Exception;
     void addOtherPlayerToCircuit(String nickname, int place) throws Exception;

@@ -151,7 +151,7 @@ public class Tui implements View {
 
             case NEW_CARD -> printNewCard();
 
-            case CARD_EFFECT -> card_effect_switch();
+            case CARD_EFFECT -> cardEffect();
         }
     }
 
@@ -243,7 +243,7 @@ public class Tui implements View {
         }
     }
 
-    public void card_effect_switch() {
+    public void cardEffect() {
         switch (controller.getCardState()) {
             case ENGINE_CHOICE -> {
                 engineChoice();
@@ -629,23 +629,26 @@ public class Tui implements View {
     }
 
     private void chooseBuiltShip() {
-        System.out.println("Available built ships setup");
-        synchronized (controller.getFlyBoard().getAvailableConstructedShips()) {
-            for (int index : controller.getFlyBoard().getAvailableConstructedShips())
-                System.out.println(index);
-        }
+//        System.out.println("Available built ships setup");
+//        synchronized (controller.getFlyBoard().getAvailableConstructedShips()) {
+//            for (int index : controller.getFlyBoard().getAvailableConstructedShips())
+//                System.out.println(index);
+//        }
 
-        try {
-            int chosen;
-            chosen = Integer.parseInt(scanner.nextLine());
+        controller.builtDefault();
+        controller.setState(GameState.BUILDING_SHIP);
+//        try {
+//            int chosen;
+//            chosen = Integer.parseInt(scanner.nextLine());
+//
+//            if (!controller.getFlyBoard().getAvailableConstructedShips().contains(chosen))
+//                throw new Exception("");
+//
+//            controller.builtDefault(chosen);
+//        } catch (Exception e) {
+//            controller.setState(GameState.INVALID_SHIP_CHOICE);
+//        }
 
-            if (!controller.getFlyBoard().getAvailableConstructedShips().contains(chosen))
-                throw new Exception("");
-
-            controller.builtDefault(chosen);
-        } catch (Exception e) {
-            controller.setState(GameState.INVALID_SHIP_CHOICE);
-        }
     }
 
     private void engineChoice() {

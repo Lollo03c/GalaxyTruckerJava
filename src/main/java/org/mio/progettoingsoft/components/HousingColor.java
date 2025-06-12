@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft.components;
 
-public enum HousingColor {
+import java.io.Serializable;
+
+public enum HousingColor implements Serializable {
     BLUE, GREEN, RED, YELLOW, NOCOLOR;
 
     public static HousingColor stringToColor(String s){

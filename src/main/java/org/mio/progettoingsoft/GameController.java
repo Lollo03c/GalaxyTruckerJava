@@ -2,10 +2,14 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.model.events.MovePlayerEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.utils.Logger;
 
 import javax.crypto.EncryptedPrivateKeyInfo;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +20,30 @@ public class GameController {
 
     public GameController(GameServer game) {
         this.game = game;
+    }
+
+    public void registerListener(){
+        Logger.debug("Chiamato registerListener");
+
+        game.getFlyboard().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                Logger.debug("evento gestito");
+                if ("movePlayer".equals(evt.getPropertyName())){
+                    Logger.debug("event movePlayer gestito");
+                    MovePlayerEvent event = (MovePlayerEvent) evt.getNewValue();
+
+                    for (VirtualClient client : game.getClients().values()){
+                        try {
+                            //todo sistemare questo per le batterie
+                            client.advancePlayer(event.getNickname(), event.getSteps(), 0);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        });
     }
 
 
@@ -75,6 +103,7 @@ public class GameController {
             default -> {}
         }
     }
+
 
 //    private void broadcast(Message message){
 //        for (VirtualClient client : game.getClients().values()){

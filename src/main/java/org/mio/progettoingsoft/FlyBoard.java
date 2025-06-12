@@ -6,6 +6,8 @@ import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.components.*;
 
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 
@@ -17,7 +19,10 @@ import org.mio.progettoingsoft.model.FlyBoardEasy;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.MovePlayerEvent;
 import org.mio.progettoingsoft.model.interfaces.FlyBoardServer;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.*;
 
@@ -57,6 +62,11 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     private final List<Integer> availableConstructedShips;
 
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
 
 
     protected FlyBoard(GameMode mode, Set<String> nicknames) {
@@ -283,6 +293,9 @@ public abstract class FlyBoard implements FlyBoardServer {
             for (int i = days; i < 0; i++)
                 retreatOne(player);
         }
+        Event event = new MovePlayerEvent(player.getNickname(), days);
+        support.firePropertyChange("movePlayer", 0, event);
+        Logger.debug("evento movePlayer lanciato");
     }
 
     //advance one step and if necessary send the scoreboard
@@ -483,18 +496,6 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
 
-    public void  automaticBuild(){
-        Iterator<String> nickIter = players.stream().map(p -> p.getNickname()).toList().iterator();
-
-        Iterator<ShipBoard> ships = ShipBoardNormal.getBuilt().iterator();
-
-        while (nickIter.hasNext()){
-            String nickname = nickIter.next();
-
-            getPlayerByUsername(nickname).copyShipboard(ships.next());
-        }
-    }
-
     public List<Integer> getAvailableConstructedShips(){
         synchronized (availableConstructedShips) {
             return availableConstructedShips;
@@ -502,26 +503,17 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
 
-    public void takeCostructedShip(String nickname, Integer index) throws IncorrectFlyBoardException{
-        synchronized (availableConstructedShips) {
-            if (! availableConstructedShips.remove(index)){
-                throw new IncorrectFlyBoardException("");
-            }
+    public void takeCostructedShip(Player player) throws IncorrectFlyBoardException{
+            HousingColor color = player.getColor();
 
-            Player player = null;
-            for (Player p : players)
-                if (p.getNickname().equals(nickname))
-                    player = p;
-
-            switch (index) {
-                case 1 -> player.setShipBoard(ShipBoardNormal.buildFirst());
-                case 2 -> player.setShipBoard(ShipBoardNormal.buildSecond());
-                case 3 -> player.setShipBoard(ShipBoardNormal.buildThird());
-                case 4 -> player.setShipBoard(ShipBoardNormal.buildFourth());
+            switch (color) {
+                case GREEN -> player.setShipBoard(ShipBoardNormal.buildFirst(this));
+                case RED -> player.setShipBoard(ShipBoardNormal.buildSecond(this));
+                case BLUE -> player.setShipBoard(ShipBoardNormal.buildThird(this));
+                case YELLOW -> player.setShipBoard(ShipBoardNormal.buildFourth(this));
             }
-        }
     }
 
 
-    public abstract ShipBoard getBuiltShip(int index);
+    public abstract ShipBoard getBuiltShip(HousingColor color);
 }

@@ -2,6 +2,8 @@ package org.mio.progettoingsoft.network.client.socket;
 
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.Housing;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.socket.VirtualServerSocket;
@@ -73,8 +75,8 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void takeBuild(int idGame, String nickname, int indexShip) throws IOException{
-        Message message = new BuildShipMessage(idGame, nickname, indexShip);
+    public void takeBuild(int idGame, String nickname) throws IOException{
+        Message message = new BuildShipMessage(idGame, nickname);
         sendMessage(message);
     }
 

@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NotYourTurnException;
@@ -13,6 +14,7 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 public class ServerController {
@@ -211,17 +213,19 @@ public class ServerController {
         }
     }
 
-    public void takeBuild(int idGame, String nickname, int indexShip){
-        Logger.debug(nickname + " assigned to ship " + indexShip);
+    public void takeBuild(int idGame, String nickname){
+
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
+        Player player = flyBoard.getPlayerByUsername(nickname);
 
+        Logger.debug(nickname + " assigned to ship " + player.getColor());
         try{
-            flyBoard.takeCostructedShip(nickname, indexShip);
+            flyBoard.takeCostructedShip(player);
 
             for (VirtualClient client : game.getClients().values()){
                 try{
-                    client.setBuiltShip(nickname, indexShip);
+                    client.setBuiltShip(nickname);
                 }
                 catch (Exception e ){
                     throw new RuntimeException(e);
@@ -317,28 +321,33 @@ public class ServerController {
             }
         }
         card.init(game);
+
     }
 
     public void activateDoubleEngine(int idGame, String  nickname, int number){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         SldAdvCard card = flyBoard.getPlayedCard();
+        Player player= flyBoard.getPlayerByUsername(nickname);
 
 
         switch (card){
             case SldOpenSpace openSpace -> {
+
+                openSpace.applyEffect(player, number);
+
                 //nofica l'avanzamento del player agli avversari
-                int nSteps = 2 * number + flyBoard.getPlayerByUsername(nickname).getShipBoard().getBaseEnginePower();
-                for (VirtualClient client : game.getClients().values()){
-                    try {
-                        client.advancePlayer(nickname, nSteps, number);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+//                int nSteps = 2 * number + flyBoard.getPlayerByUsername(nickname).getShipBoard().getBaseEnginePower();
+//                for (VirtualClient client : game.getClients().values()){
+//                    try {
+//                        client.advancePlayer(nickname, nSteps, number);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
 
                 //passa al prossimo giocatore
-                openSpace.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), number, game);
+                openSpace.setNextPlayer();
             }
 
             default -> {

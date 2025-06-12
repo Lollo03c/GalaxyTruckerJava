@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.tui.VisualCard;
 
 import java.util.Iterator;
@@ -21,6 +22,9 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     protected Player actualPlayer;
     protected Iterator<Player> playerIterator;
     protected CardState state;
+
+    protected GameServer game;
+    protected FlyBoard flyBoard;
 
 
     public abstract String getCardName();
@@ -105,10 +109,17 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         visual.drawCard();
     }
 
-    protected void setState(Player player, CardState state, GameServer game){
-        this.actualPlayer = player;
+    protected void setState(CardState state){
         this.state = state;
+        if (! state.equals(CardState.FINALIZED))
+            this.actualPlayer = this.playerIterator.next();
+
         game.getController().update(this);
+    }
+
+
+    public void setNextPlayer(){
+        Logger.debug("carta non implementata");
     }
 }
 

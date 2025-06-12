@@ -705,7 +705,7 @@ public class Gui extends Application implements View {
             Button builtButton = new Button("Built " + i);
             builtButton.setOnAction(event -> {
                 choiceBuiltStage.close();
-                controller.builtDefault(i);
+                controller.builtDefault();
             });
             btnBox.getChildren().add(builtButton);
         }

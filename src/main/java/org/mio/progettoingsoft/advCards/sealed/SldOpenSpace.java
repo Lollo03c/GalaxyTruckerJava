@@ -38,34 +38,30 @@ public final class SldOpenSpace extends SldAdvCard {
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }
-        FlyBoard board = game.getFlyboard();
-        noPowerPlayers = board.getScoreBoard().stream()
+        this.game = game;
+        this.flyBoard = game.getFlyboard();
+
+        noPowerPlayers = flyBoard.getScoreBoard().stream()
                 .filter(player ->
                         player.getShipBoard().getBaseEnginePower() == 0 &&
                                 (player.getShipBoard().getDoubleEngine().isEmpty() ||
                                         player.getShipBoard().getQuantBatteries() <= 0)
                 ).toList();
         // allowedPlayers is a new list because the score board will be modified by the applyEffect
-        this.allowedPlayers = new ArrayList<>(board.getScoreBoard());
+        this.allowedPlayers = new ArrayList<>(flyBoard.getScoreBoard());
         allowedPlayers.removeAll(noPowerPlayers);
         this.playerIterator = allowedPlayers.iterator();
-
-        if (this.playerIterator.hasNext()) {
-            setState(this.playerIterator.next(), CardState.ENGINE_CHOICE, game);
-        } else {
-            throw new RuntimeException("No allowed players");
-        }
     }
 
     // must be called right after init with the right player
     // starting from the leader, it activates the double engines (if possible) and moves the player
     // if the player is the last, it sets the card state to FINALIZED (to accept only finish calls)
     // else, it sets the card state to ENGINE_CHOICE to accept other calls with next players
-    public void applyEffect(FlyBoard board, Player player, int numDoubleEngines, GameServer game) {
+    public void applyEffect(Player player, int numDoubleEngines) {
         if (this.state != CardState.ENGINE_CHOICE) {
             throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
         }
-        if (!board.getScoreBoard().contains(player)) {
+        if (!flyBoard.getScoreBoard().contains(player)) {
             throw new BadPlayerException("The player " + player.getNickname() + " is not in the board");
         }
 
@@ -85,12 +81,7 @@ public final class SldOpenSpace extends SldAdvCard {
             int base = player.getShipBoard().getBaseEnginePower();
             int power = base + numDoubleEngines * 2;
 
-            board.moveDays(actualPlayer, power);
-            if (playerIterator.hasNext()) {
-                setState(playerIterator.next(), CardState.ENGINE_CHOICE, game);
-            } else {
-                setState(actualPlayer, CardState.FINALIZED, game);
-            }
+            flyBoard.moveDays(actualPlayer, power);
 
         } else {
             throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't play " + this.getCardName() + " at the moment");
@@ -108,5 +99,14 @@ public final class SldOpenSpace extends SldAdvCard {
             throw new RuntimeException("There's at least a player with no power, not implemented yet");
         }
 //        board.setState(GameState.DRAW_CARD);
+    }
+
+    @Override
+    public void setNextPlayer(){
+        if (playerIterator.hasNext()) {
+            setState(CardState.ENGINE_CHOICE);
+        } else {
+            setState(CardState.FINALIZED);
+        }
     }
 }

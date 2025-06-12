@@ -62,7 +62,7 @@ public final class SldAbandonedShip extends SldAdvCard {
 
         this.playerIterator = allowedPlayers.iterator();
         if (playerIterator.hasNext()) {
-            setState(playerIterator.next(), CardState.CREW_REMOVE_CHOICE, game);
+            setState(CardState.CREW_REMOVE_CHOICE);
         } else {
             throw new RuntimeException("No players allowed");
         }
@@ -101,7 +101,7 @@ public final class SldAbandonedShip extends SldAdvCard {
             } else {
                 if (playerIterator.hasNext()) {
 
-                    setState(playerIterator.next(), CardState.CREW_REMOVE_CHOICE,  game);
+                    setState(CardState.CREW_REMOVE_CHOICE);
                 } else {
                     this.state = CardState.FINALIZED;
                 }

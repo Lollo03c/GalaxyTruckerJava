@@ -8,6 +8,7 @@ import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.ShipBoard;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardEasy;
@@ -209,7 +210,7 @@ public class FlyBoardEasy extends FlyBoard {
     }
 
     @Override
-    public ShipBoard getBuiltShip(int index){
+    public ShipBoard getBuiltShip(HousingColor color){
         return null;
     }
 }

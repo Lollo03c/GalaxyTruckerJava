@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -483,22 +484,33 @@ public class ClientController {
         }
     }
 
-    public void builtDefault(int index) {
+    public void builtDefault() {
         try {
-            server.takeBuild(idGame, nickname, index);
+            server.takeBuild(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void assignBuild(String nick, Integer indexBuild) {
-        flyBoard.getAvailableConstructedShips().remove(indexBuild);
+    public void assignBuild(String nick) {
+        HousingColor color = flyBoard.getPlayerByUsername(nick).getColor();
 
-        if (nick.equals(nickname)) {
-            shipBoard = flyBoard.getBuiltShip(indexBuild);
-            setState(GameState.BUILDING_SHIP);
+        try {
+            if (nick.equals(nickname)) {
+                flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(color));
+                shipBoard = flyBoard.getPlayerByUsername(nick).getShipBoard();
+
+                Logger.debug(nick + " " + color + "assegnato");
+                setState(GameState.BUILDING_SHIP);
+            }
+            else {
+                //il ramo di else serve per non creare bug
+                Logger.debug(nick + " " + color);
+                flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(color));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(indexBuild));
     }
 
     public void endBuild() {

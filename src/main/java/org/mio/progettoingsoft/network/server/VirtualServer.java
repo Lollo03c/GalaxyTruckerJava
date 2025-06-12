@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 
 import java.rmi.Remote;
@@ -19,7 +20,7 @@ public interface VirtualServer extends Remote {
     void drawUncovered(int idGame, String nickname, int idComponent) throws Exception;
     void bookDeck(int idGame, String nickname, int deckNumber) throws Exception;
     void freeDeck(int idGame, String nickname, int deckNumber) throws Exception;
-    void takeBuild(int idGame, String nickname, int indexShip) throws Exception;
+    void takeBuild(int idGame, String nickname) throws Exception;
 
     void endBuild(int idGame, String nickname) throws Exception;
     void choosePlace(int idGame, String nickname, int place) throws Exception;

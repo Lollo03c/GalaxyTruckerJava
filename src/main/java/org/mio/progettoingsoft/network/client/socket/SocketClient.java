@@ -125,7 +125,7 @@ public class SocketClient implements Client {
                     }
 
                     case BuildShipMessage buildShipMessage ->{
-                        executor.submit(() -> controller.assignBuild(buildShipMessage.getNickname(), buildShipMessage.getIndexShip()));
+                        executor.submit(() -> controller.assignBuild(buildShipMessage.getNickname()));
                     }
                     case AvailablePlacesMessage availablePlacesMessage -> {
                         controller.setAvailablePlaces(availablePlacesMessage.getAvailablePlaces());
