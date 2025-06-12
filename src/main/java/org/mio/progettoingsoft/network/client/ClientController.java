@@ -98,7 +98,8 @@ public class ClientController {
 
     public void setCardState(CardState state) {
         CardState oldState;
-
+        if(this.getState() != GameState.CARD_EFFECT)
+            setState(GameState.CARD_EFFECT);
         synchronized (cardStateLock) {
             oldState = this.cardState;
             this.cardState = state;
@@ -107,8 +108,6 @@ public class ClientController {
             support.firePropertyChange("cardState", oldState, state);
             Logger.debug("CARD: " + oldState + " -> " + state);
         }
-
-        setState(GameState.CARD_EFFECT);
     }
 
     public CardState getCardState() {
@@ -175,7 +174,9 @@ public class ClientController {
     }
 
     public ShipBoard getShipBoard() {
-        return shipBoard;
+        synchronized (shipboardLock) {
+            return shipBoard;
+        }
     }
 
     public void increaseTmpRotation() {

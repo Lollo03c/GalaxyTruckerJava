@@ -17,10 +17,13 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     private final ServerController controller;
     private final ConnectionInfo connectionInfo;
+    private ExecutorService executors = Executors.newFixedThreadPool(1);
 
     public RmiServer(ConnectionInfo connectionInfo) throws RemoteException {
         super(); // automatic export of UnicastRemoteObject
@@ -32,7 +35,7 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         try {
             System.setProperty("java.rmi.server.hostname", connectionInfo.getIpHost());
 
-            Registry registry =  LocateRegistry.createRegistry(connectionInfo.getRmiPort());
+            Registry registry = LocateRegistry.createRegistry(connectionInfo.getRmiPort());
             registry.rebind(connectionInfo.getServerName(), this);
 
             Logger.info("SERVER RMI STARTED | Port: " + connectionInfo.getRmiPort() + " | IP: " + connectionInfo.getIpHost() + " | Server: " + connectionInfo.getServerName());
@@ -53,76 +56,106 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
 
     @Override
     public void handleNickname(int tempIdClient, String nickname) throws RemoteException {
-        controller.handleNickname(tempIdClient, nickname);
+        executors.submit(() -> {
+            controller.handleNickname(tempIdClient, nickname);
+        });
     }
 
     @Override
     public void handleGameInfo(GameInfo gameInfo, String nickname) throws RemoteException {
-        controller.handleGameInfo(gameInfo, nickname);
+        executors.submit(() -> {
+            controller.handleGameInfo(gameInfo, nickname);
+        });
     }
 
     @Override
     public void getCoveredComponent(int idGame, String nickname) throws RemoteException {
-        controller.getCoveredComponent(idGame, nickname);
+        executors.submit(() -> {
+            controller.getCoveredComponent(idGame, nickname);
+        });
     }
 
     @Override
     public void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) throws RemoteException {
-        controller.addComponent(idGame, nickname, idComp, cordinate, rotations);
+        executors.submit(() -> {
+            controller.addComponent(idGame, nickname, idComp, cordinate, rotations);
+        });
     }
 
     @Override
     public void discardComponent(int idGame, int idComponent) throws RemoteException {
-        controller.discardComponent(idGame, idComponent);
+        executors.submit(() -> {
+            controller.discardComponent(idGame, idComponent);
+        });
     }
 
     @Override
     public void drawUncovered(int idGame, String nickname, int idComponent) throws RemoteException {
-        controller.drawUncovered(idGame, nickname, idComponent);
+        executors.submit(() -> {
+            controller.drawUncovered(idGame, nickname, idComponent);
+        });
     }
 
     @Override
     public void bookDeck(int idGame, String nickname, int deckNumber) throws RemoteException {
-        controller.bookDeck(idGame, nickname, deckNumber);
+        executors.submit(() -> {
+            controller.bookDeck(idGame, nickname, deckNumber);
+        });
     }
 
     @Override
     public void freeDeck(int idGame, String nickname, int deckNumber) throws RemoteException {
-        controller.freeDeck(idGame, nickname, deckNumber);
+        executors.submit(() -> {
+            controller.freeDeck(idGame, nickname, deckNumber);
+        });
     }
 
     @Override
-    public void takeBuild(int idGame, String nickname, int indexShip) throws RemoteException{
-        controller.takeBuild(idGame, nickname, indexShip);
+    public void takeBuild(int idGame, String nickname, int indexShip) throws RemoteException {
+        executors.submit(() -> {
+            controller.takeBuild(idGame, nickname, indexShip);
+        });
     }
 
     @Override
     public void endBuild(int idGame, String nickname) throws RemoteException {
-        controller.endBuild(idGame, nickname);
+        executors.submit(() -> {
+            controller.endBuild(idGame, nickname);
+        });
     }
 
     @Override
     public void choosePlace(int idGame, String nickname, int place) throws RemoteException {
-        controller.choosePlace(idGame, nickname, place);
+        executors.submit(() -> {
+            controller.choosePlace(idGame, nickname, place);
+        });
     }
 
     @Override
     public void applyStardust(int idGame, String nickname, SldStardust card) throws RemoteException {
-        controller.applyStardust(idGame, card);
+        executors.submit(() -> {
+            controller.applyStardust(idGame, card);
+        });
     }
 
     @Override
-    public void activateDoubleEngine(int idGame, String nickname, int number) throws RemoteException{
-        controller.activateDoubleEngine(idGame, nickname, number);
+    public void activateDoubleEngine(int idGame, String nickname, int number) throws RemoteException {
+        executors.submit(() -> {
+            controller.activateDoubleEngine(idGame, nickname, number);
+        });
     }
 
     @Override
     public void leaveFlight(int idGame, String nickname) throws RemoteException {
-        controller.leaveFlight(idGame, nickname);
+        executors.submit(() -> {
+            controller.leaveFlight(idGame, nickname);
+        });
     }
 
     @Override
     public void drawCard(int idGame, String nickname) throws RemoteException {
-        controller.drawCard(idGame, nickname);
+        executors.submit(() -> {
+            controller.drawCard(idGame, nickname);
+        });
     }
 }

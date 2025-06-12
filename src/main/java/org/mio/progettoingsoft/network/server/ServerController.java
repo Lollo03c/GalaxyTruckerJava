@@ -66,7 +66,7 @@ public class ServerController {
                 try {
                     client.addComponent(nickname, idComp, cordinate, rotations);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -95,7 +95,7 @@ public class ServerController {
             try {
                 client.addUncoveredComponent(idComponent);
             } catch (Exception e) {
-
+                throw new RuntimeException(e);
             }
         }
     }
@@ -145,7 +145,7 @@ public class ServerController {
             try {
                 game.getClients().get(nickname).setState(GameState.UNABLE_UNCOVERED_COMPONENT);
             } catch (Exception e) {
-
+                throw new RuntimeException(e);
             }
         }
     }
@@ -313,11 +313,10 @@ public class ServerController {
                 client.setState(GameState.NEW_CARD);
             }
             catch (Exception e){
-
+                throw new RuntimeException(e);
             }
         }
         card.init(game);
-
     }
 
     public void activateDoubleEngine(int idGame, String  nickname, int number){

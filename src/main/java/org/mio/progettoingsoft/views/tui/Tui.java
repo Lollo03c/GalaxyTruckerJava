@@ -13,10 +13,7 @@ import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -237,10 +234,10 @@ public class Tui implements View {
             controller.getFlyBoard().drawCircuit();
         }
         String input = "";
-        while (!input.equals("d")) {
+        while (!input.equalsIgnoreCase("d")) {
             System.out.println("You are the leader! You can draw a Card, type \"d\" to draw a Card");
             input = scanner.nextLine();
-            if (input.equals("d")) {
+            if (input.equalsIgnoreCase("d")) {
                 controller.drawNewAdvCard();
             }
         }
@@ -652,14 +649,20 @@ public class Tui implements View {
     }
 
     private void engineChoice() {
-        Logger.debug("scegli i motori da attivare");
-        ShipBoard shipBoard = controller.getShipBoard();
-
-        int maxAvailable = Integer.min(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());
+        int maxAvailable;
+        synchronized (controller.getShipboardLock()) {
+            ShipBoard shipBoard = controller.getShipBoard();
+            maxAvailable = Integer.min(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());
+        }
         int activated = -1;
         while (activated < 0 || activated > maxAvailable) {
             System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : )");
-            activated = scanner.nextInt();
+            try {
+                activated = scanner.nextInt();
+            }catch(InputMismatchException e){
+                scanner.next();
+                activated = -1;
+            }
             if (activated >= 0 && activated <= maxAvailable)
                 controller.activateDoubleEngine(activated);
             else

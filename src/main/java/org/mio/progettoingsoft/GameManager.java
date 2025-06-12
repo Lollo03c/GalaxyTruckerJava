@@ -143,7 +143,7 @@ public class GameManager{
                 client.wrongNickname();
                 return;
             } catch (Exception e) {
-                //todo bisogna togliere il client
+                clientsToAccept.remove(idClient);
             }
 
         }
@@ -151,7 +151,6 @@ public class GameManager{
         try {
             client.setNickname(nickname);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
@@ -179,7 +178,7 @@ public class GameManager{
                    Logger.info("Added player " + nickname + " to game " + gameToStart.getIdGame());
                }
                catch (Exception e){
-                   e.printStackTrace();
+                   throw new RuntimeException(e);
                }
            }
            else {
@@ -195,7 +194,7 @@ public class GameManager{
                    nicknames.add(nickname);
 
                } catch (Exception e) {
-                   e.printStackTrace();
+                    throw new RuntimeException(e);
                }
 
                if (gameToStart.getClients().size() == gameToStart.getNumPlayers()){

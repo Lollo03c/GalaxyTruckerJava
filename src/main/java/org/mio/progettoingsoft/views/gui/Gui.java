@@ -22,6 +22,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -30,6 +31,7 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
+import javax.smartcardio.Card;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -46,6 +48,7 @@ public class Gui extends Application implements View {
     private final ClientController controller;
     private final BlockingQueue<GameState> statesQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<Pair<Integer, Integer>> circuitMovesQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<CardState> cardStatesQueue = new LinkedBlockingQueue<>();
 
     private static final String IMG_PATH = "/images/";
     private static final String TILES_REL_PATH = "tiles/GT-new_tiles_16_for web";
@@ -168,6 +171,8 @@ public class Gui extends Application implements View {
                     circuitMovesQueue.add(new Pair<>((int) evt.getOldValue(), (int) evt.getNewValue()));
                 }
             }
+            // the card state changes (only in CARD_EFFECT state): enable the user interaction based on the different state
+            case "cardState" -> cardStatesQueue.add((CardState) evt.getNewValue());
         }
     }
 
@@ -224,7 +229,7 @@ public class Gui extends Application implements View {
      */
     private void updateGui(GameState state) {
         switch (state) {
-            case START -> firstView() /*buildingShipView()*/ /*advStartedView()*/;
+            case START -> firstView();
             case WAITING -> loadingView();
             case NICKNAME -> nicknameRequestView(false);
             case ERROR_NICKNAME -> nicknameRequestView(true);
@@ -246,6 +251,7 @@ public class Gui extends Application implements View {
             case DRAW_CARD -> advStartedView(false);
             case YOU_CAN_DRAW_CARD -> advStartedView(true);
             case NEW_CARD -> loadNewCard();
+            case CARD_EFFECT -> {}
 
             default -> genericErrorView(state);
         }
@@ -321,6 +327,7 @@ public class Gui extends Application implements View {
         nicknameField.setPromptText("Insert your nickname");
         Button sendButton = new Button("Confirm");
         sendButton.setOnAction(event -> handleNickname(nicknameField.getText()));
+        nicknameField.setOnAction(event -> handleNickname(nicknameField.getText()));
         box.getChildren().addAll(label, nicknameField, sendButton);
         nicknameBox.getChildren().add(box);
 
@@ -373,13 +380,24 @@ public class Gui extends Application implements View {
     }
 
     /**
-     * mainly used for debug or not already implemented funcionalities
+     * mainly used for debug or not already implemented functionalities
      *
      * @param state: the game state in which the server is
      */
     private void genericErrorView(GameState state) {
         root.getChildren().clear();
         Label errorLabel = new Label("Generic error! State: " + state);
+        root.getChildren().add(errorLabel);
+    }
+
+    /**
+     * mainly used for debug or not already implemented funcionalities
+     *
+     * @param state: the game card state in which the played card is
+     */
+    private void genericErrorView(CardState state) {
+        root.getChildren().clear();
+        Label errorLabel = new Label("Generic error! Card state: " + state);
         root.getChildren().add(errorLabel);
     }
 
@@ -1132,6 +1150,28 @@ public class Gui extends Application implements View {
             circuitUpdater.setDaemon(true);
             circuitUpdater.start();
 
+            /*
+             * thread that listens for changes in the card state and, if there isn't any pending game state,
+             * update the view to manage the new card state
+             */
+            Thread cardStateManager = new Thread(() -> {
+                while (true) {
+                    try {
+                        CardState cardState = cardStatesQueue.take();
+                        while (!statesQueue.isEmpty()) {
+                            synchronized (statesQueue) {
+                                statesQueue.wait();
+                            }
+                        }
+                        Platform.runLater(() -> updateCardGui(cardState));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            cardStateManager.setDaemon(true);
+            cardStateManager.start();
+
         } else {
             waitingForLeaderLabel.setVisible(!isLeader);
             drawCardButton.setVisible(isLeader);
@@ -1467,6 +1507,13 @@ public class Gui extends Application implements View {
                 circle.setLayoutY(y);
                 circlesLayer.getChildren().add(circle);
             }
+        }
+    }
+
+    private void updateCardGui(CardState cardState) {
+        switch (cardState) {
+            case ENGINE_CHOICE -> Logger.info("Fucking working!!");
+            default -> genericErrorView(cardState);
         }
     }
 }
