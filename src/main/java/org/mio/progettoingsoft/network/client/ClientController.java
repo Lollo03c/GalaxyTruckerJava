@@ -53,6 +53,7 @@ public class ClientController {
     private final Object flyboardLock = new Object();
     private final Object shipboardLock = new Object();
     private final Object listLock = new Object();
+    private final Object cardLock = new Object();
     private final Object cardStateLock = new Object();
     FlyBoard flyBoard;
     ShipBoard shipBoard;
@@ -148,7 +149,9 @@ public class ClientController {
     }
 
     public FlyBoard getFlyBoard() {
-        return flyBoard;
+        synchronized (flyboardLock) {
+            return flyBoard;
+        }
     }
 
     public GameInfo getGameInfo() {
@@ -214,7 +217,7 @@ public class ClientController {
         }
     }
 
-    public void setCardState(){
+    public void setCardState() {
         //todo da settare gli stati a tutti i giocatori: switch in base alla carta uscita
     }
 
@@ -237,12 +240,17 @@ public class ClientController {
     }
 
     public void setCard(int idCard) {
-        System.out.println(flyBoard);
-        this.card = flyBoard.getSldAdvCardByID(idCard);
+        synchronized (cardLock) {
+            synchronized (flyboardLock) {
+                this.card = flyBoard.getSldAdvCardByID(idCard);
+            }
+        }
     }
 
     public SldAdvCard getPlayedCard() {
-        return card;
+        synchronized (cardLock) {
+            return card;
+        }
     }
 
     public void addUncoveredComponent(int idComp) {
@@ -265,7 +273,7 @@ public class ClientController {
         }
     }
 
-    public void updateState(){
+    public void updateState() {
 
     }
 
@@ -294,10 +302,9 @@ public class ClientController {
     }
 
     public void advancePlayer(String nickname, int steps, int energyToRemove) {
-        Logger.debug(nickname + "moved " + steps);
         int oldPos, newPos;
         synchronized (flyboardLock) {
-            if(this.nickname.equals(nickname)) {
+            if (this.nickname.equals(nickname)) {
                 shipBoard.removeEnergy(energyToRemove);
             }
             Player player = flyBoard.getPlayerByUsername(nickname);
@@ -305,7 +312,7 @@ public class ClientController {
             flyBoard.moveDays(player, steps);
             newPos = flyBoard.getPlayerPositionOnCircuit(nickname);
         }
-        support.firePropertyChange("circuit",oldPos,newPos);
+        support.firePropertyChange("circuit", oldPos, newPos);
     }
 
     /*
@@ -359,11 +366,9 @@ public class ClientController {
             setState(GameState.DRAW_UNCOVERED_COMPONENTS);
         } else if (chosen == 3) {
             setState(GameState.VIEW_BOOKED);
-        }
-        else if (chosen == 4){
+        } else if (chosen == 4) {
             setState(GameState.VIEW_SHIP_BUILDING);
-        }
-        else if (chosen == 5 && flyBoard.getMode().equals(GameMode.NORMAL)) {
+        } else if (chosen == 5 && flyBoard.getMode().equals(GameMode.NORMAL)) {
             setState(GameState.VIEW_DECKS_LIST);
         } else if (chosen == 5 && flyBoard.getMode().equals(GameMode.EASY)) {
             //server.playerReady()
@@ -374,8 +379,7 @@ public class ClientController {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-        else if (chosen == 7){
+        } else if (chosen == 7) {
             setState(GameState.CHOICE_BUILT);
         }
     }
@@ -418,9 +422,9 @@ public class ClientController {
         }
     }
 
-    public void choseBookedComponent(int pos){
+    public void choseBookedComponent(int pos) {
         int idComp = shipBoard.getBookedComponents().get(pos - 1).get();
-        shipBoard.removedBookedComponent(pos - 1 );
+        shipBoard.removedBookedComponent(pos - 1);
 
         inHandComponent = idComp;
         setState(GameState.COMPONENT_MENU);
@@ -478,15 +482,15 @@ public class ClientController {
         }
     }
 
-    public void builtDefault(int index){
-        try{
+    public void builtDefault(int index) {
+        try {
             server.takeBuild(idGame, nickname, index);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void assignBuild(String nick, Integer indexBuild){
+    public void assignBuild(String nick, Integer indexBuild) {
         flyBoard.getAvailableConstructedShips().remove(indexBuild);
 
         if (nick.equals(nickname)) {
@@ -513,9 +517,9 @@ public class ClientController {
     }
 
     public void drawNewAdvCard() {
-        try{
-            server.drawCard(idGame,nickname);
-        }catch (Exception e){
+        try {
+            server.drawCard(idGame, nickname);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -527,7 +531,6 @@ public class ClientController {
             throw new RuntimeException(e);
         }
     }
-
 
 
     public void leaveFlight() {

@@ -66,7 +66,7 @@ public class Tui implements View {
         switch (state) {
             case START -> printConnectionMenu();
             case NICKNAME -> askNickname();
-            case WAITING ->  checkEndBuilding();
+            case WAITING -> checkEndBuilding();
 
             case GAME_MODE -> printGameModeMenu();
             case GAME_START -> {
@@ -109,7 +109,7 @@ public class Tui implements View {
 
             case STARDUST -> {
                 // la riga successiva è da eliminare e passargli la carta pescata
-                SldStardust card = new SldStardust(1,1);
+                SldStardust card = new SldStardust(1, 1);
                 System.out.println("STARDUST was drown");
                 controller.applyStardust(card);
             }
@@ -146,7 +146,9 @@ public class Tui implements View {
 
             case CREW_REMOVE_CHOICE -> crewRemove();
 
-            case DRAW_CARD -> { printWaitingTheLeader();}
+            case DRAW_CARD -> {
+                printWaitingTheLeader();
+            }
 
             case YOU_CAN_DRAW_CARD -> printDrawCardMenu();
 
@@ -188,27 +190,29 @@ public class Tui implements View {
         clearConsole();
     }
 
-    private void printWaitingTheLeader(){
+    private void printWaitingTheLeader() {
         System.out.println("The effect of the card is over, this is the actual circuit");
-        controller.getFlyBoard().drawScoreboard();
-        controller.getFlyBoard().drawCircuit();
+        synchronized (controller.getFlyboardLock()) {
+            controller.getFlyBoard().drawScoreboard();
+            controller.getFlyBoard().drawCircuit();
+        }
         System.out.println("Waiting for the leader to draw a new card");
     }
 
-    private void printNewCard(){
+    private void printNewCard() {
         System.out.println("A new card has been drawn");
         controller.getPlayedCard().disegnaCard();
     }
 
-    private void printChoosePosition(){
+    private void printChoosePosition() {
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
         String input = "";
         int choice = -1;
         int k = 0;
         while (!availablePlaces.contains(choice)) {
             controller.getFlyBoard().drawCircuit();
-            System.out.println("In which of these available position do you want to start ?" );
-            for ( Integer i : availablePlaces){
+            System.out.println("In which of these available position do you want to start ?");
+            for (Integer i : availablePlaces) {
                 k = FlyBoardNormal.indexToPosition(i);
                 System.out.println(k);
             }
@@ -228,8 +232,10 @@ public class Tui implements View {
 
     private void printDrawCardMenu() {
         System.out.println("The effect of the card is over, this is the actual circuit");
-        controller.getFlyBoard().drawScoreboard();
-        controller.getFlyBoard().drawCircuit();
+        synchronized (controller.getFlyboardLock()) {
+            controller.getFlyBoard().drawScoreboard();
+            controller.getFlyBoard().drawCircuit();
+        }
         String input = "";
         while (!input.equals("d")) {
             System.out.println("You are the leader! You can draw a Card, type \"d\" to draw a Card");
@@ -240,13 +246,9 @@ public class Tui implements View {
         }
     }
 
-    public void card_effect_switch(){
-
-        Logger.debug("");
-        Logger.debug(controller.getCardState().toString());
-        switch(controller.getCardState()){
-            case ENGINE_CHOICE-> {
-                Logger.debug("ao");
+    public void card_effect_switch() {
+        switch (controller.getCardState()) {
+            case ENGINE_CHOICE -> {
                 engineChoice();
             }
             case FINALIZED -> {
@@ -324,13 +326,13 @@ public class Tui implements View {
         clearConsole();
     }
 
-    private void checkEndBuilding(){
+    private void checkEndBuilding() {
 
     }
 
     /**
      * Message to notify the clients the start of the game
-     * */
+     */
     private void printStartGameInfo() {
         System.out.println(BLUE + "The game has started!" + RESET);
         System.out.println("Players:");
@@ -342,9 +344,9 @@ public class Tui implements View {
 
     /**
      * Message to show building ship menu
-     * */
+     */
     private void buildingShipMenu() {
-        if(firstBuilding){
+        if (firstBuilding) {
             printStartGameInfo();
             System.out.println(BLUE + "It's time to build your ship!" + RESET);
             firstBuilding = false;
@@ -362,8 +364,7 @@ public class Tui implements View {
             System.out.println("5 : Look at decks");
             System.out.println("6 : End ship building");
             System.out.println("7 : Load automatic shipboard");
-        }
-        else {
+        } else {
             System.out.println("5 : end building ship");
         }
         System.out.print("Make your choice: ");
@@ -375,11 +376,9 @@ public class Tui implements View {
 
             if (choice < 1) {
                 throw new Exception("");
-            }
-            else if (mode.equals(GameMode.NORMAL) && choice > 7){
+            } else if (mode.equals(GameMode.NORMAL) && choice > 7) {
                 throw new Exception("");
-            }
-            else if (mode.equals(GameMode.EASY) && choice > 5){
+            } else if (mode.equals(GameMode.EASY) && choice > 5) {
                 throw new Exception("");
             }
         } catch (Exception e) {
@@ -394,7 +393,7 @@ public class Tui implements View {
 
     /**
      * Prints the menu to add component, asks for row, column and rotation
-     * */
+     */
     private void addComponent() {
         String input = "";
 
@@ -510,26 +509,24 @@ public class Tui implements View {
             }
         }
 
-        if (choice == 1){
+        if (choice == 1) {
             controller.setState(GameState.ADD_COMPONENT);
-        }
-        else if (choice == 2){
+        } else if (choice == 2) {
             controller.discardComponent();
-        }
-        else if (choice == 3){
+        } else if (choice == 3) {
             controller.bookComponent();
         }
     }
 
     private void drawUncoveredComponents() {
         int count = 1;
-        if (controller.getFlyBoard().getUncoveredComponents().isEmpty()){
+        if (controller.getFlyBoard().getUncoveredComponents().isEmpty()) {
             System.out.println("No uncovered Components");
             controller.setState(GameState.BUILDING_SHIP);
             return;
         }
 
-        for (int idComp : controller.getFlyBoard().getUncoveredComponents()){
+        for (int idComp : controller.getFlyBoard().getUncoveredComponents()) {
             System.out.println("Component #" + idComp);
             Component component = controller.getFlyBoard().getComponentById(idComp);
             new ShipCell(component).drawCell();
@@ -546,9 +543,9 @@ public class Tui implements View {
             controller.drawUncovered(chosen);
     }
 
-    private void viewDecksList(){
+    private void viewDecksList() {
         System.out.println("Available decks : ");
-        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()){
+        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()) {
             System.out.println("Deck #" + numberDeck);
         }
         System.out.print("Choose deck number : ");
@@ -557,7 +554,7 @@ public class Tui implements View {
         controller.bookDeck(chosen);
     }
 
-    private void viewDeck(){
+    private void viewDeck() {
         System.out.println("hai in mano il deck #" + controller.getInHandDeck());
         System.out.println("premere invio per continuare");
 
@@ -565,8 +562,8 @@ public class Tui implements View {
         controller.freeDeck();
     }
 
-    private void printPlayersName(){
-        synchronized (controller.getFlyboardLock()){
+    private void printPlayersName() {
+        synchronized (controller.getFlyboardLock()) {
             FlyBoard flyBoard = controller.getFlyBoard();
             int count = 1;
 
@@ -576,11 +573,11 @@ public class Tui implements View {
         }
     }
 
-    private void viewBookedComponents(){
+    private void viewBookedComponents() {
         List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
         int count = 1;
 
-        for (Optional<Integer> booked : bookedComponents){
+        for (Optional<Integer> booked : bookedComponents) {
             if (booked.isEmpty())
                 continue;
 
@@ -596,11 +593,11 @@ public class Tui implements View {
         controller.choseBookedComponent(chosen);
     }
 
-    private void switchBookedComponents(){
+    private void switchBookedComponents() {
         List<Integer> possibles = new ArrayList<>();
 
         List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
-        for (Optional<Integer> optComp : bookedComponents){
+        for (Optional<Integer> optComp : bookedComponents) {
             if (optComp.isEmpty())
                 continue;
 
@@ -634,52 +631,50 @@ public class Tui implements View {
         controller.bookComponent(possibles.indexOf(chosenComp));
     }
 
-    private void chooseBuiltShip(){
-        System.out.println("Available built ships setup" );
+    private void chooseBuiltShip() {
+        System.out.println("Available built ships setup");
         synchronized (controller.getFlyBoard().getAvailableConstructedShips()) {
             for (int index : controller.getFlyBoard().getAvailableConstructedShips())
                 System.out.println(index);
         }
 
-        try{
+        try {
             int chosen;
             chosen = Integer.parseInt(scanner.nextLine());
 
-            if (! controller.getFlyBoard().getAvailableConstructedShips().contains(chosen))
+            if (!controller.getFlyBoard().getAvailableConstructedShips().contains(chosen))
                 throw new Exception("");
 
             controller.builtDefault(chosen);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             controller.setState(GameState.INVALID_SHIP_CHOICE);
         }
-
     }
 
-    private void  engineChoice(){
+    private void engineChoice() {
         Logger.debug("scegli i motori da attivare");
         ShipBoard shipBoard = controller.getShipBoard();
 
         int maxAvailable = Integer.min(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());
-        System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : )");
         int activated = -1;
-        while(activated < 0 || activated > maxAvailable) {
+        while (activated < 0 || activated > maxAvailable) {
+            System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : )");
             activated = scanner.nextInt();
-            if(activated >= 0 && activated <= maxAvailable)
+            if (activated >= 0 && activated <= maxAvailable)
                 controller.activateDoubleEngine(activated);
             else
                 System.out.println(RED + "Invalid activated engine" + RESET);
         }
     }
 
-    private void drawCard(){
+    private void drawCard() {
         controller.drawNewAdvCard();
     }
 
-    private void crewRemove(){
+    private void crewRemove() {
         SldAdvCard card = controller.getPlayedCard();
         String choice = "";
-        while(!choice.equals("y") && !choice.equals("n")) {
+        while (!choice.equals("y") && !choice.equals("n")) {
             System.out.println("Do you want to accept the card effect (y/n) : ");
 
             choice = scanner.nextLine();
