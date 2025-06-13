@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -194,6 +195,30 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     @Override
     public void removeCrew(String nickname, List<Cordinate> housingCordinates)throws IOException{
         Message message = new CrewRemoveMessage(0, nickname, housingCordinates);
+        sendMessage(message);
+    }
+
+    @Override
+    public void addGood(int idComp, GoodType type) throws IOException{
+        Message message = new GoodMessage(0, null, GoodMessage.GoodMessageType.ADD_GOOD, idComp, type);
+        sendMessage(message);
+    }
+
+    @Override
+    public void removeGoodPendingList(String nickname, GoodType type) throws IOException{
+        Message message = new GoodMessage(0, nickname, GoodMessage.GoodMessageType.REMOVE_PENDING, 0, type);
+        sendMessage(message);
+    }
+
+    @Override
+    public void removeGood(int idComp, GoodType type) throws IOException{
+        Message message = new GoodMessage(0, null, GoodMessage.GoodMessageType.REMOVE_GOOD, idComp, type);
+        sendMessage(message);
+    }
+
+    @Override
+    public void addGoodPendingList(String nickname, GoodType type) throws IOException{
+        Message message = new GoodMessage(0, nickname, GoodMessage.GoodMessageType.ADD_PENDING, 0, type);
         sendMessage(message);
     }
 

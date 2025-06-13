@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft.network.server.socket;
 
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.Logger;
@@ -91,6 +90,13 @@ public class ServerMessageHandler implements Runnable {
 
                     case CrewRemoveMessage crewRemoveMessage ->
                         serverController.removeCrew(crewRemoveMessage.getGameId(), crewRemoveMessage.getNickname(), crewRemoveMessage.getCordinates());
+
+                    case GoodMessage goodMessage ->{
+                        switch (goodMessage.getTypeMessage()){
+                            case ADD_GOOD -> serverController.addGood(goodMessage.getGameId(), goodMessage.getNickname(), goodMessage.getIdComp(), goodMessage.getGoodType());
+                            case REMOVE_GOOD -> serverController.removeGood(goodMessage.getGameId(), goodMessage.getNickname(), goodMessage.getIdComp(), goodMessage.getGoodType());
+                        }
+                    }
 
                     default -> {
                         Logger.error("Messaggio non gestito lato server");

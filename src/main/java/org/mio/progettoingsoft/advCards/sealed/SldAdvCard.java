@@ -12,6 +12,7 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.tui.VisualCard;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,8 +85,9 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     }
 
     public List<GoodType> getGoods(){
-        throw new RuntimeException("this card doesn't have goods");
+        return Collections.emptyList();
     }
+
     public int getCrewLost(){
         throw new RuntimeException("this card doesn't have crew lost");
     }

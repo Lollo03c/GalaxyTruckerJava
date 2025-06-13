@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.client;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
@@ -64,4 +65,9 @@ public interface VirtualClient extends Remote {
     void advancePlayer(String nickname, int steps, int energyToRemove) throws Exception;
     void addCredits(String nickname, int credits) throws Exception;
     void removeCrew(String nickname, List<Cordinate> housingCordinates) throws Exception;
+    void addGood(int idComp, GoodType type) throws Exception;
+    void removeGoodPendingList(String nickname, GoodType type) throws Exception;
+
+    void removeGood(int idComp, GoodType type) throws Exception;
+    void addGoodPendingList(String nickname, GoodType type) throws Exception;
 }

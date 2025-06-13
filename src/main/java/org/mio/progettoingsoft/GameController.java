@@ -65,6 +65,15 @@ public class GameController {
                 }
             }
 
+            case ACCEPTATION_CHOICE -> {
+                try{
+                    client.setCardState(CardState.ACCEPTATION_CHOICE);
+                }
+                catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            }
+
             case CREW_REMOVE_CHOICE -> {
                 try{
                     client.setState(GameState.CARD_EFFECT);

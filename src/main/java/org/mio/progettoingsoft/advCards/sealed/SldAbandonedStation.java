@@ -61,22 +61,17 @@ public final class SldAbandonedStation extends SldAdvCard {
 
     @Override
     public void init(GameServer game) {
-        FlyBoard board = game.getFlyboard();
+        this.game = game;
+        this.flyBoard = game.getFlyboard();
+
 
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }
-        allowedPlayers = board.getScoreBoard().stream()
+        allowedPlayers = flyBoard.getScoreBoard().stream()
                 .filter(player -> player.getShipBoard().getQuantityGuests() >= crewNeeded)
                 .toList();
         playerIterator = allowedPlayers.iterator();
-        if (playerIterator.hasNext()) {
-            actualPlayer = playerIterator.next();
-        } else {
-            throw new RuntimeException("No allowed players");
-        }
-//        board.setState(GameState.CARD_EFFECT);
-        this.state = CardState.ACCEPTATION_CHOICE;
     }
 
     public List<GoodType> applyEffect(FlyBoard board, Player player, boolean wantsToApply) {
@@ -122,5 +117,15 @@ public final class SldAbandonedStation extends SldAdvCard {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
 //        board.setState(GameState.DRAW_CARD);
+    }
+
+    @Override
+    public void setNextPlayer(){
+        if (playerIterator.hasNext()) {
+            actualPlayer = playerIterator.next();
+            setState(CardState.ACCEPTATION_CHOICE);
+        } else {
+            setState(CardState.FINALIZED);
+        }
     }
 }

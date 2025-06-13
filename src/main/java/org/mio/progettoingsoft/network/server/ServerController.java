@@ -1,10 +1,8 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
-import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
-import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.advCards.sealed.*;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NotYourTurnException;
@@ -303,7 +301,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(17);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(19);
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
@@ -412,6 +410,48 @@ public class ServerController {
             }
 
             default -> Logger.error("Effetto carta non consentito");
+        }
+    }
+
+    public void addGood(int idGame, String nickname, int idComp, GoodType type){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        game.getFlyboard().getComponentById(idComp).addGood(type);
+
+        for (VirtualClient client : game.getClients().values()) {
+
+            try{
+                client.addGood(idComp, type);
+                client.removeGoodPendingList(nickname, type);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try{
+            game.getClients().get(nickname).setState(GameState.GOODS_PLACEMENT);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeGood(int idGame, String nickname, int idComp, GoodType type){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        game.getFlyboard().getComponentById(idComp).removeGood(type);
+
+        for (VirtualClient client : game.getClients().values()){
+            try{
+                client.removeGood(idComp, type);
+                client.addGoodPendingList(nickname, type);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try {
+            game.getClients().get(nickname).setState(GameState.GOODS_PLACEMENT);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

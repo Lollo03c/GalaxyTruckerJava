@@ -4,6 +4,7 @@ package org.mio.progettoingsoft.network.server.rmi;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -171,6 +172,20 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     public void crewRemove(int idGame, String nickname, List<Cordinate> cordsToRemove) throws RemoteException{
         executors.submit(() ->
             controller.removeCrew(idGame, nickname, cordsToRemove)
+        );
+    }
+
+    @Override
+    public void addGood(int idGame, String nickname, int idComp, GoodType type){
+        executors.submit(() ->
+            controller.addGood(idGame, nickname, idComp, type)
+        );
+    }
+
+    @Override
+    public void removeGood(int idGame, String nickaname, int compId, GoodType type) throws RemoteException{
+        executors.submit(() ->
+            controller.removeGood(idGame, nickaname, idGame, type)
         );
     }
 }

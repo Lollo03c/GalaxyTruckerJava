@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.network.client.socket;
 
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.socket.VirtualServerSocket;
@@ -129,6 +130,18 @@ public class SocketServerHandler implements VirtualServerSocket {
     @Override
     public void crewRemove(int idGame, String nickname, List<Cordinate> cordinateList) throws IOException{
         Message message = new CrewRemoveMessage(idGame, nickname, cordinateList);
+        sendMessage(message);
+    }
+
+    @Override
+    public void addGood(int idGame, String nickname, int compId, GoodType type) throws IOException{
+        Message message = new GoodMessage(idGame, nickname, GoodMessage.GoodMessageType.ADD_GOOD, compId, type);
+        sendMessage(message);
+    }
+
+    @Override
+    public void removeGood(int idGame, String nickaname, int compId, GoodType type) throws IOException{
+        Message message = new GoodMessage(idGame, nickaname, GoodMessage.GoodMessageType.REMOVE_GOOD, compId, type);
         sendMessage(message);
     }
 

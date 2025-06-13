@@ -3,7 +3,7 @@ package org.mio.progettoingsoft;
 import java.io.Serializable;
 
 public enum GameState implements Serializable {
-    WAITING, START, NICKNAME, GAME_MODE, WAITING_PLAYERS,
+    WAITING, START, NICKNAME, GAME_MODE, WAITING_PLAYERS, IDLE,
 
     GAME_START, BUILDING_SHIP, COMPONENT_MENU, ADD_COMPONENT, DRAW_UNCOVERED_COMPONENTS,
     VIEW_SHIP_BUILDING, VIEW_DECKS_LIST, VIEW_DECK, SWITCH_BOOKED, END_BUILDING, CHOOSE_POSITION, VIEW_BOOKED, CHOICE_BUILT,
@@ -18,7 +18,7 @@ public enum GameState implements Serializable {
     //la seguente riga e' poi da eliminare (vede Stefano)
     CREW_REMOVE_CHOICE,
 
-    ENGINE_CHOICE
+    ENGINE_CHOICE, GOODS_PLACEMENT
     ;
 
     public static GameState stringToGameState(String string){

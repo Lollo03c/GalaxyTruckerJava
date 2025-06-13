@@ -1,15 +1,18 @@
 package org.mio.progettoingsoft.views.tui;
 
+import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
@@ -154,6 +157,8 @@ public class Tui implements View {
             case NEW_CARD -> printNewCard();
 
             case CARD_EFFECT -> cardEffect();
+
+            case GOODS_PLACEMENT -> goodPlacement();
         }
     }
 
@@ -246,13 +251,12 @@ public class Tui implements View {
     }
 
     public void cardEffect() {
-
-
-
         switch (controller.getCardState()) {
             case ENGINE_CHOICE -> {
                 engineChoice();
             }
+
+            case ACCEPTATION_CHOICE -> askAcceptEffect();
 
             case CREW_REMOVE_CHOICE -> crewRemove();
 
@@ -260,7 +264,6 @@ public class Tui implements View {
 
             }
         }
-
     }
 
     /**
@@ -686,6 +689,28 @@ public class Tui implements View {
         controller.drawNewAdvCard();
     }
 
+    private void askAcceptEffect(){
+        SldAdvCard card = controller.getPlayedCard();
+        String choice = "";
+        while (!choice.equals("y") && !choice.equals("n")) {
+            System.out.println("Do you want to accept the card effect (y/n) : ");
+
+            choice = scanner.nextLine();
+            //todo controllo input
+        }
+
+        if (choice.equals("n")){
+            controller.skipEffect();
+            return;
+        }
+
+        switch (card){
+            case SldAbandonedStation abandonedStation -> controller.setState(GameState.GOODS_PLACEMENT);
+
+            default -> Logger.error("Effetto non permesso dalla carta");
+        }
+    }
+
     private void crewRemove() {
         SldAdvCard card = controller.getPlayedCard();
         String choice = "";
@@ -758,6 +783,81 @@ public class Tui implements View {
         }
 
         controller.removeCrew(crewPositionsToRemove);
+    }
+
+    private void goodPlacement(){
+        SldAdvCard card = controller.getPlayedCard();
+        List<GoodType> toInsert = controller.getGoodsToInsert();
+        ShipBoard shipBoard = controller.getShipBoard();
+
+        String choice = "";
+
+        Logger.info("GOOD_PLACEMENT menu");
+
+        shipBoard.drawShipboard();
+
+        System.out.println("The following goods have to be placed");
+        for (GoodType type : toInsert)
+            System.out.println(type);
+
+        System.out.println("\n1. Insert a good in the shipboard");
+        System.out.println("2. Remove a good in the shipboard");
+        System.out.println("3, End placement (the good yet to placed will be discarded");
+
+        choice = scanner.nextLine().trim();
+
+        if (choice.equals("1")){
+            System.out.println("Available goods in your hand");
+            for (GoodType type : toInsert){
+                System.out.print(type + "\t");
+            }
+            System.out.println("Select the type :");
+            String chosenType = scanner.nextLine().trim().toUpperCase();
+            GoodType type = GoodType.stringToGoodType(chosenType);
+
+            List<Cordinate> availableDepots = shipBoard.getAvailableDepots(type);
+            for (int i = 0; i < availableDepots.size(); i++){
+                System.out.println(i+1 + ". " + availableDepots.get(i));
+            }
+            System.out.println("Select the depot by its number : ");
+            int chosenDepot = Integer.parseInt(scanner.nextLine().trim());
+
+            Component comp = shipBoard.getOptComponentByCord(availableDepots.get(chosenDepot - 1)).get();
+
+            controller.addGood(comp.getId() , type);
+        }
+        else if (choice.equals("2")){
+            List<Cordinate> depotCords = new ArrayList<>();
+            Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+
+            while (cordinateIterator.hasNext()){
+                Cordinate cord = cordinateIterator.next();
+                if (shipBoard.getOptComponentByCord(cord).isEmpty())
+                    continue;
+
+                List<GoodType> goods = shipBoard.getOptComponentByCord(cord).get().getStoredGoods();
+                if (! goods.isEmpty())
+                    depotCords.add(cord);
+            }
+
+            for (int i = 0; i < depotCords.size(); i++){
+                System.out.println(i+1 + ". " + depotCords.get(i));
+            }
+            System.out.print("Select a housing by its number :");
+            int chosenHousing = Integer.parseInt(scanner.nextLine().trim());
+            Component depot = shipBoard.getOptComponentByCord(depotCords.get(chosenHousing - 1)).get();
+            System.out.println("Available goods to remove");
+            for (GoodType type : depot.getStoredGoods()){
+                System.out.println(type);
+            }
+            System.out.print("Select a good to remove : ");
+            GoodType type = GoodType.stringToGoodType(scanner.nextLine().trim().toUpperCase());
+
+            controller.removeGood(depot.getId(), type);
+
+            System.out.println();
+        }
+
     }
 
 //        try{

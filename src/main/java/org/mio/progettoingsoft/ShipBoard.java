@@ -700,6 +700,25 @@ public abstract class ShipBoard {
                 .collect(Collectors.toList());
     }
 
+    public List<Cordinate> getAvailableDepots(GoodType type){
+        List<Cordinate> cordinates = new ArrayList<>();
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            if (shipComponents[cord.getRow()][cord.getColumn()].isEmpty())
+                continue;
+
+            Component comp = shipComponents[cord.getRow()][cord.getColumn()].get();
+            if (comp.canContainsGood(type)){
+                cordinates.add(cord);
+            }
+        }
+
+        return cordinates;
+    }
+
 
 }
 

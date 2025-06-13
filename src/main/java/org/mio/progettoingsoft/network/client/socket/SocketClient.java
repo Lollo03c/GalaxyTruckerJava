@@ -156,6 +156,21 @@ public class SocketClient implements Client {
                             controller.crewLost(crewRemoveMessage.getNickname(), crewRemoveMessage.getCordinates());
                         });
 
+                    case GoodMessage goodMessage ->{
+                        switch (goodMessage.getTypeMessage()) {
+                            case ADD_GOOD ->
+                                    controller.addGoodToModel(goodMessage.getIdComp(), goodMessage.getGoodType());
+                            case REMOVE_PENDING ->
+                                    controller.removePendingGood(goodMessage.getNickname(), goodMessage.getGoodType());
+                            case REMOVE_GOOD ->
+                                    controller.removeGoodFromModel(goodMessage.getIdComp(), goodMessage.getGoodType());
+                            case ADD_PENDING ->
+                                    controller.addPendingGood(goodMessage.getNickname(), goodMessage.getGoodType());
+                            default -> {
+                            }
+                        }
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito");
                     }

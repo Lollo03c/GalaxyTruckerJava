@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
@@ -15,6 +16,7 @@ import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -70,6 +72,8 @@ public class ClientController {
 
     private List<Integer> availablePlacesOnCircuit;
 
+    private List<GoodType> goodsToInsert = new ArrayList<>();
+
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -86,8 +90,11 @@ public class ClientController {
             oldState = this.gameState;
             this.gameState = state;
         }
-        if (oldState != state) {
+        if (oldState == null || !oldState.equals(state)) {
             support.firePropertyChange("gameState", oldState, state);
+        }
+        else if (oldState.equals(state)){
+            support.firePropertyChange(new PropertyChangeEvent(this, "gameState", oldState, state));
         }
     }
 
@@ -106,6 +113,9 @@ public class ClientController {
         synchronized (cardStateLock) {
             oldState = this.cardState;
             this.cardState = state;
+
+//            if(this.getState() != GameState.CARD_EFFECT)
+                setState(GameState.CARD_EFFECT);
         }
         if (oldState != state) {
             support.firePropertyChange("cardState", oldState, state);
@@ -247,6 +257,7 @@ public class ClientController {
         synchronized (cardLock) {
             synchronized (flyboardLock) {
                 this.card = flyBoard.getSldAdvCardByID(idCard);
+                goodsToInsert = card.getGoods();
                 Logger.debug("settata la carta: " + card.getCardName());
             }
         }
@@ -548,6 +559,9 @@ public class ClientController {
         }
     }
 
+    public List<GoodType> getGoodsToInsert() {
+        return goodsToInsert;
+    }
 
     public void leaveFlight() {
         try {
@@ -587,5 +601,51 @@ public class ClientController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addGood(int idComp, GoodType type){
+        setCardState(CardState.IDLE);
+
+
+        try{
+            server.addGood(idGame, nickname, idComp, type);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addGoodToModel(int idComp, GoodType type){
+        synchronized (flyboardLock){
+            flyBoard.getComponentById(idComp).addGood(type);
+        }
+    }
+
+    public void removePendingGood(String nick, GoodType type){
+        if (nick.equals(nickname)){
+            goodsToInsert.remove(type);
+        }
+    }
+
+    public void removeGood(int idComp, GoodType type){
+        setCardState(CardState.IDLE);
+
+        try{
+            server.removeGood(idGame, nickname, idComp, type);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeGoodFromModel(int idComp, GoodType type){
+        synchronized (flyboardLock){
+            Logger.debug(type + "removed from " + idComp);
+            flyBoard.getComponentById(idComp).removeGood(type);
+        }
+    }
+
+    public void addPendingGood(String nick, GoodType type){
+        if (nick.equals(nickname))
+            goodsToInsert.add(type);
     }
 }

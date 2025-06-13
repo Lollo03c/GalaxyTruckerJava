@@ -254,7 +254,7 @@ public abstract class Component {
      * @throws IncorrectShipBoardException if the component is not a {@link org.mio.progettoingsoft.components.Depot}
      */
     public boolean canContainsGood(GoodType type) throws IncorrectShipBoardException{
-        throw new IncorrectShipBoardException("not a depot");
+        return false;
     }
 
     public boolean getHazard() throws IncorrectShipBoardException{

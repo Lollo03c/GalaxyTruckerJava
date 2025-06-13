@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.client.rmi;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -190,6 +191,34 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     @Override
     public void removeCrew(String nickname, List<Cordinate> housingCordinates) throws RemoteException{
         executors.submit(() -> controller.crewLost(nickname,housingCordinates));
+    }
+
+    @Override
+    public void addGood(int idComp, GoodType type) throws RemoteException{
+        executors.submit(() ->
+            controller.addGoodToModel(idComp, type)
+        );
+    }
+
+    @Override
+    public void removeGoodPendingList(String nickname, GoodType type) throws RemoteException{
+        executors.submit(() ->
+            controller.removePendingGood(nickname, type)
+        );
+    }
+
+    @Override
+    public void removeGood(int idComp, GoodType type) throws RemoteException{
+        executors.submit(() ->
+            controller.removeGoodFromModel(idComp, type)
+        );
+    }
+
+    @Override
+    public void addGoodPendingList(String nickname, GoodType type) throws RemoteException{
+        executors.submit(() ->
+            controller.addPendingGood(nickname, type)
+        );
     }
 
 }
