@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -145,8 +146,18 @@ public class SocketClient implements Client {
                             controller.setCard(drawCardMessage.getIdCard());
                         });
                     }
-                    case AddCreditsMessage addCreditsMessage -> executor.submit(() -> controller.addCredits(addCreditsMessage.getCredits()));
+                    case AddCreditsMessage addCreditsMessage ->
+                            executor.submit(() ->
+                                    controller.addCredits(addCreditsMessage.getNickname(), addCreditsMessage.getCredits())
+                            );
+
+                    case CrewRemoveMessage crewRemoveMessage ->
+                        executor.submit(() -> {
+                            controller.crewLost(crewRemoveMessage.getNickname(), crewRemoveMessage.getCordinates());
+                        });
+
                     default -> {
+                        Logger.error("Messaggio non gestito");
                     }
                 }
             } catch (InterruptedException e) {

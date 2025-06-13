@@ -104,5 +104,10 @@ public class Cordinate implements Serializable {
         return new Cordinate(row - 5, column - 4);
     }
 
+    @Override
+    public String toString(){
+        return "(" + row + ", " + column + ")";
+    }
+
 
 }

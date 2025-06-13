@@ -183,12 +183,12 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
-    public void addCredits(int credits) throws RemoteException{
-        executors.submit(() -> controller.addCredits(credits));
+    public void addCredits(String nickname, int credits) throws RemoteException{
+        executors.submit(() -> controller.addCredits(nickname, credits));
     }
 
     @Override
-    public void crewLost(String nickname, List<Cordinate> housingCordinates) throws RemoteException{
+    public void removeCrew(String nickname, List<Cordinate> housingCordinates) throws RemoteException{
         executors.submit(() -> controller.crewLost(nickname,housingCordinates));
     }
 

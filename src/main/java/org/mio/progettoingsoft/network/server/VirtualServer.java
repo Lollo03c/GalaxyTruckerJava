@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 
 import java.rmi.Remote;
+import java.util.List;
 
 /**
  * Interfaccia che definisce i metodi del server che devono essere resi accessibili ai client per poter interagire con
@@ -32,4 +33,5 @@ public interface VirtualServer extends Remote {
 
     void drawCard(int idGame, String nickname) throws Exception;
     void skipEffect(int idGame, String nickname, int idCard) throws Exception;
+    void crewRemove(int idGame, String nickname, List<Cordinate> cordsToRemove) throws Exception;
 }

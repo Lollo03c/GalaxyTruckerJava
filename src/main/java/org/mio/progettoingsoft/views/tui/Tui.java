@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.views.tui;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
@@ -695,16 +696,73 @@ public class Tui implements View {
 
         if (choice.equals("n")) {
             controller.skipEffect();
-
-            return;
-        } else if (choice.equals("y")) {
-            //todo far partire il flusso da qui
-
             return;
         }
 
+        int toRemove = card.getCrewLost();
+        List<Cordinate> crewPositionsToRemove = new ArrayList<>();
 
+        System.out.println("Now you have to select " + toRemove + " guest, the selected ones will be deleted from your shipBoard");
+
+
+        System.out.println("To select a guest enter the associated row and column");
+        controller.getShipBoard().drawShipboard();
+
+        for (int i = 0; i < toRemove; i++) {
+            System.out.println("\nCrew member #" + i + 1);
+            String input = "";
+            int row = 0;
+            while (row < 5 || row > 9) {
+                System.out.print("Insert row: ");
+
+                input = scanner.nextLine();
+
+                try {
+                    row = Integer.parseInt(input);
+
+                    if (row < 5 || row > 9) {
+                        System.out.println(RED + "Invalid row!" + RESET);
+                    }
+                } catch (Exception e) {
+                    System.out.println(RED + "Invalid row!" + RESET);
+                }
+            }
+
+            int column = 0;
+            while (column < 4 || column > 10) {
+                System.out.print("Insert column: ");
+
+                input = scanner.nextLine();
+
+                try {
+                    column = Integer.parseInt(input);
+
+                    if (column < 4 || column > 10) {
+                        System.out.println(RED + "Invalid column!" + RESET);
+                    }
+                } catch (Exception e) {
+                    System.out.println(RED + "Invalid column!" + RESET);
+                    column = 0;
+                }
+            }
+
+            int offsetRow = controller.getShipBoard().getOffsetRow();
+            int offsetCol = controller.getShipBoard().getOffsetCol();
+
+            crewPositionsToRemove.add(new Cordinate(row - offsetRow, column - offsetCol));
+        }
+
+        controller.removeCrew(crewPositionsToRemove);
     }
+
+//        try{
+//            controller.removeCrew(crewPositionsToRemove);
+//        } catch (Exception e) {
+//            System.out.println(RED + "One of the coordindate you insert is not associated with a guest" + RESET);
+//            controller.setState(GameState.CARD_EFFECT);
+//            return ;
+//        }
+
 
     private void clearConsole() {
         System.out.print("\033[H\033[2J");

@@ -5,7 +5,6 @@ import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
-import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NotYourTurnException;
@@ -14,7 +13,6 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 public class ServerController {
@@ -357,37 +355,6 @@ public class ServerController {
         }
     }
 
-    public void crewLost(int idGame, String nickname, List<Cordinate> housingCordinates){
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        FlyBoard flyBoard = game.getFlyboard();
-        SldAdvCard card = flyBoard.getPlayedCard();
-
-        switch (card){
-            case SldAbandonedShip abandonedShip -> {
-                for (String nick : game.getClients().keySet()){
-                    VirtualClient client = game.getClients().get(nick);
-
-                    try {
-                        client.crewLost(nickname, housingCordinates);
-                        client.advancePlayer(nickname, -card.getDaysLost(),0);
-
-                        if (nick.equals(nickname))
-                            client.addCredits(card.getCredits());
-
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                abandonedShip.applyEffect(nickname, true, housingCordinates);
-            }
-
-            default -> {
-                Logger.error("carta non valida per effetto activeDoubleEngine");
-            }
-        }
-    }
-
     public void leaveFlight(int idGame, String nickname){
         //TODO: this is only for testing of the circuit update, this must be replaced with the actual functionality
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
@@ -412,12 +379,39 @@ public class ServerController {
         if (idCard == card.getId() && nickname.equals(card.getActualPlayer().getNickname())){
             Logger.debug("Salto effetto carta " + idCard);
             switch (card){
-                case SldAbandonedShip abandonedShip -> abandonedShip.applyEffect(nickname, false, null);
+                case SldAbandonedShip abandonedShip -> {
+                    abandonedShip.applyEffect(nickname, false, null);
+                }
 
                 default -> Logger.error("carta non implementata - per salto effetto");
             }
 
             card.setNextPlayer();
+        }
+    }
+
+    public void removeCrew(int idGame, String nickname, List<Cordinate> cordToRemove){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
+        SldAdvCard card = flyBoard.getPlayedCard();
+
+        switch (card){
+            case SldAbandonedShip abandonedShip ->{
+                abandonedShip.applyEffect(nickname, true, cordToRemove);
+
+                for (VirtualClient client : game.getClients().values()){
+                    try{
+                        client.removeCrew(nickname, cordToRemove);
+                        client.addCredits(nickname, card.getCredits());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                drawCard(idGame, nickname);
+            }
+
+            default -> Logger.error("Effetto carta non consentito");
         }
     }
 }

@@ -186,14 +186,14 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
-    public void addCredits(int credits) throws IOException{
-        Message message = new AddCreditsMessage(0, "", credits);
+    public void addCredits(String nickname, int credits) throws IOException{
+        Message message = new AddCreditsMessage(0, nickname, credits);
         sendMessage(message);
     }
 
     @Override
-    public void crewLost(String nickname, List<Cordinate> housingCordinates)throws IOException{
-        Message message = new CrewLostMessage(0,nickname,housingCordinates);
+    public void removeCrew(String nickname, List<Cordinate> housingCordinates)throws IOException{
+        Message message = new CrewRemoveMessage(0, nickname, housingCordinates);
         sendMessage(message);
     }
 

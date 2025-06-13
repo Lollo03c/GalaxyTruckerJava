@@ -3,6 +3,7 @@ package org.mio.progettoingsoft.network.server.socket;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.ServerController;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -88,7 +89,12 @@ public class ServerMessageHandler implements Runnable {
                     case SkipEffectMessage skipEffectMessage ->
                         serverController.skipEffect(skipEffectMessage.getGameId(), skipEffectMessage.getNickname(), skipEffectMessage.getIdCard());
 
-                    default -> {}
+                    case CrewRemoveMessage crewRemoveMessage ->
+                        serverController.removeCrew(crewRemoveMessage.getGameId(), crewRemoveMessage.getNickname(), crewRemoveMessage.getCordinates());
+
+                    default -> {
+                        Logger.error("Messaggio non gestito lato server");
+                    }
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

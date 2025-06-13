@@ -3,13 +3,10 @@ package org.mio.progettoingsoft.network.client;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +62,6 @@ public interface VirtualClient extends Remote {
 
     void setPlayedCard(int idCard) throws Exception;
     void advancePlayer(String nickname, int steps, int energyToRemove) throws Exception;
-    void addCredits(int credits) throws Exception;
-    void crewLost(String nickname, List<Cordinate> housingCordinates) throws Exception;
+    void addCredits(String nickname, int credits) throws Exception;
+    void removeCrew(String nickname, List<Cordinate> housingCordinates) throws Exception;
 }

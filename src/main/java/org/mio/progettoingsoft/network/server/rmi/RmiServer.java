@@ -17,6 +17,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -163,6 +164,13 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     public void skipEffect(int idGame, String nickname, int idCard) throws RemoteException{
         executors.submit(() ->
                 controller.skipEffect(idGame, nickname, idCard)
+        );
+    }
+
+    @Override
+    public void crewRemove(int idGame, String nickname, List<Cordinate> cordsToRemove) throws RemoteException{
+        executors.submit(() ->
+            controller.removeCrew(idGame, nickname, cordsToRemove)
         );
     }
 }

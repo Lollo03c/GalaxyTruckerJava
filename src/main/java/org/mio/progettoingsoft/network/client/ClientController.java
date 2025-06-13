@@ -554,15 +554,18 @@ public class ClientController {
         }
     }
 
-    public void addCredits(int credits) {
+    public void addCredits(String nick, int credits) {
+        Logger.info(nick + " added " + credits + "credits");
         synchronized (flyboardLock) {
-            flyBoard.getPlayerByUsername(nickname).addCredits(credits);
+            flyBoard.getPlayerByUsername(nick).addCredits(credits);
         }
     }
 
-    public void crewLost(String nickname, List<Cordinate> housingCordinates) {
-        ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+    public void crewLost(String nick, List<Cordinate> housingCordinates) {
+        ShipBoard ship = flyBoard.getPlayerByUsername(nick).getShipBoard();
+
         for (Cordinate cord : housingCordinates) {
+            Logger.info(nick + "lost crew member in " + cord);
             ship.getOptComponentByCord(cord).get().removeGuest();
         }
     }
@@ -570,6 +573,14 @@ public class ClientController {
     public void skipEffect(){
         try{
             server.skipEffect(idGame, nickname, card.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeCrew(List<Cordinate> cordinatesToRemove){
+        try {
+            server.crewRemove(idGame, nickname, cordinatesToRemove);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

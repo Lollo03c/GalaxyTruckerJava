@@ -99,7 +99,7 @@ public final class SldAbandonedShip extends SldAdvCard {
                 flyBoard.moveDays(flyBoard.getPlayerByUsername(actualPlayer.getNickname()), -this.daysLost);
                 flyBoard.getPlayerByUsername(actualPlayer.getNickname()).addCredits(this.credits);
 
-                this.state = CardState.FINALIZED;
+                setState(CardState.FINALIZED);
             } else {
                 return;
             }

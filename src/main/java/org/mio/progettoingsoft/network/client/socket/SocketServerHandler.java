@@ -2,8 +2,6 @@ package org.mio.progettoingsoft.network.client.socket;
 
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
-import org.mio.progettoingsoft.components.Housing;
-import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.socket.VirtualServerSocket;
@@ -11,7 +9,7 @@ import org.mio.progettoingsoft.network.server.socket.VirtualServerSocket;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.rmi.RemoteException;
+import java.util.List;
 
 public class SocketServerHandler implements VirtualServerSocket {
     private final ObjectOutputStream out;
@@ -125,6 +123,12 @@ public class SocketServerHandler implements VirtualServerSocket {
     @Override
     public void skipEffect(int idGame, String nickname, int idCard) throws IOException{
         Message message = new SkipEffectMessage(idGame, nickname, idCard);
+        sendMessage(message);
+    }
+
+    @Override
+    public void crewRemove(int idGame, String nickname, List<Cordinate> cordinateList) throws IOException{
+        Message message = new CrewRemoveMessage(idGame, nickname, cordinateList);
         sendMessage(message);
     }
 
