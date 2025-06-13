@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.views.tui;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GuestType;
@@ -245,6 +246,9 @@ public class Tui implements View {
     }
 
     public void cardEffect() {
+
+
+
         switch (controller.getCardState()) {
             case ENGINE_CHOICE -> {
                 engineChoice();
@@ -256,6 +260,7 @@ public class Tui implements View {
 
             }
         }
+
     }
 
     /**

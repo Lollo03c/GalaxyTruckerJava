@@ -99,8 +99,10 @@ public class ClientController {
 
     public void setCardState(CardState state) {
         CardState oldState;
-        if(this.getState() != GameState.CARD_EFFECT)
-            setState(GameState.CARD_EFFECT);
+        synchronized (stateLock) {
+            if(this.getState() != GameState.CARD_EFFECT)
+                setState(GameState.CARD_EFFECT);
+        }
         synchronized (cardStateLock) {
             oldState = this.cardState;
             this.cardState = state;
@@ -245,6 +247,7 @@ public class ClientController {
         synchronized (cardLock) {
             synchronized (flyboardLock) {
                 this.card = flyBoard.getSldAdvCardByID(idCard);
+                Logger.debug("settata la carta: " + card.getCardName());
             }
         }
     }
