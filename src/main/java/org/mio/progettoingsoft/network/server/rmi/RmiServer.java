@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     private final ServerController controller;
     private final ConnectionInfo connectionInfo;
-    private ExecutorService executors = Executors.newFixedThreadPool(1);
+    private ExecutorService executors = Executors.newFixedThreadPool(4);
 
     public RmiServer(ConnectionInfo connectionInfo) throws RemoteException {
         super(); // automatic export of UnicastRemoteObject

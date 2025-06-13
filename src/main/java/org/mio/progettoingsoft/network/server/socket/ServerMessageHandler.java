@@ -5,10 +5,13 @@ import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServerMessageHandler implements Runnable {
     private final BlockingQueue<Message> receivedMessages;
     private final ServerController serverController;
+    private ExecutorService executors = Executors.newFixedThreadPool(4);
 
     public ServerMessageHandler(ServerController serverController, BlockingQueue<Message> receivedMessages){
         this.serverController = serverController;
@@ -23,7 +26,7 @@ public class ServerMessageHandler implements Runnable {
 
                 switch (message){
                     case NicknameMessage nicknameMessage -> {
-                        serverController.handleNickname(nicknameMessage.getIdClient(), nicknameMessage.getNickname());
+                        executors.submit(() -> serverController.handleNickname(nicknameMessage.getIdClient(), nicknameMessage.getNickname()));
                     }
 
                     case GameInfoMessage gameInfoMessage -> {
