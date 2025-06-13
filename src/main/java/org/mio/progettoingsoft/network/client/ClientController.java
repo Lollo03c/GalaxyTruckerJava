@@ -566,4 +566,12 @@ public class ClientController {
             ship.getOptComponentByCord(cord).get().removeGuest();
         }
     }
+
+    public void skipEffect(){
+        try{
+            server.skipEffect(idGame, nickname, card.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

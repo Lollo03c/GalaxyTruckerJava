@@ -305,7 +305,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(5);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(17);
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
@@ -379,7 +379,7 @@ public class ServerController {
                     }
                 }
 
-                abandonedShip.applyEffect(flyBoard, flyBoard.getPlayerByUsername(nickname), true, housingCordinates, game);
+                abandonedShip.applyEffect(nickname, true, housingCordinates);
             }
 
             default -> {
@@ -401,6 +401,23 @@ public class ServerController {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public void skipEffect(int idGame, String nickname, int idCard){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        SldAdvCard card = flyBoard.getPlayedCard();
+
+        if (idCard == card.getId() && nickname.equals(card.getActualPlayer().getNickname())){
+            Logger.debug("Salto effetto carta " + idCard);
+            switch (card){
+                case SldAbandonedShip abandonedShip -> abandonedShip.applyEffect(nickname, false, null);
+
+                default -> Logger.error("carta non implementata - per salto effetto");
+            }
+
+            card.setNextPlayer();
         }
     }
 }

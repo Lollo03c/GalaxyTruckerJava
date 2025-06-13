@@ -122,6 +122,12 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
+    @Override
+    public void skipEffect(int idGame, String nickname, int idCard) throws IOException{
+        Message message = new SkipEffectMessage(idGame, nickname, idCard);
+        sendMessage(message);
+    }
+
     /**
      * utility method used to send messages to the server
      *
@@ -132,5 +138,6 @@ public class SocketServerHandler implements VirtualServerSocket {
         out.flush();
         out.reset();
     }
+
 
 }

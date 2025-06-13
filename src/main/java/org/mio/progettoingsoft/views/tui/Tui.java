@@ -248,6 +248,9 @@ public class Tui implements View {
             case ENGINE_CHOICE -> {
                 engineChoice();
             }
+
+            case CREW_REMOVE_CHOICE -> crewRemove();
+
             case FINALIZED -> {
 
             }
@@ -686,16 +689,18 @@ public class Tui implements View {
             choice = scanner.nextLine();
             //todo controllo input
 
-            if (choice.equals("n")) {
 
-                //todo comunicare al server di passare al prossimo player
-                return;
-            } else if (choice.equals("y")) {
-                //todo far partire il flusso da qui
+        }
 
-                return;
-            }
-            System.out.println(RED + "Invalid choice!" + RESET);
+
+        if (choice.equals("n")) {
+            controller.skipEffect();
+
+            return;
+        } else if (choice.equals("y")) {
+            //todo far partire il flusso da qui
+
+            return;
         }
 
 

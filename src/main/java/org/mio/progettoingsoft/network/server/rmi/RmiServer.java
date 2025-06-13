@@ -158,4 +158,11 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
             controller.drawCard(idGame, nickname);
         });
     }
+
+    @Override
+    public void skipEffect(int idGame, String nickname, int idCard) throws RemoteException{
+        executors.submit(() ->
+                controller.skipEffect(idGame, nickname, idCard)
+        );
+    }
 }

@@ -55,56 +55,53 @@ public final class SldAbandonedShip extends SldAdvCard {
 //        if (board.getState() != GameState.DRAW_CARD) {
 //            throw new IllegalStateException("Illegal state: " + board.getState());
 //        }
-//        board.setState(GameState.CARD_EFFECT);
+
+        this.game = game;
+        this.flyBoard = game.getFlyboard();
+
         this.allowedPlayers = board.getScoreBoard().stream()
                 .filter(player -> player.getShipBoard().getQuantityGuests() >= this.crewLost)
                 .toList();
 
-        this.playerIterator = allowedPlayers.iterator();
-        if (playerIterator.hasNext()) {
-            setState(CardState.CREW_REMOVE_CHOICE);
-        } else {
-            throw new RuntimeException("No players allowed");
-        }
+        playerIterator = allowedPlayers.iterator();
     }
 
     // must be called after the init with the right player
     // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
     // else, it does nothing, and it's ready for another call with the next player
-    public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Cordinate> housingCordinatesList, GameServer game) {
+    public void applyEffect(String nickname, boolean wantsToActivate, List<Cordinate> housingCordinatesList) {
 ////        if (this.state != CardState.CREW_REMOVE_CHOICE || board.getState() != GameState.CARD_EFFECT) {
 //            throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
 //        }
-        if (!board.getScoreBoard().contains(player)) {
-            throw new BadPlayerException("The player " + player.getNickname() + " is not in the board");
-        }
-        if (housingCordinatesList == null) {
-            throw new BadParameterException("List is null");
-        }
-        if (housingCordinatesList.isEmpty() && wantsToActivate) {
-            throw new BadParameterException("List is empty");
-        }
-        if (housingCordinatesList.size() != this.crewLost && wantsToActivate) {
-            throw new BadParameterException("List has wrong size");
+        if (! nickname.equals(actualPlayer.getNickname())) {
+            throw new BadPlayerException("Not " + nickname + " turn to play");
         }
 
+
         this.state = CardState.APPLYING;
+        Player player = flyBoard.getPlayerByUsername(nickname);
+
         if (player.equals(actualPlayer)) {
             if (wantsToActivate) {
-                for (Cordinate cord : housingCordinatesList) {
-                    board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard().getOptComponentByCord(cord).get().removeGuest();
+                if (housingCordinatesList == null) {
+                    throw new BadParameterException("List is null");
                 }
-                board.moveDays(board.getPlayerByUsername(actualPlayer.getNickname()), -this.daysLost);
-                board.getPlayerByUsername(actualPlayer.getNickname()).addCredits(this.credits);
+                if (housingCordinatesList.isEmpty() && wantsToActivate) {
+                    throw new BadParameterException("List is empty");
+                }
+                if (housingCordinatesList.size() != this.crewLost && wantsToActivate) {
+                    throw new BadParameterException("List has wrong size");
+                }
+
+                for (Cordinate cord : housingCordinatesList) {
+                    flyBoard.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard().getOptComponentByCord(cord).get().removeGuest();
+                }
+                flyBoard.moveDays(flyBoard.getPlayerByUsername(actualPlayer.getNickname()), -this.daysLost);
+                flyBoard.getPlayerByUsername(actualPlayer.getNickname()).addCredits(this.credits);
 
                 this.state = CardState.FINALIZED;
             } else {
-                if (playerIterator.hasNext()) {
-
-                    setState(CardState.CREW_REMOVE_CHOICE);
-                } else {
-                    this.state = CardState.FINALIZED;
-                }
+                return;
             }
         } else {
             throw new BadPlayerException(this.getCardName());
@@ -117,4 +114,16 @@ public final class SldAbandonedShip extends SldAdvCard {
         }
 //        board.setState(GameState.DRAW_CARD);
     }
+
+    @Override
+    public void setNextPlayer() {
+        if (playerIterator.hasNext()) {
+
+            this.actualPlayer = this.playerIterator.next();
+            setState(CardState.CREW_REMOVE_CHOICE);
+        } else {
+            setState(CardState.FINALIZED);
+        }
+    }
+
 }

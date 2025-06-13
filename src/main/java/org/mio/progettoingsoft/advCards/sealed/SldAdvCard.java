@@ -111,15 +111,14 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
 
     protected void setState(CardState state){
         this.state = state;
-        if (! state.equals(CardState.FINALIZED))
-            this.actualPlayer = this.playerIterator.next();
+
 
         game.getController().update(this);
     }
 
 
     public void setNextPlayer(){
-        Logger.debug("carta non implementata");
+        Logger.debug("set next player - carta non implementata");
     }
 }
 

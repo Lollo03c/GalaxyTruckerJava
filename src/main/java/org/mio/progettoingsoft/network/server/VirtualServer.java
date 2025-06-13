@@ -31,4 +31,5 @@ public interface VirtualServer extends Remote {
     void leaveFlight(int idGame, String nickname) throws Exception;
 
     void drawCard(int idGame, String nickname) throws Exception;
+    void skipEffect(int idGame, String nickname, int idCard) throws Exception;
 }

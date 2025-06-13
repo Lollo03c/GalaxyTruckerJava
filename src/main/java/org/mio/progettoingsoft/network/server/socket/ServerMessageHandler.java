@@ -85,6 +85,9 @@ public class ServerMessageHandler implements Runnable {
                         serverController.drawCard(drawCardMessage.getGameId(), drawCardMessage.getNickname());
                     }
 
+                    case SkipEffectMessage skipEffectMessage ->
+                        serverController.skipEffect(skipEffectMessage.getGameId(), skipEffectMessage.getNickname(), skipEffectMessage.getIdCard());
+
                     default -> {}
                 }
             } catch (InterruptedException e) {
