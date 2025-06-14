@@ -106,7 +106,7 @@ public class Cordinate implements Serializable {
 
     @Override
     public String toString(){
-        return "(" + row + ", " + column + ")";
+        return "(" + (row + 5) + ", " + (column + 4) + ")";
     }
 
 

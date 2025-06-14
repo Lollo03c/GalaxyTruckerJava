@@ -33,8 +33,10 @@ public interface VirtualServer extends Remote {
     void leaveFlight(int idGame, String nickname) throws Exception;
 
     void drawCard(int idGame, String nickname) throws Exception;
+    void applyEffect(int idGame, String nickname) throws Exception;
     void skipEffect(int idGame, String nickname, int idCard) throws Exception;
     void crewRemove(int idGame, String nickname, List<Cordinate> cordsToRemove) throws Exception;
     void addGood(int idGame, String nickname, int compId, GoodType type) throws Exception;
     void removeGood(int idGame, String nickaname, int compId, GoodType type) throws Exception;
+    void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) throws Exception;
 }

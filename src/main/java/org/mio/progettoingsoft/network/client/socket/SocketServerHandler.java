@@ -128,6 +128,12 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
+    public void applyEffect(int idGame, String nickname) throws IOException{
+        Message message = new ApplyEffectMessage(idGame, nickname);
+        sendMessage(message);
+    }
+
+    @Override
     public void crewRemove(int idGame, String nickname, List<Cordinate> cordinateList) throws IOException{
         Message message = new CrewRemoveMessage(idGame, nickname, cordinateList);
         sendMessage(message);
@@ -145,6 +151,11 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
+    @Override
+    public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordintes) throws IOException{
+        Message message = new DoubleDrillMessage(idGame, nickname, drillCordintes);
+        sendMessage(message);
+    }
     /**
      * utility method used to send messages to the server
      *

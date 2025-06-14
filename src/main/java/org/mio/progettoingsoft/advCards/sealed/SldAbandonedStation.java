@@ -19,6 +19,8 @@ public final class SldAbandonedStation extends SldAdvCard {
     private final int crewNeeded;
     private final List<GoodType> goods;
 
+    private boolean effectTaken = false;
+
     public SldAbandonedStation(int id, int level, int daysLost, int crewNeeded, List<GoodType> goods) {
         super(id, level);
         this.daysLost = daysLost;
@@ -74,27 +76,18 @@ public final class SldAbandonedStation extends SldAdvCard {
         playerIterator = allowedPlayers.iterator();
     }
 
-    public List<GoodType> applyEffect(FlyBoard board, Player player, boolean wantsToApply) {
+    public void applyEffect(Player player, boolean wantsToApply) {
         if (this.state != CardState.ACCEPTATION_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
         this.state = CardState.APPLYING;
         if (actualPlayer.equals(player)) {
             if (wantsToApply) {
-                board.moveDays(actualPlayer, -daysLost);
-                this.state = CardState.GOODS_PLACEMENT;
-                return new ArrayList<>(goods);
-            } else {
-                if (playerIterator.hasNext()) {
-                    actualPlayer = playerIterator.next();
-
-                    this.state = CardState.ACCEPTATION_CHOICE;
-
-                } else {
-                    this.state = CardState.FINALIZED;
-                }
-                return new ArrayList<>(Collections.emptyList());
+                effectTaken = true;
+                flyBoard.moveDays(actualPlayer, -daysLost);
             }
+
+
         } else {
             throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
@@ -121,10 +114,11 @@ public final class SldAbandonedStation extends SldAdvCard {
 
     @Override
     public void setNextPlayer(){
-        if (playerIterator.hasNext()) {
+        if (playerIterator.hasNext() && !effectTaken) {
             actualPlayer = playerIterator.next();
             setState(CardState.ACCEPTATION_CHOICE);
         } else {
+            effectTaken = false;
             setState(CardState.FINALIZED);
         }
     }

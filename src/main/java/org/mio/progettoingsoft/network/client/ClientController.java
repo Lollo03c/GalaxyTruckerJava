@@ -107,15 +107,16 @@ public class ClientController {
     public void setCardState(CardState state) {
         CardState oldState;
         synchronized (stateLock) {
-            if(this.getState() != GameState.CARD_EFFECT)
+            if (this.getState() != GameState.CARD_EFFECT)
                 setState(GameState.CARD_EFFECT);
-        }
-        synchronized (cardStateLock) {
-            oldState = this.cardState;
-            this.cardState = state;
+
+            synchronized (cardStateLock) {
+                oldState = this.cardState;
+                this.cardState = state;
 
 //            if(this.getState() != GameState.CARD_EFFECT)
                 setState(GameState.CARD_EFFECT);
+            }
         }
         if (oldState != state) {
             support.firePropertyChange("cardState", oldState, state);
@@ -647,5 +648,21 @@ public class ClientController {
     public void addPendingGood(String nick, GoodType type){
         if (nick.equals(nickname))
             goodsToInsert.add(type);
+    }
+
+    public void applyEffect(){
+        try{
+            server.applyEffect(idGame, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void activateDoubleDrills(List<Cordinate> drillsCordinate){
+        try{
+            server.activateDoubleDrills(idGame, nickname, drillsCordinate);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

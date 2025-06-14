@@ -15,6 +15,8 @@ public final class SldAbandonedShip extends SldAdvCard {
     private final int credits;
     private final int crewLost;
 
+    private boolean effectTaken = false;
+
     public String getCardName() {
         return "Abandoned Ship";
     }
@@ -99,7 +101,8 @@ public final class SldAbandonedShip extends SldAdvCard {
                 flyBoard.moveDays(flyBoard.getPlayerByUsername(actualPlayer.getNickname()), -this.daysLost);
                 flyBoard.getPlayerByUsername(actualPlayer.getNickname()).addCredits(this.credits);
 
-                setState(CardState.FINALIZED);
+                effectTaken = true;
+
             } else {
                 return;
             }
@@ -117,7 +120,7 @@ public final class SldAbandonedShip extends SldAdvCard {
 
     @Override
     public void setNextPlayer() {
-        if (playerIterator.hasNext()) {
+        if (playerIterator.hasNext() && !effectTaken) {
 
             this.actualPlayer = this.playerIterator.next();
             setState(CardState.CREW_REMOVE_CHOICE);

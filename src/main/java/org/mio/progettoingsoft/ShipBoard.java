@@ -573,37 +573,39 @@ public abstract class ShipBoard {
      *
      * @param quantity int : quantity of goods / batteries to stole
      */
-    public void stoleGood(int quantity) {
+    public Map<Integer, List<GoodType>> stoleGood(int quantity) {
+        Map<Integer, List<GoodType>> result = new HashMap<>();
 
-        Iterator<GoodType> iter = GoodType.sortedList.iterator();
-        Map<GoodType, Long> toRemove = new HashMap<>();
+        Iterator<GoodType> typeIterator = GoodType.sortedList.iterator();
 
-        while (quantity > 0 && iter.hasNext()){
-            GoodType type = iter.next();
 
-            long possible =  getCompStream().flatMap(
-                    comp -> comp.getStoredGoods().stream()
-            ).filter(t -> t.equals(type)).count();
+        while (quantity > 0 && typeIterator.hasNext()){
+            GoodType type = typeIterator.next();
+            Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
 
-            long typeRemoved = Long.min(quantity, possible);
-            quantity -= typeRemoved;
-            toRemove.put(type, typeRemoved);
-        }
+            while (quantity > 0 && cordinateIterator.hasNext()){
+                Cordinate cord = cordinateIterator.next();
+                if (getOptComponentByCord(cord).isEmpty())
+                    continue;
 
-        for (GoodType type : toRemove.keySet()){
-            for (int i = 0; i < toRemove.get(type); i++){
-                Iterator<Component> componentIterator = getCompIterator();
-                while (componentIterator.hasNext()){
-                    Component comp = componentIterator.next();
+                Component comp = getOptComponentByCord(cord).get();
+                if (comp.getStoredGoods().contains(type)){
+                    int contained = (int) comp.getStoredGoods().stream().filter(t -> t.equals(type)).count();
+                    quantity -= Integer.min(quantity, contained);
 
-                    try{
-                        comp.removeGood(type);
-                        break;
-                    }
-                    catch (IncorrectShipBoardException e){
-                        continue;
+                    if (result.containsKey(comp.getId()))
+                        result.get(comp.getId()).add(type);
+                    else{
+                        result.put(comp.getId(), new ArrayList<>());
+                        result.get(comp.getId()).add(type);
                     }
                 }
+            }
+        }
+
+        for (Integer idComp : result.keySet()){
+            for (GoodType type : result.get(idComp)){
+                flyBoard.getComponentById(idComp).removeGood(type);
             }
         }
 
@@ -614,6 +616,8 @@ public abstract class ShipBoard {
                 throw new RuntimeException(e);
             }
         }
+
+        return result;
     }
 
     // activated engine power: tmp property to store the engine power after activating double engines.
@@ -717,6 +721,22 @@ public abstract class ShipBoard {
         }
 
         return cordinates;
+    }
+
+    public List<Cordinate> getDoubleDrills(){
+        List<Cordinate> drillCords = new ArrayList<>();
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+            if (this.getOptComponentByCord(cord).isEmpty())
+                continue;
+
+            Component comp = this.getOptComponentByCord(cord).get();
+            if (comp.getType().equals(ComponentType.DOUBLE_DRILL))
+                drillCords.add(cord);
+        }
+
+        return drillCords;
     }
 
 

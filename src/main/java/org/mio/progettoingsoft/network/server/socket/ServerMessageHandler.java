@@ -91,6 +91,9 @@ public class ServerMessageHandler implements Runnable {
                     case SkipEffectMessage skipEffectMessage ->
                         serverController.skipEffect(skipEffectMessage.getGameId(), skipEffectMessage.getNickname(), skipEffectMessage.getIdCard());
 
+                    case ApplyEffectMessage applyEffectMessage ->
+                        serverController.applyEffect(applyEffectMessage.getGameId(), applyEffectMessage.getNickname());
+
                     case CrewRemoveMessage crewRemoveMessage ->
                         serverController.removeCrew(crewRemoveMessage.getGameId(), crewRemoveMessage.getNickname(), crewRemoveMessage.getCordinates());
 
@@ -99,6 +102,10 @@ public class ServerMessageHandler implements Runnable {
                             case ADD_GOOD -> serverController.addGood(goodMessage.getGameId(), goodMessage.getNickname(), goodMessage.getIdComp(), goodMessage.getGoodType());
                             case REMOVE_GOOD -> serverController.removeGood(goodMessage.getGameId(), goodMessage.getNickname(), goodMessage.getIdComp(), goodMessage.getGoodType());
                         }
+                    }
+
+                    case DoubleDrillMessage doubleDrillMessage ->{
+                        serverController.activateDoubleDrills(doubleDrillMessage.getGameId(), doubleDrillMessage.getNickname(), doubleDrillMessage.getDrillCordinates());
                     }
 
                     default -> {

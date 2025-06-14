@@ -18,7 +18,7 @@ public enum GameState implements Serializable {
     //la seguente riga e' poi da eliminare (vede Stefano)
     CREW_REMOVE_CHOICE,
 
-    ENGINE_CHOICE, GOODS_PLACEMENT
+    ENGINE_CHOICE, GOODS_PLACEMENT, DRILL_CHOICE
     ;
 
     public static GameState stringToGameState(String string){

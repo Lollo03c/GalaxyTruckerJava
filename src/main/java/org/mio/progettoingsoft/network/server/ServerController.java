@@ -11,7 +11,9 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class ServerController {
     /**
@@ -301,7 +303,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(19);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(22);
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
@@ -381,10 +383,31 @@ public class ServerController {
                     abandonedShip.applyEffect(nickname, false, null);
                 }
 
+                case SldAbandonedStation abandonedStation -> {
+                    abandonedStation.setNextPlayer();
+                }
+
+                case SldSmugglers sldSmugglers ->{
+                    sldSmugglers.setNextPlayer();
+                }
+
                 default -> Logger.error("carta non implementata - per salto effetto");
             }
 
             card.setNextPlayer();
+        }
+    }
+
+    public void applyEffect(int idGame, String nickname){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        SldAdvCard card = game.getFlyboard().getPlayedCard();
+        Player player = game.getFlyboard().getPlayerByUsername(nickname);
+
+        switch (card){
+            case SldAbandonedStation abandonedStation ->
+                abandonedStation.applyEffect(player, true);
+
+            default -> Logger.error("effetto carta non applicabile");
         }
     }
 
@@ -406,7 +429,8 @@ public class ServerController {
                         throw new RuntimeException(e);
                     }
                 }
-                drawCard(idGame, nickname);
+                abandonedShip.setNextPlayer();
+
             }
 
             default -> Logger.error("Effetto carta non consentito");
@@ -454,4 +478,55 @@ public class ServerController {
             throw new RuntimeException(e);
         }
     }
+
+    public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        SldAdvCard card = game.getFlyboard().getPlayedCard();
+
+        switch (card){
+            case SldSmugglers sldSmugglers -> {
+                Logger.debug(nickname + drillCordinates);
+                Player player = game.getFlyboard().getPlayerByUsername(nickname);
+                sldSmugglers.applyEffect(player, true, drillCordinates);
+
+                if (sldSmugglers.isStealGoods()){
+                    stealGoods(game, player, sldSmugglers.getStolenGoods());
+                    sldSmugglers.setNextPlayer();
+                }
+                else if (sldSmugglers.isGiverReward()){
+                    VirtualClient client = game.getClients().get(nickname);
+                    try{
+
+                        client.setState(GameState.GOODS_PLACEMENT);
+                    }
+                    catch (Exception e){
+                        throw new RuntimeException(e);
+                    }
+                }
+                else{
+                    sldSmugglers.setNextPlayer();
+                }
+            }
+
+            default -> Logger.error("effetto carta non consentito");
+        }
+    }
+
+    private void stealGoods(GameServer game, Player player, int numberStolenGoods){
+        Logger.debug(player.getNickname() + "steal goods");
+        Map<Integer, List<GoodType>> stolenGoods = player.getShipBoard().stoleGood(numberStolenGoods);
+
+        for (Integer idComp : stolenGoods.keySet()){
+            for (GoodType type : stolenGoods.get(idComp)){
+                for (VirtualClient client : game.getClients().values()){
+                    try{
+                        client.removeGood(idComp, type);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+    }
 }
+

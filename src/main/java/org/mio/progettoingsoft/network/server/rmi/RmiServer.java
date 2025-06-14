@@ -162,6 +162,13 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
+    public void applyEffect(int idGame, String nickname) throws RemoteException{
+        executors.submit(() -> {
+            controller.applyEffect(idGame, nickname);
+        });
+    }
+
+    @Override
     public void skipEffect(int idGame, String nickname, int idCard) throws RemoteException{
         executors.submit(() ->
                 controller.skipEffect(idGame, nickname, idCard)
@@ -187,5 +194,12 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         executors.submit(() ->
             controller.removeGood(idGame, nickaname, idGame, type)
         );
+    }
+
+    @Override
+    public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) throws RemoteException{
+        executors.submit(() -> {
+           controller.activateDoubleDrills(idGame, nickname, drillCordinates);
+        });
     }
 }

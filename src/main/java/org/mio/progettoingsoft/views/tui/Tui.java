@@ -2,10 +2,7 @@ package org.mio.progettoingsoft.views.tui;
 
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.advCards.sealed.SldAbandonedStation;
-import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
@@ -260,6 +257,8 @@ public class Tui implements View {
             case ACCEPTATION_CHOICE -> askAcceptEffect();
 
             case CREW_REMOVE_CHOICE -> crewRemove();
+
+            case DRILL_CHOICE -> drillChoice();
 
             case FINALIZED -> {
 
@@ -706,7 +705,14 @@ public class Tui implements View {
         }
 
         switch (card){
-            case SldAbandonedStation abandonedStation -> controller.setState(GameState.GOODS_PLACEMENT);
+            case SldAbandonedStation abandonedStation -> {
+                controller.applyEffect();
+                controller.setState(GameState.GOODS_PLACEMENT);
+            }
+
+            case SldSmugglers sldSmugglers ->{
+                controller.setState(GameState.DRILL_CHOICE);
+            }
 
             default -> Logger.error("Effetto non permesso dalla carta");
         }
@@ -858,6 +864,54 @@ public class Tui implements View {
 
             System.out.println();
         }
+        else if (choice.equals("3")){
+            controller.skipEffect();
+        }
+
+    }
+
+    private void drillChoice(){
+        ShipBoard ship = controller.getShipBoard();
+        ship.drawShipboard();
+
+        int energyAvailable = ship.getQuantBatteries();
+        double power = ship.getBaseFirePower();
+
+        List<Cordinate> drillCords = ship.getDoubleDrills();
+        for (int i = 0; i < drillCords.size(); i++){
+            System.out.println(i+1 + ". " + drillCords.get(i));
+        }
+        List<Cordinate> activatedDrills = new ArrayList<>();
+
+        boolean stopAsking = false;
+        while (activatedDrills.size() < energyAvailable && activatedDrills.size() < drillCords.size() && !stopAsking){
+            System.out.println("You currently have " + energyAvailable + " batteries");
+            System.out.println("Actual fire power : " + power);
+
+            System.out.print("Select double drill to activate (0 to exit) : ");
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                if (activatedDrills.contains(choice))
+                    throw new IllegalArgumentException("");
+                if (choice < 0 || choice > drillCords.size())
+                    throw new IllegalArgumentException("");
+
+                if (choice == 0)
+                    stopAsking = true;
+                else {
+                    activatedDrills.add(drillCords.get(choice - 1));
+                    power += ship.getOptComponentByCord(drillCords.get(choice -1)).get().getFirePower(true);
+                    energyAvailable--;
+                }
+
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid input. Try again.");
+            }
+
+            controller.activateDoubleDrills(activatedDrills);
+
+        }
+
 
     }
 

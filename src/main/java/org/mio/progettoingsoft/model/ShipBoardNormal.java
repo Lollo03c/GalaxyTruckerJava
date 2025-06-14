@@ -117,7 +117,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(2, new Cordinate(4, 0), 0);
         shipBoard.addComponentToPosition(90, new Cordinate(4, 1), 0);
         shipBoard.addComponentToPosition(86, new Cordinate(4, 2), 0);
-        shipBoard.addComponentToPosition(26, new Cordinate(4, 4), 1);
+        shipBoard.addComponentToPosition(24, new Cordinate(4, 4), 1);
         shipBoard.addComponentToPosition(16, new Cordinate(4, 5), 3);
         shipBoard.addComponentToPosition(100, new Cordinate(4, 6), 0);
 
@@ -133,7 +133,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(153, new Cordinate(1, 1), 0);
         shipBoard.addComponentToPosition(65, new Cordinate(2, 1), 0);
         shipBoard.addComponentToPosition(7, new Cordinate(2, 2), 3);
-        shipBoard.addComponentToPosition(31, new Cordinate(3, 2), 2);
+        shipBoard.addComponentToPosition(29, new Cordinate(3, 2), 2);
         shipBoard.addComponentToPosition(79, new Cordinate(4, 2), 0);
         shipBoard.addComponentToPosition(111, new Cordinate(1, 3), 0);
 
@@ -163,7 +163,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(75, new Cordinate(4,0), 0);
         shipBoard.addComponentToPosition(107, new Cordinate(0,2), 0);
         shipBoard.addComponentToPosition(69, new Cordinate(3,0), 3);
-        shipBoard.addComponentToPosition(26, new Cordinate(4,1), 0);
+        shipBoard.addComponentToPosition(27, new Cordinate(4,1), 0);
         shipBoard.addComponentToPosition(13, new Cordinate(1,2), 0);
         shipBoard.addComponentToPosition(144, new Cordinate(2,0), 1);
         shipBoard.addComponentToPosition(36, new Cordinate(2,2), 3);
