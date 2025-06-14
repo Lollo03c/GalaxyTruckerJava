@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.Stardust;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,12 +30,23 @@ public final class SldStardust extends SldAdvCard{
 
     @Override
     public void init(GameServer game) {
-        FlyBoard board = game.getFlyboard();
-//        if(board.getState() != GameState.DRAW_CARD){
-//            throw new IllegalStateException("Illegal state: " + board.getState());
-//        }
-//        board.setState(GameState.CARD_EFFECT);
-        this.state = CardState.APPLYING;
+        this.game = game;
+        this.flyBoard = game.getFlyboard();
+
+        List<Player> inverserPlayers = flyBoard.getScoreBoard().reversed();
+        playerIterator = inverserPlayers.iterator();
+        actualPlayer = playerIterator.next();
+
+        for (Player player : inverserPlayers){
+            int daysLost = player.getShipBoard().getExposedConnectors();
+
+            Logger.debug(player.getNickname() + " days lost : " + daysLost);
+            flyBoard.moveDays(player, -daysLost);
+        }
+
+        setState(CardState.FINALIZED);
+
+
     }
 
     public void applyEffect(FlyBoard board) {

@@ -51,7 +51,7 @@ public class GameController {
         Player player = card.getActualPlayer();
         String username = player.getNickname();
 
-        VirtualClient client = game.getClients().get(username);
+        VirtualClient client = game.getClients().get(player.getNickname());
         CardState cardState = card.getState();
 
         switch (cardState){

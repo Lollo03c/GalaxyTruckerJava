@@ -303,7 +303,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(22);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(1);
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();

@@ -540,6 +540,7 @@ public abstract class ShipBoard {
      */
     public int getExposedConnectors() {
         int numExposedConnectors = 0;
+
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()){
             Cordinate cordinate = cordinateIterator.next();
@@ -551,7 +552,7 @@ public abstract class ShipBoard {
             Map<Direction, Component> adjacents = getAdjacent(cordinate);
 
             for (Direction dir : Direction.values()){
-                if (!comp.getConnector(dir).equals(Connector.FLAT) && adjacents.containsKey(dir))
+                if (!comp.getConnector(dir).equals(Connector.FLAT) && !adjacents.containsKey(dir))
                     numExposedConnectors++;
             }
         }
