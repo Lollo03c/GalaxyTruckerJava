@@ -222,5 +222,12 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         sendMessage(message);
     }
 
+    @Override
+    public void setPlayerOnPlanet(String nickname, int choice) throws IOException{
+        Message message = new LandOnPlanetMessage(0, nickname, choice);
+        sendMessage(message);
+    }
+
+
 
 }

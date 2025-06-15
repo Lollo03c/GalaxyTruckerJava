@@ -202,4 +202,11 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
            controller.activateDoubleDrills(idGame, nickname, drillCordinates);
         });
     }
+
+    public void landOnPlanet(int idGame, String nickname, int choice)throws RemoteException{
+        executors.submit(() -> {
+           controller.landOnPlanet(idGame,nickname,choice);
+        });
+    }
+
 }

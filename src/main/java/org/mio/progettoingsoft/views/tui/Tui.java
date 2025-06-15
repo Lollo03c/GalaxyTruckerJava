@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.views.tui;
 
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
@@ -19,6 +20,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 public class Tui implements View {
     private Scanner scanner = new Scanner(System.in);
@@ -260,10 +262,55 @@ public class Tui implements View {
 
             case DRILL_CHOICE -> drillChoice();
 
+            case PLANET_CHOICE -> planetChoice();
+
             case FINALIZED -> {
 
             }
         }
+    }
+
+    public void planetChoice() {
+        System.out.println("Do you want to land on any planet? y/n");
+        String input = "";
+        while(!input.equals("y") && !input.equals("n")) {
+            input = scanner.nextLine();
+            if(!input.equals("y") && !input.equals("n")) {
+                System.out.println(RED + "Invalid choice!" + RESET);
+            }
+        }
+        if(input.equals("n")){
+            controller.landOnPlanet(-1);
+        }
+        else {
+            SldAdvCard card = controller.getPlayedCard();
+            List<Planet> planets = card.getPlanets();
+            List<Planet> availablePlanets = new ArrayList<>();
+            availablePlanets = planets.stream().filter(x->!x.getPlayer().isPresent()).collect(Collectors.toList());
+            System.out.println("Which planet do you want to land on?");
+            for (Planet planet : availablePlanets) {
+                System.out.println(planets.indexOf(planet)+1);
+            }
+            int numPlanet = 0;
+            while (true) {
+                try {
+                    numPlanet = scanner.nextInt();
+                    if (numPlanet >= 1 && numPlanet <= planets.size() && availablePlanets.contains(planets.get(numPlanet - 1))) {
+                        break;
+                    } else {
+                        System.out.println(RED + "Invalid choice!" + RESET);
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println(RED + "Please enter a number!" + RESET);
+                    scanner.next();
+                }
+            }
+            int choice = numPlanet - 1;
+            controller.landOnPlanet(choice);
+            // ho messo qua la consegna delle merci come ha fatto toni su abandonedStation, non so se va bene
+            controller.setState(GameState.GOODS_PLACEMENT);
+        }
+
     }
 
     /**

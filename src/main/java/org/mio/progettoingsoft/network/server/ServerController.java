@@ -303,7 +303,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(1);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(14);
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
@@ -477,6 +477,25 @@ public class ServerController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void landOnPlanet(int idGame, String nickname, int choice){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        Player player = game.getFlyboard().getPlayerByUsername(nickname);
+        Logger.debug("player " + nickname + " land on planet number " + choice);
+        if(choice != -1){
+            for (VirtualClient client : game.getClients().values()){
+                try {
+                    client.setPlayerOnPlanet(nickname, choice );
+                }
+                catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        game.getFlyboard().getPlayedCard().land(player, choice);
+
+
     }
 
     public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates){

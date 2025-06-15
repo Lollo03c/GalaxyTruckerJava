@@ -108,6 +108,10 @@ public class ServerMessageHandler implements Runnable {
                         serverController.activateDoubleDrills(doubleDrillMessage.getGameId(), doubleDrillMessage.getNickname(), doubleDrillMessage.getDrillCordinates());
                     }
 
+                    case LandOnPlanetMessage landOnPlanetMessage -> {
+                        serverController.landOnPlanet(landOnPlanetMessage.getGameId(), landOnPlanetMessage.getNickname(), landOnPlanetMessage.getChoice());
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito lato server");
                     }

@@ -14,6 +14,7 @@ public class Planet {
 
     public Planet(List<GoodType> goods) {
         this.goods = goods;
+        this.player = Optional.empty();
     }
 
 

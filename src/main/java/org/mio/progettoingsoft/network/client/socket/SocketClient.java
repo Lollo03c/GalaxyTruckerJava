@@ -171,6 +171,12 @@ public class SocketClient implements Client {
                         }
                     }
 
+                    case LandOnPlanetMessage landOnPlanetMessage -> {
+                        executor.submit(() -> {
+                            controller.setPlayerOnPlanet(landOnPlanetMessage.getNickname(), landOnPlanetMessage.getChoice());
+                        });
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito");
                     }

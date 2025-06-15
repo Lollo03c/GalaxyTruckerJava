@@ -53,7 +53,7 @@ public class GameController {
 
         VirtualClient client = game.getClients().get(player.getNickname());
         CardState cardState = card.getState();
-
+        Logger.debug("setto lo stato : " + cardState + " a " + player.getNickname());
         switch (cardState){
 //            case BUILDING_SHIP -> broadcast(new StartGameMessage(game.getIdGame()));
             case ENGINE_CHOICE -> {
@@ -90,6 +90,15 @@ public class GameController {
                     client.setCardState(CardState.DRILL_CHOICE);
                     client.setState(GameState.CARD_EFFECT);
                 } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            case PLANET_CHOICE -> {
+                try{
+                    client.setCardState(CardState.PLANET_CHOICE);
+                    client.setState(GameState.CARD_EFFECT);
+                }catch (Exception e){
                     throw new RuntimeException(e);
                 }
             }

@@ -413,6 +413,15 @@ public class ClientController {
         }
     }
 
+    public void landOnPlanet(int choice) {
+        try {
+            server.landOnPlanet(idGame, nickname, choice);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public void addComponent(Cordinate cordinate, int rotations) {
         try {
             shipBoard.addComponentToPosition(inHandComponent, cordinate, rotations);
@@ -648,6 +657,13 @@ public class ClientController {
     public void addPendingGood(String nick, GoodType type){
         if (nick.equals(nickname))
             goodsToInsert.add(type);
+    }
+
+    public void setPlayerOnPlanet( String nickname, int choice){
+        synchronized (cardLock){
+            Player player = flyBoard.getPlayerByUsername(nickname);
+            card.getPlanets().get(choice).land(player);
+        }
     }
 
     public void applyEffect(){

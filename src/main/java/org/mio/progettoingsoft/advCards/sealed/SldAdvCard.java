@@ -60,6 +60,10 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         this.state = CardState.IDLE;
     }
 
+    public void land(Player player, int planetIndex){
+        throw new RuntimeException("this card doesn't have method land");
+    }
+
     public int getId() {return id;}
 
     public int getLevel() {return level;}
@@ -113,7 +117,6 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
 
     protected void setState(CardState state){
         this.state = state;
-
 
         game.getController().update(this);
     }

@@ -221,4 +221,12 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         );
     }
 
+    @Override
+    public void setPlayerOnPlanet(String nickname, int choice) throws RemoteException{
+        executors.submit(() ->
+                controller.setPlayerOnPlanet(nickname,choice)
+        );
+    }
+
+
 }

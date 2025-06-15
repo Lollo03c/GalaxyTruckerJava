@@ -156,6 +156,14 @@ public class SocketServerHandler implements VirtualServerSocket {
         Message message = new DoubleDrillMessage(idGame, nickname, drillCordintes);
         sendMessage(message);
     }
+
+    @Override
+    public void landOnPlanet(int idGame, String nickname, int choice)throws IOException{
+        Message message = new LandOnPlanetMessage(idGame,nickname,choice);
+        sendMessage(message);
+    }
+
+
     /**
      * utility method used to send messages to the server
      *
