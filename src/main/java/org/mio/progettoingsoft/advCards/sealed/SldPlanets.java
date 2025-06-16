@@ -178,6 +178,7 @@ public final class SldPlanets extends SldAdvCard {
             actualPlayer = playerIterator.next();
             setState(CardState.PLANET_CHOICE);
         } else {
+            Logger.debug("entro in FINALIZED : " + playerIterator+ " "+ actualPlayer);
             setState(CardState.FINALIZED);
         }
     }

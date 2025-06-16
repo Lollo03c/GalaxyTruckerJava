@@ -499,21 +499,20 @@ public class ServerController {
                 }
             }
         }
-
-        try{
-            c.setState(GameState.GOODS_PLACEMENT);
+        if(choice != -1) {
+            try {
+                c.setState(GameState.GOODS_PLACEMENT);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-        catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
+        Logger.debug("numero giocatori passati "   + passedPlayers);
         if( passedPlayers == game.getNumPlayers() || card.getLandedPlayers().size() == card.getPlanets().size() ) {
             Logger.debug("numero giocatori passati "   + passedPlayers);
             card.applyEffect();
         }else {
             card.setNextPlayer();
         }
-
 
     }
 
