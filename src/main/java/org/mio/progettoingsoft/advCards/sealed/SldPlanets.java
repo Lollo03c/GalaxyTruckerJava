@@ -19,6 +19,11 @@ import java.util.Map;
 public final class SldPlanets extends SldAdvCard {
     private final int daysLost;
     private final List<Planet> planets;
+
+    public List<Player> getLandedPlayers() {
+        return landedPlayers;
+    }
+
     private final List<Player> landedPlayers;
     private int passedPlayers;
 
@@ -108,18 +113,23 @@ public final class SldPlanets extends SldAdvCard {
 //                    nextPlayer(board);
 //                }
             }
-            if( passedPlayers == game.getNumPlayers() || landedPlayers.size() == planets.size() ) {
-                Logger.debug("numero giocatori passati "   + passedPlayers);
-                applyEffect();
-            }else {
-                setNextPlayer();
-            }
+//            if( passedPlayers == game.getNumPlayers() || landedPlayers.size() == planets.size() ) {
+//                Logger.debug("numero giocatori passati "   + passedPlayers);
+//                applyEffect();
+//            }else {
+//                setNextPlayer();
+//            }
         } else {
             throw new BadPlayerException("The player " + actualPlayer.getNickname() + " cannot play " + this.getCardName() + " at the moment");
         }
     }
 
-    private void applyEffect() {
+    @Override
+    public int getPassedPlayers(){
+        return passedPlayers;
+    }
+
+    public void applyEffect() {
         for (Player p : landedPlayers.reversed()) {
             flyBoard.moveDays(p, - daysLost);
         }

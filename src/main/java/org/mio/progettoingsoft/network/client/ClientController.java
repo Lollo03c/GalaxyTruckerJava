@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ClientController {
     private static ClientController instance;
@@ -571,6 +573,23 @@ public class ClientController {
 
     public List<GoodType> getGoodsToInsert() {
         return goodsToInsert;
+    }
+
+    public List<GoodType> getPlanetGoods() {
+        Player player;
+        List<GoodType> toInsert = new ArrayList<>();
+        synchronized (flyboardLock){
+            player = flyBoard.getPlayerByUsername(nickname);
+        }
+        synchronized (cardLock){
+            toInsert = card.getPlanets().stream()
+                    .filter(p -> p.getPlayer().isPresent() && p.getPlayer().get().equals(player))
+                    .map(x->x.getGoods())
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+        }
+        Logger.debug("getGoodsToInsert: " + toInsert);
+        return toInsert;
     }
 
     public void leaveFlight() {

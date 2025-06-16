@@ -483,6 +483,12 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         Player player = game.getFlyboard().getPlayerByUsername(nickname);
         Logger.debug("player " + nickname + " land on planet number " + choice);
+        SldAdvCard card = game.getFlyboard().getPlayedCard();
+        card.land(player, choice);
+        int passedPlayers = card.getPassedPlayers();
+
+        VirtualClient c = game.getClients().get(nickname);
+
         if(choice != -1){
             for (VirtualClient client : game.getClients().values()){
                 try {
@@ -493,7 +499,20 @@ public class ServerController {
                 }
             }
         }
-        game.getFlyboard().getPlayedCard().land(player, choice);
+
+        try{
+            c.setState(GameState.GOODS_PLACEMENT);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+        if( passedPlayers == game.getNumPlayers() || card.getLandedPlayers().size() == card.getPlanets().size() ) {
+            Logger.debug("numero giocatori passati "   + passedPlayers);
+            card.applyEffect();
+        }else {
+            card.setNextPlayer();
+        }
 
 
     }

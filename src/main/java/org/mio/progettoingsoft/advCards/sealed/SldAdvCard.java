@@ -12,6 +12,7 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.tui.VisualCard;
 
+import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +39,10 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
 
     }
 
+    public  void applyEffect(){
+        throw new RuntimeException("problem with the apply effect method");
+    }
+
     public CardState getState() {return state;}
 
     public Player getActualPlayer() {return actualPlayer;}
@@ -58,6 +63,14 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         this.id = id;
         this.level = level;
         this.state = CardState.IDLE;
+    }
+
+    public List<Player> getLandedPlayers() {
+        throw new RuntimeException("this card does not have any landed players");
+    }
+
+    public int getPassedPlayers(){
+        throw new RuntimeException("this card does not have passed players");
     }
 
     public void land(Player player, int planetIndex){
