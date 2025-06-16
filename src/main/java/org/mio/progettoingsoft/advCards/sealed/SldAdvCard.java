@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, SldOpenSpace, SldSlavers, SldAbandonedStation, SldCombatZone, SldStardust, SldSmugglers, SldPlanets, SldPirates, SldMeteorSwarm{
+public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, SldOpenSpace, SldSlavers, SldAbandonedStation, SldCombatZone, SldStardust, SldSmugglers, SldPlanets, SldPirates, SldMeteorSwarm {
     private final int level;
     private final int id;
     protected List<Player> allowedPlayers;
@@ -35,11 +35,11 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     public abstract void init(GameServer game);
 
     // this method must be called right after applying the effect of the card on ALL the available players, it sets the game state DRAW_CARD
-    public void finish(FlyBoard board){
+    public void finish(FlyBoard board) {
 
     }
 
-    public  void applyEffect(){
+    public void applyEffect() {
         throw new RuntimeException("problem with the apply effect method");
     }
 
@@ -55,23 +55,27 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card doesn't need to notifyGoodsPlacementFinished");
     }
 
-    public CardState getState() {return state;}
+    public CardState getState() {
+        return state;
+    }
 
-    public Player getActualPlayer() {return actualPlayer;}
+    public Player getActualPlayer() {
+        return actualPlayer;
+    }
 
     public void keepShipPart(FlyBoard board, Player player, int row, int col) {
-        if(this.state != CardState.PART_CHOICE){
+        if (this.state != CardState.PART_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        if(actualPlayer.equals(player)){
+        if (actualPlayer.equals(player)) {
             actualPlayer.getShipBoard().keepPart(row, col);
             this.state = CardState.PART_REMOVING_DONE;
-        }else{
+        } else {
             throw new BadPlayerException("Illegal player: " + player);
         }
     }
 
-    public SldAdvCard(int id, int level){
+    public SldAdvCard(int id, int level) {
         this.id = id;
         this.level = level;
         this.state = CardState.IDLE;
@@ -81,23 +85,27 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card does not have any landed players");
     }
 
-    public int getPassedPlayers(){
+    public int getPassedPlayers() {
         throw new RuntimeException("this card does not have passed players");
     }
 
-    public void land(Player player, int planetIndex){
+    public void land(Player player, int planetIndex) {
         throw new RuntimeException("this card doesn't have method land");
     }
 
-    public int getId() {return id;}
+    public int getId() {
+        return id;
+    }
 
-    public int getLevel() {return level;}
+    public int getLevel() {
+        return level;
+    }
 
     public List<CombatLine> getLines() {
         throw new RuntimeException("this card doesn't have combat lines");
     }
 
-    public int getCrewNeeded()throws Exception{
+    public int getCrewNeeded() throws Exception {
         throw new Exception("this card doesn't need crew");
     }
 
@@ -105,33 +113,35 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card doesn't have meteors");
     }
 
-    public List<CannonPenalty> getCannonPenalty(){
+    public List<CannonPenalty> getCannonPenalty() {
         throw new RuntimeException("this card doesn't have cannon penalties");
     }
 
-    public int getStolenGoods(){
+    public int getStolenGoods() {
         throw new RuntimeException("this card doesn't have stolen goods");
     }
 
-    public List<GoodType> getGoods(){
+    public List<GoodType> getGoods() {
         return Collections.emptyList();
     }
 
-    public int getCrewLost(){
+    public int getCrewLost() {
         throw new RuntimeException("this card doesn't have crew lost");
     }
-    public int getCredits(){
+
+    public int getCredits() {
         throw new RuntimeException("this card doesn't have credits");
     }
 
-    public int getDaysLost(){
+    public int getDaysLost() {
         throw new RuntimeException("this card doesn't have days lost");
     }
 
-    public int getStrength(){
+    public int getStrength() {
         throw new RuntimeException("this card doesn't have strength");
     }
-    public List<Planet> getPlanets(){
+
+    public List<Planet> getPlanets() {
         throw new RuntimeException("this card doesn't have planets");
     }
 
@@ -140,19 +150,23 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         visual.drawCard();
     }
 
-    protected void setState(CardState state){
+    protected void setState(CardState state) {
         this.state = state;
 
         game.getController().update(this);
     }
 
 
-    public void setNextPlayer(){
+    public void setNextPlayer() {
         Logger.debug("set next player - carta non implementata");
     }
 
     public boolean allPlayersPlacedGoods() {
         throw new RuntimeException("this card doesn't need to implement this method");
+    }
+
+    public int comparePower(FlyBoard board, Player player) {
+        throw new RuntimeException("this card doesn't implement compare Power");
     }
 }
 

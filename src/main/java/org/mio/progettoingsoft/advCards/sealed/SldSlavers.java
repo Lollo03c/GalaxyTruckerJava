@@ -6,9 +6,11 @@ import org.mio.progettoingsoft.advCards.Slaver;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class SldSlavers extends SldAdvCard {
     private final int strength;
@@ -54,20 +56,26 @@ public final class SldSlavers extends SldAdvCard {
 
 
 
-    public void init(GameServer game) {
-        FlyBoard board = game.getFlyboard();
-//        if (board.getState() != GameState.DRAW_CARD) {
-//            throw new IllegalStateException("Illegal state: " + board.getState());
-//        }
-        this.allowedPlayers = board.getScoreBoard();
+    public void init(GameServer game) {;
+        this.game = game;
+        this.flyBoard = game.getFlyboard();
+        this.allowedPlayers = flyBoard.getScoreBoard();
         this.playerIterator = allowedPlayers.iterator();
-        if (this.playerIterator.hasNext()) {
-            this.actualPlayer = this.playerIterator.next();
-        } else {
-            throw new RuntimeException("No allowed players");
-        }
         this.state = CardState.COMPARING;
     }
+
+    @Override
+    public void setNextPlayer() {
+        if (playerIterator.hasNext()) {
+            actualPlayer = playerIterator.next();
+            setState(CardState.COMPARING);
+        }
+        else{
+            Logger.debug("the effect of SldSlavers is over");
+            setState(CardState.FINALIZED);
+        }
+    }
+
 
     /* !!! Card workflow after init !!! */
     /*
@@ -103,59 +111,75 @@ public final class SldSlavers extends SldAdvCard {
         return 0;
     }
 
-    public void applyEffect(FlyBoard board, Player player, boolean wantsToActivate, List<Integer[]> coordinatesDoubleToActivate) {
+    public void applyEffect( Player player, boolean wantsToActivate, List<Cordinate> drillsCordinate) {
         if (this.state != CardState.APPLYING && this.state != CardState.DRILL_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        if (player.equals(this.actualPlayer)) {
-            double power = player.getShipBoard().getBaseFirePower();
-            if (this.state == CardState.DRILL_CHOICE) {
-                if (coordinatesDoubleToActivate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
-                    throw new NotEnoughBatteriesException();
-                }
-                for (Integer[] integers : coordinatesDoubleToActivate) {
-                    int row = integers[0];
-                    int col = integers[1];
-//                    power += actualPlayer.getShipBoard().getComponent(row, col).getFirePower();
-                }
-                this.state = CardState.APPLYING;
-            }
-            if (power > this.strength) {
-                if (wantsToActivate) {
-                    board.moveDays(actualPlayer, -this.daysLost);
-                    actualPlayer.addCredits(this.credits);
-                }
-                this.state = CardState.FINALIZED;
-            } else if (power < this.strength) {
-                this.state = CardState.CREW_REMOVE_CHOICE;
-            } else {
-                this.nextPlayer();
-            }
-        }else{
+
+        if (!player.equals(this.actualPlayer)) {
             throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
+        }
+
+        double power = player.getShipBoard().getBaseFirePower();
+
+        if (this.state == CardState.DRILL_CHOICE) {
+            if (drillsCordinate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
+                throw new NotEnoughBatteriesException();
+            }
+
+            for (Cordinate c : drillsCordinate) {
+                Optional<Component> comp = actualPlayer.getShipBoard().getOptComponentByCord(c);
+                if (comp.isPresent()) {
+                    power += comp.get().getFirePower(true);
+                } else {
+                    throw new IllegalArgumentException("Invalid coordinate: " + c);
+                }
+            }
+
+            this.state = CardState.APPLYING;
+        }
+
+        if (power > this.strength) {
+            if (wantsToActivate) {
+                flyBoard.moveDays(actualPlayer, -this.daysLost);
+                actualPlayer.addCredits(this.credits);
+            }
+            this.state = CardState.FINALIZED;
+        } else if (power < this.strength) {
+            this.state = CardState.CREW_REMOVE_CHOICE;
+        } else {
+            this.setNextPlayer();
         }
     }
 
-    public void removeCrew(FlyBoard board, Player player, List<Integer[]> housingCordinatesList) {
-        if(this.state != CardState.CREW_REMOVE_CHOICE){
+
+    public void removeCrew(FlyBoard board, Player player, List<Cordinate> housingCordinatesList) {
+        if (this.state != CardState.CREW_REMOVE_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        if (player.equals(this.actualPlayer)) {
-            if(!housingCordinatesList.isEmpty()){
-                for(int i = 0; i < housingCordinatesList.size(); i++){
-                    int row = housingCordinatesList.get(i)[0];
-                    int col = housingCordinatesList.get(i)[1];
-//                    board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard().getComponent(row, col).removeGuest();
-                }
-                this.nextPlayer();
-            }else{
-                throw new BadPlayerException("Empty list");
-            }
-        }else{
+
+        if (!player.equals(this.actualPlayer)) {
             throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
+        if (housingCordinatesList.isEmpty()) {
+            throw new BadPlayerException("Empty list");
+        }
+
+        ShipBoard shipBoard = board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard();
+
+        for (Cordinate cord : housingCordinatesList) {
+            Optional<Component> compOpt = shipBoard.getOptComponentByCord(cord);
+            if (compOpt.isPresent()) {
+                compOpt.get().removeGuest();
+            } else {
+                throw new IllegalArgumentException("Invalid coordinate: " + cord);
+            }
+        }
+
+        this.setNextPlayer();
     }
+
 
     private void nextPlayer(){
         if(this.playerIterator.hasNext()){

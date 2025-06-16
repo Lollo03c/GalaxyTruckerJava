@@ -163,6 +163,13 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
+    @Override
+    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate)throws IOException{
+        Message message = new ActivateSlaversMessage(idGame,nickname,activatedDrills,wantsToActivate);
+        sendMessage(message);
+    }
+
+
 
     /**
      * utility method used to send messages to the server

@@ -203,10 +203,19 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         });
     }
 
+    @Override
     public void landOnPlanet(int idGame, String nickname, int choice)throws RemoteException{
         executors.submit(() -> {
            controller.landOnPlanet(idGame,nickname,choice);
         });
     }
+
+    @Override
+    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate){
+        executors.submit(() ->{
+           controller.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
+        });
+    }
+
 
 }

@@ -112,6 +112,10 @@ public class ServerMessageHandler implements Runnable {
                         serverController.landOnPlanet(landOnPlanetMessage.getGameId(), landOnPlanetMessage.getNickname(), landOnPlanetMessage.getChoice());
                     }
 
+                    case ActivateSlaversMessage activateSlaversMessage -> {
+                        serverController.activateSlaver(activateSlaversMessage.getGameId(), activateSlaversMessage.getNickname(), activateSlaversMessage.getActivatedDrills(),activateSlaversMessage.getWantsToActivate());
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito lato server");
                     }

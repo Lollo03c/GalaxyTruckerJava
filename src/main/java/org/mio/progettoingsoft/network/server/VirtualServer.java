@@ -40,4 +40,5 @@ public interface VirtualServer extends Remote {
     void removeGood(int idGame, String nickaname, int compId, GoodType type) throws Exception;
     void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) throws Exception;
     void landOnPlanet(int idGame, String nickname, int choice)throws Exception;
+    void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate) throws Exception;
 }

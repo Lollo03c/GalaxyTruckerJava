@@ -264,8 +264,44 @@ public class Tui implements View {
 
             case PLANET_CHOICE -> planetChoice();
 
+            case COMPARING -> {
+                SldAdvCard card = controller.getPlayedCard();
+                switch (card){
+                    case SldSlavers sldSlavers -> drillChoice();
+                    default -> System.out.println(" COMPARING NOT IMPLEMENTED FOR " + card.getCardName());
+                }
+            }
+
             case FINALIZED -> {
 
+            }
+        }
+    }
+
+    public void compareFirePower(){
+        SldAdvCard card = controller.getPlayedCard();
+        ShipBoard shipBoard = controller.getShipBoard();
+        FlyBoard flyBoard = controller.getFlyBoard();
+//        int slaverStrength = card.getStrength();
+        double baseStrength = shipBoard.getBaseFirePower();
+//        List<Cordinate> drillCords = shipBoard.getDoubleDrills();
+        int ris = card.comparePower(flyBoard, flyBoard.getPlayerByUsername(controller.getNickname()));
+        if (ris > 0) {
+            System.out.println("your baseStrength is:" +baseStrength + " and is bigger than the card strength");
+            System.out.println("do you want to activate any double drill  ? y/n ");
+        }else if(ris == 0){
+            System.out.println("Your baseStrength is the same of the card's one, do you want to activate any double drill  ? y/n");
+        }
+        else{
+            System.out.println("Your baseStrength is lower than the card's one,do you want to activate any double drill  ? y/n ");
+        }
+        String input = "";
+        while (!input.equals("y") && !input.equals("n")) {
+            input = scanner.nextLine();
+            if(input.equals("y")){
+                drillChoice();
+            }else if (input.equals("n")){
+                drillChoice();
             }
         }
     }
@@ -926,11 +962,12 @@ public class Tui implements View {
     private void drillChoice(){
         ShipBoard ship = controller.getShipBoard();
         ship.drawShipboard();
-
+        SldAdvCard card = controller.getPlayedCard();
         int energyAvailable = ship.getQuantBatteries();
         double power = ship.getBaseFirePower();
 
         List<Cordinate> drillCords = ship.getDoubleDrills();
+        System.out.println("These are the available double drills in your ShipBoard:");
         for (int i = 0; i < drillCords.size(); i++){
             System.out.println(i+1 + ". " + drillCords.get(i));
         }
@@ -960,9 +997,24 @@ public class Tui implements View {
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid input. Try again.");
             }
-
-            controller.activateDoubleDrills(activatedDrills);
-
+            switch(card){
+                case SldSlavers sldSlavers->{
+                    boolean wantsToActivate = false;
+                    System.out.println("In case your Strenght is major than the card's one, do you want to activate the effect of the card? ");
+                    String input = "";
+                    while(!input.equals("y") && !input.equals("n")){
+                        System.out.println("Enter y/n");
+                        input = scanner.nextLine().trim();
+                        if(input.equals("y")){
+                            wantsToActivate = true;
+                        } else if (input.equals("n")) {
+                            wantsToActivate = false;
+                        }
+                    }
+                    controller.activateSlaver(activatedDrills,wantsToActivate);
+                }
+                default -> {controller.activateDoubleDrills(activatedDrills);}
+            }
         }
 
 

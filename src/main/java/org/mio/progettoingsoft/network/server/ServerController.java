@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.exceptions.NotYourTurnException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.messages.ApplyEffectMessage;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.io.IOException;
@@ -303,7 +304,8 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(14);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(21);
+        Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
@@ -560,6 +562,20 @@ public class ServerController {
             default -> Logger.error("effetto carta non consentito");
         }
     }
+
+    public void activateSlaver(int idGame, String nickname, List<Cordinate> activatedDrills, boolean wantsToActivate){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        SldAdvCard card = game.getFlyboard().getPlayedCard();
+        Logger.debug(nickname + activatedDrills);
+        Player player = game.getFlyboard().getPlayerByUsername(nickname);
+        switch(card){
+            case SldSlavers sldSlavers -> {
+                sldSlavers.applyEffect(player,wantsToActivate,activatedDrills);
+            }
+            default -> Logger.error("effetto carta non consentito");
+        }
+    }
+
 
     private void stealGoods(GameServer game, Player player, int numberStolenGoods){
         Logger.debug(player.getNickname() + "steal goods");

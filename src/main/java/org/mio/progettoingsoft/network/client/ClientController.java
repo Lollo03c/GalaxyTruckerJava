@@ -700,4 +700,12 @@ public class ClientController {
             throw new RuntimeException(e);
         }
     }
+
+    public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate){
+        try{
+            server.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

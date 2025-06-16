@@ -102,6 +102,14 @@ public class GameController {
                     throw new RuntimeException(e);
                 }
             }
+            case COMPARING -> {
+                try{
+                    client.setCardState(CardState.COMPARING);
+                    client.setState(GameState.CARD_EFFECT);
+                }catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            }
 
             case FINALIZED -> {
                 Map<String,VirtualClient> clients = game.getClients();
@@ -129,7 +137,8 @@ public class GameController {
                 }
             }
 
-            default -> {}
+            default -> {
+            }
         }
     }
 
