@@ -43,6 +43,18 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("problem with the apply effect method");
     }
 
+    public boolean getReadyToProceed() {
+        throw new RuntimeException("problem with the getReadyToProceed method");
+    }
+
+    public void setReadyToProceed(boolean readyToProceed) {
+        throw new RuntimeException("problem with the setReadyToProceed method");
+    }
+
+    public void notifyGoodsPlacementFinished(Player player) {
+        throw new RuntimeException("this card doesn't need to notifyGoodsPlacementFinished");
+    }
+
     public CardState getState() {return state;}
 
     public Player getActualPlayer() {return actualPlayer;}
@@ -137,6 +149,10 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
 
     public void setNextPlayer(){
         Logger.debug("set next player - carta non implementata");
+    }
+
+    public boolean allPlayersPlacedGoods() {
+        throw new RuntimeException("this card doesn't need to implement this method");
     }
 }
 

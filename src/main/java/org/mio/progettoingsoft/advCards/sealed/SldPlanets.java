@@ -12,16 +12,35 @@ import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class SldPlanets extends SldAdvCard {
     private final int daysLost;
     private final List<Planet> planets;
+    private Set<Player> finishedGoodsPlacement = new HashSet<>();
+    private boolean readyToProceed = false;
+
+    public boolean getReadyToProceed() {
+        return readyToProceed;
+    }
+
+    public void setReadyToProceed(boolean readyToProceed) {
+        this.readyToProceed = readyToProceed;
+    }
 
     public List<Player> getLandedPlayers() {
         return landedPlayers;
+    }
+
+    public void notifyGoodsPlacementFinished(Player player) {
+        finishedGoodsPlacement.add(player);
+        Logger.debug("Player " + player.getNickname() + " finished goods placement");
+        Logger.debug("Players finished so far: " + finishedGoodsPlacement.size() + "/" + landedPlayers.size());
+    }
+
+    @Override
+    public boolean allPlayersPlacedGoods() {
+        return finishedGoodsPlacement.size() == landedPlayers.size();
     }
 
     private final List<Player> landedPlayers;
@@ -90,7 +109,7 @@ public final class SldPlanets extends SldAdvCard {
             passedPlayers++;
             Logger.debug("numero giocatori passati "   + passedPlayers);
             if (planetIndex == -1) {
-                setNextPlayer();
+                //setNextPlayer();
             } else {
                 if (planetIndex >= this.planets.size() || planetIndex < 0) {
                     throw new BadParameterException("Index out of list bounds");
@@ -130,8 +149,10 @@ public final class SldPlanets extends SldAdvCard {
     }
 
     public void applyEffect() {
-        for (Player p : landedPlayers.reversed()) {
-            flyBoard.moveDays(p, - daysLost);
+        Logger.debug("applyEffect() called with landedPlayers: " + landedPlayers);
+        for (int i = landedPlayers.size() - 1; i >= 0; i--) {
+            Player p = landedPlayers.get(i);
+            flyBoard.moveDays(p, -daysLost);
         }
         setState(CardState.FINALIZED);
 //        boolean atLeastOneGiven = false;
@@ -178,8 +199,8 @@ public final class SldPlanets extends SldAdvCard {
             actualPlayer = playerIterator.next();
             setState(CardState.PLANET_CHOICE);
         } else {
-            Logger.debug("entro in FINALIZED : " + playerIterator+ " "+ actualPlayer);
-            setState(CardState.FINALIZED);
+//            Logger.debug("entro in FINALIZED : " + playerIterator+ " "+ actualPlayer);
+//            setState(CardState.FINALIZED);
         }
     }
 

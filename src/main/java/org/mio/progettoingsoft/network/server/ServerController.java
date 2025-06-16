@@ -376,11 +376,12 @@ public class ServerController {
         FlyBoard flyBoard = game.getFlyboard();
         SldAdvCard card = flyBoard.getPlayedCard();
 
-        if (idCard == card.getId() && nickname.equals(card.getActualPlayer().getNickname())){
+        if (idCard == card.getId() ){
             Logger.debug("Salto effetto carta " + idCard);
             switch (card){
                 case SldAbandonedShip abandonedShip -> {
                     abandonedShip.applyEffect(nickname, false, null);
+                    card.setNextPlayer();
                 }
 
                 case SldAbandonedStation abandonedStation -> {
@@ -391,10 +392,19 @@ public class ServerController {
                     sldSmugglers.setNextPlayer();
                 }
 
+                case SldPlanets sldPlanets ->{
+                    card.notifyGoodsPlacementFinished(game.getFlyboard().getPlayerByUsername(nickname));
+                    Logger.debug("ReadyToProceed: " + sldPlanets.getReadyToProceed());
+                    Logger.debug("AllPlayersPlacedGoods: " + sldPlanets.allPlayersPlacedGoods());
+                    if(sldPlanets.getReadyToProceed() && sldPlanets.allPlayersPlacedGoods()){
+                        card.applyEffect();
+                    }
+                }
+
                 default -> Logger.error("carta non implementata - per salto effetto");
             }
-
-            card.setNextPlayer();
+            //if(!(card instanceof SldPlanets))
+                //card.setNextPlayer();
         }
     }
 
@@ -508,10 +518,12 @@ public class ServerController {
         }
         Logger.debug("numero giocatori passati "   + passedPlayers);
         if( passedPlayers == game.getNumPlayers() || card.getLandedPlayers().size() == card.getPlanets().size() ) {
-            Logger.debug("numero giocatori passati "   + passedPlayers);
-            card.applyEffect();
+            card.setReadyToProceed(true);
         }else {
             card.setNextPlayer();
+        }
+        if(game.getFlyboard().getScoreBoard().getLast().equals(player) && choice == -1 && card.allPlayersPlacedGoods()){
+            card.applyEffect();
         }
 
     }

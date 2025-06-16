@@ -284,6 +284,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     //    private  List<Optional<Player>> circuit;
     //    list da 24 celle
     public void moveDays(Player player, int days) {
+        Logger.debug("Moving " + days + " days from " + player.getNickname());
         boolean advance = days > 0 ? true : false;
 
         if (advance) {

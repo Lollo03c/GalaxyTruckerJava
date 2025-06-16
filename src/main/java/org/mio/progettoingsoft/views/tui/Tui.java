@@ -295,6 +295,7 @@ public class Tui implements View {
             while (true) {
                 try {
                     numPlanet = scanner.nextInt();
+                    scanner.nextLine();
                     if (numPlanet >= 1 && numPlanet <= planets.size() && availablePlanets.contains(planets.get(numPlanet - 1))) {
                         break;
                     } else {
@@ -864,8 +865,7 @@ public class Tui implements View {
         System.out.println("2. Remove a good in the shipboard");
         System.out.println("3, End placement (the good yet to placed will be discarded");
 
-        choice = scanner.nextLine().trim();
-
+        choice = scanner.nextLine();
         if (choice.equals("1")){
             System.out.println("Available goods in your hand");
             for (GoodType type : toInsert){
