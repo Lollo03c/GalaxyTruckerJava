@@ -372,7 +372,7 @@ public abstract class FlyBoard implements FlyBoardServer {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            JsonNode rootNode = mapper.readTree(new File("src/main/resources/components.json"));
+            JsonNode rootNode = mapper.readTree(getClass().getResourceAsStream("/components.json"));
 
             for (int i = 0; i < rootNode.size(); i++) {
                 String type = rootNode.get(i).path("type").asText();

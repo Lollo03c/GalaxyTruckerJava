@@ -35,8 +35,6 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
 
     public void startServer() {
         try {
-            System.setProperty("java.rmi.server.hostname", connectionInfo.getIpHost());
-
             Registry registry = LocateRegistry.createRegistry(connectionInfo.getRmiPort());
             registry.rebind(connectionInfo.getServerName(), this);
 

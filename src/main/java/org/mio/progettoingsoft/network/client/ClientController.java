@@ -353,6 +353,7 @@ public class ClientController {
                 this.notifyAll();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

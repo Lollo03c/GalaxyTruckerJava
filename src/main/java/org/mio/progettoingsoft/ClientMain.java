@@ -3,6 +3,7 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.network.client.ClientApp;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.IPValidator;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -50,6 +51,8 @@ public class ClientMain {
             // default IP
             ip = "127.0.0.1";
         }
+
+        System.out.println("IP del server: " + ip);
 
         ConnectionInfo connectionInfo = new ConnectionInfo(ip);
         ClientApp clientApp = new ClientApp(isGui, connectionInfo);
