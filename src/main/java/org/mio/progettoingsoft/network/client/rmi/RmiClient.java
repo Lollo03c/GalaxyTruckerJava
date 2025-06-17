@@ -13,6 +13,7 @@ import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.network.server.rmi.VirtualServerRmi;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -35,14 +36,15 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         this.controller = ClientController.getInstance();
         this.connectionInfo = connectionInfo;
 
-        System.setProperty("java.rmi.server.hostname", connectionInfo.getIpHost());
-
         try {
+            System.out.println("Connetto a " + connectionInfo.getIpHost());
             Registry registry = LocateRegistry.getRegistry(connectionInfo.getIpHost(), connectionInfo.getRmiPort());
             server = (VirtualServerRmi) registry.lookup(connectionInfo.getServerName());
         } catch (NotBoundException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
+        System.out.println("Connesso al server: " + server);
     }
 
     /**
@@ -51,7 +53,9 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
 
     @Override
     public void connect() throws RemoteException {
+        System.out.println("Inizio connect");
         controller.setIdClient(server.registerClient(this));
+        System.out.println("Fine connect");
     }
 
     @Override

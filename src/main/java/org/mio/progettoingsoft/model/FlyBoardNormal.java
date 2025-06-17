@@ -58,7 +58,8 @@ public class FlyBoardNormal extends FlyBoard {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
+            File cardsFile = new File(getClass().getResource("advCards.json").toExternalForm());
+            JsonNode rootNode = mapper.readTree(cardsFile);
 
             for (int i = 0; i < rootNode.size(); i++) {
                 String type = rootNode.get(i).path("type").asText();
@@ -194,7 +195,8 @@ public class FlyBoardNormal extends FlyBoard {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            JsonNode rootNode = mapper.readTree(new File("src/main/resources/advCards.json"));
+            File cardsFile = new File(getClass().getResource("/advCards.json").toExternalForm());
+            JsonNode rootNode = mapper.readTree(getClass().getResourceAsStream("/advCards.json"));
 
             for (int i = 0; i < rootNode.size(); i++) {
                 String type = rootNode.get(i).path("type").asText();

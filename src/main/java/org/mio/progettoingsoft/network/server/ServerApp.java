@@ -12,6 +12,7 @@ public class ServerApp implements Runnable {
     private final SocketServer socketServer;
 
     public ServerApp(ConnectionInfo connectionInfo) throws RemoteException {
+        System.setProperty("java.rmi.server.hostname", connectionInfo.getIpHost());
         this.rmiServer = new RmiServer(connectionInfo);
         this.socketServer = new SocketServer(connectionInfo);
     }

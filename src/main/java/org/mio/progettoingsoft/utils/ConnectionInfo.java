@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.utils;
 
 public class ConnectionInfo {
-    // COSTANT INFO
+    // CONSTANT INFO
     private final int rmiPort = 1099;
     private final int socketPort = 1050;
     private final String serverName = "GalaxyTruckerServer";
