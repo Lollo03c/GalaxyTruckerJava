@@ -436,13 +436,26 @@ public class ServerController {
                 for (VirtualClient client : game.getClients().values()){
                     try{
                         client.removeCrew(nickname, cordToRemove);
-                        client.addCredits(nickname, card.getCredits());
+                        //commento perchè ho modificato con i listener il model di add credits
+                        //client.addCredits(nickname, card.getCredits());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
                 abandonedShip.setNextPlayer();
 
+            }
+
+            case SldSlavers sldSlavers ->{
+                Player player = flyBoard.getPlayerByUsername(nickname);
+                sldSlavers.removeCrew(player,cordToRemove);
+                for (VirtualClient client : game.getClients().values()){
+                    try{
+                        client.removeCrew(nickname, cordToRemove);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
 
             default -> Logger.error("Effetto carta non consentito");
@@ -566,7 +579,7 @@ public class ServerController {
     public void activateSlaver(int idGame, String nickname, List<Cordinate> activatedDrills, boolean wantsToActivate){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
-        Logger.debug(nickname + activatedDrills);
+        Logger.debug("player: " + nickname + " ha attivato "+ activatedDrills+ " doppicannoni");
         Player player = game.getFlyboard().getPlayerByUsername(nickname);
         switch(card){
             case SldSlavers sldSlavers -> {

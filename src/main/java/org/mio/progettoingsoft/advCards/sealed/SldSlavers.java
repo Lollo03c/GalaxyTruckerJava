@@ -112,7 +112,7 @@ public final class SldSlavers extends SldAdvCard {
     }
 
     public void applyEffect( Player player, boolean wantsToActivate, List<Cordinate> drillsCordinate) {
-        if (this.state != CardState.APPLYING && this.state != CardState.DRILL_CHOICE) {
+        if (this.state != CardState.APPLYING && this.state!=CardState.COMPARING && this.state != CardState.DRILL_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
 
@@ -144,16 +144,17 @@ public final class SldSlavers extends SldAdvCard {
                 flyBoard.moveDays(actualPlayer, -this.daysLost);
                 actualPlayer.addCredits(this.credits);
             }
-            this.state = CardState.FINALIZED;
+            setState(CardState.FINALIZED);
         } else if (power < this.strength) {
-            this.state = CardState.CREW_REMOVE_CHOICE;
+            setState(CardState.CREW_REMOVE_CHOICE);
         } else {
             this.setNextPlayer();
         }
     }
 
 
-    public void removeCrew(FlyBoard board, Player player, List<Cordinate> housingCordinatesList) {
+    public void removeCrew( Player player, List<Cordinate> housingCordinatesList) {
+        Logger.debug("sono entrato nel metodo removeCrew di SldSlavers");
         if (this.state != CardState.CREW_REMOVE_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
@@ -166,12 +167,13 @@ public final class SldSlavers extends SldAdvCard {
             throw new BadPlayerException("Empty list");
         }
 
-        ShipBoard shipBoard = board.getPlayerByUsername(actualPlayer.getNickname()).getShipBoard();
+        ShipBoard shipBoard = player.getShipBoard();
 
         for (Cordinate cord : housingCordinatesList) {
             Optional<Component> compOpt = shipBoard.getOptComponentByCord(cord);
             if (compOpt.isPresent()) {
                 compOpt.get().removeGuest();
+                //todo devo comunicare agli altri che ho rimosso questa crew.
             } else {
                 throw new IllegalArgumentException("Invalid coordinate: " + cord);
             }
@@ -181,14 +183,7 @@ public final class SldSlavers extends SldAdvCard {
     }
 
 
-    private void nextPlayer(){
-        if(this.playerIterator.hasNext()){
-            this.actualPlayer = this.playerIterator.next();
-            this.state = CardState.COMPARING;
-        }else{
-            this.state = CardState.FINALIZED;
-        }
-    }
+
 
     // removes players with no crew remaining
     public void finish(FlyBoard board) {

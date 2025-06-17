@@ -92,12 +92,14 @@ public class ClientController {
             oldState = this.gameState;
             this.gameState = state;
         }
+
         if (oldState == null || !oldState.equals(state)) {
             support.firePropertyChange("gameState", oldState, state);
         }
         else if (oldState.equals(state)){
             support.firePropertyChange(new PropertyChangeEvent(this, "gameState", oldState, state));
         }
+        Logger.debug("GameState: " + oldState + " -> " + state+ "il corrente CardState: " + cardState);
     }
 
     public GameState getState() {
@@ -122,7 +124,7 @@ public class ClientController {
         }
         if (oldState != state) {
             support.firePropertyChange("cardState", oldState, state);
-            Logger.debug("CARD: " + oldState + " -> " + state);
+            Logger.debug("CardState: " + oldState + " -> " + state);
         }
     }
 

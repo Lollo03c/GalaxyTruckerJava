@@ -146,7 +146,7 @@ public class Tui implements View {
                 controller.setState(GameState.ADD_COMPONENT);
             }
 
-            case CREW_REMOVE_CHOICE -> crewRemove();
+            //case CREW_REMOVE_CHOICE -> crewRemove();
 
             case DRAW_CARD -> {
                 printWaitingTheLeader();
@@ -251,6 +251,7 @@ public class Tui implements View {
     }
 
     public void cardEffect() {
+        Logger.debug("[cardEffect] chiamato con stato: " + controller.getCardState());
         switch (controller.getCardState()) {
             case ENGINE_CHOICE -> {
                 engineChoice();
@@ -804,21 +805,28 @@ public class Tui implements View {
 
     private void crewRemove() {
         SldAdvCard card = controller.getPlayedCard();
-        String choice = "";
-        while (!choice.equals("y") && !choice.equals("n")) {
-            System.out.println("Do you want to accept the card effect (y/n) : ");
+        Logger.debug("sono in crewRemove");
+        switch(card){
+            case SldAbandonedShip sldAbandonedShip -> {
+                String choice = "";
+                while (!choice.equals("y") && !choice.equals("n")) {
+                    System.out.println("Do you want to accept the card effect (y/n) : ");
 
-            choice = scanner.nextLine();
-            //todo controllo input
+                    choice = scanner.nextLine();
+                    if(!choice.equals("y") && !choice.equals("n")){
+                        System.out.println(RED + "Invalid input please type y/n " + RESET);
+                    }
+                }
 
 
+                if (choice.equals("n")) {
+                    controller.skipEffect();
+                    return;
+                }
+            }
+            default -> {}
         }
 
-
-        if (choice.equals("n")) {
-            controller.skipEffect();
-            return;
-        }
 
         int toRemove = card.getCrewLost();
         List<Cordinate> crewPositionsToRemove = new ArrayList<>();
@@ -1000,15 +1008,20 @@ public class Tui implements View {
             switch(card){
                 case SldSlavers sldSlavers->{
                     boolean wantsToActivate = false;
-                    System.out.println("In case your Strenght is major than the card's one, do you want to activate the effect of the card? ");
-                    String input = "";
-                    while(!input.equals("y") && !input.equals("n")){
-                        System.out.println("Enter y/n");
-                        input = scanner.nextLine().trim();
-                        if(input.equals("y")){
-                            wantsToActivate = true;
-                        } else if (input.equals("n")) {
-                            wantsToActivate = false;
+                    System.out.println(" You selected" + activatedDrills.size() + " double drills");
+                    double playerStrength = power + 2* activatedDrills.size();
+                    int cardStrength = card.getStrength();
+                    if(playerStrength > cardStrength){
+                        System.out.println("Your fire power is higher than the one of the card, Do you want to get the credits?");
+                        String input = "";
+                        while(!input.equals("y") && !input.equals("n")){
+                            System.out.println("Enter y/n");
+                            input = scanner.nextLine().trim();
+                            if(input.equals("y")){
+                                wantsToActivate = true;
+                            } else if (input.equals("n")) {
+                                wantsToActivate = false;
+                            }
                         }
                     }
                     controller.activateSlaver(activatedDrills,wantsToActivate);
@@ -1016,7 +1029,6 @@ public class Tui implements View {
                 default -> {controller.activateDoubleDrills(activatedDrills);}
             }
         }
-
 
     }
 

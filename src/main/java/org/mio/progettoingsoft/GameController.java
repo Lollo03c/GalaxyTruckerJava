@@ -2,15 +2,14 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.model.events.AddCreditsEvent;
 import org.mio.progettoingsoft.model.events.MovePlayerEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
-import javax.crypto.EncryptedPrivateKeyInfo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +43,27 @@ public class GameController {
                 }
             }
         });
+
+        // listener per ogni Player : gestiscono modifiche ai credits
+        for (Player player : game.getFlyboard().getPlayers()) {
+            player.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    if ("addedCredit".equals(evt.getPropertyName())) {
+                        Logger.debug("event addedCredit gestito");
+                        AddCreditsEvent event = (AddCreditsEvent) evt.getNewValue();
+
+                        for (VirtualClient client : game.getClients().values()) {
+                            try {
+                                client.addCredits(event.getNickname(), event.getAddedCredits());
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 
 

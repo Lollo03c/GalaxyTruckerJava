@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.model.events;
 
-public abstract sealed class Event permits MovePlayerEvent {
+public abstract sealed class Event permits MovePlayerEvent, AddCreditsEvent {
     private final String nickname;
 
     public Event(String nickname) {

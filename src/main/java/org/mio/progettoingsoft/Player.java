@@ -4,7 +4,12 @@ import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.events.AddCreditsEvent;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.utils.Logger;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 public class Player {
@@ -18,7 +23,11 @@ public class Player {
     private boolean isRunning;
 //    private final VirtualView view;
     private List<GoodType> tmpGoods;
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
 
     public Player(String nickname, HousingColor color, GameMode mode, FlyBoard flyboard) {
         this.nickname = nickname;
@@ -86,6 +95,10 @@ public class Player {
 
     public void addCredits(int quantity) {
         credits += quantity;
+        Event event = new AddCreditsEvent(nickname, quantity);
+        support.firePropertyChange("movePlayer", 0, event);
+        Logger.debug("evento movePlayer lanciato");
+
     }
 
     public void giveGoods(List<GoodType> goods) {
