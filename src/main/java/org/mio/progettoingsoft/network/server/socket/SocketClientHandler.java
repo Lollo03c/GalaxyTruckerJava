@@ -229,5 +229,10 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
 
+    @Override
+    public void genericChoiceError(String msg) throws Exception {
+        Message message = new ChoiceErrorMessage(0, null, msg);
+    }
+
 
 }

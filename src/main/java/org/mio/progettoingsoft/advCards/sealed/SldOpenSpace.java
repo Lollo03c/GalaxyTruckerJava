@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +105,7 @@ public final class SldOpenSpace extends SldAdvCard {
     @Override
     public void setNextPlayer(){
         if (playerIterator.hasNext()) {
+            this.actualPlayer = this.playerIterator.next();
             setState(CardState.ENGINE_CHOICE);
         } else {
             setState(CardState.FINALIZED);

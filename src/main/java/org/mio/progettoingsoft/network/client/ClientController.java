@@ -76,6 +76,8 @@ public class ClientController {
 
     private List<GoodType> goodsToInsert = new ArrayList<>();
 
+    private String choiceErrorMessage;
+
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -92,7 +94,6 @@ public class ClientController {
             oldState = this.gameState;
             this.gameState = state;
         }
-
         if (oldState == null || !oldState.equals(state)) {
             support.firePropertyChange("gameState", oldState, state);
 
@@ -120,6 +121,10 @@ public class ClientController {
         }
         if (oldState != state) {
             support.firePropertyChange("cardState", oldState, state);
+            Logger.debug("CardState: " + oldState + " -> " + state);
+        }else{
+            support.firePropertyChange("cardState", oldState, CardState.IDLE);
+            support.firePropertyChange("cardState", CardState.IDLE, state);
             Logger.debug("CardState: " + oldState + " -> " + state);
         }
     }
@@ -232,8 +237,12 @@ public class ClientController {
         }
     }
 
-    public void setCardState() {
-        //todo da settare gli stati a tutti i giocatori: switch in base alla carta uscita
+    public String getErrMessage(){
+        return choiceErrorMessage;
+    }
+
+    public void resetErrMessage(){
+        choiceErrorMessage = null;
     }
 
     /*
@@ -332,6 +341,13 @@ public class ClientController {
         support.firePropertyChange("circuit", oldPos, newPos);
     }
 
+    public void genericChoiceError(String msg) {
+        CardState old = getCardState();
+        choiceErrorMessage = msg;
+        setCardState(CardState.ERROR_CHOICE);
+        setCardState(old);
+    }
+
     /*
      * Methods called by the view to handle the input and communicate with the server
      */
@@ -351,7 +367,6 @@ public class ClientController {
                 this.notifyAll();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

@@ -170,6 +170,9 @@ public class SocketClient implements Client {
                             }
                         }
                     }
+                    case ChoiceErrorMessage choiceErrorMessage -> {
+                        executor.submit(() -> controller.genericChoiceError(choiceErrorMessage.getMsg()));
+                    }
 
                     case LandOnPlanetMessage landOnPlanetMessage -> {
                         executor.submit(() -> {

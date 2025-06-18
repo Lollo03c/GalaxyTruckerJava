@@ -6,6 +6,11 @@ import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NotYourTurnException;
+import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
+import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -308,7 +313,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(1);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(5);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -381,7 +386,7 @@ public class ServerController {
         FlyBoard flyBoard = game.getFlyboard();
         SldAdvCard card = flyBoard.getPlayedCard();
 
-        if (idCard == card.getId()) {
+        if (idCard == card.getId() && nickname.equals(card.getActualPlayer().getNickname())) {
             Logger.debug("Salto effetto carta " + idCard);
             switch (card) {
                 case SldAbandonedShip abandonedShip -> {

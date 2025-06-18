@@ -71,4 +71,6 @@ public interface VirtualClient extends Remote {
     void removeGood(int idComp, GoodType type) throws Exception;
     void addGoodPendingList(String nickname, GoodType type) throws Exception;
     void setPlayerOnPlanet(String nickname, int choice) throws Exception;
+    void genericChoiceError(String msg) throws Exception;
+
 }

@@ -198,6 +198,11 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
+    public void genericChoiceError(String msg) throws RemoteException{
+        executors.submit(()->controller.genericChoiceError(msg));
+    }
+
+    @Override
     public void addGood(int idComp, GoodType type) throws RemoteException{
         executors.submit(() ->
             controller.addGoodToModel(idComp, type)

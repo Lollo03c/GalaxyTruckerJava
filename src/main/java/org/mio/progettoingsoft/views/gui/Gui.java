@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -31,7 +30,6 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
-import javax.smartcardio.Card;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -63,6 +61,8 @@ public class Gui extends Application implements View {
 
     // true -> first time in the BUILDING_SHIP view
     private boolean firstBuilding = true;
+    // true -> the built-in button is invisible (the ship has already been loaded)
+    private boolean willTestBuildDisappear = false;
     //true -> first time in adventure card view
     private boolean firstAdventureStart = true;
     private double screenHeight;
@@ -124,6 +124,7 @@ public class Gui extends Application implements View {
     private VBox topBuildingShipBox;
     private VBox inHandBox;
     private ImageView inHandImageView;
+    private Button loadShipBtn;
     private VBox viewOtherPlayersBox;
     // modal stage and view components for the uncovered components "gallery"
     private Stage uncoveredComponentModalStage;
@@ -136,7 +137,11 @@ public class Gui extends Application implements View {
     private Label hintLabel;
     private Label errorLabel;
     // modal stage for other player ship displaying
-    private Stage otherPlayerShipStage;
+    private Stage modalShipStage;
+    private Map<Cordinate, ImageView> modalShipCordToImg;
+    private Map<Cordinate, StackPane> modalShipCordToStackPane;
+    private String modalErrorLabelMessage;
+    private VBox modalShipContainer;
     // modal stage for position choosing
     private Stage choosePositionStage;
     // view components for the circuit and card activation
@@ -249,8 +254,10 @@ public class Gui extends Application implements View {
             case DRAW_CARD -> advStartedView(false);
             case YOU_CAN_DRAW_CARD -> advStartedView(true);
             case NEW_CARD -> loadNewCard();
-            case CARD_EFFECT -> {}
-            case IDLE -> {}
+            case CARD_EFFECT -> {
+            }
+            case IDLE -> {
+            }
 
             default -> genericErrorView(state);
         }
@@ -497,7 +504,7 @@ public class Gui extends Application implements View {
                     Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
                     butt.setTextAlignment(TextAlignment.CENTER);
                     butt.setWrapText(true);
-                    butt.setOnAction(event -> lookAtOtherShipboardView(player.getNickname()));
+                    butt.setOnAction(event -> modalShipboardView(player.getNickname()));
                     viewOtherPlayersBox.getChildren().add(butt);
                 }
             }
@@ -540,8 +547,11 @@ public class Gui extends Application implements View {
             shipViewBorderPane.setRight(shipRightColumn);
 
             /* TESTING SECTION */
-            Button loadShipBtn = new Button("Load built-in shipboard");
-            loadShipBtn.setOnAction(evt -> controller.builtDefault());
+            loadShipBtn = new Button("Load built-in shipboard");
+            loadShipBtn.setOnAction(evt -> {
+                controller.builtDefault();
+                willTestBuildDisappear = true;
+            });
             shipRightColumn.getChildren().addAll(loadShipBtn);
             /* END TESTING SECTION */
 
@@ -666,6 +676,8 @@ public class Gui extends Application implements View {
             inHandBox.setDisable(true);
             backButton.setVisible(false);
             hintLabel.setVisible(false);
+            loadShipBtn.setDisable(false);
+            loadShipBtn.setVisible(!willTestBuildDisappear);
 
             // fill the grid of the shipboard with the components from the model
             Optional<Integer>[][] idMatrix;
@@ -698,6 +710,7 @@ public class Gui extends Application implements View {
         inHandImageView.setImage(image);
         backButton.setVisible(false);
         hintLabel.setVisible(false);
+        loadShipBtn.setDisable(false);
         Optional<Integer>[][] idMatrix;
         Optional<Integer>[][] rotationsMatrix;
         List<Optional<Integer>> bookedComponents;
@@ -782,6 +795,7 @@ public class Gui extends Application implements View {
     private void placeComponentView(boolean isError) {
         backButton.setVisible(true);
         inHandBox.setDisable(true);
+        loadShipBtn.setDisable(false);
         isComponentBoxClickable = true;
         hintLabel.setText("Click on the empty cell where you want to insert the component");
         hintLabel.setVisible(true);
@@ -802,6 +816,7 @@ public class Gui extends Application implements View {
     private void switchBookedComponentsView() {
         backButton.setVisible(true);
         inHandBox.setDisable(true);
+        loadShipBtn.setDisable(false);
         isComponentBoxClickable = true;
         hintLabel.setText("Click on the booked component you want to replace");
         hintLabel.setVisible(true);
@@ -859,19 +874,19 @@ public class Gui extends Application implements View {
      *
      * @param nickname: nickname of the chosen player
      */
-    private void lookAtOtherShipboardView(String nickname) {
-        Map<Cordinate, ImageView> otherPlayerShipCordToImg = new HashMap<>();
-        Map<Cordinate, StackPane> otherPlayerShipCordToStackPane = new HashMap<>();
-        otherPlayerShipStage = new Stage();
-        otherPlayerShipStage.initModality(Modality.APPLICATION_MODAL);
-        otherPlayerShipStage.setTitle(nickname + "'s shipboard");
-        VBox otherPlayerShipContainer = new VBox();
-        otherPlayerShipStage.setScene(new Scene(otherPlayerShipContainer, 1200, 800));
-        otherPlayerShipStage.show();
-        double stageHeight = otherPlayerShipStage.getHeight(), stageWidth = otherPlayerShipStage.getWidth();
-        otherPlayerShipContainer.setAlignment(Pos.CENTER);
-        VBox.setVgrow(otherPlayerShipContainer, Priority.ALWAYS);
-        otherPlayerShipContainer.setPadding(new Insets(10, 0, 10, 0));
+    private void modalShipboardView(String nickname) {
+        modalShipCordToImg = new HashMap<>();
+        modalShipCordToStackPane = new HashMap<>();
+        modalShipStage = new Stage();
+        modalShipStage.initModality(Modality.APPLICATION_MODAL);
+        modalShipStage.setTitle(nickname + "'s shipboard");
+        modalShipContainer = new VBox(15);
+        modalShipStage.setScene(new Scene(modalShipContainer, 1200, 800));
+        modalShipStage.show();
+        double stageHeight = modalShipStage.getHeight(), stageWidth = modalShipStage.getWidth();
+        modalShipContainer.setAlignment(Pos.CENTER);
+        VBox.setVgrow(modalShipContainer, Priority.ALWAYS);
+        modalShipContainer.setPadding(new Insets(10, 0, 10, 0));
         GridPane otherPlayerShipGrid = new GridPane();
         otherPlayerShipGrid.setAlignment(Pos.CENTER);
         otherPlayerShipGrid.setPadding(shipPadding);
@@ -911,13 +926,13 @@ public class Gui extends Application implements View {
                     sp.getChildren().add(imgView);
                     sp.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                     otherPlayerShipGrid.add(sp, j, i);
-                    otherPlayerShipCordToImg.put(new Cordinate(i, j), imgView);
-                    otherPlayerShipCordToStackPane.put(new Cordinate(i, j), sp);
+                    modalShipCordToImg.put(new Cordinate(i, j), imgView);
+                    modalShipCordToStackPane.put(new Cordinate(i, j), sp);
                 }
             }
         }
         setGridConstraints(otherPlayerShipGrid, tilesSideLength);
-        otherPlayerShipContainer.getChildren().add(otherPlayerShipGrid);
+        modalShipContainer.getChildren().add(otherPlayerShipGrid);
         Optional<Integer>[][] idMatrix;
         Optional<Integer>[][] rotationsMatrix;
         List<Optional<Integer>> bookedComponents;
@@ -926,10 +941,10 @@ public class Gui extends Application implements View {
             rotationsMatrix = controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getComponentRotationsMatrix();
             bookedComponents = new ArrayList<>(controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard().getBookedComponents());
         }
-        fillShipboard(idMatrix, rotationsMatrix, bookedComponents, otherPlayerShipCordToImg);
+        fillShipboard(idMatrix, rotationsMatrix, bookedComponents, modalShipCordToImg);
         synchronized (controller.getFlyboardLock()) {
             ShipBoard ship = controller.getFlyBoard().getPlayerByUsername(nickname).getShipBoard();
-            loadComponentSpecificObjects(ship, otherPlayerShipCordToStackPane);
+            loadComponentSpecificObjects(ship, modalShipCordToStackPane);
         }
     }
 
@@ -1016,7 +1031,7 @@ public class Gui extends Application implements View {
                     Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
                     butt.setTextAlignment(TextAlignment.CENTER);
                     butt.setWrapText(true);
-                    butt.setOnAction(event -> lookAtOtherShipboardView(player.getNickname()));
+                    butt.setOnAction(event -> modalShipboardView(player.getNickname()));
                     topBox.getChildren().add(butt);
                 }
             }
@@ -1026,7 +1041,7 @@ public class Gui extends Application implements View {
             HBox bottomBox = new HBox(50);
             bottomBox.setAlignment(Pos.CENTER);
             Button showShipBtn = new Button("Show your shipboard");
-            showShipBtn.setOnAction(evt -> lookAtOtherShipboardView(controller.getNickname()));
+            showShipBtn.setOnAction(evt -> modalShipboardView(controller.getNickname()));
             bottomBox.getChildren().addAll(showShipBtn);
             adventureBorderPane.setBottom(bottomBox);
 
@@ -1157,6 +1172,84 @@ public class Gui extends Application implements View {
         cardImageView.setImage(cardImage);
         drawCardButton.setVisible(false);
         waitingForLeaderLabel.setVisible(false);
+    }
+
+    /*
+     * card-specific view methods section
+     */
+
+    private void updateCardGui(CardState cardState) {
+        switch (cardState) {
+            case ENGINE_CHOICE -> engineChoiceView();
+
+            case ERROR_CHOICE -> {
+                modalErrorLabelMessage = controller.getErrMessage();
+                controller.resetErrMessage();
+            }
+            case IDLE -> {}
+            default -> genericErrorView(cardState);
+        }
+    }
+
+    private void engineChoiceView() {
+        modalShipboardView(controller.getNickname());
+        Label hintTopLabel = new Label();
+        ShipBoard ship = controller.getShipBoard();
+        Map<Cordinate, Boolean> cordToActive = new HashMap<>();
+        int maxAvailable;
+        synchronized (controller.getShipboardLock()) {
+            maxAvailable = Integer.min(ship.getQuantBatteries(), ship.getDoubleEngine().size());
+            hintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: 0");
+            for (Cordinate cord : modalShipCordToStackPane.keySet()) {
+                StackPane sp = modalShipCordToStackPane.get(cord);
+                if (ship.getOptComponentByCord(cord).isPresent()) {
+                    if (ship.getOptComponentByCord(cord).get().getType() == ComponentType.DOUBLE_ENGINE) {
+                        cordToActive.put(cord, false);
+                        sp.setOnMouseClicked(evt -> {
+                            if (!cordToActive.get(cord)) {
+                                int sum = 0;
+                                for(Boolean bool : cordToActive.values()){
+                                    if(bool)
+                                        sum++;
+                                }
+                                if(sum < maxAvailable){
+                                    cordToActive.put(cord, true);
+                                    hintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum+1));
+                                    sp.setStyle("-fx-border-color: green;" +
+                                                    "-fx-border-width: 4;");
+                                }
+                            }else{
+                                cordToActive.put(cord, false);
+                                int sum = 0;
+                                for(Boolean bool : cordToActive.values()){
+                                    if(bool)
+                                        sum++;
+                                }
+                                hintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum));
+                                sp.setStyle("");
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        Button confirmBtn = new Button("Confirm");
+        confirmBtn.setOnAction(evt -> {
+            int i = 0;
+            for (Cordinate cord : cordToActive.keySet()) {
+                if (cordToActive.get(cord)) {
+                    i++;
+                }
+            }
+            modalShipStage.close();
+            controller.activateDoubleEngine(i);
+        });
+        modalShipContainer.getChildren().addFirst(hintTopLabel);
+        modalShipContainer.getChildren().add(confirmBtn);
+        if (modalErrorLabelMessage != null) {
+            modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
+            modalErrorLabelMessage = null;
+        }
     }
 
     /*
@@ -1366,8 +1459,9 @@ public class Gui extends Application implements View {
 
     /**
      * show graphically the content of ENERGY_DEPOT, DEPOT and HOUSING
+     *
      * @param ship: the shipboard to display the content of
-     * @param map: the map of the stack panes where add the icons
+     * @param map:  the map of the stack panes where add the icons
      */
     private void loadComponentSpecificObjects(ShipBoard ship, Map<Cordinate, StackPane> map) {
         for (Cordinate cord : map.keySet()) {
@@ -1390,7 +1484,7 @@ public class Gui extends Application implements View {
                             )));
                             hbox.setPadding(new Insets(tilesSideLength / 18));
                             vbox.getChildren().add(hbox);
-                            for(int i = 0; i < c.getEnergyQuantity(); i++) {
+                            for (int i = 0; i < c.getEnergyQuantity(); i++) {
                                 hbox.getChildren().add(new Circle(tilesSideLength / 12, Color.GREEN));
                             }
                             sp.getChildren().add(vbox);
@@ -1398,12 +1492,12 @@ public class Gui extends Application implements View {
                     }
                     case ComponentType.HOUSING -> {
                         Logger.info("Guests: " + c.getGuests().toString());
-                        if(!c.getGuests().isEmpty()) {
+                        if (!c.getGuests().isEmpty()) {
                             HBox hbox = new HBox(tilesSideLength / 12);
                             hbox.setAlignment(Pos.CENTER);
-                            for(int i = 0; i < c.getGuests().size(); i++) {
+                            for (int i = 0; i < c.getGuests().size(); i++) {
                                 Color color;
-                                switch(c.getGuests().get(i)){
+                                switch (c.getGuests().get(i)) {
                                     case HUMAN -> color = Color.DARKSLATEGREY;
                                     case PURPLE -> color = Color.FUCHSIA;
                                     case BROWN -> color = Color.SANDYBROWN;
@@ -1416,12 +1510,12 @@ public class Gui extends Application implements View {
                     }
                     case ComponentType.DEPOT -> {
                         Logger.info("Goods: " + c.getStoredGoods().toString());
-                        if(!c.getStoredGoods().isEmpty()) {
+                        if (!c.getStoredGoods().isEmpty()) {
                             HBox hbox = new HBox(tilesSideLength / 12);
                             hbox.setAlignment(Pos.CENTER);
-                            for(int i = 0; i < c.getStoredGoods().size(); i++) {
+                            for (int i = 0; i < c.getStoredGoods().size(); i++) {
                                 Color color;
-                                switch(c.getStoredGoods().get(i)){
+                                switch (c.getStoredGoods().get(i)) {
                                     case RED -> color = Color.RED;
                                     case YELLOW -> color = Color.YELLOW;
                                     case GREEN -> color = Color.GREEN;
@@ -1477,10 +1571,5 @@ public class Gui extends Application implements View {
         }
     }
 
-    private void updateCardGui(CardState cardState) {
-        switch (cardState) {
-            case ENGINE_CHOICE -> Logger.info("Fucking working!!");
-            default -> genericErrorView(cardState);
-        }
-    }
+
 }
