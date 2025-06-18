@@ -44,8 +44,6 @@ public class Depot extends Component {
 
         if (type.equals(GoodType.RED) && !isHazard)
             throw new IncorrectShipBoardException("Depot is not hazard");
-
-        Logger.debug("aggiunto " + type + "to id " + getId());
         storedGoods.add(type);
     }
 

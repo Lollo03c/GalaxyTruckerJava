@@ -230,6 +230,11 @@ public class ServerController {
                 }
             }
 
+            try {
+                game.getClients().get(nickname).setState(GameState.BUILDING_SHIP);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
 
         } catch (IncorrectFlyBoardException e) {
             try {

@@ -730,7 +730,6 @@ public class Tui implements View {
 //        }
 
         controller.builtDefault();
-        controller.setState(GameState.BUILDING_SHIP);
 //        try {
 //            int chosen;
 //            chosen = Integer.parseInt(scanner.nextLine());

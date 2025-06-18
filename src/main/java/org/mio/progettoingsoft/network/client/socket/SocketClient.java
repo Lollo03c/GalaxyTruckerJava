@@ -51,11 +51,11 @@ public class SocketClient implements Client {
         this.serverHandler = new SocketServerHandler(out,in);
 
         ClientMessageReceiver clientMessageReceiver = new ClientMessageReceiver(in, receivedMessages);
-        Thread serverMessageThread = new Thread(clientMessageReceiver, "message-receiver");
+        Thread serverMessageThread = new Thread(clientMessageReceiver, "client-message-receiver");
         serverMessageThread.setDaemon(true);
         serverMessageThread.start();
 
-        Thread serverReceiverThread = new Thread(this::handleMessage, "message-handler");
+        Thread serverReceiverThread = new Thread(this::handleMessage, "client-message-handler");
         serverReceiverThread.setDaemon(true);
         serverReceiverThread.start();
 

@@ -236,8 +236,6 @@ public class Gui extends Application implements View {
             case GAME_MODE -> askForSettingsView();
             case WAITING_PLAYERS -> waitingForPlayersView();
             case BUILDING_SHIP -> buildingShipView();
-            case CHOICE_BUILT -> choiceBuiltView(false);
-            case INVALID_SHIP_CHOICE -> choiceBuiltView(true);
             case COMPONENT_MENU -> newComponentView();
             case UNABLE_UNCOVERED_COMPONENT -> unableUncoveredView();
             case ADD_COMPONENT -> placeComponentView(false);
@@ -252,6 +250,7 @@ public class Gui extends Application implements View {
             case YOU_CAN_DRAW_CARD -> advStartedView(true);
             case NEW_CARD -> loadNewCard();
             case CARD_EFFECT -> {}
+            case IDLE -> {}
 
             default -> genericErrorView(state);
         }
@@ -542,7 +541,7 @@ public class Gui extends Application implements View {
 
             /* TESTING SECTION */
             Button loadShipBtn = new Button("Load built-in shipboard");
-            loadShipBtn.setOnAction(evt -> controller.setState(GameState.CHOICE_BUILT));
+            loadShipBtn.setOnAction(evt -> controller.builtDefault());
             shipRightColumn.getChildren().addAll(loadShipBtn);
             /* END TESTING SECTION */
 
@@ -680,38 +679,6 @@ public class Gui extends Application implements View {
             fillShipboard(idMatrix, rotationsMatrix, bookedComponents, cordToImageViews);
         }
         isComponentBoxClickable = true;
-    }
-
-    private void choiceBuiltView(boolean isError) {
-        Stage choiceBuiltStage = new Stage();
-        choiceBuiltStage.setTitle("Built view");
-        choiceBuiltStage.setResizable(false);
-        choiceBuiltStage.initModality(Modality.APPLICATION_MODAL);
-        VBox box = new VBox(10);
-        box.setAlignment(Pos.CENTER);
-        box.setPadding(new Insets(10, 10, 10, 10));
-        if (isError) {
-            Label errLabel = new Label("The previously chosen ship is no more available");
-            box.getChildren().add(errLabel);
-        }
-        List<Integer> list;
-        synchronized (controller.getFlyboardLock()) {
-            list = new ArrayList<>(controller.getFlyBoard().getAvailableConstructedShips());
-        }
-        HBox btnBox = new HBox(15);
-        btnBox.setAlignment(Pos.CENTER);
-        btnBox.setPadding(new Insets(30, 30, 30, 30));
-        for (Integer i : list) {
-            Button builtButton = new Button("Built " + i);
-            builtButton.setOnAction(event -> {
-                choiceBuiltStage.close();
-                controller.builtDefault();
-            });
-            btnBox.getChildren().add(builtButton);
-        }
-        box.getChildren().addAll(btnBox);
-        choiceBuiltStage.setScene(new Scene(box));
-        choiceBuiltStage.show();
     }
 
     /**
