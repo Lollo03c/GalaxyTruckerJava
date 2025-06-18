@@ -54,7 +54,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     protected final List<Player> players;
 
     private Map<Integer, Component> components = loadComponentMap();
-    protected Map<Integer, SldAdvCard> sldAdvCards = loadSldAdvCard();
+    protected Map<Integer, SldAdvCard> sldAdvCards;
 
     private SldAdvCard playedCard;
 
@@ -78,7 +78,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
         Collections.shuffle(coveredComponents);
 
-
+        sldAdvCards = loadSldAdvCard();
         deck = new ArrayList<>();
         deck.addAll(sldAdvCards.keySet());
         //deck.addAll(adventureCards.keySet());

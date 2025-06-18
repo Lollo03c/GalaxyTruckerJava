@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class SldStardust extends SldAdvCard{
-    public SldStardust(int level, int id) {
-        super(level, id);
+    public SldStardust(int id, int level) {
+        super(id, level);
     }
     @Override
     public String getCardName() {
@@ -25,7 +25,7 @@ public final class SldStardust extends SldAdvCard{
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
 
-        return new SldStardust(level, id);
+        return new SldStardust(id, level);
     }
 
     @Override
