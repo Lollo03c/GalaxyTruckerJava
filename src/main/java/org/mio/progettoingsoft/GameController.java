@@ -97,7 +97,6 @@ public class GameController {
             case CREW_REMOVE_CHOICE -> {
                 try{
                     client.setCardState(CardState.CREW_REMOVE_CHOICE);
-                    client.setState(GameState.CARD_EFFECT);
 
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -106,9 +105,7 @@ public class GameController {
 
             case DRILL_CHOICE -> {
                 try{
-
                     client.setCardState(CardState.DRILL_CHOICE);
-                    client.setState(GameState.CARD_EFFECT);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

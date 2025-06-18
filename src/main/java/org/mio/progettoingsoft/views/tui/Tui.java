@@ -146,8 +146,6 @@ public class Tui implements View {
                 controller.setState(GameState.ADD_COMPONENT);
             }
 
-            //case CREW_REMOVE_CHOICE -> crewRemove();
-
             case DRAW_CARD -> {
                 printWaitingTheLeader();
             }
@@ -268,7 +266,6 @@ public class Tui implements View {
             case COMPARING -> {
                 SldAdvCard card = controller.getPlayedCard();
                 switch (card){
-                    case SldSlavers sldSlavers -> drillChoice();
                     default -> System.out.println(" COMPARING NOT IMPLEMENTED FOR " + card.getCardName());
                 }
             }

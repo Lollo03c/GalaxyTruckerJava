@@ -23,7 +23,7 @@ public final class SldSlavers extends SldAdvCard {
         return "Slavers";
     }
 
-    public static SldSlavers loadSlaver(JsonNode node){
+    public static SldSlavers loadSlaver(JsonNode node) {
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
         int strength = node.path("strength").asInt();
@@ -43,34 +43,39 @@ public final class SldSlavers extends SldAdvCard {
     }
 
     @Override
-    public int getStrength(){return strength;}
+    public int getStrength() {
+        return strength;
+    }
 
     @Override
-    public int getCrewLost(){ return crewLost; }
+    public int getCrewLost() {
+        return crewLost;
+    }
 
     @Override
-    public int getCredits(){ return credits; }
+    public int getCredits() {
+        return credits;
+    }
 
     @Override
-    public int getDaysLost( ){return daysLost;}
+    public int getDaysLost() {
+        return daysLost;
+    }
 
 
-
-    public void init(GameServer game) {;
+    public void init(GameServer game) {
         this.game = game;
         this.flyBoard = game.getFlyboard();
         this.allowedPlayers = flyBoard.getScoreBoard();
         this.playerIterator = allowedPlayers.iterator();
-        this.state = CardState.COMPARING;
     }
 
     @Override
     public void setNextPlayer() {
         if (playerIterator.hasNext()) {
             actualPlayer = playerIterator.next();
-            setState(CardState.COMPARING);
-        }
-        else{
+            setState(CardState.DRILL_CHOICE);
+        } else {
             Logger.debug("the effect of SldSlavers is over");
             setState(CardState.FINALIZED);
         }
@@ -111,8 +116,8 @@ public final class SldSlavers extends SldAdvCard {
         return 0;
     }
 
-    public void applyEffect( Player player, boolean wantsToActivate, List<Cordinate> drillsCordinate) {
-        if (this.state != CardState.APPLYING && this.state!=CardState.COMPARING && this.state != CardState.DRILL_CHOICE) {
+    public void applyEffect(Player player, boolean wantsToActivate, List<Cordinate> drillsCordinate) {
+        if (this.state != CardState.APPLYING && this.state != CardState.COMPARING && this.state != CardState.DRILL_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
 
@@ -136,7 +141,6 @@ public final class SldSlavers extends SldAdvCard {
                 }
             }
 
-            this.state = CardState.APPLYING;
         }
 
         if (power > this.strength) {
@@ -153,7 +157,7 @@ public final class SldSlavers extends SldAdvCard {
     }
 
 
-    public void removeCrew( Player player, List<Cordinate> housingCordinatesList) {
+    public void removeCrew(Player player, List<Cordinate> housingCordinatesList) {
         Logger.debug("sono entrato nel metodo removeCrew di SldSlavers");
         if (this.state != CardState.CREW_REMOVE_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
@@ -183,20 +187,18 @@ public final class SldSlavers extends SldAdvCard {
     }
 
 
-
-
     // removes players with no crew remaining
     public void finish(FlyBoard board) {
         if (this.state != CardState.FINALIZED) {
             throw new IllegalStateException("Illegal state for 'finish': " + this.state);
         }
         List<Player> noCrewPlayers = new ArrayList<Player>();
-        for(Player p : board.getScoreBoard()){
-            if(p.getShipBoard().getQuantityGuests() == 0){
+        for (Player p : board.getScoreBoard()) {
+            if (p.getShipBoard().getQuantityGuests() == 0) {
                 noCrewPlayers.add(p);
             }
         }
-        if(!noCrewPlayers.isEmpty()){
+        if (!noCrewPlayers.isEmpty()) {
             // here the method should call a procedure or throw an exception to remove the players with no power
             throw new RuntimeException("There's at least a player with no crew, not implemented yet");
 

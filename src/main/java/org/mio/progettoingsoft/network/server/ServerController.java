@@ -212,21 +212,20 @@ public class ServerController {
         }
     }
 
-    public void takeBuild(int idGame, String nickname){
+    public void takeBuild(int idGame, String nickname) {
 
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         Player player = flyBoard.getPlayerByUsername(nickname);
 
         Logger.debug(nickname + " assigned to ship " + player.getColor());
-        try{
+        try {
             flyBoard.takeCostructedShip(player);
 
-            for (VirtualClient client : game.getClients().values()){
-                try{
+            for (VirtualClient client : game.getClients().values()) {
+                try {
                     client.setBuiltShip(nickname);
-                }
-                catch (Exception e ){
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -263,11 +262,11 @@ public class ServerController {
         VirtualClient client = game.getClients().get(nickname);
         try {
             flyBoard.addPlayerToCircuit(nickname, place);
-            for(VirtualClient c : game.getClients().values()) {
+            for (VirtualClient c : game.getClients().values()) {
                 try {
                     c.addOtherPlayerToCircuit(nickname, place);
                 } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    throw new RuntimeException(e);
                 }
             }
             state = GameState.END_BUILDING;
@@ -282,11 +281,11 @@ public class ServerController {
 
         try {
             client.setState(state);
-            if(flyBoard.isReadyToAdventure()) {
+            if (flyBoard.isReadyToAdventure()) {
                 VirtualClient c2 = game.getClients().get(flyBoard.getScoreBoard().getFirst().getNickname());
                 c2.setState(GameState.YOU_CAN_DRAW_CARD);
                 for (VirtualClient c : game.getClients().values()) {
-                    if(!c.equals(c2))
+                    if (!c.equals(c2))
                         c.setState(GameState.DRAW_CARD);
                 }
             }
@@ -296,11 +295,11 @@ public class ServerController {
 
     }
 
-    public void drawCard(int idGame, String nickname ){
+    public void drawCard(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         //controllo per vedere se il giocatore è il Leader
-        if(!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))){
+        if (!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))) {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
@@ -309,14 +308,13 @@ public class ServerController {
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
-        for (VirtualClient client : game.getClients().values()){
+        for (VirtualClient client : game.getClients().values()) {
             try {
                 client.setPlayedCard(card.getId());
                 //setto a tutti i client lo stato NEW_CARD, così la mostra a tutti poi lo switch in base al tipo
                 //di carta e al player lo fa il ClientController
                 client.setState(GameState.NEW_CARD);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -325,14 +323,14 @@ public class ServerController {
 
     }
 
-    public void activateDoubleEngine(int idGame, String  nickname, int number){
+    public void activateDoubleEngine(int idGame, String nickname, int number) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         SldAdvCard card = flyBoard.getPlayedCard();
-        Player player= flyBoard.getPlayerByUsername(nickname);
+        Player player = flyBoard.getPlayerByUsername(nickname);
 
 
-        switch (card){
+        switch (card) {
             case SldOpenSpace openSpace -> {
 
                 openSpace.applyEffect(player, number);
@@ -357,30 +355,30 @@ public class ServerController {
         }
     }
 
-    public void leaveFlight(int idGame, String nickname){
+    public void leaveFlight(int idGame, String nickname) {
         //TODO: this is only for testing of the circuit update, this must be replaced with the actual functionality
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         flyBoard.moveDays(flyBoard.getPlayerByUsername(nickname), 4);
 
-        for (String nick : game.getClients().keySet()){
+        for (String nick : game.getClients().keySet()) {
             VirtualClient client = game.getClients().get(nick);
             try {
-                client.advancePlayer(nickname, 4,0);
+                client.advancePlayer(nickname, 4, 0);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public void skipEffect(int idGame, String nickname, int idCard){
+    public void skipEffect(int idGame, String nickname, int idCard) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         SldAdvCard card = flyBoard.getPlayedCard();
 
-        if (idCard == card.getId() ){
+        if (idCard == card.getId()) {
             Logger.debug("Salto effetto carta " + idCard);
-            switch (card){
+            switch (card) {
                 case SldAbandonedShip abandonedShip -> {
                     abandonedShip.applyEffect(nickname, false, null);
                     card.setNextPlayer();
@@ -390,15 +388,15 @@ public class ServerController {
                     abandonedStation.setNextPlayer();
                 }
 
-                case SldSmugglers sldSmugglers ->{
+                case SldSmugglers sldSmugglers -> {
                     sldSmugglers.setNextPlayer();
                 }
 
-                case SldPlanets sldPlanets ->{
+                case SldPlanets sldPlanets -> {
                     card.notifyGoodsPlacementFinished(game.getFlyboard().getPlayerByUsername(nickname));
                     Logger.debug("ReadyToProceed: " + sldPlanets.getReadyToProceed());
                     Logger.debug("AllPlayersPlacedGoods: " + sldPlanets.allPlayersPlacedGoods());
-                    if(sldPlanets.getReadyToProceed() && sldPlanets.allPlayersPlacedGoods()){
+                    if (sldPlanets.getReadyToProceed() && sldPlanets.allPlayersPlacedGoods()) {
                         card.applyEffect();
                     }
                 }
@@ -406,35 +404,34 @@ public class ServerController {
                 default -> Logger.error("carta non implementata - per salto effetto");
             }
             //if(!(card instanceof SldPlanets))
-                //card.setNextPlayer();
+            //card.setNextPlayer();
         }
     }
 
-    public void applyEffect(int idGame, String nickname){
+    public void applyEffect(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
         Player player = game.getFlyboard().getPlayerByUsername(nickname);
 
-        switch (card){
-            case SldAbandonedStation abandonedStation ->
-                abandonedStation.applyEffect(player, true);
+        switch (card) {
+            case SldAbandonedStation abandonedStation -> abandonedStation.applyEffect(player, true);
 
             default -> Logger.error("effetto carta non applicabile");
         }
     }
 
-    public void removeCrew(int idGame, String nickname, List<Cordinate> cordToRemove){
+    public void removeCrew(int idGame, String nickname, List<Cordinate> cordToRemove) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
         SldAdvCard card = flyBoard.getPlayedCard();
 
-        switch (card){
-            case SldAbandonedShip abandonedShip ->{
+        switch (card) {
+            case SldAbandonedShip abandonedShip -> {
                 abandonedShip.applyEffect(nickname, true, cordToRemove);
 
-                for (VirtualClient client : game.getClients().values()){
-                    try{
+                for (VirtualClient client : game.getClients().values()) {
+                    try {
                         client.removeCrew(nickname, cordToRemove);
                         //commento perchè ho modificato con i listener il model di add credits
                         //client.addCredits(nickname, card.getCredits());
@@ -446,11 +443,11 @@ public class ServerController {
 
             }
 
-            case SldSlavers sldSlavers ->{
+            case SldSlavers sldSlavers -> {
                 Player player = flyBoard.getPlayerByUsername(nickname);
-                sldSlavers.removeCrew(player,cordToRemove);
-                for (VirtualClient client : game.getClients().values()){
-                    try{
+                sldSlavers.removeCrew(player, cordToRemove);
+                for (VirtualClient client : game.getClients().values()) {
+                    try {
                         client.removeCrew(nickname, cordToRemove);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -462,13 +459,13 @@ public class ServerController {
         }
     }
 
-    public void addGood(int idGame, String nickname, int idComp, GoodType type){
+    public void addGood(int idGame, String nickname, int idComp, GoodType type) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         game.getFlyboard().getComponentById(idComp).addGood(type);
 
         for (VirtualClient client : game.getClients().values()) {
 
-            try{
+            try {
                 client.addGood(idComp, type);
                 client.removeGoodPendingList(nickname, type);
 
@@ -477,19 +474,19 @@ public class ServerController {
             }
         }
 
-        try{
+        try {
             game.getClients().get(nickname).setState(GameState.GOODS_PLACEMENT);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeGood(int idGame, String nickname, int idComp, GoodType type){
+    public void removeGood(int idGame, String nickname, int idComp, GoodType type) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         game.getFlyboard().getComponentById(idComp).removeGood(type);
 
-        for (VirtualClient client : game.getClients().values()){
-            try{
+        for (VirtualClient client : game.getClients().values()) {
+            try {
                 client.removeGood(idComp, type);
                 client.addGoodPendingList(nickname, type);
             } catch (Exception e) {
@@ -504,7 +501,7 @@ public class ServerController {
         }
     }
 
-    public void landOnPlanet(int idGame, String nickname, int choice){
+    public void landOnPlanet(int idGame, String nickname, int choice) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         Player player = game.getFlyboard().getPlayerByUsername(nickname);
         Logger.debug("player " + nickname + " land on planet number " + choice);
@@ -514,60 +511,56 @@ public class ServerController {
 
         VirtualClient c = game.getClients().get(nickname);
 
-        if(choice != -1){
-            for (VirtualClient client : game.getClients().values()){
+        if (choice != -1) {
+            for (VirtualClient client : game.getClients().values()) {
                 try {
-                    client.setPlayerOnPlanet(nickname, choice );
-                }
-                catch (Exception e){
+                    client.setPlayerOnPlanet(nickname, choice);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-        if(choice != -1) {
+        if (choice != -1) {
             try {
                 c.setState(GameState.GOODS_PLACEMENT);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        Logger.debug("numero giocatori passati "   + passedPlayers);
-        if( passedPlayers == game.getNumPlayers() || card.getLandedPlayers().size() == card.getPlanets().size() ) {
+        Logger.debug("numero giocatori passati " + passedPlayers);
+        if (passedPlayers == game.getNumPlayers() || card.getLandedPlayers().size() == card.getPlanets().size()) {
             card.setReadyToProceed(true);
-        }else {
+        } else {
             card.setNextPlayer();
         }
-        if(game.getFlyboard().getScoreBoard().getLast().equals(player) && choice == -1 && card.allPlayersPlacedGoods()){
+        if (game.getFlyboard().getScoreBoard().getLast().equals(player) && choice == -1 && card.allPlayersPlacedGoods()) {
             card.applyEffect();
         }
 
     }
 
-    public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates){
+    public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
 
-        switch (card){
+        switch (card) {
             case SldSmugglers sldSmugglers -> {
                 Logger.debug(nickname + drillCordinates);
                 Player player = game.getFlyboard().getPlayerByUsername(nickname);
                 sldSmugglers.applyEffect(player, true, drillCordinates);
 
-                if (sldSmugglers.isStealGoods()){
+                if (sldSmugglers.isStealGoods()) {
                     stealGoods(game, player, sldSmugglers.getStolenGoods());
                     sldSmugglers.setNextPlayer();
-                }
-                else if (sldSmugglers.isGiverReward()){
+                } else if (sldSmugglers.isGiverReward()) {
                     VirtualClient client = game.getClients().get(nickname);
-                    try{
+                    try {
 
                         client.setState(GameState.GOODS_PLACEMENT);
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                }
-                else{
+                } else {
                     sldSmugglers.setNextPlayer();
                 }
             }
@@ -576,28 +569,28 @@ public class ServerController {
         }
     }
 
-    public void activateSlaver(int idGame, String nickname, List<Cordinate> activatedDrills, boolean wantsToActivate){
+    public void activateSlaver(int idGame, String nickname, List<Cordinate> activatedDrills, boolean wantsToActivate) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
-        Logger.debug("player: " + nickname + " ha attivato "+ activatedDrills+ " doppicannoni");
+        Logger.debug("player: " + nickname + " ha attivato " + activatedDrills + " doppicannoni");
         Player player = game.getFlyboard().getPlayerByUsername(nickname);
-        switch(card){
+        switch (card) {
             case SldSlavers sldSlavers -> {
-                sldSlavers.applyEffect(player,wantsToActivate,activatedDrills);
+                sldSlavers.applyEffect(player, wantsToActivate, activatedDrills);
             }
             default -> Logger.error("effetto carta non consentito");
         }
     }
 
 
-    private void stealGoods(GameServer game, Player player, int numberStolenGoods){
+    private void stealGoods(GameServer game, Player player, int numberStolenGoods) {
         Logger.debug(player.getNickname() + "steal goods");
         Map<Integer, List<GoodType>> stolenGoods = player.getShipBoard().stoleGood(numberStolenGoods);
 
-        for (Integer idComp : stolenGoods.keySet()){
-            for (GoodType type : stolenGoods.get(idComp)){
-                for (VirtualClient client : game.getClients().values()){
-                    try{
+        for (Integer idComp : stolenGoods.keySet()) {
+            for (GoodType type : stolenGoods.get(idComp)) {
+                for (VirtualClient client : game.getClients().values()) {
+                    try {
                         client.removeGood(idComp, type);
                     } catch (Exception e) {
                         throw new RuntimeException(e);

@@ -95,11 +95,12 @@ public class ClientController {
 
         if (oldState == null || !oldState.equals(state)) {
             support.firePropertyChange("gameState", oldState, state);
+
+        } else {
+            support.firePropertyChange("gameState", oldState, GameState.IDLE);
+            support.firePropertyChange("gameState", GameState.IDLE, state);
         }
-        else if (oldState.equals(state)){
-            support.firePropertyChange(new PropertyChangeEvent(this, "gameState", oldState, state));
-        }
-        Logger.debug("GameState: " + oldState + " -> " + state+ "il corrente CardState: " + cardState);
+        Logger.debug("GameState: " + oldState + " -> " + state);
     }
 
     public GameState getState() {
@@ -110,17 +111,12 @@ public class ClientController {
 
     public void setCardState(CardState state) {
         CardState oldState;
+        synchronized (cardStateLock) {
+            oldState = this.cardState;
+            this.cardState = state;
+        }
         synchronized (stateLock) {
-            if (this.getState() != GameState.CARD_EFFECT)
-                setState(GameState.CARD_EFFECT);
-
-            synchronized (cardStateLock) {
-                oldState = this.cardState;
-                this.cardState = state;
-
-//            if(this.getState() != GameState.CARD_EFFECT)
-                setState(GameState.CARD_EFFECT);
-            }
+            setState(GameState.CARD_EFFECT);
         }
         if (oldState != state) {
             support.firePropertyChange("cardState", oldState, state);
@@ -421,7 +417,7 @@ public class ClientController {
     public void landOnPlanet(int choice) {
         try {
             server.landOnPlanet(idGame, nickname, choice);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -530,9 +526,7 @@ public class ClientController {
                 shipBoard = flyBoard.getPlayerByUsername(nick).getShipBoard();
 
                 Logger.debug(nick + " " + color + "assegnato");
-                setState(GameState.BUILDING_SHIP);
-            }
-            else {
+            } else {
                 //il ramo di else serve per non creare bug
                 Logger.debug(nick + " " + color);
                 flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(color));
@@ -581,13 +575,13 @@ public class ClientController {
     public List<GoodType> getPlanetGoods() {
         Player player;
         List<GoodType> toInsert = new ArrayList<>();
-        synchronized (flyboardLock){
+        synchronized (flyboardLock) {
             player = flyBoard.getPlayerByUsername(nickname);
         }
-        synchronized (cardLock){
+        synchronized (cardLock) {
             toInsert = card.getPlanets().stream()
                     .filter(p -> p.getPlayer().isPresent() && p.getPlayer().get().equals(player))
-                    .map(x->x.getGoods())
+                    .map(x -> x.getGoods())
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
         }
@@ -619,15 +613,15 @@ public class ClientController {
         }
     }
 
-    public void skipEffect(){
-        try{
+    public void skipEffect() {
+        try {
             server.skipEffect(idGame, nickname, card.getId());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeCrew(List<Cordinate> cordinatesToRemove){
+    public void removeCrew(List<Cordinate> cordinatesToRemove) {
         try {
             server.crewRemove(idGame, nickname, cordinatesToRemove);
         } catch (Exception e) {
@@ -635,78 +629,77 @@ public class ClientController {
         }
     }
 
-    public void addGood(int idComp, GoodType type){
+    public void addGood(int idComp, GoodType type) {
         setCardState(CardState.IDLE);
 
 
-        try{
+        try {
             server.addGood(idGame, nickname, idComp, type);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void addGoodToModel(int idComp, GoodType type){
-        synchronized (flyboardLock){
+    public void addGoodToModel(int idComp, GoodType type) {
+        synchronized (flyboardLock) {
             flyBoard.getComponentById(idComp).addGood(type);
         }
     }
 
-    public void removePendingGood(String nick, GoodType type){
-        if (nick.equals(nickname)){
+    public void removePendingGood(String nick, GoodType type) {
+        if (nick.equals(nickname)) {
             goodsToInsert.remove(type);
         }
     }
 
-    public void removeGood(int idComp, GoodType type){
+    public void removeGood(int idComp, GoodType type) {
         setCardState(CardState.IDLE);
 
-        try{
+        try {
             server.removeGood(idGame, nickname, idComp, type);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeGoodFromModel(int idComp, GoodType type){
-        synchronized (flyboardLock){
+    public void removeGoodFromModel(int idComp, GoodType type) {
+        synchronized (flyboardLock) {
             Logger.debug(type + "removed from " + idComp);
             flyBoard.getComponentById(idComp).removeGood(type);
         }
     }
 
-    public void addPendingGood(String nick, GoodType type){
+    public void addPendingGood(String nick, GoodType type) {
         if (nick.equals(nickname))
             goodsToInsert.add(type);
     }
 
-    public void setPlayerOnPlanet( String nickname, int choice){
-        synchronized (cardLock){
+    public void setPlayerOnPlanet(String nickname, int choice) {
+        synchronized (cardLock) {
             Player player = flyBoard.getPlayerByUsername(nickname);
             card.getPlanets().get(choice).land(player);
         }
     }
 
-    public void applyEffect(){
-        try{
+    public void applyEffect() {
+        try {
             server.applyEffect(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void activateDoubleDrills(List<Cordinate> drillsCordinate){
-        try{
+    public void activateDoubleDrills(List<Cordinate> drillsCordinate) {
+        try {
             server.activateDoubleDrills(idGame, nickname, drillsCordinate);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate){
-        try{
-            server.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
+    public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate) {
+        try {
+            server.activateSlaver(idGame, nickname, activatedDrills, wantsToActivate);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
