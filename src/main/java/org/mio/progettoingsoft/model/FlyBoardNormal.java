@@ -198,17 +198,6 @@ public class FlyBoardNormal extends FlyBoard {
 
         try {
             //File cardsFile = new File(getClass().getResource("/advCards.json").toExternalForm());
-            try (InputStream is = getClass().getResourceAsStream("/advCards.json")) {
-                if (is == null) {
-                    System.out.println("File advCards.json non trovato nelle risorse!");
-                } else {
-                    String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-                    System.out.println("Contenuto advCards.json letto:");
-                    System.out.println(content);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             JsonNode rootNode = mapper.readTree(getClass().getResourceAsStream("/advCards.json"));
 
             for (int i = 0; i < rootNode.size(); i++) {
@@ -268,13 +257,6 @@ public class FlyBoardNormal extends FlyBoard {
         for (SldAdvCard card : loadedCards){
             advCardsMap.put(card.getId(), card);
         }
-        for( SldAdvCard card : advCardsMap.values()){
-            System.out.println(card.getCardName() + " , id : " + card.getId());
-        }
-        System.out.println("prova");
-        SldAdvCard card = advCardsMap.get(1);
-        System.out.println(card.getClass().getSimpleName());  // Che stampa?
-        System.out.println(card.getCardName());
 
         return advCardsMap;
     }

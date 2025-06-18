@@ -1007,6 +1007,7 @@ public class Tui implements View {
                     boolean wantsToActivate = false;
                     System.out.println(" You selected" + activatedDrills.size() + " double drills");
                     double playerStrength = power + 2* activatedDrills.size();
+                    Logger.debug("playerStrength: " + playerStrength + " cardStrength" + card.getStrength());
                     int cardStrength = card.getStrength();
                     if(playerStrength > cardStrength){
                         System.out.println("Your fire power is higher than the one of the card, Do you want to get the credits?");
@@ -1023,7 +1024,10 @@ public class Tui implements View {
                     }
                     controller.activateSlaver(activatedDrills,wantsToActivate);
                 }
-                default -> {controller.activateDoubleDrills(activatedDrills);}
+                default -> {
+                    controller.activateDoubleDrills(activatedDrills);
+                    Logger.debug("sono entrato nel default branch");
+                }
             }
         }
 

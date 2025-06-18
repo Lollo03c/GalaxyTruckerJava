@@ -142,7 +142,7 @@ public final class SldSlavers extends SldAdvCard {
             }
 
         }
-
+        Logger.debug("il player " + player.getNickname()+" ha una potenza pari a " + power + " , la potenza della carta :" +strength);
         if (power > this.strength) {
             if (wantsToActivate) {
                 flyBoard.moveDays(actualPlayer, -this.daysLost);
