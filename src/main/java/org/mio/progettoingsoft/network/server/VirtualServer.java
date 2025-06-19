@@ -46,5 +46,5 @@ public interface VirtualServer extends Remote {
     void removeBattery(int idGame, String nickname, int quantity) throws Exception;
     void advanceMeteor(int idGame, String nickname) throws Exception;
     void removeComponent(int idGame, String nickname, Cordinate cordinate) throws Exception;
-
+    void startHourglass(int idGame) throws Exception;
 }

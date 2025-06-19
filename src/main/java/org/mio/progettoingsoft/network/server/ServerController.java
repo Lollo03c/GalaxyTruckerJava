@@ -12,6 +12,9 @@ import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.*;
+import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.FlyBoardNotifiable;
+import org.mio.progettoingsoft.model.Hourglass;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
@@ -682,6 +685,12 @@ public class ServerController {
             default -> Logger.error("Effect not taken");
         }
 
+    }
+
+    public void startHourglass(int idGame){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        Hourglass hourglass = new Hourglass(game);
+        hourglass.avvia();
     }
 
     public void removeComponent(int idGame, String nickname, Cordinate cord){

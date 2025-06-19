@@ -34,6 +34,15 @@ public class ClientController {
     private int tempIdClient;
     private VirtualServer server;
     private final ConnectionInfo connectionInfo;
+    private boolean hourglassStarted = false;
+    private int hourglassCounter = 0;
+    private boolean pendingHourglass = false;
+
+    public int getHourglassCounter(){
+        return hourglassCounter;
+    }
+
+
 
     private ClientController(ConnectionInfo connectionInfo) {
         this.setState(GameState.START);
@@ -378,6 +387,15 @@ public class ClientController {
         }
     }
 
+    public void startHourglass() {
+        try{
+            pendingHourglass = true;
+            server.startHourglass(idGame);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     public void handleNickname(String nickname) {
         try {
             server.handleNickname(tempIdClient, nickname);
@@ -421,6 +439,13 @@ public class ClientController {
             }
         } else if (chosen == 7) {
             setState(GameState.CHOICE_BUILT);
+        } else if (chosen == 8) {
+            try {
+                server.startHourglass(idGame);
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+            setState(GameState.BUILDING_SHIP);
         }
     }
 

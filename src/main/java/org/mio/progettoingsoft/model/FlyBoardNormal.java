@@ -16,11 +16,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FlyBoardNormal extends FlyBoard {
-
+public class FlyBoardNormal extends FlyBoard  {
     public FlyBoardNormal(Set<String> nicknames){
         super(GameMode.NORMAL, nicknames);
     }
+
+
 
     public static int indexToPosition(int index) {
         int i;

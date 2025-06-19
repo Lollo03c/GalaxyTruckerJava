@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
@@ -103,6 +104,14 @@ public class Tui implements View {
 
             case CHOICE_BUILT -> {
                 chooseBuiltShip();
+            }
+
+            case FINISH_HOURGLASS -> {
+                System.out.println("Hourglass has finished its cycle number : " + controller.getHourglassCounter());
+            }
+
+            case FINISH_LAST_HOURGLASS -> {
+                //todo implementare logica secondo la quale la costruzione viene stoppata
             }
 
             case INVALID_SHIP_CHOICE -> {
@@ -448,14 +457,18 @@ public class Tui implements View {
      * Message to show building ship menu
      */
     private void buildingShipMenu() {
+        GameMode mode = controller.getFlyBoard().getMode();
         if (firstBuilding) {
             printStartGameInfo();
             System.out.println(BLUE + "It's time to build your ship!" + RESET);
             firstBuilding = false;
+            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partita
+            if(controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE)  && mode.equals(GameMode.NORMAL)){
+                controller.startHourglass();
+            }
         }
         int choice = -1;
         String input = "";
-        GameMode mode = controller.getFlyBoard().getMode();
 
         System.out.println("1 : Pick covered component");
         System.out.println("2 : Pick uncovered component");
@@ -466,6 +479,7 @@ public class Tui implements View {
             System.out.println("5 : Look at decks");
             System.out.println("6 : End ship building");
             System.out.println("7 : Load automatic shipboard");
+            System.out.println("8 : Rotate hourglass");
         } else {
             System.out.println("5 : end building ship");
         }
@@ -478,7 +492,7 @@ public class Tui implements View {
 
             if (choice < 1) {
                 throw new Exception("");
-            } else if (mode.equals(GameMode.NORMAL) && choice > 7) {
+            } else if (mode.equals(GameMode.NORMAL) && choice > 8) {
                 throw new Exception("");
             } else if (mode.equals(GameMode.EASY) && choice > 5) {
                 throw new Exception("");

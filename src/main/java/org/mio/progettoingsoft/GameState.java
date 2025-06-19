@@ -20,7 +20,7 @@ public enum GameState implements Serializable {
 
     ENGINE_CHOICE, GOODS_PLACEMENT, DRILL_CHOICE,
 
-    WAITING_ROLL, DICE_ROLL
+    WAITING_ROLL, DICE_ROLL, FINISH_HOURGLASS, FINISH_LAST_HOURGLASS
     ;
 
     public static GameState stringToGameState(String string){

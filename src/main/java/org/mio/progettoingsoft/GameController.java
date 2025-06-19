@@ -10,6 +10,7 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,6 +64,22 @@ public class GameController {
                     }
                 }
             });
+        }
+    }
+
+    public void finishHourglass(int numeroAttivazione) {
+        List<VirtualClient> clients =game.getClients().values().stream().toList();
+        for (VirtualClient client : clients){
+            try {
+                if(numeroAttivazione == 3){
+                    client.setState(GameState.FINISH_LAST_HOURGLASS);
+                }
+                else {
+                    client.setState(GameState.FINISH_HOURGLASS);
+                }
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
         }
     }
 

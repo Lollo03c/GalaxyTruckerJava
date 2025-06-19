@@ -243,6 +243,14 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         });
     }
 
+    @Override
+    public void startHourglass(int idGame) throws RemoteException{
+        executors.submit(() -> {
+            controller.startHourglass(idGame);
+        });
+    }
+
+
 
 
 }

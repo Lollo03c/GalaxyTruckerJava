@@ -193,6 +193,13 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
+    @Override
+    public void startHourglass(int idGame) throws IOException{
+        Message message = new StartHourglassMessage(idGame, " wesh ");
+        sendMessage(message);
+    }
+
+
     /**
      * utility method used to send messages to the server
      *
