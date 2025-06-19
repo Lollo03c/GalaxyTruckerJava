@@ -4,13 +4,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.MeteorSwarm;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class SldMeteorSwarm extends SldAdvCard{
     private final List<Meteor> meteors;
+    private Iterator<Meteor> meteorIterator;
+    private Meteor actualMeteor;
+
     public SldMeteorSwarm(int id, int level, List<Meteor> meteors) {
         super(id, level);
         this.meteors = meteors;
@@ -35,8 +40,13 @@ public final class SldMeteorSwarm extends SldAdvCard{
 
     @Override
     public void init(GameServer game) {
-        FlyBoard board = game.getFlyboard();
+        this.game  = game;
+        this.flyBoard = game.getFlyboard();
 
+        allowedPlayers = new ArrayList<>(flyBoard.getScoreBoard());
+        playerIterator = allowedPlayers.iterator();
+
+        meteorIterator = meteors.iterator();
     }
 
     @Override
@@ -46,6 +56,33 @@ public final class SldMeteorSwarm extends SldAdvCard{
 
     @Override
     public void finish(FlyBoard board) {
+
+    }
+
+    public void setNextMeteor(){
+        if (meteorIterator.hasNext()){
+            actualMeteor = meteorIterator.next();
+            setState(CardState.DICE_ROLL);
+        }
+        else{
+            setState(CardState.FINALIZED);
+        }
+    }
+
+    public Meteor getActualMeteor(){
+        return actualMeteor;
+    }
+
+    public void setNextMeteor(String nick){
+        if (!flyBoard.getPlayers().contains(nick))
+            throw new IncorrectFlyBoardException("no player found");
+
+        if (actualMeteor.getPlayerResponses().contains(nick))
+            throw new IncorrectFlyBoardException("player has already answered");
+
+        actualMeteor.addPlayerResponses(nick);
+        if (actualMeteor.getPlayerResponses().size() == flyBoard.getPlayers().size())
+            setNextMeteor();
 
     }
 }

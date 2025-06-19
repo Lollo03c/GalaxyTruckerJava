@@ -169,6 +169,23 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
+    @Override
+    public void setRollResult(int idGame, String nickname, int number) throws IOException{
+        Message message = new RollDiceMessage(idGame, nickname, number);
+        sendMessage(message);
+    }
+
+    @Override
+    public void removeBattery(int idGame, String nickname, int quantity) throws IOException{
+        Message message = new BatteryMessage(idGame, nickname, quantity);
+        sendMessage(message);
+    }
+
+    @Override
+    public void advanceMeteor(int idGame, String nickname) throws IOException{
+        Message message = new AdvanceMeteorMessage(idGame, nickname);
+        sendMessage(message);
+    }
 
 
     /**

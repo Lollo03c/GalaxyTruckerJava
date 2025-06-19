@@ -116,6 +116,18 @@ public class ServerMessageHandler implements Runnable {
                         serverController.activateSlaver(activateSlaversMessage.getGameId(), activateSlaversMessage.getNickname(), activateSlaversMessage.getActivatedDrills(),activateSlaversMessage.getWantsToActivate());
                     }
 
+                    case RollDiceMessage rollDiceMessage -> {
+                        serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getNumber());
+                    }
+
+                    case BatteryMessage batteryMessage -> {
+                        serverController.removeBattery(batteryMessage.getGameId(), batteryMessage.getNickname(), batteryMessage.getQuantity());
+                    }
+
+                    case AdvanceMeteorMessage advanceMeteorMessage -> {
+                        serverController.advanceMeteor(advanceMeteorMessage.getGameId(), advanceMeteorMessage.getNickname());
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito lato server");
                     }

@@ -740,6 +740,21 @@ public abstract class ShipBoard {
         return drillCords;
     }
 
+    public boolean coveredByShield(Direction direction){
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            if (getOptComponentByCord(cord).isEmpty())
+                continue;
+            Component comp = getOptComponentByCord(cord).get();
+            if (comp.getShieldDirections().contains(direction))
+                return true;
+        }
+
+        return false;
+    }
+
 
 }
 

@@ -128,6 +128,29 @@ public class GameController {
                 }
             }
 
+            case DICE_ROLL -> {
+                String leaderNickname = game.getFlyboard().getScoreBoard().getFirst().getNickname();
+                Map<String, VirtualClient> clients = game.getClients();
+
+                for (String nick : clients.keySet() ){
+                    if (nick.equals(leaderNickname)){
+                        try{
+                            clients.get(nick).setCardState(CardState.DICE_ROLL);
+                        }
+                        catch (Exception e){
+
+                        }
+                    }
+                    else{
+                        try {
+                            clients.get(nick).setCardState(CardState.WAITING_ROLL);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+
             case FINALIZED -> {
                 Map<String,VirtualClient> clients = game.getClients();
 

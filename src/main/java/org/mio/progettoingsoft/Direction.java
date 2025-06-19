@@ -1,6 +1,8 @@
 package org.mio.progettoingsoft;
 
-public enum Direction {
+import java.io.Serializable;
+
+public enum Direction implements Serializable {
     FRONT, BACK, RIGHT, LEFT;
 
     public Direction getOpposite(){

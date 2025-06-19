@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
@@ -11,6 +12,7 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.network.client.rmi.RmiClient;
 import org.mio.progettoingsoft.network.client.socket.SocketClient;
 import org.mio.progettoingsoft.network.server.VirtualServer;
@@ -75,6 +77,7 @@ public class ClientController {
     private List<Integer> availablePlacesOnCircuit;
 
     private List<GoodType> goodsToInsert = new ArrayList<>();
+    private Meteor meteor;
 
     private String choiceErrorMessage;
 
@@ -196,6 +199,10 @@ public class ClientController {
         synchronized (shipboardLock) {
             return shipBoard;
         }
+    }
+
+    public Meteor getMeteor() {
+        return meteor;
     }
 
     public void increaseTmpRotation() {
@@ -715,6 +722,67 @@ public class ClientController {
     public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate) {
         try {
             server.activateSlaver(idGame, nickname, activatedDrills, wantsToActivate);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setRollResult(int number){
+        try{
+            server.setRollResult(idGame, nickname, number);
+        }
+        catch (Exception e){
+
+        }
+    }
+
+    public void meteorHit(MeteorType type, Direction direction, int number){
+        meteor = new Meteor(direction, type);
+        meteor.setNumber(number);
+
+        Optional<Cordinate> optCordinateHit = meteor.findHit(shipBoard, number);
+        if (optCordinateHit.isEmpty())
+            return;
+        Cordinate cordinateHit = optCordinateHit.get();
+        Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
+
+        meteor.setCordinateHit(cordinateHit);
+
+        if (meteor.getType().equals(MeteorType.SMALL)){
+            if (componentHit.getConnector(direction).equals(Connector.FLAT)){
+                advanceMeteor();
+                //flat connector, no effect
+                return;
+            }
+            else{
+                setCardState(CardState.SHIELD_SELECTION);
+            }
+        }
+        else{
+
+        }
+    }
+
+    public void removeBattery(int quantity){
+        try{
+            server.removeBattery(idGame, nickname, quantity);
+        }
+        catch (Exception e){
+            throw new RuntimeException("");
+        }
+    }
+
+    public void removeBatteriesFromModel(List<Integer> batteryDepotId){
+        synchronized (flyBoard){
+            for (int id : batteryDepotId){
+                flyBoard.getComponentById(id).removeOneEnergy();
+            }
+        }
+    }
+
+    public void advanceMeteor(){
+        try{
+            server.advanceMeteor(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

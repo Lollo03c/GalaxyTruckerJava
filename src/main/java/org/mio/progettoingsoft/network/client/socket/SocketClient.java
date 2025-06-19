@@ -180,6 +180,18 @@ public class SocketClient implements Client {
                         });
                     }
 
+                    case MeteorMessage meteorMessage -> {
+                        executor.submit(() -> {
+                            controller.meteorHit(meteorMessage.getType(), meteorMessage.getDirection(), meteorMessage.getNumber());
+                        });
+                    }
+
+                    case BatteryMessage batteryMessage -> {
+                        executor.submit(() -> {
+                            controller.removeBatteriesFromModel(batteryMessage.getBatteryDepotId());
+                        });
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito");
                     }

@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.advCards;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.model.enums.MeteorType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Optional;
 public class SmallMeteor extends Meteor {
 
     public SmallMeteor(Direction direction) {
-        super(direction);
+        super(direction, MeteorType.SMALL);
     }
     @Override
     public String toString(){
@@ -23,25 +24,25 @@ public class SmallMeteor extends Meteor {
 //        if(board.isExposed(player.getShipBoard().getComponent(row, col), adjacent, this.direction)){
 //            //da capire come chiedere al player se vuole utilizzare lo scudo
 //        }
-        Optional<Component> hitComponent = findHit(player, value);
-        ShipBoard shipBoard = player.getShipBoard();
-
-        if (hitComponent.isEmpty())
-            return;
-
-        Component comp = hitComponent.get();
-        if (comp.getConnector(direction).equals(Connector.FLAT))
-            return;
-
-
-        boolean activateShield = true; //player.getView().askShield(direction);
-
-        if (activateShield){
-//            shipBoard.removeEnergy();
-        }
-        else{
-//            shipBoard.removeComponent(comp);
-        }
+//        Optional<Component> hitComponent = findHit(player, value);x
+//        ShipBoard shipBoard = player.getShipBoard();
+//
+//        if (hitComponent.isEmpty())
+//            return;
+//
+//        Component comp = hitComponent.get();
+//        if (comp.getConnector(direction).equals(Connector.FLAT))
+//            return;
+//
+//
+//        boolean activateShield = true; //player.getView().askShield(direction);
+//
+//        if (activateShield){
+////            shipBoard.removeEnergy();
+//        }
+//        else{
+////            shipBoard.removeComponent(comp);
+//        }
 
     }
 }

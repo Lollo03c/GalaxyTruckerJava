@@ -235,7 +235,7 @@ public abstract class Component {
     }
 
     public List<Direction> getShieldDirections(){
-        return null;
+        return Collections.emptyList();
     }
 
     public Connector getConnector(Direction dir){

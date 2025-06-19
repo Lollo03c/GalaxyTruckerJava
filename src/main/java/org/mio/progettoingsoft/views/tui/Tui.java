@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.views.tui;
 
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
@@ -157,6 +158,8 @@ public class Tui implements View {
             case CARD_EFFECT -> cardEffect();
 
             case GOODS_PLACEMENT -> goodPlacement();
+
+
         }
     }
 
@@ -269,6 +272,12 @@ public class Tui implements View {
                     default -> System.out.println(" COMPARING NOT IMPLEMENTED FOR " + card.getCardName());
                 }
             }
+
+            case DICE_ROLL -> rollDice();
+
+            case WAITING_ROLL -> waitingRoll();
+
+            case SHIELD_SELECTION -> shieldSelection();
 
             case FINALIZED -> {
 
@@ -832,9 +841,11 @@ public class Tui implements View {
 
         System.out.println("To select a guest enter the associated row and column");
         controller.getShipBoard().drawShipboard();
+        ShipBoard shipBoard = controller.getShipBoard();
+        int removed = 0;
 
-        for (int i = 0; i < toRemove; i++) {
-            System.out.println("\nCrew member #" + i + 1);
+        while (removed < toRemove){
+            System.out.println("\nCrew member #" + removed + 1);
             String input = "";
             int row = 0;
             while (row < 5 || row > 9) {
@@ -874,7 +885,22 @@ public class Tui implements View {
             int offsetRow = controller.getShipBoard().getOffsetRow();
             int offsetCol = controller.getShipBoard().getOffsetCol();
 
+            Cordinate cord = new Cordinate(row - offsetRow, column - offsetCol);
+            if (shipBoard.getOptComponentByCord(cord).isEmpty()) {
+                System.out.println("Invalid cordinate");
+                continue;
+            }
+            if (shipBoard.getOptComponentByCord(cord).get().getGuests().isEmpty()){
+                System.out.println("This component has no guest to eliminate");
+                continue;
+            }
+            if (shipBoard.getOptComponentByCord(cord).get().getGuests().size() == (int)crewPositionsToRemove.stream().filter(c -> c.equals(cord)).count()){
+                System.out.println("This component has no guests reamining to eliminate");
+                continue;
+            }
+
             crewPositionsToRemove.add(new Cordinate(row - offsetRow, column - offsetCol));
+            removed++;
         }
 
         controller.removeCrew(crewPositionsToRemove);
@@ -1029,7 +1055,58 @@ public class Tui implements View {
                 }
             }
         }
+    }
 
+    private void rollDice(){
+        System.out.println("You are the leader. Press enter to roll the dices");
+        String pressed = scanner.nextLine();
+
+        Random random = new Random();
+        int first = random.nextInt(6) + 1;
+        int second = random.nextInt(6) + 1;
+
+
+        controller.setRollResult(first + second);
+    }
+
+    private void waitingRoll(){
+        System.out.println("Waiting for the leader to roll the dices");
+    }
+
+    private void shieldSelection(){
+        SldAdvCard card = controller.getPlayedCard();
+        ShipBoard shipBoard = controller.getShipBoard();
+
+        switch (card){
+            case SldMeteorSwarm meteorSwarm -> {
+                Meteor meteor = controller.getMeteor();
+
+                System.out.println("Expoxed connector on " + meteor.getCordinateHit());
+                boolean possibleToActivate = shipBoard.getQuantBatteries() > 0 && shipBoard.coveredByShield(meteor.getDirection());
+
+                if (possibleToActivate){
+                    String choice = "";
+                    while (choice.equals("")) {
+                        System.out.println("Activate a shield to protect (y/n) : ");
+                        choice = scanner.nextLine().trim().toLowerCase();
+
+                        if (!(choice.equals("y") || choice.equals("n"))){
+                            choice = "";
+                            continue;
+                        }
+
+                        if (choice.equals("y")){
+                            controller.removeBattery(1);
+                        }
+
+                        controller.advanceMeteor();
+                    }
+
+                }
+            }
+
+            default -> Logger.error("no effect");
+        }
     }
 
 //        try{

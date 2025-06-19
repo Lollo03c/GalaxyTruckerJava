@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
@@ -12,6 +13,7 @@ import org.mio.progettoingsoft.advCards.sealed.SldOpenSpace;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.enums.GameInfo;
+import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.messages.ApplyEffectMessage;
@@ -313,7 +315,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(5);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(26);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -329,7 +331,15 @@ public class ServerController {
             }
         }
         card.init(game);
-        card.setNextPlayer();
+
+        switch (card){
+            case SldMeteorSwarm meteorSwarm ->{
+                meteorSwarm.setNextMeteor();
+            }
+
+            default -> card.setNextPlayer();
+        }
+
 
     }
 
@@ -608,6 +618,68 @@ public class ServerController {
                 }
             }
         }
+    }
+
+    public void setRollResult(int idGame, String nickname, int number){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        SldAdvCard card = game.getFlyboard().getPlayedCard();
+
+        if (!nickname.equals(game.getFlyboard().getScoreBoard().getFirst().getNickname()))
+            throw new IncorrectFlyBoardException("Not the leader");
+
+        switch (card) {
+            case SldMeteorSwarm meteorSwarm -> {
+                Meteor meteor = meteorSwarm.getActualMeteor();
+                meteor.setNumber(number);
+                Direction direction = meteor.getDirection();
+                MeteorType type = meteor.getType();
+
+                for (VirtualClient client : game.getClients().values()){
+                    try {
+                        client.meteorHit(type, direction, number);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+
+            default -> Logger.error("No effect for setRollResult");
+
+        }
+    }
+
+    public void removeBattery(int idGame, String nickname, int quantity){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+
+        ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();
+        if (shipBoard.getQuantBatteries() < quantity){
+            throw new IncorrectShipBoardException("not enough batteries");
+        }
+
+        List<Integer> removedId = shipBoard.removeEnergy(quantity);
+
+        for (VirtualClient client : game.getClients().values()){
+            try{
+                client.removeBatteries(removedId);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void advanceMeteor(int idGame, String nickname){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        SldAdvCard card = game.getFlyboard().getPlayedCard();
+
+        switch (card){
+            case SldMeteorSwarm meteorSwarm -> {
+                meteorSwarm.setNextMeteor(nickname);
+            }
+
+            default -> Logger.error("Effect not taken");
+        }
+
     }
 }
 

@@ -1,12 +1,15 @@
 package org.mio.progettoingsoft.network.server.socket;
 
 import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.messages.*;
 
@@ -232,6 +235,18 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     @Override
     public void genericChoiceError(String msg) throws Exception {
         Message message = new ChoiceErrorMessage(0, null, msg);
+    }
+
+    @Override
+    public void meteorHit(MeteorType type, Direction direction, int number) throws IOException{
+        Message message = new MeteorMessage(0, null, type, direction, number);
+        sendMessage(message);
+    }
+
+    @Override
+    public void removeBatteries(List<Integer> batteryDepotId) throws IOException{
+        Message message = new BatteryMessage(0, null, batteryDepotId);
+        sendMessage(message);
     }
 
 

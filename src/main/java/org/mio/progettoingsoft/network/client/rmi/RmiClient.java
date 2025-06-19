@@ -1,12 +1,14 @@
 package org.mio.progettoingsoft.network.client.rmi;
 
 import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -235,6 +237,20 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         executors.submit(() ->
                 controller.setPlayerOnPlanet(nickname,choice)
         );
+    }
+
+    @Override
+    public void meteorHit(MeteorType type, Direction direction, int number) throws RemoteException{
+        executors.submit(() -> {
+            controller.meteorHit(type, direction, number);
+        });
+    }
+
+    @Override
+    public void removeBatteries(List<Integer> batteryDepotId) throws RemoteException{
+        executors.submit(() -> {
+            controller.removeBatteriesFromModel(batteryDepotId);
+        });
     }
 
 

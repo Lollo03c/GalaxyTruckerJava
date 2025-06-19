@@ -1,11 +1,13 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.enums.MeteorType;
 
 import java.rmi.Remote;
 import java.util.List;
@@ -73,4 +75,6 @@ public interface VirtualClient extends Remote {
     void setPlayerOnPlanet(String nickname, int choice) throws Exception;
     void genericChoiceError(String msg) throws Exception;
 
+    void meteorHit(MeteorType type, Direction direction, int number) throws Exception;
+    void removeBatteries(List<Integer> batteryDepotId) throws Exception;
 }

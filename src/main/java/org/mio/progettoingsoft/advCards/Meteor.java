@@ -1,17 +1,20 @@
 package org.mio.progettoingsoft.advCards;
 
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.Direction;
-import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.ShipBoard;
+import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.model.enums.MeteorType;
 
-import java.util.Optional;
+import java.util.*;
 
-public abstract class Meteor {
+public class Meteor {
     protected final Direction direction;
+    protected final MeteorType type;
+    private int number;
+    private Cordinate cordinateHit;
+    private final Set<String> nicksAnswered = new HashSet<>();
 
-    public Meteor(Direction direction) {
+    public Meteor(Direction direction, MeteorType type) {
         this.direction = direction;
+        this.type = type;
     }
 
     public static Meteor stringToMeteor(String type, String direction) {
@@ -26,57 +29,79 @@ public abstract class Meteor {
         return direction;
     }
 
-    public abstract void hit(Player player, int value);
+    public MeteorType getType() {
+        return type;
+    }
 
-    protected Optional<Component> findHit(Player player, int value){
-        ShipBoard board = player.getShipBoard();
-        int rows = board.getRows();
-        int columns = board.getColumns();
-        Optional<Component>[][] shipComponents = board.getComponentsMatrix();
+    public void hit(Player player, int value){
 
-        int maxValue = direction.equals(Direction.FRONT) || direction.equals(Direction.BACK) ? board.getColumns() : board.getRows();
-        Optional<Component> isHit = Optional.empty();
+    }
 
-        if (value < 0 || value >= maxValue)
-            Optional.empty();
-//a cosa serve l'if qui sopra ?
-        if (direction.equals(Direction.FRONT)){
-            int row = 0;
-            while (row < rows && shipComponents[row][value].isEmpty())
-                row++;
+    public Optional<Cordinate> findHit(ShipBoard shipBoard, int value){
+        Optional<Cordinate> cordinate = Optional.empty();
+        List<Cordinate> validCords = new ArrayList<>();
 
-            if (row < rows){
-                isHit = Optional.of(shipComponents[row][value].get());
-            }
+        switch (direction){
+            case LEFT, RIGHT -> value -= shipBoard.getOffsetCol();
+            case FRONT, BACK -> value -= shipBoard.getOffsetRow();
         }
-        else if (direction.equals(Direction.BACK)){
-            int row = rows;
-            while (row >= 0 && shipComponents[row][value].isEmpty())
-                row--;
 
-            if (row >= rows){
-                isHit = Optional.of(shipComponents[row][value].get());
-            }
-        }
-        else if (direction.equals(Direction.RIGHT)){
-            int col = columns;
-            while (col >= 0 && shipComponents[value][col].isEmpty())
-                col--;
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
 
-            if (col >= columns){
-                isHit = Optional.of(shipComponents[value][col].get());
-            }
-        }
-        else if (direction.equals(Direction.LEFT)){
-            int col = 0;
-            while (col < columns && shipComponents[value][col].isEmpty())
-                col--;
+            switch (direction){
+                case LEFT, RIGHT -> {
+                    if (cord.getRow() == value)
+                        validCords.add(cord);
+                }
 
-            if (col < columns){
-                isHit = Optional.of(shipComponents[value][col].get());
+                case FRONT, BACK -> {
+                    if (cord.getColumn() == value)
+                        validCords.add(cord);
+                }
             }
         }
 
-        return isHit;
+        if (validCords.isEmpty())
+            return Optional.empty();
+
+        return switch (direction){
+            case LEFT ->
+                validCords.stream().min(Comparator.comparingInt(c -> c.getColumn()));
+
+            case RIGHT ->
+                validCords.stream().max(Comparator.comparingInt(c -> c.getColumn()));
+
+            case FRONT ->
+                validCords.stream().min(Comparator.comparingInt(c -> c.getRow()));
+
+            case BACK ->
+                validCords.stream().max(Comparator.comparingInt(c -> c.getRow()));
+        };
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public Cordinate getCordinateHit() {
+        return cordinateHit;
+    }
+
+    public void setCordinateHit(Cordinate cordinateHit) {
+        this.cordinateHit = cordinateHit;
+    }
+
+    public void addPlayerResponses(String nick){
+        nicksAnswered.add(nick);
+    }
+
+    public Set<String> getPlayerResponses() {
+        return nicksAnswered;
     }
 }
