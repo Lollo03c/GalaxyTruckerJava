@@ -279,6 +279,8 @@ public class Tui implements View {
 
             case SHIELD_SELECTION -> shieldSelection();
 
+            case ASK_ONE_DOUBLE_DRILL -> askOneDoubleDrill();
+
             case FINALIZED -> {
 
             }
@@ -1102,14 +1104,44 @@ public class Tui implements View {
                             controller.removeBattery(1);
                         }
 
-                        controller.advanceMeteor();
-                    }
 
+                    }
                 }
+                else{
+                    controller.removeComponent(meteor.getCordinateHit());
+                }
+                controller.advanceMeteor();
             }
 
             default -> Logger.error("no effect");
         }
+    }
+
+    private void askOneDoubleDrill(){
+        String choice = "";
+        ShipBoard shipBoard = controller.getShipBoard();
+        boolean activate = false;
+
+        if (shipBoard.getQuantBatteries() > 0){
+            while (choice.equals("")) {
+                System.out.print("Activate one double drill (y/n) : ");
+                choice = scanner.nextLine().trim().toLowerCase();
+
+                if (!(choice.equals("y") || choice.equals("n"))){
+                    choice = "";
+                    continue;
+                }
+                activate = (choice.equals("y"));
+            }
+        }
+
+        if (activate){
+            controller.removeBattery(1);
+        }
+        else{
+            controller.removeComponent(controller.getMeteor().getCordinateHit());
+        }
+        controller.advanceMeteor();
     }
 
 //        try{

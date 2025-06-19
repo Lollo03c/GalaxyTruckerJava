@@ -40,7 +40,9 @@ public class ServerMessageHandler implements Runnable {
                                         componentMessage.getIdComp(), componentMessage.getCordinate(), componentMessage.getRotations());
                             }
 
-                            case REMOVE -> {}
+                            case REMOVE -> {
+                                serverController.removeComponent(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
+                            }
 
                             case DISCARD -> {
                                 serverController.discardComponent(componentMessage.getGameId(), componentMessage.getIdComp());

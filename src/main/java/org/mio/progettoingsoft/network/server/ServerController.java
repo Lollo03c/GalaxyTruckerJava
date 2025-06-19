@@ -683,5 +683,26 @@ public class ServerController {
         }
 
     }
+
+    public void removeComponent(int idGame, String nickname, Cordinate cord){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
+        if (!flyBoard.getNicknameList().contains(nickname)){
+            throw new IncorrectFlyBoardException("Not player wit hthis nick");
+        }
+
+        ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        shipBoard.removeComponent(cord);
+
+        for (VirtualClient client : game.getClients().values()){
+            try{
+                client.removeComponent(nickname, cord);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
 }
 

@@ -187,6 +187,11 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
+    @Override
+    public void removeComponent(int idGame, String nickname, Cordinate cordinate) throws IOException{
+        Message message = new ComponentMessage(idGame, nickname, ComponentMessage.Action.REMOVE, -1, cordinate, -1);
+        sendMessage(message);
+    }
 
     /**
      * utility method used to send messages to the server

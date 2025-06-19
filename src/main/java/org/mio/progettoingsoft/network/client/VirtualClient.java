@@ -77,4 +77,5 @@ public interface VirtualClient extends Remote {
 
     void meteorHit(MeteorType type, Direction direction, int number) throws Exception;
     void removeBatteries(List<Integer> batteryDepotId) throws Exception;
+    void removeComponent(String nickname, Cordinate cord) throws Exception;
 }

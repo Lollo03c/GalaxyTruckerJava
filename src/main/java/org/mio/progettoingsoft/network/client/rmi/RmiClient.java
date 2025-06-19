@@ -253,5 +253,12 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         });
     }
 
+    @Override
+    public void removeComponent(String nickname, Cordinate cord) throws RemoteException{
+        executors.submit(() -> {
+            controller.removeComponentFromModel(nickname, cord);
+        });
+    }
+
 
 }

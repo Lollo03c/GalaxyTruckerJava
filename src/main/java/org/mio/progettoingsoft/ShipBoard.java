@@ -755,6 +755,23 @@ public abstract class ShipBoard {
         return false;
     }
 
+    public List<Cordinate> getDrills(Direction direction){
+        List<Cordinate> result = new ArrayList<>();
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            if (getOptComponentByCord(cord).isEmpty())
+                continue;
+            Component comp = getOptComponentByCord(cord).get();
+
+            if (comp.getEnginePower(true) > 0 && comp.getDirection() != null && comp.getDirection().equals(direction))
+                result.add(cord);
+        }
+        return result;
+    }
+
 
 }
 

@@ -741,36 +741,69 @@ public class ClientController {
         meteor.setNumber(number);
 
         shipBoard.drawShipboard();
-        Logger.debug("direzione " + direction);
-        Logger.debug("e' uscito " + number);
-        Logger.debug(type.toString());
 
         Optional<Cordinate> optCordinateHit = meteor.findHit(shipBoard, number);
-        Logger.debug("cordinate trovata");
         if (optCordinateHit.isEmpty()) {
-            Logger.error("errore, non trova la cordinata giusta");
             return;
         }
-        Cordinate cordinateHit = optCordinateHit.get();
-        Logger.debug(cordinateHit.toString());
+        Cordinate cordinateHit = optCordinateHit.get();;
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         meteor.setCordinateHit(cordinateHit);
-        Logger.debug("cordinata colpita " + componentHit);
 
         if (meteor.getType().equals(MeteorType.SMALL)){
             if (componentHit.getConnector(direction).equals(Connector.FLAT)){
                 Logger.debug("componente piatto");
                 advanceMeteor();
-
-                return;
             }
             else{
                 setCardState(CardState.SHIELD_SELECTION);
             }
         }
         else{
+            List<Cordinate> validDrills = shipBoard.getDrills(direction);
 
+            if (validDrills.isEmpty()){
+                removeComponent(cordinateHit);
+            }
+
+            if (direction.equals(Direction.FRONT)){
+
+                for (Cordinate cordDrill : validDrills){
+                    if (cordDrill.getColumn() == number - shipBoard.getOffsetCol()) {
+                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
+                            advanceMeteor();
+                            return;
+                        } else {
+                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
+                        }
+                    }
+                }
+            }
+            else if (direction.equals(Direction.BACK)){
+                for (Cordinate cordDrill : validDrills){
+                    if (Math.abs( cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
+                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
+                            advanceMeteor();
+                            return;
+                        } else {
+                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
+                        }
+                    }
+                }
+            }
+            else{
+                for (Cordinate cordDrill : validDrills){
+                    if (Math.abs( cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
+                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
+                            advanceMeteor();
+                            return;
+                        } else {
+                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -784,8 +817,9 @@ public class ClientController {
     }
 
     public void removeBatteriesFromModel(List<Integer> batteryDepotId){
-        synchronized (flyBoard){
+        synchronized (flyboardLock){
             for (int id : batteryDepotId){
+                Logger.debug("Removed battery from component id " + id);
                 flyBoard.getComponentById(id).removeOneEnergy();
             }
         }
@@ -796,6 +830,22 @@ public class ClientController {
             server.advanceMeteor(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void removeComponent(Cordinate cordinate){
+        try{
+            server.removeComponent(idGame, nickname, cordinate);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeComponentFromModel(String nickname, Cordinate cord){
+        synchronized (flyboardLock) {
+            Logger.debug("removed component of " + nickname + " from cordinate " + cord);
+            ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+            otherShip.removeComponent(cord);
         }
     }
 }

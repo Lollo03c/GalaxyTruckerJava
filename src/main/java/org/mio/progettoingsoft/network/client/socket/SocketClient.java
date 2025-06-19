@@ -99,6 +99,7 @@ public class SocketClient implements Client {
                         switch (componentMessage.getAction()) {
                             case COVERED -> controller.setInHandComponent(componentMessage.getIdComp());
                             case REMOVE -> {
+                                controller.removeComponentFromModel(message.getNickname(), componentMessage.getCordinate());
                             }
                             case ADD ->
                                     controller.addOtherPlayersComponent(componentMessage.getNickname(), componentMessage.getIdComp(),

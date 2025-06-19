@@ -45,4 +45,6 @@ public interface VirtualServer extends Remote {
     void setRollResult(int idGame, String nickname, int number) throws Exception;
     void removeBattery(int idGame, String nickname, int quantity) throws Exception;
     void advanceMeteor(int idGame, String nickname) throws Exception;
+    void removeComponent(int idGame, String nickname, Cordinate cordinate) throws Exception;
+
 }
