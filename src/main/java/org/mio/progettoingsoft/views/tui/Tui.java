@@ -1061,12 +1061,15 @@ public class Tui implements View {
         System.out.println("You are the leader. Press enter to roll the dices");
         String pressed = scanner.nextLine();
 
-        Random random = new Random();
-        int first = random.nextInt(6) + 1;
-        int second = random.nextInt(6) + 1;
+//        Random random = new Random();
+//        int first = random.nextInt(6) + 1;
+//        int second = random.nextInt(6) + 1;
 
 
-        controller.setRollResult(first + second);
+//        controller.setRollResult(first + second);
+
+        //todo da cancellare questa riga
+        controller.setRollResult(8);
     }
 
     private void waitingRoll(){

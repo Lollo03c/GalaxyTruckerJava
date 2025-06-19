@@ -740,18 +740,29 @@ public class ClientController {
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
 
+        shipBoard.drawShipboard();
+        Logger.debug("direzione " + direction);
+        Logger.debug("e' uscito " + number);
+        Logger.debug(type.toString());
+
         Optional<Cordinate> optCordinateHit = meteor.findHit(shipBoard, number);
-        if (optCordinateHit.isEmpty())
+        Logger.debug("cordinate trovata");
+        if (optCordinateHit.isEmpty()) {
+            Logger.error("errore, non trova la cordinata giusta");
             return;
+        }
         Cordinate cordinateHit = optCordinateHit.get();
+        Logger.debug(cordinateHit.toString());
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         meteor.setCordinateHit(cordinateHit);
+        Logger.debug("cordinata colpita " + componentHit);
 
         if (meteor.getType().equals(MeteorType.SMALL)){
             if (componentHit.getConnector(direction).equals(Connector.FLAT)){
+                Logger.debug("componente piatto");
                 advanceMeteor();
-                //flat connector, no effect
+
                 return;
             }
             else{

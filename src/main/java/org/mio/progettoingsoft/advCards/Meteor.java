@@ -42,8 +42,8 @@ public class Meteor {
         List<Cordinate> validCords = new ArrayList<>();
 
         switch (direction){
-            case LEFT, RIGHT -> value -= shipBoard.getOffsetCol();
-            case FRONT, BACK -> value -= shipBoard.getOffsetRow();
+            case LEFT, RIGHT -> value -= shipBoard.getOffsetRow();
+            case FRONT, BACK -> value -= shipBoard.getOffsetCol();
         }
 
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();

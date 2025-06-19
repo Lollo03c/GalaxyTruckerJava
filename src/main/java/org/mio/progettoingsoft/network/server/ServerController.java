@@ -315,7 +315,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(26);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(29);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -629,6 +629,8 @@ public class ServerController {
 
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
+                Logger.info("e' uscito " + number );
+
                 Meteor meteor = meteorSwarm.getActualMeteor();
                 meteor.setNumber(number);
                 Direction direction = meteor.getDirection();

@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.MeteorSwarm;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,6 +46,7 @@ public final class SldMeteorSwarm extends SldAdvCard{
 
         allowedPlayers = new ArrayList<>(flyBoard.getScoreBoard());
         playerIterator = allowedPlayers.iterator();
+        actualPlayer = playerIterator.next();
 
         meteorIterator = meteors.iterator();
     }
@@ -59,7 +61,7 @@ public final class SldMeteorSwarm extends SldAdvCard{
 
     }
 
-    public void setNextMeteor(){
+    public synchronized void setNextMeteor(){
         if (meteorIterator.hasNext()){
             actualMeteor = meteorIterator.next();
             setState(CardState.DICE_ROLL);
@@ -73,9 +75,13 @@ public final class SldMeteorSwarm extends SldAdvCard{
         return actualMeteor;
     }
 
-    public void setNextMeteor(String nick){
-        if (!flyBoard.getPlayers().contains(nick))
+    public synchronized void setNextMeteor(String nick){
+        List<String> nicknames = flyBoard.getPlayers().stream().map(p -> p.getNickname()).toList();
+        if (!nicknames.contains(nick)){
+            Logger.error("eccezion");
             throw new IncorrectFlyBoardException("no player found");
+        }
+
 
         if (actualMeteor.getPlayerResponses().contains(nick))
             throw new IncorrectFlyBoardException("player has already answered");
