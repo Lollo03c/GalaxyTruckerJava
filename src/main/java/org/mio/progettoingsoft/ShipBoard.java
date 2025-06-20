@@ -168,7 +168,15 @@ public abstract class ShipBoard {
      * @return the total engine power when all {@link DoubleEngine} are not activated
      */
     public int getBaseEnginePower() {
-        return getCompStream().mapToInt(comp -> comp.getEnginePower(false)).sum();
+        int enginePower = getCompStream().mapToInt(comp -> comp.getEnginePower(false)).sum();;
+        if (enginePower > 0){
+            boolean alienPresent = getCompStream().anyMatch(comp -> comp.getGuests().contains(GuestType.BROWN));
+            if (alienPresent)
+                enginePower += 2;
+        }
+
+        return enginePower;
+
     }
 
     /**
@@ -176,7 +184,13 @@ public abstract class ShipBoard {
      * @return the total fire power when all {@link DoubleDrill} are not activated
      */
     public double getBaseFirePower() {
-        return getCompStream().mapToDouble (comp -> comp.getFirePower()).sum();
+        double firePower = getCompStream().mapToDouble (comp -> comp.getFirePower(false)).sum();
+        if (firePower > 0){
+            boolean alienPresent = getCompStream().anyMatch(comp -> comp.getGuests().contains(GuestType.PURPLE));
+            if (alienPresent)
+                firePower += 2;
+        }
+        return firePower;
     }
 
     /**
@@ -367,14 +381,6 @@ public abstract class ShipBoard {
     public List<Component> getDoubleEngine() {
         return getCompStream()
                 .filter(comp -> comp.getEnginePower(true) == 2)
-                .toList();
-    }
-
-    public List<Component> getDoubleDrill(Direction dir) {
-        return getCompStream()
-                .filter(comp -> comp.getFirePower(true) == 2)
-                .filter(comp -> comp.getDirection() != null)
-                .filter(comp -> comp.getDirection().equals(dir))
                 .toList();
     }
 
@@ -657,19 +663,14 @@ public abstract class ShipBoard {
         return 0;
     }
 
-    public String toString() {
-        String out = "";
-        for(Component c : getCompStream().toList()){
-            out += c.toString() + "\n";
-        }
-        return out;
-    }
+//    public String toString() {
+//        String out = "";
+//        for(Component c : getCompStream().toList()){
+//            out += c.toString() + "\n";
+//        }
+//        return out;
+//    }
 
-    public float getMaximumFirePower(){
-        return (float) getCompStream()
-                .mapToDouble(Component::getFirePower)
-                .sum();
-    }
 
     public void keepPart(int row, int col){
         List<Set<Component>> multiple = Collections.emptyList(); // getMultiplePieces();

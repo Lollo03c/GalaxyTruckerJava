@@ -27,10 +27,6 @@ public class Engine extends Component {
         return direction;
     }
 
-    public void setDirection(Direction dir){
-        direction = dir;
-    }
-
     @Override
     public void rotateClockwise(){
         super.rotateClockwise();
@@ -41,17 +37,17 @@ public class Engine extends Component {
             case LEFT -> Direction.FRONT;
         };
     }
-
-    @Override
-    public void rotateCounterClockwise(){
-        super.rotateCounterClockwise();
-        this.direction = switch(direction){
-            case FRONT -> Direction.LEFT;
-            case LEFT -> Direction.BACK;
-            case BACK -> Direction.RIGHT;
-            case RIGHT -> Direction.FRONT;
-        };
-    }
+//
+//    @Override
+//    public void rotateCounterClockwise(){
+//        super.rotateCounterClockwise();
+//        this.direction = switch(direction){
+//            case FRONT -> Direction.LEFT;
+//            case LEFT -> Direction.BACK;
+//            case BACK -> Direction.RIGHT;
+//            case RIGHT -> Direction.FRONT;
+//        };
+//    }
 
 //    @Override
 //    public int getEnginePower(){

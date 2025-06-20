@@ -15,6 +15,7 @@ class EnergyDepotTest {
     void should_build_2_batteries(){
         Component energy = new EnergyDepot(1, false, flat, flat, flat, flat);
 
+        assertFalse(energy.getTriple());
         assertEquals(2, energy.getEnergyQuantity());
     }
 

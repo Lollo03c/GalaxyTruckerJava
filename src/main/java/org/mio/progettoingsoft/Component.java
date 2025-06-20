@@ -75,13 +75,13 @@ public abstract class Component {
         this.rightConnector = tmp;
     }
 
-    protected void rotateCounterClockwise(){
-        Connector tmp = this.topConnector;
-        this.topConnector = this.rightConnector;
-        this.rightConnector = this.bottomConnector;
-        this.bottomConnector = this.leftConnector;
-        this.leftConnector = tmp;
-    }
+//    protected void rotateCounterClockwise(){
+//        Connector tmp = this.topConnector;
+//        this.topConnector = this.rightConnector;
+//        this.rightConnector = this.bottomConnector;
+//        this.bottomConnector = this.leftConnector;
+//        this.leftConnector = tmp;
+//    }
 
     public Integer getEnergyQuantity(){
         return 0;
@@ -166,11 +166,6 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not a alien housing");
     }
 
-    public HousingColor getHousingColorById(int id) throws IncorrectShipBoardException{
-        throw new IncorrectShipBoardException("");
-    }
-
-
     /**
      *
      * @return the list of {@link GuestType} hosted in the {@link org.mio.progettoingsoft.components.Housing},
@@ -219,10 +214,6 @@ public abstract class Component {
 
     public int getEnginePower(boolean activated){
         return 0;
-    }
-
-    public float getFirePower(){
-        return 0f;
     }
 
 

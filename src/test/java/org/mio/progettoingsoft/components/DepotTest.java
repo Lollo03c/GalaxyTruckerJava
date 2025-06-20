@@ -15,9 +15,50 @@ class DepotTest {
     private Connector flat = Connector.FLAT;
 
     @Test
+    void should_match_correct_goods_value(){
+        for (GoodType type : GoodType.values()){
+            switch (type){
+                case BLUE ->{
+                    assertEquals(1, type.getValue());
+                    assertEquals("BLUE", type.toString());
+                    assertEquals("\u001B[34m", type.toColor());
+                }
+
+                case GREEN ->{
+                    assertEquals(2, type.getValue());
+                    assertEquals("GREEN", type.toString());
+                    assertEquals("\u001B[32m", type.toColor());
+                }
+
+                case YELLOW ->{
+                    assertEquals(3, type.getValue());
+                    assertEquals("YELLOW", type.toString());
+                    assertEquals("\u001B[33m", type.toColor());
+                }
+
+                case RED ->{
+                    assertEquals(4, type.getValue());
+                    assertEquals("RED", type.toString());
+                    assertEquals("\u001B[31m", type.toColor());
+                }
+
+            }
+        }
+    }
+
+    @Test
+    void should_match_string(){
+        assertEquals(GoodType.BLUE, GoodType.stringToGoodType("BLUE"));
+        assertEquals(GoodType.GREEN, GoodType.stringToGoodType("GREEN"));
+        assertEquals(GoodType.YELLOW, GoodType.stringToGoodType("YELLOW"));
+        assertEquals(GoodType.RED, GoodType.stringToGoodType("RED"));
+        assertEquals(GoodType.BLUE, GoodType.stringToGoodType("sda"));
+    }
+    @Test
     void should_be_null_red_depot_if_not_hazard(){
         Component depot = new Depot(1, false, false, flat, flat, flat, flat);
-
+        assertFalse(depot.getBig());
+        assertFalse(depot.getHazard());
         assertFalse(depot.canContainsGood(GoodType.RED));
     }
 

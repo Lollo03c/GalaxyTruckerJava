@@ -19,6 +19,7 @@ public class Shield extends Component {
         directions.add(Direction.FRONT);
         directions.add(Direction.RIGHT);
     }
+
     @Override
     public void rotateClockwise(){
         super.rotateClockwise();
@@ -35,21 +36,21 @@ public class Shield extends Component {
             case LEFT -> Direction.FRONT;
         });
     }
-    public void rotateCounterClockwise(){
-        super.rotateCounterClockwise();
-        directions.set(0, switch (directions.get(0)) {
-            case FRONT -> Direction.LEFT;
-            case RIGHT -> Direction.FRONT;
-            case BACK -> Direction.RIGHT;
-            case LEFT -> Direction.BACK;
-        });
-        directions.set(1, switch (directions.get(1)) {
-            case FRONT -> Direction.LEFT;
-            case RIGHT -> Direction.FRONT;
-            case BACK -> Direction.RIGHT;
-            case LEFT -> Direction.BACK;
-        });
-    }
+//    public void rotateCounterClockwise(){
+//        super.rotateCounterClockwise();
+//        directions.set(0, switch (directions.get(0)) {
+//            case FRONT -> Direction.LEFT;
+//            case RIGHT -> Direction.FRONT;
+//            case BACK -> Direction.RIGHT;
+//            case LEFT -> Direction.BACK;
+//        });
+//        directions.set(1, switch (directions.get(1)) {
+//            case FRONT -> Direction.LEFT;
+//            case RIGHT -> Direction.FRONT;
+//            case BACK -> Direction.RIGHT;
+//            case LEFT -> Direction.BACK;
+//        });
+//    }
 
     @Override
     public List<Direction> getShieldDirections(){

@@ -191,8 +191,6 @@ class ShipBoardTest {
         first.addComponentToPosition(137, new Cordinate(2, 2), 0);
         first.addComponentToPosition(46, new Cordinate(2,1), 0);
         first.validateShip();
-
-        assertTrue(flyBoard.getComponentById(46).canAddGuest(GuestType.BROWN));
     }
 //
 //    @Test

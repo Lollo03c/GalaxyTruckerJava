@@ -3,7 +3,7 @@ package org.mio.progettoingsoft.components;
 import java.io.Serializable;
 
 public enum HousingColor implements Serializable {
-    BLUE, GREEN, RED, YELLOW, NOCOLOR;
+    BLUE, GREEN, RED, YELLOW;
 
     public static HousingColor stringToColor(String s){
         return switch(s){
@@ -15,13 +15,23 @@ public enum HousingColor implements Serializable {
         };
     }
 
+
+    public static HousingColor getHousingColorById(int id){
+        return switch (id) {
+            case 33 -> HousingColor.BLUE;
+            case 34 -> HousingColor.GREEN;
+            case 52 -> HousingColor.RED;
+            case 61 -> HousingColor.YELLOW;
+            default -> HousingColor.BLUE;
+        };
+    }
+
     public int getIdByColor(){
         return switch (this) {
             case BLUE -> 33;
             case GREEN -> 34;
             case RED -> 52;
             case YELLOW -> 61;
-            default -> -1;
         };
     }
 
@@ -31,7 +41,6 @@ public enum HousingColor implements Serializable {
             case BLUE -> "\u001B[34m";
             case GREEN -> "\u001B[32m";
             case YELLOW -> "\u001B[33m";
-            case NOCOLOR -> "\u001B[0m";
         };
     }
 }
