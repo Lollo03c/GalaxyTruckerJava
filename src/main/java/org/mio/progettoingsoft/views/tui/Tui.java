@@ -462,10 +462,6 @@ public class Tui implements View {
             printStartGameInfo();
             System.out.println(BLUE + "It's time to build your ship!" + RESET);
             firstBuilding = false;
-            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partita
-            if(controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE)  && mode.equals(GameMode.NORMAL)){
-                controller.startHourglass();
-            }
         }
         int choice = -1;
         String input = "";

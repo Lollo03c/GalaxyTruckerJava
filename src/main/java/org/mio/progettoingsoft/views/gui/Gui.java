@@ -23,6 +23,8 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
+import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -65,6 +67,7 @@ public class Gui extends Application implements View {
     private boolean willTestBuildDisappear = false;
     //true -> first time in adventure card view
     private boolean firstAdventureStart = true;
+    private boolean acceptEffect;
     private double screenHeight;
     private double screenWidth;
     // height given to the tiles in the shipboard grid
@@ -172,7 +175,7 @@ public class Gui extends Application implements View {
             case "gameState" -> statesQueue.add((GameState) evt.getNewValue());
             // the circuit changes (only in the right game states): the circuit view is updated
             case "circuit" -> {
-                if (controller.getState() == GameState.DRAW_CARD || controller.getState() == GameState.CARD_EFFECT) {
+                if (controller.getState() == GameState.DRAW_CARD || controller.getState() == GameState.CARD_EFFECT || controller.getState() == GameState.NEW_CARD || controller.getState() == GameState.YOU_CAN_DRAW_CARD) {
                     circuitMovesQueue.add(new Pair<>((int) evt.getOldValue(), (int) evt.getNewValue()));
                 }
             }
@@ -1181,6 +1184,7 @@ public class Gui extends Application implements View {
     private void updateCardGui(CardState cardState) {
         switch (cardState) {
             case ENGINE_CHOICE -> engineChoiceView();
+            case CREW_REMOVE_CHOICE -> crewRemoveChoiceAccept();
 
             case ERROR_CHOICE -> {
                 modalErrorLabelMessage = controller.getErrMessage();
@@ -1250,6 +1254,120 @@ public class Gui extends Application implements View {
             modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
             modalErrorLabelMessage = null;
         }
+    }
+
+    private void crewRemoveChoiceAccept(){
+        SldAdvCard card = controller.getPlayedCard();
+
+        switch(card){
+            case SldAbandonedShip s ->{
+                acceptEffectStage(this::crewRemoveChoice);
+            }
+            default -> {
+                acceptEffect = true;
+            }
+        }
+    }
+
+    private void crewRemoveChoice(){
+        if(acceptEffect){
+            SldAdvCard card = controller.getPlayedCard();
+            int toRemove = card.getCrewLost();
+            modalShipboardView(controller.getNickname());
+            Label hintTopLabel = new Label();
+            ShipBoard ship = controller.getShipBoard();
+            Map<Cordinate, Integer> cordToRemoving = new HashMap<>();
+            Button confirmBtn = new Button("Confirm");
+            synchronized (controller.getShipboardLock()) {
+                hintTopLabel.setText("Click on the housing you want to remove crew from, click twice if you want to remove two members.\nCrew to remove: " + toRemove + ". Removed: 0\nTo undo a selection, click again");
+                for (Cordinate cord : modalShipCordToStackPane.keySet()) {
+                    StackPane sp = modalShipCordToStackPane.get(cord);
+                    if (ship.getOptComponentByCord(cord).isPresent()) {
+                        if (ship.getOptComponentByCord(cord).get().getType() == ComponentType.HOUSING) {
+                            cordToRemoving.put(cord, 0);
+                            sp.setOnMouseClicked(evt -> {
+                                int removed = cordToRemoving.values().stream().mapToInt(i -> i).sum();
+                                int maxRemovable = ship.getOptComponentByCord(cord).get().getGuests().size();
+                                if(cordToRemoving.get(cord) < maxRemovable && removed < toRemove){
+                                    if(cordToRemoving.get(cord) == 0){
+                                        cordToRemoving.put(cord, 1);
+                                    } else if (cordToRemoving.get(cord) == 1) {
+                                        cordToRemoving.put(cord, 2);
+                                    }
+                                }else{
+                                    if(cordToRemoving.get(cord) == 2){
+                                        cordToRemoving.put(cord, 1);
+                                    } else if (cordToRemoving.get(cord) == 1) {
+                                        cordToRemoving.put(cord, 0);
+                                    }
+                                }
+                                loadHousingSpecificObjects(ship.getOptComponentByCord(cord).get(), sp, cordToRemoving.get(cord));
+                                removed = cordToRemoving.values().stream().mapToInt(i -> i).sum();
+                                hintTopLabel.setText("Click on the housing you want to remove crew from, click twice if you want to remove two members.\nCrew to remove: " + toRemove + ". Removed: " + removed + "\nTo undo a selection, click again");
+                                confirmBtn.setDisable(removed != toRemove);
+
+                            });
+                        }
+                    }
+                }
+            }
+            HBox btnBox = new HBox(10);
+            btnBox.setAlignment(Pos.CENTER);
+
+            confirmBtn.setOnAction(evt -> {
+                modalShipStage.close();
+                List<Cordinate> cordsToRemove = new ArrayList<>();
+                for(Cordinate cord : cordToRemoving.keySet()){
+                    for(int i = 0; i < cordToRemoving.get(cord); i++){
+                        cordsToRemove.add(cord);
+                    }
+                }
+                controller.removeCrew(cordsToRemove);
+            });
+            Button resetBtn = new Button("Reset");
+            resetBtn.setOnAction(evt -> {
+                modalShipStage.close();
+                crewRemoveChoice();
+            });
+            modalShipContainer.getChildren().addFirst(hintTopLabel);
+            btnBox.getChildren().addAll(resetBtn, confirmBtn);
+            modalShipContainer.getChildren().add(btnBox);
+            if (modalErrorLabelMessage != null) {
+                modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
+                modalErrorLabelMessage = null;
+            }
+        }else{
+            controller.skipEffect();
+        }
+    }
+
+    private void acceptEffectStage(Runnable postConfirmation){
+        Stage acceptStage = new Stage();
+        acceptStage.setTitle("Accept the effect");
+        acceptStage.initModality(Modality.APPLICATION_MODAL);
+        acceptStage.setResizable(false);
+        VBox center = new VBox(10);
+        center.setPadding(new Insets(20));
+        center.setAlignment(Pos.CENTER);
+        Label acceptLabel = new Label("Do you want to apply the effect?");
+        HBox btnBox = new HBox(15);
+        btnBox.setAlignment(Pos.CENTER);
+        Button cancelBtn = new Button("No");
+        cancelBtn.setOnAction(evt -> {
+            acceptEffect = false;
+            acceptStage.close();
+            postConfirmation.run();
+        });
+        Button confirmBtn = new Button("Yes");
+        confirmBtn.setOnAction(evt -> {
+            acceptEffect = true;
+            acceptStage.close();
+            postConfirmation.run();
+        });
+        btnBox.getChildren().addAll(cancelBtn, confirmBtn);
+        center.getChildren().addAll(acceptLabel, btnBox);
+        acceptStage.setScene(new Scene(center));
+        acceptStage.show();
     }
 
     /*
@@ -1470,7 +1588,6 @@ public class Gui extends Application implements View {
                 StackPane sp = map.get(cord);
                 switch (c.getType()) {
                     case ComponentType.ENERGY_DEPOT -> {
-                        Logger.info("Energy: " + c.getEnergyQuantity().toString());
                         if (c.getEnergyQuantity() > 0) {
                             VBox vbox = new VBox();
                             vbox.setPadding(new Insets(tilesSideLength / 10));
@@ -1491,25 +1608,9 @@ public class Gui extends Application implements View {
                         }
                     }
                     case ComponentType.HOUSING -> {
-                        Logger.info("Guests: " + c.getGuests().toString());
-                        if (!c.getGuests().isEmpty()) {
-                            HBox hbox = new HBox(tilesSideLength / 12);
-                            hbox.setAlignment(Pos.CENTER);
-                            for (int i = 0; i < c.getGuests().size(); i++) {
-                                Color color;
-                                switch (c.getGuests().get(i)) {
-                                    case HUMAN -> color = Color.DARKSLATEGREY;
-                                    case PURPLE -> color = Color.FUCHSIA;
-                                    case BROWN -> color = Color.SANDYBROWN;
-                                    default -> color = Color.BLACK;
-                                }
-                                hbox.getChildren().add(new Circle(tilesSideLength / 12, color));
-                            }
-                            sp.getChildren().add(hbox);
-                        }
+                        loadHousingSpecificObjects(c, sp, 0);
                     }
                     case ComponentType.DEPOT -> {
-                        Logger.info("Goods: " + c.getStoredGoods().toString());
                         if (!c.getStoredGoods().isEmpty()) {
                             HBox hbox = new HBox(tilesSideLength / 12);
                             hbox.setAlignment(Pos.CENTER);
@@ -1531,6 +1632,29 @@ public class Gui extends Application implements View {
                     }
                 }
             }
+        }
+    }
+
+    private void loadHousingSpecificObjects(Component c, StackPane sp, int toCancel){
+        if (!c.getGuests().isEmpty()) {
+            sp.getChildren().retainAll(sp.getChildren().getFirst());
+            HBox hbox = new HBox(tilesSideLength / 12);
+            hbox.setAlignment(Pos.CENTER);
+            for (int i = 0; i < c.getGuests().size(); i++) {
+                Color color;
+                switch (c.getGuests().get(i)) {
+                    case HUMAN -> color = Color.DARKSLATEGREY;
+                    case PURPLE -> color = Color.FUCHSIA;
+                    case BROWN -> color = Color.SANDYBROWN;
+                    default -> color = Color.BLACK;
+                }
+                if(toCancel > 0){
+                    toCancel--;
+                }else{
+                    hbox.getChildren().add(new Circle(tilesSideLength / 12, color));
+                }
+            }
+            sp.getChildren().add(hbox);
         }
     }
 

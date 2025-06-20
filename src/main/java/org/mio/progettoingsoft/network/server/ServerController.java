@@ -318,7 +318,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(29);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(17);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -356,20 +356,17 @@ public class ServerController {
         switch (card) {
             case SldOpenSpace openSpace -> {
 
-                openSpace.applyEffect(player, number);
-
-                //nofica l'avanzamento del player agli avversari
-//                int nSteps = 2 * number + flyBoard.getPlayerByUsername(nickname).getShipBoard().getBaseEnginePower();
-//                for (VirtualClient client : game.getClients().values()){
-//                    try {
-//                        client.advancePlayer(nickname, nSteps, number);
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-
-                //passa al prossimo giocatore
-                openSpace.setNextPlayer();
+                try{
+                    openSpace.applyEffect(player, number);
+                    openSpace.setNextPlayer();
+                }catch(IllegalStateException | BadParameterException | BadPlayerException | NotEnoughBatteriesException e){
+                    VirtualClient client = game.getClients().get(nickname);
+                    try {
+                        client.genericChoiceError(e.getMessage());
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
             }
 
             default -> {

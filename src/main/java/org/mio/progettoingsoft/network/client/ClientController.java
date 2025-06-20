@@ -355,6 +355,7 @@ public class ClientController {
             newPos = flyBoard.getPlayerPositionOnCircuit(nickname);
         }
         support.firePropertyChange("circuit", oldPos, newPos);
+        Logger.debug("Moved " + nickname + " from " + oldPos + " to " + newPos);
     }
 
     public void genericChoiceError(String msg) {

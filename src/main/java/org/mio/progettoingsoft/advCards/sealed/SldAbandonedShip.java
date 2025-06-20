@@ -54,9 +54,6 @@ public final class SldAbandonedShip extends SldAdvCard {
     // it initializes the list of players that can play the card (crew > crewLost) and set the card state CREW_REMOVE_CHOICE
     public void init(GameServer game) {
         FlyBoard board = game.getFlyboard();
-//        if (board.getState() != GameState.DRAW_CARD) {
-//            throw new IllegalStateException("Illegal state: " + board.getState());
-//        }
 
         this.game = game;
         this.flyBoard = game.getFlyboard();
@@ -72,9 +69,6 @@ public final class SldAbandonedShip extends SldAdvCard {
     // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
     // else, it does nothing, and it's ready for another call with the next player
     public void applyEffect(String nickname, boolean wantsToActivate, List<Cordinate> housingCordinatesList) {
-////        if (this.state != CardState.CREW_REMOVE_CHOICE || board.getState() != GameState.CARD_EFFECT) {
-//            throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
-//        }
         if (! nickname.equals(actualPlayer.getNickname())) {
             throw new BadPlayerException("Not " + nickname + " turn to play");
         }
@@ -88,10 +82,10 @@ public final class SldAbandonedShip extends SldAdvCard {
                 if (housingCordinatesList == null) {
                     throw new BadParameterException("List is null");
                 }
-                if (housingCordinatesList.isEmpty() && wantsToActivate) {
+                if (housingCordinatesList.isEmpty()) {
                     throw new BadParameterException("List is empty");
                 }
-                if (housingCordinatesList.size() != this.crewLost && wantsToActivate) {
+                if (housingCordinatesList.size() != this.crewLost) {
                     throw new BadParameterException("List has wrong size");
                 }
 
