@@ -1,18 +1,21 @@
 package org.mio.progettoingsoft.advCards;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.Direction;
-import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.ShipBoard;
+import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.model.enums.CannonType;
 
-import java.util.Optional;
+import java.util.*;
 
-public abstract class CannonPenalty extends Penalty {
+public class CannonPenalty extends Penalty {
     protected final Direction direction;
+    protected final CannonType cannonType;
 
-    public CannonPenalty(Direction direction) {
+    protected int number;
+    private Cordinate cordinateHit;
+
+    public CannonPenalty(Direction direction, CannonType type) {
         this.direction = direction;
+        this.cannonType = type;
     }
 
     public static CannonPenalty stringToCannonPenalty(String type, String direction) {
@@ -24,54 +27,82 @@ public abstract class CannonPenalty extends Penalty {
     }
 
     @Override
-    public abstract void apply(String json, Player player) throws Exception;
+    public PenaltyType getType(){
+        return null;
+    }
 
-    public Optional<Component> findHit(Player player, int value) {
-        ShipBoard board = player.getShipBoard();
-        Optional<Component>[][] shipComponents = board.getComponentsMatrix();
+    @Override
+    public void apply(String json, Player player) throws Exception{
 
-        switch (direction) {
-            case LEFT -> value -= board.getOffsetCol();
-            case RIGHT -> value -= board.getOffsetCol();
-            case FRONT -> value -= board.getOffsetRow();
-            case BACK -> value -= board.getOffsetRow();
+    }
+
+    public Optional<Cordinate> findHit(ShipBoard shipBoard, int value){
+        Optional<Cordinate> cordinate = Optional.empty();
+        List<Cordinate> validCords = new ArrayList<>();
+
+        switch (direction){
+            case LEFT, RIGHT -> value -= shipBoard.getOffsetRow();
+            case FRONT, BACK -> value -= shipBoard.getOffsetCol();
         }
 
-        Optional<Component> hitComponent = Optional.empty();
-        if (direction.equals(Direction.FRONT)) {
-            int row = 0;
-            while (row < board.getRows() && shipComponents[row][value].isEmpty())
-                row++;
-            if (row < board.getRows())
-                hitComponent = shipComponents[row][value];
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            switch (direction){
+                case LEFT, RIGHT -> {
+                    if (cord.getRow() == value)
+                        validCords.add(cord);
+                }
+
+                case FRONT, BACK -> {
+                    if (cord.getColumn() == value)
+                        validCords.add(cord);
+                }
+            }
         }
-        if (direction.equals(Direction.BACK)) {
-            int row = board.getRows();
-            while (row >= 0 && shipComponents[row][value].isEmpty())
-                row--;
-            if (row >= 0)
-                hitComponent = shipComponents[row][value];
-        }
-        if (direction.equals(Direction.LEFT)) {
-            int col = 0;
-            while (col < board.getRows() && shipComponents[value][col].isEmpty())
-                col++;
-            if (col < board.getColumns())
-                hitComponent = shipComponents[value][col];
-        }
-        if (direction.equals(Direction.RIGHT)) {
-            int col = board.getColumns();
-            while (col >= 0 && shipComponents[value][col].isEmpty())
-                col--;
-            if (col >= 0)
-                hitComponent = shipComponents[value][col];
-        }
-        return hitComponent;
+
+        if (validCords.isEmpty())
+            return Optional.empty();
+
+        return switch (direction){
+            case LEFT ->
+                    validCords.stream().min(Comparator.comparingInt(c -> c.getColumn()));
+
+            case RIGHT ->
+                    validCords.stream().max(Comparator.comparingInt(c -> c.getColumn()));
+
+            case FRONT ->
+                    validCords.stream().min(Comparator.comparingInt(c -> c.getRow()));
+
+            case BACK ->
+                    validCords.stream().max(Comparator.comparingInt(c -> c.getRow()));
+        };
     }
 
     @Override
     public Direction getDirection() {
         return direction;
+    }
+
+    public void setNumber(int number){
+        this.number = number;
+    }
+
+    public CannonType getCannonType() {
+        return cannonType;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setCordinateHit(Cordinate cordinate){
+        this.cordinateHit = cordinate;
+    }
+
+    public Cordinate getCordinateHit() {
+        return cordinateHit;
     }
 }
 

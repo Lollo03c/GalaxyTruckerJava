@@ -1,12 +1,14 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.FlyBoard;
+import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Pirate;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class SldPirates extends SldAdvCard{
@@ -14,6 +16,11 @@ public final class SldPirates extends SldAdvCard{
     private final int credits;
     private final List<CannonPenalty> cannons;
     private final int daysLost;
+
+    private List<Player> penaltyPlayers = new ArrayList<>();
+    private Iterator<CannonPenalty> cannonIterator;
+    private CannonPenalty actualCannon;
+
     public SldPirates(int id, int level, int daysLost, int strength, int credits, List<CannonPenalty> cannons) {
         super(id, level);
         this.strength = strength;
@@ -47,7 +54,13 @@ public final class SldPirates extends SldAdvCard{
 
     @Override
     public void init(GameServer game) {
-        FlyBoard board = game.getFlyboard();
+        this.game = game;
+        this.flyBoard = game.getFlyboard();
+
+       allowedPlayers = new ArrayList<>(flyBoard.getPlayers());
+       playerIterator = allowedPlayers.iterator();
+
+       cannonIterator = cannons.iterator();
     }
 
     @Override
@@ -66,5 +79,55 @@ public final class SldPirates extends SldAdvCard{
     @Override
     public void finish(FlyBoard board) {
 
+    }
+
+    @Override
+    public void setNextPlayer(){
+        if (playerIterator.hasNext()){
+            actualPlayer = playerIterator.next();
+            setState(CardState.DRILL_CHOICE);
+        }
+        else{
+            setNextCannon();
+        }
+    }
+
+    public void setNextCannon(){
+        if (cannonIterator.hasNext()){
+            actualCannon = cannonIterator.next();
+            setState(CardState.DICE_ROLL);
+        }
+        else{
+            setState(CardState.FINALIZED);
+        }
+    }
+
+    public void loadPower(Player player, List<Cordinate> doubleDrills){
+        ShipBoard shipBoard = player.getShipBoard();
+        double power = shipBoard.getBaseFirePower();
+
+        for (Cordinate cord : doubleDrills){
+            if (shipBoard.getOptComponentByCord(cord).isEmpty())
+                throw new IncorrectShipBoardException("Not valid cord");
+            Component comp = shipBoard.getOptComponentByCord(cord).get();
+
+            if (comp.getFirePower(true) <= 0)
+                throw new IncorrectShipBoardException("Not a drill to activate");
+
+            power += comp.getFirePower(true);
+
+            if (power < this.strength){
+                this.penaltyPlayers.add(player);
+            }
+        }
+
+    }
+
+    public CannonPenalty getActualCannon() {
+        return actualCannon;
+    }
+
+    public List<Player> getPenaltyPlayers() {
+        return penaltyPlayers;
     }
 }

@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.views.tui;
 
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.*;
@@ -18,6 +19,7 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
+import javax.security.auth.login.LoginException;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -1091,40 +1093,86 @@ public class Tui implements View {
     private void shieldSelection(){
         SldAdvCard card = controller.getPlayedCard();
         ShipBoard shipBoard = controller.getShipBoard();
+        Direction direction = null;
 
-        switch (card){
+        switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
                 Meteor meteor = controller.getMeteor();
+                direction = meteor.getDirection();
+            }
 
+            case SldPirates pirates -> {
+                CannonPenalty cannon = controller.getCannon();
+                direction = cannon.getDirection();
+            }
+
+            default -> Logger.error("caso non previsto");
+        }
+
+        boolean possibleToActivate = shipBoard.getQuantBatteries() > 0 && shipBoard.coveredByShield(direction);
+
+        switch (card) {
+            case SldMeteorSwarm meteorSwarm -> {
+                Meteor meteor = controller.getMeteor();
                 System.out.println("Expoxed connector on " + meteor.getCordinateHit());
-                boolean possibleToActivate = shipBoard.getQuantBatteries() > 0 && shipBoard.coveredByShield(meteor.getDirection());
 
-                if (possibleToActivate){
-                    String choice = "";
-                    while (choice.equals("")) {
-                        System.out.println("Activate a shield to protect (y/n) : ");
-                        choice = scanner.nextLine().trim().toLowerCase();
+            }
 
-                        if (!(choice.equals("y") || choice.equals("n"))){
-                            choice = "";
-                            continue;
-                        }
+            case SldPirates sldPirates -> {
+                CannonPenalty cannon = controller.getCannon();
+                System.out.println("Light cannot hit component in " + cannon.getCordinateHit());
+            }
 
-                        if (choice.equals("y")){
-                            controller.removeBattery(1);
-                        }
+            default -> Logger.error("caso non previsto");
+        }
 
+        String choice = "";
+        if (possibleToActivate){
+            while (choice.equals("")) {
+                System.out.println("Activate a shield to protect (y/n) : ");
+                choice = scanner.nextLine().trim().toLowerCase();
 
-                    }
+                if (!(choice.equals("y") || choice.equals("n"))){
+                    choice = "";
+                    continue;
                 }
-                else{
+
+                if (choice.equals("y")){
+                    controller.removeBattery(1);
+                }
+
+
+            }
+        }
+
+        if (choice.equals("n")) {
+            switch (card) {
+                case SldMeteorSwarm meteorSwarm -> {
+                    Meteor meteor = controller.getMeteor();
                     controller.removeComponent(meteor.getCordinateHit());
                 }
+
+                case SldPirates pirates -> {
+                    CannonPenalty cannon = controller.getCannon();
+                    controller.removeComponent(cannon.getCordinateHit());
+                }
+
+                default -> Logger.error("caso non previsto");
+            }
+        }
+
+        switch (card) {
+            case SldMeteorSwarm meteorSwarm -> {
                 controller.advanceMeteor();
             }
 
-            default -> Logger.error("no effect");
+            case SldPirates pirates -> {
+                controller.advanceMeteor();
+            }
+
+            default -> Logger.error("caso non previsto");
         }
+
     }
 
     private void askOneDoubleDrill(){

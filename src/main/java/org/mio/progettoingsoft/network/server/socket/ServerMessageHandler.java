@@ -130,6 +130,10 @@ public class ServerMessageHandler implements Runnable {
                         serverController.advanceMeteor(advanceMeteorMessage.getGameId(), advanceMeteorMessage.getNickname());
                     }
 
+                    case AdvanceCannonMessage advanceCannonMessage -> {
+                        serverController.advanceCannon(advanceCannonMessage.getGameId(), advanceCannonMessage.getNickname());
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito lato server");
                     }

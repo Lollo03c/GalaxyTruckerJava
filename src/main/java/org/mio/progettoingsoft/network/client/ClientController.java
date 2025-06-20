@@ -1,7 +1,9 @@
 package org.mio.progettoingsoft.network.client;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
+import org.mio.progettoingsoft.advCards.PenaltyType;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
@@ -10,6 +12,7 @@ import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
+import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.enums.MeteorType;
@@ -87,6 +90,7 @@ public class ClientController {
 
     private List<GoodType> goodsToInsert = new ArrayList<>();
     private Meteor meteor;
+    private CannonPenalty cannon;
 
     private String choiceErrorMessage;
 
@@ -762,16 +766,60 @@ public class ClientController {
         }
     }
 
+
+
+    public void removeBattery(int quantity){
+        try{
+            server.removeBattery(idGame, nickname, quantity);
+        }
+        catch (Exception e){
+            throw new RuntimeException("");
+        }
+    }
+
+    public void removeBatteriesFromModel(List<Integer> batteryDepotId){
+        synchronized (flyboardLock){
+            for (int id : batteryDepotId){
+                Logger.debug("Removed battery from component id " + id);
+                flyBoard.getComponentById(id).removeOneEnergy();
+            }
+        }
+    }
+
+    public void advanceMeteor(){
+        try{
+            server.advanceMeteor(idGame, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeComponent(Cordinate cordinate){
+        try{
+            server.removeComponent(idGame, nickname, cordinate);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeComponentFromModel(String nickname, Cordinate cord){
+        synchronized (flyboardLock) {
+            Logger.debug("removed component of " + nickname + " from cordinate " + cord);
+            ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+            otherShip.removeComponent(cord);
+        }
+    }
+
     public void meteorHit(MeteorType type, Direction direction, int number){
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
 
-        shipBoard.drawShipboard();
-
         Optional<Cordinate> optCordinateHit = meteor.findHit(shipBoard, number);
         if (optCordinateHit.isEmpty()) {
+            advanceMeteor();
             return;
         }
+
         Cordinate cordinateHit = optCordinateHit.get();;
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
@@ -833,45 +881,41 @@ public class ClientController {
         }
     }
 
-    public void removeBattery(int quantity){
-        try{
-            server.removeBattery(idGame, nickname, quantity);
+    public void cannonHit(CannonType type, Direction direction, int number){
+        cannon = new CannonPenalty(direction, type);
+        cannon.setNumber(number);
+
+        Optional<Cordinate> optCordinateHit = cannon.findHit(shipBoard, number);
+        if (optCordinateHit.isEmpty()) {
+            advanceCannon();
+            return;
         }
-        catch (Exception e){
-            throw new RuntimeException("");
+
+        Cordinate cordinateHit = optCordinateHit.get();;
+        Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
+
+        cannon.setCordinateHit(cordinateHit);
+
+        if (type.equals(CannonType.HEAVY)){
+            removeComponent(cordinateHit);
+            advanceCannon();
         }
+        else{
+            setCardState(CardState.SHIELD_SELECTION);
+        }
+
+
     }
 
-    public void removeBatteriesFromModel(List<Integer> batteryDepotId){
-        synchronized (flyboardLock){
-            for (int id : batteryDepotId){
-                Logger.debug("Removed battery from component id " + id);
-                flyBoard.getComponentById(id).removeOneEnergy();
-            }
-        }
-    }
-
-    public void advanceMeteor(){
+    public void advanceCannon(){
         try{
-            server.advanceMeteor(idGame, nickname);
+            server.advanceCannon(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeComponent(Cordinate cordinate){
-        try{
-            server.removeComponent(idGame, nickname, cordinate);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void removeComponentFromModel(String nickname, Cordinate cord){
-        synchronized (flyboardLock) {
-            Logger.debug("removed component of " + nickname + " from cordinate " + cord);
-            ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-            otherShip.removeComponent(cord);
-        }
+    public CannonPenalty getCannon() {
+        return cannon;
     }
 }

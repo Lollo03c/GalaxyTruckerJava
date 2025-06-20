@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.network.client.Client;
@@ -257,6 +258,13 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     public void removeComponent(String nickname, Cordinate cord) throws RemoteException{
         executors.submit(() -> {
             controller.removeComponentFromModel(nickname, cord);
+        });
+    }
+
+    @Override
+    public void cannonHit(CannonType type, Direction direction, int number) throws RemoteException{
+        executors.submit(() -> {
+            controller.cannonHit(type, direction, number);
         });
     }
 

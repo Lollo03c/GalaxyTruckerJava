@@ -6,13 +6,14 @@ import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.ShipBoard;
+import org.mio.progettoingsoft.model.enums.CannonType;
 
 import java.util.Optional;
 
 public class LightCannon extends CannonPenalty {
 
     public LightCannon(Direction direction) {
-        super(direction);
+        super(direction, CannonType.LIGHT);
     }
 
     public PenaltyType getType(){

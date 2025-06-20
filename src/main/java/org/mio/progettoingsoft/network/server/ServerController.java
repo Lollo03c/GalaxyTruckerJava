@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
@@ -15,6 +16,7 @@ import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.FlyBoardNotifiable;
 import org.mio.progettoingsoft.model.Hourglass;
+import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
@@ -561,6 +563,8 @@ public class ServerController {
 
     public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
         SldAdvCard card = game.getFlyboard().getPlayedCard();
 
         switch (card) {
@@ -583,6 +587,13 @@ public class ServerController {
                 } else {
                     sldSmugglers.setNextPlayer();
                 }
+            }
+
+            case SldPirates sldPirates -> {
+                Logger.debug(nickname + drillCordinates);
+                Player player = flyBoard.getPlayerByUsername(nickname);
+
+                sldPirates.loadPower(player, drillCordinates);
             }
 
             default -> Logger.error("effetto carta non consentito");
@@ -643,7 +654,24 @@ public class ServerController {
                         throw new RuntimeException(e);
                     }
                 }
+            }
 
+            case SldPirates sldPirates -> {
+                CannonPenalty cannon = sldPirates.getActualCannon();
+                cannon.setNumber(number);
+                Direction direction = cannon.getDirection();
+                CannonType type = cannon.getCannonType();
+                List<String> nicknameToHit = sldPirates.getPenaltyPlayers().stream().map(Player::getNickname).toList();
+
+                for (String nick : game.getClients().keySet()){
+                    if (nicknameToHit.contains(nick)){
+                        try{
+                            game.getClients().get(nick).cannonHit(type, direction, number);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
             }
 
             default -> Logger.error("No effect for setRollResult");
@@ -681,7 +709,19 @@ public class ServerController {
 
             default -> Logger.error("Effect not taken");
         }
+    }
 
+    public void advanceCannon(int idGame, String nickname){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        SldAdvCard card = game.getFlyboard().getPlayedCard();
+
+        switch (card){
+            case SldPirates pirates ->{
+                pirates.setNextCannon();
+            }
+
+            default -> Logger.error("Effect not taken");
+        }
     }
 
     public void startHourglass(int idGame){
