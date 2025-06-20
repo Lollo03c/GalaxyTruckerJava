@@ -82,4 +82,6 @@ public interface VirtualClient extends Remote {
     void removeComponent(String nickname, Cordinate cord) throws Exception;
 
     void cannonHit(CannonType type, Direction direction, int number) throws Exception;
+
+    void startedHourglass(int idGame) throws Exception;
 }

@@ -11,16 +11,13 @@ import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FlyBoardNormal extends FlyBoard  {
     public FlyBoardNormal(Set<String> nicknames){
         super(GameMode.NORMAL, nicknames);
     }
-
+    private Hourglass hourglass;
 
 
     public static int indexToPosition(int index) {
@@ -145,6 +142,18 @@ public class FlyBoardNormal extends FlyBoard  {
             newCircuit.add(Optional.empty());
 
         return newCircuit;
+    }
+
+    @Override
+    public void startHourglass(int idGame) {
+        if (firstUseHourglass){
+            this.hourglass = new Hourglass(GameManager.getInstance().getOngoingGames().get(idGame));
+            firstUseHourglass = false;
+            hourglass.avvia();
+        }
+        else{
+            hourglass.avvia();
+        }
     }
 
     protected void buildLittleDecks(){

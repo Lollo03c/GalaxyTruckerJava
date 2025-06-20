@@ -268,5 +268,14 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         });
     }
 
+    @Override
+    public void startedHourglass(int idGame) throws RemoteException{
+        executors.submit(() -> {
+            controller.setPendingHourglass(true);
+            controller.incrementHourglassCounter();
+        });
+    }
+
+
 
 }

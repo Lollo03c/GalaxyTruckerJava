@@ -11,6 +11,7 @@ import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -37,14 +38,24 @@ public class ClientController {
     private int tempIdClient;
     private VirtualServer server;
     private final ConnectionInfo connectionInfo;
-    private boolean hourglassStarted = false;
     private int hourglassCounter = 0;
-    private boolean pendingHourglass = false;
+    private boolean pendingHourglass = true;
+    private boolean finishedBuilding = false;
 
+    public boolean getFinishedBuilding(){
+        return finishedBuilding;
+    }
     public int getHourglassCounter(){
         return hourglassCounter;
     }
 
+    public void setPendingHourglass(boolean pendingHourglass){
+        this.pendingHourglass = pendingHourglass;
+    }
+
+    public void incrementHourglassCounter(){
+        hourglassCounter++;
+    }
 
 
     private ClientController(ConnectionInfo connectionInfo) {
@@ -106,6 +117,8 @@ public class ClientController {
 
     public void setState(GameState state) {
         GameState oldState;
+        if(state.equals(GameState.FINISH_HOURGLASS))
+            pendingHourglass = false;
         synchronized (stateLock) {
             oldState = this.gameState;
             this.gameState = state;
@@ -417,7 +430,7 @@ public class ClientController {
         }
     }
 
-    public void handleBuildingShip(int chosen) {
+    public void handleBuildingShip(int chosen) throws CannotRotateHourglassException {
         System.out.println("choice : " + chosen);
         if (chosen == 1) {
             try {
@@ -438,6 +451,7 @@ public class ClientController {
             setState(GameState.END_BUILDING);
         } else if (chosen == 6) {
             try {
+                finishedBuilding = true;
                 server.endBuild(idGame, nickname);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -446,12 +460,36 @@ public class ClientController {
             setState(GameState.CHOICE_BUILT);
         } else if (chosen == 8) {
             try {
+                if ( pendingHourglass ){
+                    throw new CannotRotateHourglassException("hourglass timer is already started");
+                }else if (hourglassCounter == 2 && !getState().equals(GameState.END_BUILDING)) {
+                    throw new CannotRotateHourglassException("you cannot rotate hourglass : you need to finish your ship building first");
+                }else if (hourglassCounter == 3) {
+                    throw new CannotRotateHourglassException("hourglass cannote be rotated anymore");
+                }
+                pendingHourglass = true;
                 server.startHourglass(idGame);
             }catch (Exception e){
                 throw new RuntimeException(e);
             }
             setState(GameState.BUILDING_SHIP);
         }
+    }
+
+    // this method is called only by the players who have already finished the ship building
+    public void rotateHourglass() {
+        try {
+            if ( pendingHourglass ){
+                throw new CannotRotateHourglassException("hourglass timer is already started");
+            } else if (hourglassCounter == 3) {
+                throw new CannotRotateHourglassException("hourglass cannote be rotated anymore");
+            }
+            pendingHourglass = true;
+            server.startHourglass(idGame);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        setState(GameState.END_BUILDING);
     }
 
     public void drawUncovered(int idComp) {

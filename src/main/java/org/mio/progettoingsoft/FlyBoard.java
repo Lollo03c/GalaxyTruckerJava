@@ -17,6 +17,7 @@ import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NoMoreComponentsException;
 import org.mio.progettoingsoft.model.FlyBoardEasy;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.Hourglass;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.Event;
@@ -45,7 +46,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     protected final List<Integer> deck;
 
-
+    protected boolean firstUseHourglass = true;
     public final List<Optional<Player>> circuit;
     private List<Player> scoreBoard = new ArrayList<>();
     protected final List<Integer> coveredComponents;
@@ -58,7 +59,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     private SldAdvCard playedCard;
 
-    private HourGlass hourGlass;
+
 
     private final List<Integer> availableConstructedShips;
 
@@ -101,6 +102,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         availableConstructedShips.addAll(List.of(1, 2, 3, 4));
 
     }
+
+    public abstract void startHourglass(int idGame);
 
     protected abstract void buildLittleDecks();
     public abstract void setLittleDecks(List<List<Integer>> decks);

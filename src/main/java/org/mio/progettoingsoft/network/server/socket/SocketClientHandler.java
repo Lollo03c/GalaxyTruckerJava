@@ -262,4 +262,11 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         sendMessage(message);
     }
 
+    @Override
+    public void startedHourglass(int idGame) throws IOException{
+        Message message = new StartHourglassMessage(idGame," ");
+        sendMessage(message);
+    }
+
+
 }

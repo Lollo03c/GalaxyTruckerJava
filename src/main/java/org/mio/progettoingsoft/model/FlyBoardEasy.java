@@ -24,6 +24,10 @@ public class FlyBoardEasy extends FlyBoard {
         super(GameMode.EASY, nicknames);
     }
 
+    @Override
+    public void startHourglass(int idGame) {
+
+    }
 
     @Override
     protected Map<Integer, AdventureCard > loadAdventureCard() {

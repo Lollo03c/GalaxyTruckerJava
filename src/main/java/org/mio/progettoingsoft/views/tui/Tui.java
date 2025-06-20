@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
@@ -25,6 +26,8 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
+
+import static org.mio.progettoingsoft.views.tui.CircuitCell.GREEN;
 
 public class Tui implements View {
     private Scanner scanner = new Scanner(System.in);
@@ -109,11 +112,19 @@ public class Tui implements View {
             }
 
             case FINISH_HOURGLASS -> {
-                System.out.println("Hourglass has finished its cycle number : " + controller.getHourglassCounter());
+                controller.setPendingHourglass(false);
+                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);
             }
 
             case FINISH_LAST_HOURGLASS -> {
-                //todo implementare logica secondo la quale la costruzione viene stoppata
+                //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
+                //di simile e deve processare l'input mi genera un'eccezione
+                if(!controller.getFinishedBuilding()){
+                    //controller.setState(GameState.CHOOSE_POSITION);
+                }
+                else{
+                    controller.setState(GameState.END_BUILDING);
+                }
             }
 
             case INVALID_SHIP_CHOICE -> {
@@ -139,8 +150,7 @@ public class Tui implements View {
                 printChoosePosition();
             }
             case END_BUILDING -> {
-                System.out.println("Waiting for other players" + RESET);
-
+                endBuildingMenu();
             }
 
             case UNABLE_UNCOVERED_COMPONENT -> {
@@ -171,6 +181,29 @@ public class Tui implements View {
             case GOODS_PLACEMENT -> goodPlacement();
 
 
+        }
+    }
+
+    private void endBuildingMenu(){
+        System.out.println("Waiting for other players" + RESET);
+        System.out.println("Type \"r\" to rotate hourglass");
+        String input = " ";
+        while(!input.equalsIgnoreCase("r")){
+            input = scanner.nextLine();
+        }
+        try{
+            controller.rotateHourglass();
+        } catch (CannotRotateHourglassException e) {
+            System.out.println(RED + e.getMessage() + RESET);
+            controller.setState(GameState.END_BUILDING);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof CannotRotateHourglassException) {
+                System.out.println(RED + cause.getMessage() + RESET);
+            } else {
+                throw e;
+            }
+            controller.setState(GameState.END_BUILDING);
         }
     }
 
@@ -464,6 +497,10 @@ public class Tui implements View {
             printStartGameInfo();
             System.out.println(BLUE + "It's time to build your ship!" + RESET);
             firstBuilding = false;
+            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partitaAdd commentMore actions
+            if(controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE)  && mode.equals(GameMode.NORMAL)){
+                controller.startHourglass();
+            }
         }
         int choice = -1;
         String input = "";
@@ -500,8 +537,20 @@ public class Tui implements View {
             controller.setState(GameState.BUILDING_SHIP);
             return;
         }
-
-        controller.handleBuildingShip(choice);
+        try {
+            controller.handleBuildingShip(choice);
+        } catch (CannotRotateHourglassException e) {
+            System.out.println(RED + e.getMessage() + RESET);
+            controller.setState(GameState.BUILDING_SHIP);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof CannotRotateHourglassException) {
+                System.out.println(RED + cause.getMessage() + RESET);
+            } else {
+                throw e;
+            }
+            controller.setState(GameState.BUILDING_SHIP);
+        }
         clearConsole();
     }
 
