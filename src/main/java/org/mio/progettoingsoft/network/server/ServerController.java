@@ -65,7 +65,7 @@ public class ServerController {
         ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();
         shipBoard.addComponentToPosition(idComp, cordinate, rotations);
 
-        Logger.debug(nickname + " added component " + idComp);
+        Logger.debug(nickname + " added component " + idComp + " " + cordinate + " " + rotations);
 
         for (Player player : game.getFlyboard().getPlayers()) {
             if (!player.getNickname().equals(nickname)) {

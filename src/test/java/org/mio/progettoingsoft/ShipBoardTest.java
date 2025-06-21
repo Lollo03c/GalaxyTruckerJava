@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
+import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,161 +38,242 @@ class ShipBoardTest {
 
     private FlyBoard flyBoard;
     private ShipBoard first, second, third, fourth;
+    private ShipBoard yellow;
     @BeforeEach
     void setup(){
         flyBoard = FlyBoard.createFlyBoard(GameMode.NORMAL, Set.of("Antonio", "Andrea", "Lorenzo", "Stefano"));
-        first = flyBoard.getPlayerByUsername("Antonio").getShipBoard();
+        first = ShipBoardNormal.buildFirst(flyBoard);
         second = flyBoard.getPlayerByUsername("Andrea").getShipBoard();
         third = flyBoard.getPlayerByUsername("Lorenzo").getShipBoard();
         fourth = flyBoard.getPlayerByUsername("Stefano").getShipBoard();
+
+        yellow = ShipBoardNormal.buildYellow(flyBoard);
     }
 
     @Test
-    void should_add_a_component(){
-//        Component comp = flyBoard.getComponentById(4);
-
-        first.addComponentToPosition(5, new Cordinate(2, 4), 0);
-
-        assertEquals(flyBoard.getComponentById(5), first.getOptComponentByCord(new Cordinate(2, 4)).get());
+    void should_count_exposed_connector(){
+        assertEquals(4, yellow.getExposedConnectors());
+        assertEquals(8, first.getExposedConnectors());
     }
 
+    @Test
+    void shoud_get_base_fire_power(){
+        assertEquals(5.5, yellow.getBaseFirePower());
+        assertEquals(3.5, first.getBaseFirePower());
+
+
+    }
+
+    @Test
+    void should_get_base_engine_power(){
+        assertEquals(3, yellow.getBaseEnginePower());
+        assertEquals(1, first.getBaseEnginePower());
+    }
+
+    @Test
+    void should_book_a_component(){
+        int idComp = flyBoard.drawComponent();
+        yellow.addBookedComponent(idComp);
+
+        assertFalse(flyBoard.getCoveredComponents().contains(idComp));
+        assertTrue(yellow.getBookedComponents().contains(Optional.of(idComp)));
+    }
+
+    @Test
+    void should_swap_bookedComponents() {
+        int first = flyBoard.drawComponent();
+        yellow.addBookedComponent(first);
+
+        int second = flyBoard.drawComponent();
+        yellow.addBookedComponent(second);
+
+        int third = flyBoard.drawComponent();
+        yellow.swapBookComponent(third, 0);
+
+        assertEquals(third, yellow.getBookedComponents().get(0).get());
+        assertEquals(second, yellow.getBookedComponents().get(1).get());
+    }
+
+    @Test
+    void should_remove_booked_component(){
+        int comp = flyBoard.drawComponent();
+        yellow.addBookedComponent(comp);
+        assertTrue(yellow.getBookedComponents().contains(Optional.of(comp)));
+
+        yellow.removedBookedComponent(0);
+        assertFalse(yellow.getBookedComponents().contains(Optional.of(comp)));
+    }
+
+    @Test
+    void should_test_shipboard_dimensions(){
+        assertEquals(5, yellow.getOffsetRow());
+        assertEquals(4, yellow.getOffsetCol());
+    }
+
+    @Test
+    void should_test_stored_quantity(){
+        for (GoodType type : GoodType.values()){
+            switch (type){
+                case BLUE -> {
+                    assertEquals(2, yellow.getStoredQuantity(type));
+                    assertEquals(2, first.getStoredQuantity(type));
+                }
+
+                case GREEN -> {
+                    assertEquals(1, yellow.getStoredQuantity(type));
+                    assertEquals(1, first.getStoredQuantity(type));
+                }
+
+                case YELLOW -> {
+                    assertEquals(3, yellow.getStoredQuantity(type));
+                    assertEquals(1, first.getStoredQuantity(type));
+                }
+
+                case RED -> {
+                    assertEquals(1, yellow.getStoredQuantity(type));
+                    assertEquals(1, first.getStoredQuantity(type));
+                }
+            }
+        }
+    }
+
+    //todo bisogna farlo ricorsivo
     @Test
     void should_remove_component(){
-        first.addComponentToPosition(5, new Cordinate(2, 2), 0);
-        first.removeComponent(new Cordinate(2, 2));
+        yellow.removeComponent(new Cordinate(0, 4));
 
-        assertTrue(first.getOptComponentByCord(new Cordinate(2, 2)).isEmpty());
+        assertEquals(Optional.empty(), yellow.getOptComponentByCord(new Cordinate(0, 4)));
     }
 
     @Test
-    void shuold_not_remove_component_if_not_present(){
-        assertThrows(IncorrectShipBoardException.class, () -> first.removeComponent(new Cordinate(2, 2)));
+    void should_remove_energy(){
+        final int initial = yellow.getQuantBatteries();
+        assertEquals(5, yellow.getQuantBatteries());
+
+        final int quantityRemoved = 2;
+        List<Integer> removed = yellow.removeEnergy(quantityRemoved);
+
+        assertEquals(initial - quantityRemoved, yellow.getQuantBatteries());
+        assertEquals(quantityRemoved, removed.size());
+
+        assertThrows(IncorrectShipBoardException.class, () -> yellow.removeEnergy(4));
     }
 
     @Test
-    void shoud_not_add_two_component_in_the_same_place(){
-        Cordinate position = new Cordinate(2, 2);
-
-        first.addComponentToPosition(20, position, 0);
-        assertThrows(IncorrectShipBoardException.class, () -> first.addComponentToPosition(30, position, 0));
-
-        assertEquals(flyBoard.getComponentById(20), first.getOptComponentByCord(position).get());
-
-    }
-
-    @Test
-    void should_add_some_batteries(){
-        first.addComponentToPosition(1, new Cordinate(2, 4), 0);
-        first.addComponentToPosition(2, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(3, new Cordinate(2, 1), 0);
-
-        assertEquals(6, first.getQuantBatteries());
-        assertEquals(0, first.getBaseEnginePower());
-        assertEquals(0, first.getBaseFirePower());
-    }
-
-    @Test
-    void should_add_some_drills(){
-        first.addComponentToPosition(101, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(102, new Cordinate(2, 1), 0);
-        first.addComponentToPosition(126, new Cordinate(2, 0), 0);
-
-        assertEquals(0, first.getQuantBatteries());
-        assertEquals(0, first.getBaseEnginePower());
-        assertEquals(2, first.getBaseFirePower());
-    }
-
-    @Test
-    void should_add_some_rotated_drills(){
-
-        first.addComponentToPosition(101, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(102, new Cordinate(2, 1), 1);
-        first.addComponentToPosition(126, new Cordinate(2, 0), 0);
-
-        assertEquals(0, first.getQuantBatteries());
-        assertEquals(0, first.getBaseEnginePower());
-        assertEquals(1.5f, first.getBaseFirePower());
-    }
-
-    @Test
-    void should_add_some_engine(){
-        first.addComponentToPosition(71, new Cordinate(3, 3), 0);
-        first.addComponentToPosition(72, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(92, new Cordinate(2, 1), 0);
-
-        assertEquals(0, first.getQuantBatteries());
-        assertEquals(2, first.getBaseEnginePower());
-        assertEquals(0, first.getBaseFirePower());
-    }
-
-    @Test
-    void should_add_some_components(){
-        first.addComponentToPosition(71, new Cordinate(2, 2), 0);   //engine
-        first.addComponentToPosition(92, new Cordinate(2, 1), 0);   //double engine
-        first.addComponentToPosition(1, new Cordinate(2, 0), 1);    //double battery
-        first.addComponentToPosition(12, new Cordinate(2, 4), 0);   //triple battery
-        first.addComponentToPosition(101, new Cordinate(2, 5),  3); //drill
-        first.addComponentToPosition(126, new Cordinate(3, 3), 0);  //double dirll
-
-        assertEquals(5, first.getQuantBatteries());
-        assertEquals(1, first.getBaseEnginePower());
-        assertEquals(0.5f, first.getBaseFirePower());
-    }
-
-    @Test
-    void should_stole_only_red(){
-        first.addComponentToPosition(62, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(63, new Cordinate(2, 1), 0);
-
-        flyBoard.getComponentById(62).addGood(GoodType.RED);
-        flyBoard.getComponentById(63).addGood(GoodType.YELLOW);
-
-        for (GoodType type : GoodType.values()){
-            assertEquals(switch (type){
-                case RED, YELLOW -> 1;
-                default -> 0;
-            }, first.getStoredQuantity(type));
-        }
-
-        first.stoleGood(1);
-        for (GoodType type : GoodType.values()){
-            assertEquals(switch (type){
-                case YELLOW -> 1;
-                default -> 0;
-            }, first.getStoredQuantity(type));
-        }
-
-        first.stoleGood(1);
-        for (GoodType type : GoodType.values()){
-            assertEquals(switch (type){
-                case YELLOW -> 0;
-                default -> 0;
-            }, first.getStoredQuantity(type));
+    void should_test_matrix_id_creation(){
+        Optional<Integer>[][] matrix = yellow.getComponentIdsMatrix();
+        for (int i = 0; i < 5; i++){
+            for (int j = 0; j < 7; j++){
+                if (matrix[i][j].isEmpty())
+                    assertEquals(yellow.getOptComponentByCord(new Cordinate(i, j)), matrix[i][j]);
+                else
+                    assertEquals(yellow.getOptComponentByCord(new Cordinate(i, j)).get().getId(), matrix[i][j].get());
+            }
         }
     }
 
     @Test
-    void stole_battery(){
-        first.addComponentToPosition(62, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(1, new Cordinate(2, 1), 0);
+    void should_count_double_engine(){
+        assertEquals(1, yellow.getDoubleEngine().size());
+        assertTrue(yellow.getDoubleEngine().contains(98));
 
-        flyBoard.getComponentById(62).addGood(GoodType.BLUE);
-        assertEquals(2, first.getQuantBatteries());
-
-        first.stoleGood(2);
-        assertEquals(0, first.getStoredQuantity(GoodType.BLUE));
-        assertEquals(1, first.getQuantBatteries());
-
-        first.stoleGood(1);
-        assertEquals(0, first.getQuantBatteries());
+        assertEquals(2, first.getDoubleEngine().size());
+        assertTrue(first.getDoubleEngine().contains(97));
+        assertTrue(first.getDoubleEngine().contains(96));
     }
-//
-    @Test
-    void should_add_housing_with_top_alien(){
 
-        first.addComponentToPosition(137, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(46, new Cordinate(2,1), 0);
-        first.validateShip();
+    @Test
+    void should_count_guests(){
+        assertEquals(7, yellow.getQuantityGuests());
+        assertEquals(7, first.getQuantityGuests());
+    }
+
+    @Test
+    void should_stole_goods(){
+        yellow.stoleGood(3);
+
+        assertEquals(0, yellow.getStoredQuantity(GoodType.RED));
+        assertEquals(1, yellow.getStoredQuantity(GoodType.YELLOW));
+        assertEquals(1, yellow.getStoredQuantity(GoodType.GREEN));
+        assertEquals(2, yellow.getStoredQuantity(GoodType.BLUE));
+
+        yellow.stoleGood(100);
+        for (GoodType type : GoodType.values())
+            assertEquals(0, yellow.getStoredQuantity(type));
+
+        assertEquals(0, yellow.getQuantBatteries());
+    }
+
+    @Test
+    void should_get_double_drills(){
+        List<Cordinate> cordinates = yellow.getDoubleDrills();
+
+        assertEquals(2, cordinates.size());
+        assertTrue(cordinates.contains(new Cordinate(1, 1)));
+        assertTrue(cordinates.contains(new Cordinate(0, 4)));
+
+        cordinates = first.getDoubleDrills();
+
+        assertEquals(1, cordinates.size());
+        assertTrue(cordinates.contains(new Cordinate(2, 6)));
+    }
+
+    @Test
+    void should_get_covered_direction_from_shield(){
+        for (Direction dir : Direction.values()){
+            switch (dir){
+                case FRONT -> {
+                    assertFalse(yellow.coveredByShield(dir));
+                    assertTrue(first.coveredByShield(dir));
+                }
+
+                case RIGHT -> {
+                    assertTrue(yellow.coveredByShield(dir));
+                    assertFalse(first.coveredByShield(dir));
+                }
+
+                case BACK -> {
+                    assertTrue(yellow.coveredByShield(dir));
+                    assertFalse(first.coveredByShield(dir));
+                }
+
+                case LEFT -> {
+                    assertFalse(yellow.coveredByShield(dir));
+                    assertTrue(first.coveredByShield(dir));
+                }
+            }
+        }
+    }
+
+    @Test
+    void should_get_drills(){
+        yellow.drawShipboard();
+
+        for (Direction dir : Direction.values()){
+            switch (dir){
+                case FRONT -> {
+                    List<Cordinate> drill = yellow.getDrills(dir);
+                    assertEquals(4, drill.size());
+                }
+
+                case RIGHT -> {
+                    List<Cordinate> drill = yellow.getDrills(dir);
+                    assertEquals(2, drill.size());
+                }
+
+                case BACK -> {
+                    List<Cordinate> drill = yellow.getDrills(dir);
+                    assertEquals(0, drill.size());
+                }
+
+                case LEFT -> {
+                    List<Cordinate> drill = yellow.getDrills(dir);
+                    assertEquals(1, drill.size());
+                }
+            }
+        }
+
+
     }
 //
 //    @Test

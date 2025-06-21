@@ -18,17 +18,22 @@ public class Player {
     private int credits;
     private HousingColor color;
     private ShipBoard shipBoard;
-    private int discardedComponents;
     private Component inHand;
     private boolean isRunning;
-//    private final VirtualView view;
-    private List<GoodType> tmpGoods;
+
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
+    /**
+     * create a new instance of {@link Player}, it is called by the constructor of {@link FlyBoard}
+     * @param nickname : {@link String} chosen by input from the player
+     * @param color : {@link HousingColor} : the color assainged by the {@link FlyBoard}
+     * @param mode {@link GameMode} the difficulty of the game the {@link Player} has been added
+     * @param flyboard : the {@link FlyBoard} he is being added
+     */
     public Player(String nickname, HousingColor color, GameMode mode, FlyBoard flyboard) {
         this.nickname = nickname;
         credits = 0;
@@ -36,7 +41,6 @@ public class Player {
 
         shipBoard = ShipBoard.createShipBoard(mode, color, flyboard);
 
-        discardedComponents = 0;
         inHand = null;
         this.isRunning = false;
 
@@ -61,38 +65,15 @@ public class Player {
         return this.color;
     }
 
-//    public View getView(){
-//        return view;
-//    }
-
     public void setHousingColor(HousingColor color){
         this.color = color;
     }
 
-    public Component getInHand() {
-        return inHand;
-    }
 
-    public void setInHand(Component inHand) {
-        this.inHand = inHand;
-    }
-
-    public Component refuseComponentInHand() {
-        if( inHand == null)
-            throw new NoComponentInHandException("No component in hand!");
-
-        Component temp = inHand;
-        inHand = null;
-        return temp;
-    }
-
-
-    public void addDiscardComponent(int quantity) {
-        discardedComponents += quantity;
-    }
-
-
-
+    /**
+     * add the amount of credits passed as parameter
+     * @param quantity : the amount to add
+     */
     public void addCredits(int quantity) {
         credits += quantity;
         Event event = new AddCreditsEvent(nickname, quantity);
@@ -101,62 +82,20 @@ public class Player {
 
     }
 
-    public void giveGoods(List<GoodType> goods) {
-        this.tmpGoods = goods;
-    }
-
+    /**
+     * removes the amount of credits passed as parameter, setting 0 if not amout passed is greater the the available quantity
+     * @param quantity : amount of credits to remove
+     */
     public void removeCredits(int quantity) {
         credits = Integer.max(0, credits - quantity);
     }
 
-//    public Integer getGoodsQuantiy(GoodType type) {
-//        return shipBoard.getStoredQuantityGoods(type);
-//    }
 
-//    public void addGoods(GoodType type, Integer quantity) throws FullGoodDepot {
-//        for (int i = 0; i < quantity; i++)
-//            shipBoard.addGood(type);
-//    }
-
-//    public void removeGoods(GoodType type, Integer quantity) throws NotEnoughGoods {
-//        for (int i = 0; i < quantity; i++)
-//            shipBoard.removeGood(type);
-//    }
-
-    public void rotateHourGlass(){
-
-    }
-
-    //rotazione orario
-    public void addCompoment(Component comp, int row, int column, int rotations) throws IncorrectPlacementException {
-// DOMANDA : Dove il giocatore sceglie quante volte girare il componente?
-//        (Anto) credo sia compito del controller
-        for (int i = 0; i < rotations; i++){
-            comp.rotateClockwise();
-        }
-//secondo me potremmo mettere il metodo void e non fare il controllo con l'if
-//        shipBoard.addComponentToPosition(comp, row, column);
-//            System.out.println("Occupied cell");
-
-    }
-
-//    public Integer getQuantBatteries(){
-//        return shipBoard.getQuantBatteries();
-//    }
-//
-//    public void removeEnergy() throws NotEnoughBatteriesException {
-//        shipBoard.removeEnergy();
-//    }
-//
-//    public void addHumanGuest(int quantity) throws NotEnoughHousingException {
-//        for (int i = 0; i < quantity; i++)
-//            shipBoard.addHumanGuest();
-//    }
-//
-//    public void addAlien() throws NotEnoughHousingException {
-//
-//    }
-
+    /**
+     *
+     * @param other : Object
+     * @return whether the object passed is the same {@link Player}, checking the usernames, returs false it the Object passes is not a {@link Player} instance
+     */
     public boolean equals(Object other) {
         if(other == null)
             return false;
@@ -166,18 +105,28 @@ public class Player {
         return this.nickname.equals(tmp.getNickname());
     }
 
+    /**
+     *
+     * @return whether the {@link Player} has been collected on the {@link FlyBoard} and he is playing
+     */
     public boolean isRunning() {
         return isRunning;
     }
 
+    /**\
+     * Indicates whether the {@link Player} has been collected on the {@link FlyBoard} and he is playing
+     * @param running : boolean
+     */
     public void setRunning(boolean running) {
         this.isRunning = running;
     }
 
-    public void copyShipboard(ShipBoard shipBoard){
-        this.shipBoard = shipBoard;
-    }
-
+    /**
+     * Set the {@link ShipBoard} of the player to the {@link ShipBoard} passed as parameter
+     *
+     * It is only used when copying an already built {@link ShipBoard} by default, and for this reason does not check anything on it
+     * @param shipBoard : the {@link ShipBoard} to set for the {@link Player}
+     */
     public void setShipBoard(ShipBoard shipBoard){
         this.shipBoard = shipBoard;
     }

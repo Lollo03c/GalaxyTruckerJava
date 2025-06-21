@@ -1135,7 +1135,7 @@
     "top" : "flat",
     "right" : "flat",
     "bottom" : "single",
-    "left" : "triple",
+    "left" : "flat",
     "kind" : ""
   },
   {

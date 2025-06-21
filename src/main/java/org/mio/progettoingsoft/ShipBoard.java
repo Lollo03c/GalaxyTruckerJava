@@ -58,6 +58,7 @@ public abstract class ShipBoard {
     public HousingColor getHousingColor(){
         return housingColor;
     }
+
     protected ShipBoard(HousingColor color, FlyBoard flyBoard) {
         this.flyBoard = flyBoard;
         housingColor = color;
@@ -145,14 +146,6 @@ public abstract class ShipBoard {
 
     public void setActivatedFirePower(double activatedFirePower) {
         this.activatedFirePower = activatedFirePower;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public int getColumns() {
-        return columns;
     }
 
     public int getOffsetCol() {
@@ -272,7 +265,8 @@ public abstract class ShipBoard {
         if (getOptComponentByCord(cordinate).isEmpty())
             throw new IncorrectShipBoardException("tile is empty. nothing to remove");
 
-        shipComponents[cordinate.getRow()][cordinate.getRow()] = Optional.empty();
+        shipComponents[cordinate.getRow()][cordinate.getColumn()] = Optional.empty();
+
         discaredComponents++;
 
     }
@@ -378,9 +372,10 @@ public abstract class ShipBoard {
         return getCompStream().mapToInt(Component::getEnergyQuantity).sum();
     }
 
-    public List<Component> getDoubleEngine() {
+    public List<Integer> getDoubleEngine() {
         return getCompStream()
                 .filter(comp -> comp.getEnginePower(true) == 2)
+                .map(comp -> comp.getId())
                 .toList();
     }
 
@@ -428,7 +423,7 @@ public abstract class ShipBoard {
 
             try {
                 Cordinate toCheck =new Cordinate(cord.getRow() + dir.offsetRow(), cord.getColumn() + dir.offsetCol());
-                if (getOptComponentByCord(toCheck).isEmpty())
+                if (! getOptComponentByCord(toCheck).isEmpty())
                     incorrect.add(cord);
 
             }
@@ -472,7 +467,12 @@ public abstract class ShipBoard {
         return incorrect;
     }
 
+    /**
+     * metod called once the {@link ShipBoard} has being built to validate it
+     * @throws IncorrectShipBoardException if the {@link ShipBoard} is not valid
+     */
     public void validateShip() throws IncorrectShipBoardException{
+        Set<Cordinate> incorrect = getIncorrectComponents();
         if (!getIncorrectComponents().isEmpty())
             throw new IncorrectShipBoardException("shipboard is not valid");
 
@@ -673,39 +673,48 @@ public abstract class ShipBoard {
 
 
     public void keepPart(int row, int col){
-        List<Set<Component>> multiple = Collections.emptyList(); // getMultiplePieces();
-        int partToKeep = -1;
-        for(int i = 0; i < multiple.size(); i++){
-            Set<Component> set = multiple.get(i);
-            for(Component c : set){
-                if(c.getRow() == row && c.getColumn() == col){
-                    partToKeep = i;
-                    break;
-                }
-            }
-            if(partToKeep != -1){
-                break;
-            }
-        }
-        if(partToKeep == -1){
-            throw new BadParameterException("No components at row " + row + " and column " + col);
-        }
-        for(int i = 0; i < multiple.size(); i++){
-            if(i != partToKeep){
-                Set<Component> set = multiple.get(i);
-                for(Component c : set){
-                    this.removeComponent(new Cordinate(c.getRow(), c.getColumn()));
-                }
-            }
-        }
+//        List<Set<Component>> multiple = Collections.emptyList(); // getMultiplePieces();
+//        int partToKeep = -1;
+//        for(int i = 0; i < multiple.size(); i++){
+//            Set<Component> set = multiple.get(i);
+//            for(Component c : set){
+//                if(c.getRow() == row && c.getColumn() == col){
+//                    partToKeep = i;
+//                    break;
+//                }
+//            }
+//            if(partToKeep != -1){
+//                break;
+//            }
+//        }
+//        if(partToKeep == -1){
+//            throw new BadParameterException("No components at row " + row + " and column " + col);
+//        }
+//        for(int i = 0; i < multiple.size(); i++){
+//            if(i != partToKeep){
+//                Set<Component> set = multiple.get(i);
+//                for(Component c : set){
+//                    this.removeComponent(new Cordinate(c.getRow(), c.getColumn()));
+//                }
+//            }
+//        }
     }
 
+    /**
+     *
+     * @return the {@link List} of {@link Optional} of {@link Component} of the components in the {@link ShipBoard}
+     */
     public List<Optional<Component>> getComponents(){
         return Stream.of(shipComponents)
                 .flatMap(Arrays::stream)
                 .collect(Collectors.toList());
     }
 
+    /**
+     *
+     * @param type : the {@link GoodType} to search for availability
+     * @return a {@link List} of {@link Cordinate} for the valid spots of the {@link Depot}
+     */
     public List<Cordinate> getAvailableDepots(GoodType type){
         List<Cordinate> cordinates = new ArrayList<>();
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
@@ -725,6 +734,10 @@ public abstract class ShipBoard {
         return cordinates;
     }
 
+    /**
+     *
+     * @return a {@link List} of {@link Cordinate} for the valid spots of {@link DoubleDrill}
+     */
     public List<Cordinate> getDoubleDrills(){
         List<Cordinate> drillCords = new ArrayList<>();
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
@@ -741,6 +754,11 @@ public abstract class ShipBoard {
         return drillCords;
     }
 
+    /**
+     * check whether exists a {@link Shield} which can cover the given {@link Direction}
+     * @param direction : the {@link Direction} to search
+     * @return whether a {@link Shield} exists
+     */
     public boolean coveredByShield(Direction direction){
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()){
@@ -756,6 +774,10 @@ public abstract class ShipBoard {
         return false;
     }
 
+    /**
+     *
+     * @return a {@link List} of {@link Cordinate} for the valid spots of {@link DoubleDrill}
+     */
     public List<Cordinate> getDrills(Direction direction){
         List<Cordinate> result = new ArrayList<>();
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
@@ -767,7 +789,9 @@ public abstract class ShipBoard {
                 continue;
             Component comp = getOptComponentByCord(cord).get();
 
-            if (comp.getEnginePower(true) > 0 && comp.getDirection() != null && comp.getDirection().equals(direction))
+            System.out.println(cord);
+
+            if (comp.getFirePower(true) > 0 && comp.getDirection() != null && comp.getDirection().equals(direction))
                 result.add(cord);
         }
         return result;

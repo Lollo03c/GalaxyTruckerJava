@@ -179,9 +179,66 @@ public class ShipBoardNormal extends ShipBoard {
 
     }
 
+    public static ShipBoard buildYellow(FlyBoard flyBoard){
+        ShipBoard shipBoard = new ShipBoardNormal(HousingColor.YELLOW, flyBoard);
+
+        shipBoard.addComponentToPosition(78, new Cordinate(4, 0), 0);
+        shipBoard.addComponentToPosition(90, new Cordinate(4, 1), 0);
+        shipBoard.addComponentToPosition(36, new Cordinate(4, 5), 1);
+        shipBoard.addComponentToPosition(6, new Cordinate(2, 5), 0);
+        shipBoard.addComponentToPosition(118, new Cordinate(2, 0), 3);
+        shipBoard.addComponentToPosition(19, new Cordinate(2, 4), 0);
+        shipBoard.addComponentToPosition(84, new Cordinate(4, 4), 0);
+        shipBoard.addComponentToPosition(25, new Cordinate(3, 5), 1);
+        shipBoard.addComponentToPosition(16, new Cordinate(3, 1), 3);
+        shipBoard.addComponentToPosition(40, new Cordinate(3, 3), 1);
+        shipBoard.addComponentToPosition(143, new Cordinate(3, 4), 0);
+        shipBoard.addComponentToPosition(122, new Cordinate(1, 3), 0);
+        shipBoard.addComponentToPosition(18, new Cordinate(1, 2), 1);
+        shipBoard.addComponentToPosition(108, new Cordinate(1, 5), 1);
+        shipBoard.addComponentToPosition(98, new Cordinate(4, 2), 0);
+        shipBoard.addComponentToPosition(126, new Cordinate(0, 4), 0);
+        shipBoard.addComponentToPosition(102, new Cordinate(4, 6), 1);
+        shipBoard.addComponentToPosition(130, new Cordinate(1, 1), 0);
+        shipBoard.addComponentToPosition(50, new Cordinate(3, 0), 2);
+        shipBoard.addComponentToPosition(114, new Cordinate(2, 6), 0);
+        shipBoard.addComponentToPosition(65, new Cordinate(3, 6), 0);
+        shipBoard.addComponentToPosition(151, new Cordinate(2, 2), 1);
+        shipBoard.addComponentToPosition(58, new Cordinate(3, 2), 3);
+        shipBoard.addComponentToPosition(59, new Cordinate(2, 1), 1);
+        shipBoard.addComponentToPosition(54, new Cordinate(1, 4), 3);
+
+        shipBoard.validateShip();
+
+        shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(3, 3)).get().addGuest(GuestType.PURPLE);
+        shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.HUMAN);
+
+        shipBoard.getOptComponentByCord(new Cordinate(3, 6)).get().addGood(GoodType.RED);
+        shipBoard.getOptComponentByCord(new Cordinate(3, 5)).get().addGood(GoodType.YELLOW);
+        shipBoard.getOptComponentByCord(new Cordinate(3, 5)).get().addGood(GoodType.BLUE);
+        shipBoard.getOptComponentByCord(new Cordinate(1, 2)).get().addGood(GoodType.BLUE);
+        shipBoard.getOptComponentByCord(new Cordinate(1, 2)).get().addGood(GoodType.YELLOW);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 4)).get().addGood(GoodType.YELLOW);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 4)).get().addGood(GoodType.GREEN);
+
+        return shipBoard;
+    }
+
+    public static ShipBoard buildGreen(FlyBoard flyBoard){
+        ShipBoard shipBoard = new ShipBoardNormal(HousingColor.GREEN, flyBoard);
+
+        return shipBoard;
+    }
+
     public static void main(String[] args) {
         FlyBoard flyBoard = new FlyBoardNormal(Set.of("anto", "ste"));
         ShipBoard ship = buildFirst(flyBoard);
         ship.drawShipboard();
+        ship.validateShip();
     }
 }

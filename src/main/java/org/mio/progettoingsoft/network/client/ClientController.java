@@ -556,6 +556,9 @@ public class ClientController {
     }
 
     public void discardComponent() {
+        Component comp = flyBoard.getComponentById(inHandComponent);
+        comp.reinitilizeRotations();
+
         try {
             server.discardComponent(idGame, inHandComponent);
         } catch (Exception e) {

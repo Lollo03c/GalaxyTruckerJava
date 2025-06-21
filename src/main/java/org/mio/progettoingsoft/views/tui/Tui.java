@@ -611,8 +611,10 @@ public class Tui implements View {
             }
         }
 
+        ShipBoard ship = controller.getShipBoard();
+        Cordinate cord = new Cordinate(row - ship.getOffsetRow(), column - ship.getOffsetCol());
         try {
-            controller.addComponent(Cordinate.convertWithOffset(row, column), rotation);
+            controller.addComponent(cord, rotation);
         } catch (InvalidCordinate e) {
             controller.setState(GameState.ERROR_PLACEMENT);
         }

@@ -44,8 +44,8 @@ public enum Direction implements Serializable {
 
     public int offsetRow(){
         return switch (this){
-            case FRONT -> 1;
-            case BACK -> -1;
+            case FRONT -> -1;
+            case BACK -> 1;
             default -> 0;
         };
     }
