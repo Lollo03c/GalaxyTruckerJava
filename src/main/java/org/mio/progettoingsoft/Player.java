@@ -77,7 +77,7 @@ public class Player {
     public void addCredits(int quantity) {
         credits += quantity;
         Event event = new AddCreditsEvent(nickname, quantity);
-        support.firePropertyChange("movePlayer", 0, event);
+        support.firePropertyChange("addedCredit", 0, event);
         Logger.debug("evento movePlayer lanciato");
 
     }

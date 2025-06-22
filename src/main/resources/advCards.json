@@ -4,7 +4,7 @@
     "level" : "1",
     "type" : "SLAVERS",
 
-    "strength" : "6",
+    "strength" : "1",
     "daysLost" : "1",
     "reward" : "5",
     "crewLost" : "3"

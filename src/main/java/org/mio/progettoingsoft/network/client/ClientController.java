@@ -694,9 +694,12 @@ public class ClientController {
 
     public void addCredits(String nick, int credits) {
         Logger.info(nick + " added " + credits + "credits");
+        int tot;
         synchronized (flyboardLock) {
             flyBoard.getPlayerByUsername(nick).addCredits(credits);
+            tot = flyBoard.getPlayerByUsername(nick).getCredits();
         }
+        support.firePropertyChange("credits", 0, tot);
     }
 
     public void crewLost(String nick, List<Cordinate> housingCordinates) {

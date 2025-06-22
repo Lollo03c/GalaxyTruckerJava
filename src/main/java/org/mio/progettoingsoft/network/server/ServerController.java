@@ -315,7 +315,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(19);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(1);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -543,7 +543,7 @@ public class ServerController {
         }
         if (choice != -1) {
             try {
-                c.setState(GameState.GOODS_PLACEMENT);
+                c.setCardState(CardState.GOODS_PLACEMENT);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -579,7 +579,7 @@ public class ServerController {
                     VirtualClient client = game.getClients().get(nickname);
                     try {
 
-                        client.setState(GameState.GOODS_PLACEMENT);
+                        client.setCardState(CardState.GOODS_PLACEMENT);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

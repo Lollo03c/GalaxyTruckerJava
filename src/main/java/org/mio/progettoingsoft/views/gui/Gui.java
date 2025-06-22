@@ -25,6 +25,7 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.advCards.sealed.SldSlavers;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -163,6 +164,7 @@ public class Gui extends Application implements View {
     private Button drawCardButton;
     private Label waitingForLeaderLabel;
     private ImageView cardImageView;
+    private Label creditsLabel;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -188,6 +190,17 @@ public class Gui extends Application implements View {
             }
             // the card state changes (only in CARD_EFFECT state): enable the user interaction based on the different state
             case "cardState" -> cardStatesQueue.add((CardState) evt.getNewValue());
+            // the player's credits changes, it updates the label of credits
+            case "credits" -> {
+                Platform.runLater(() -> {
+                    if (creditsLabel == null) {
+                        Logger.debug("creditsLabel is null");
+                        creditsLabel = new Label("Your credits: " + evt.getNewValue());
+                    } else {
+                        creditsLabel.setText("Your credits: " + evt.getNewValue());
+                    }
+                });
+            }
         }
     }
 
@@ -217,6 +230,7 @@ public class Gui extends Application implements View {
         screenHeight = Screen.getPrimary().getBounds().getHeight();
         screenWidth = Screen.getPrimary().getBounds().getWidth();
         tilesSideLength = Math.min(screenHeight / 9, screenWidth / 16);
+        creditsLabel = new Label();
         this.updateGui(GameState.START);
         Thread thread = new Thread(() -> {
             try {
@@ -267,6 +281,10 @@ public class Gui extends Application implements View {
             case CARD_EFFECT -> {
             }
             case IDLE -> {
+            }
+            case FINISH_HOURGLASS -> {
+            }
+            case FINISH_LAST_HOURGLASS -> {
             }
 
             default -> genericErrorView(state);
@@ -1086,7 +1104,12 @@ public class Gui extends Application implements View {
             leaveFlightBtn.setOnAction(evt -> {
                 leaveFlightConfirm();
             });
-            rightColumn.getChildren().addAll(cardContainer, leaveFlightBtn);
+            int credits = 0;
+            synchronized (controller.getFlyboardLock()) {
+                credits = controller.getFlyBoard().getPlayerByUsername(controller.getNickname()).getCredits();
+            }
+            creditsLabel.setText("Your credits: " + credits);
+            rightColumn.getChildren().addAll(cardContainer, leaveFlightBtn, creditsLabel);
 
             adventureBorderPane.setRight(rightColumn);
 
@@ -1192,6 +1215,7 @@ public class Gui extends Application implements View {
     private void updateCardGui(CardState cardState) {
         switch (cardState) {
             case ENGINE_CHOICE -> engineChoiceView();
+            case DRILL_CHOICE -> drillChoiceView();
             case CREW_REMOVE_CHOICE -> crewRemoveChoiceAccept();
             case ACCEPTATION_CHOICE -> {
                 acceptEffectStage(() -> {
@@ -1265,6 +1289,91 @@ public class Gui extends Application implements View {
             }
             modalShipStage.close();
             controller.activateDoubleEngine(i);
+        });
+        modalShipContainer.getChildren().remove(modalHintTopLabel);
+        modalShipContainer.getChildren().addFirst(modalHintTopLabel);
+        modalShipContainer.getChildren().add(confirmBtn);
+        if (modalErrorLabelMessage != null) {
+            modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
+            modalErrorLabelMessage = null;
+        }
+    }
+
+    private void drillChoiceView() {
+        modalShipboardView(controller.getNickname());
+        modalHintTopLabel = new Label();
+        ShipBoard ship = controller.getShipBoard();
+        Map<Cordinate, Boolean> cordToActive = new HashMap<>();
+        int maxAvailable;
+        synchronized (controller.getShipboardLock()) {
+            maxAvailable = Integer.min(ship.getQuantBatteries(), ship.getDoubleDrills().size());
+            modalHintTopLabel.setText("Click on the double drills you want to activate (or disable). Max available: " + maxAvailable + ". Now active: 0");
+            for (Cordinate cord : modalShipCordToStackPane.keySet()) {
+                StackPane sp = modalShipCordToStackPane.get(cord);
+                if (ship.getOptComponentByCord(cord).isPresent()) {
+                    if (ship.getOptComponentByCord(cord).get().getType() == ComponentType.DOUBLE_DRILL) {
+                        cordToActive.put(cord, false);
+                        sp.setOnMouseClicked(evt -> {
+                            if (!cordToActive.get(cord)) {
+                                int sum = 0;
+                                for (Boolean bool : cordToActive.values()) {
+                                    if (bool)
+                                        sum++;
+                                }
+                                if (sum < maxAvailable) {
+                                    cordToActive.put(cord, true);
+                                    modalHintTopLabel.setText("Click on the double drill you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum + 1));
+                                    sp.setStyle("-fx-border-color: green;" +
+                                            "-fx-border-width: 4;");
+                                }
+                            } else {
+                                cordToActive.put(cord, false);
+                                int sum = 0;
+                                for (Boolean bool : cordToActive.values()) {
+                                    if (bool)
+                                        sum++;
+                                }
+                                modalHintTopLabel.setText("Click on the double drill you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum));
+                                sp.setStyle("");
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        final SldAdvCard card = controller.getPlayedCard();
+        Button confirmBtn = new Button("Confirm");
+        List<Cordinate> drillsToActivate = new ArrayList<>();
+        confirmBtn.setOnAction(evt -> {
+            for (Cordinate cord : cordToActive.keySet()) {
+                if (cordToActive.get(cord)) {
+                    drillsToActivate.add(cord);
+                }
+            }
+            modalShipStage.close();
+            switch (card) {
+                case SldSlavers slavers -> {
+                    double playerStrenght;
+                    synchronized (controller.getShipboardLock()) {
+                        playerStrenght = controller.getShipBoard().getBaseFirePower();
+                        for (Cordinate cordinate : drillsToActivate) {
+                            if (controller.getShipBoard().getOptComponentByCord(cordinate).isPresent()) {
+                                playerStrenght += controller.getShipBoard().getOptComponentByCord(cordinate).get().getFirePower(true);
+                            }
+                        }
+                    }
+                    acceptEffect = false;
+                    if (playerStrenght > slavers.getStrength()) {
+                        acceptEffectStage(() -> {
+                            controller.activateSlaver(drillsToActivate, acceptEffect);
+                        });
+                    } else {
+                        controller.activateSlaver(drillsToActivate, acceptEffect);
+                    }
+
+                }
+                default -> controller.activateDoubleDrills(drillsToActivate);
+            }
         });
         modalShipContainer.getChildren().remove(modalHintTopLabel);
         modalShipContainer.getChildren().addFirst(modalHintTopLabel);
@@ -1393,11 +1502,11 @@ public class Gui extends Application implements View {
         }
 
         List<GoodType> goods = controller.getGoodsToInsert();
-        HBox goodsBox = buildGoodList(goods, tilesSideLength/3, null);
+        HBox goodsBox = buildGoodList(goods, tilesSideLength / 3, null);
         HBox btnBox = new HBox(10);
         Button placeGoodBtn = new Button("Place");
         placeGoodBtn.setOnAction(evt -> {
-            if(goodToBePlaced != null){
+            if (goodToBePlaced != null) {
                 depotAction = "PLACE";
                 backButton.setDisable(false);
                 placeGoodBtn.setDisable(true);
@@ -1436,7 +1545,7 @@ public class Gui extends Application implements View {
         }
     }
 
-    private void modalGoodBoxView(List<GoodType> goods){
+    private void modalGoodBoxView(List<GoodType> goods) {
         Stage modal = new Stage();
         modal.initModality(Modality.APPLICATION_MODAL);
         modal.setTitle("Depot goods");
@@ -1447,7 +1556,7 @@ public class Gui extends Application implements View {
         HBox goodBox = buildGoodList(goods, tilesSideLength, btnBox);
         btnBox.setAlignment(Pos.CENTER);
         Button discardButton = new Button("Remove good");
-        discardButton.setOnAction(evt ->{
+        discardButton.setOnAction(evt -> {
             controller.removeGood(depotId, goodToBePlaced);
             goodToBePlaced = null;
             modal.close();
@@ -1822,7 +1931,7 @@ public class Gui extends Application implements View {
         }
     }
 
-    private HBox buildGoodList(List<GoodType> goods, double sideLength, HBox btnBox){
+    private HBox buildGoodList(List<GoodType> goods, double sideLength, HBox btnBox) {
         HBox box = new HBox(10);
         box.setAlignment(Pos.CENTER);
 
@@ -1848,7 +1957,7 @@ public class Gui extends Application implements View {
                 goodToBePlaced = goods.get(index);
                 box.setDisable(true);
                 stackPane.setStyle("-fx-border-color: grey; -fx-border-width: 3");
-                if(btnBox != null)
+                if (btnBox != null)
                     btnBox.setDisable(false);
             });
         }

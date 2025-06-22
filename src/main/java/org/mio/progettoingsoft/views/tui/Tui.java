@@ -177,10 +177,6 @@ public class Tui implements View {
             case NEW_CARD -> printNewCard();
 
             case CARD_EFFECT -> cardEffect();
-
-            case GOODS_PLACEMENT -> goodPlacement();
-
-
         }
     }
 
@@ -324,6 +320,8 @@ public class Tui implements View {
             case SHIELD_SELECTION -> shieldSelection();
 
             case ASK_ONE_DOUBLE_DRILL -> askOneDoubleDrill();
+
+            case GOODS_PLACEMENT -> goodPlacement();
 
             case FINALIZED -> {
 
@@ -862,7 +860,7 @@ public class Tui implements View {
         switch (card){
             case SldAbandonedStation abandonedStation -> {
                 controller.applyEffect();
-                controller.setState(GameState.GOODS_PLACEMENT);
+                controller.setCardState(CardState.GOODS_PLACEMENT);
             }
 
             case SldSmugglers sldSmugglers ->{
