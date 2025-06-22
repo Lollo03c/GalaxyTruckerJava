@@ -705,16 +705,16 @@ public class ServerController {
     }
 
     public void startHourglass(int idGame) {
-//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-//        FlyBoard fly = game.getFlyboard();
-//        fly.startHourglass(idGame);
-//        for(VirtualClient client : game.getClients().values()){
-//            try {
-//                client.startedHourglass(idGame);
-//            }catch (Exception e){
-//                throw new RuntimeException(e);
-//            }
-//        }
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard fly = game.getFlyboard();
+        fly.startHourglass(idGame);
+        for(VirtualClient client : game.getClients().values()){
+            try {
+                client.startedHourglass(idGame);
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void removeComponent(int idGame, String nickname, Cordinate cord) {
