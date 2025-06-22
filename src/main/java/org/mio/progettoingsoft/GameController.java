@@ -168,6 +168,14 @@ public class GameController {
                 }
             }
 
+            case GOODS_PLACEMENT -> {
+                try {
+                    client.setCardState(CardState.GOODS_PLACEMENT);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             case FINALIZED -> {
                 Map<String,VirtualClient> clients = game.getClients();
 

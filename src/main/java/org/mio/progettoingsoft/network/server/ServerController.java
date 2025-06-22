@@ -318,7 +318,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(17);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(19);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -335,8 +335,8 @@ public class ServerController {
         }
         card.init(game);
 
-        switch (card){
-            case SldMeteorSwarm meteorSwarm ->{
+        switch (card) {
+            case SldMeteorSwarm meteorSwarm -> {
                 meteorSwarm.setNextMeteor();
             }
 
@@ -356,10 +356,11 @@ public class ServerController {
         switch (card) {
             case SldOpenSpace openSpace -> {
 
-                try{
+                try {
                     openSpace.applyEffect(player, number);
                     openSpace.setNextPlayer();
-                }catch(IllegalStateException | BadParameterException | BadPlayerException | NotEnoughBatteriesException e){
+                } catch (IllegalStateException | BadParameterException | BadPlayerException |
+                         NotEnoughBatteriesException e) {
                     VirtualClient client = game.getClients().get(nickname);
                     try {
                         client.genericChoiceError(e.getMessage());
@@ -481,24 +482,27 @@ public class ServerController {
 
     public void addGood(int idGame, String nickname, int idComp, GoodType type) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        game.getFlyboard().getComponentById(idComp).addGood(type);
+        try {
+            game.getFlyboard().getComponentById(idComp).addGood(type);
+            for (VirtualClient client : game.getClients().values()) {
 
-        for (VirtualClient client : game.getClients().values()) {
+                try {
+                    client.addGood(idComp, type);
+                    client.removeGoodPendingList(nickname, type);
 
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (IncorrectShipBoardException e) {
             try {
-                client.addGood(idComp, type);
-                client.removeGoodPendingList(nickname, type);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+                game.getClients().get(nickname).genericChoiceError(e.getMessage());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
         }
 
-        try {
-            game.getClients().get(nickname).setState(GameState.GOODS_PLACEMENT);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     public void removeGood(int idGame, String nickname, int idComp, GoodType type) {
@@ -515,7 +519,7 @@ public class ServerController {
         }
 
         try {
-            game.getClients().get(nickname).setState(GameState.GOODS_PLACEMENT);
+            game.getClients().get(nickname).setCardState(CardState.GOODS_PLACEMENT);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -620,7 +624,7 @@ public class ServerController {
         }
     }
 
-    public void setRollResult(int idGame, String nickname, int number){
+    public void setRollResult(int idGame, String nickname, int number) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
 
@@ -629,14 +633,14 @@ public class ServerController {
 
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
-                Logger.info("e' uscito " + number );
+                Logger.info("e' uscito " + number);
 
                 Meteor meteor = meteorSwarm.getActualMeteor();
                 meteor.setNumber(number);
                 Direction direction = meteor.getDirection();
                 MeteorType type = meteor.getType();
 
-                for (VirtualClient client : game.getClients().values()){
+                for (VirtualClient client : game.getClients().values()) {
                     try {
                         client.meteorHit(type, direction, number);
                     } catch (Exception e) {
@@ -651,18 +655,18 @@ public class ServerController {
         }
     }
 
-    public void removeBattery(int idGame, String nickname, int quantity){
+    public void removeBattery(int idGame, String nickname, int quantity) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
 
         ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();
-        if (shipBoard.getQuantBatteries() < quantity){
+        if (shipBoard.getQuantBatteries() < quantity) {
             throw new IncorrectShipBoardException("not enough batteries");
         }
 
         List<Integer> removedId = shipBoard.removeEnergy(quantity);
 
-        for (VirtualClient client : game.getClients().values()){
-            try{
+        for (VirtualClient client : game.getClients().values()) {
+            try {
                 client.removeBatteries(removedId);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -670,11 +674,11 @@ public class ServerController {
         }
     }
 
-    public void advanceMeteor(int idGame, String nickname){
+    public void advanceMeteor(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
 
-        switch (card){
+        switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
                 meteorSwarm.setNextMeteor(nickname);
             }
@@ -684,25 +688,25 @@ public class ServerController {
 
     }
 
-    public void startHourglass(int idGame){
+    public void startHourglass(int idGame) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         Hourglass hourglass = new Hourglass(game);
         hourglass.avvia();
     }
 
-    public void removeComponent(int idGame, String nickname, Cordinate cord){
+    public void removeComponent(int idGame, String nickname, Cordinate cord) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
-        if (!flyBoard.getNicknameList().contains(nickname)){
+        if (!flyBoard.getNicknameList().contains(nickname)) {
             throw new IncorrectFlyBoardException("Not player wit hthis nick");
         }
 
         ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
         shipBoard.removeComponent(cord);
 
-        for (VirtualClient client : game.getClients().values()){
-            try{
+        for (VirtualClient client : game.getClients().values()) {
+            try {
                 client.removeComponent(nickname, cord);
             } catch (Exception e) {
                 throw new RuntimeException(e);

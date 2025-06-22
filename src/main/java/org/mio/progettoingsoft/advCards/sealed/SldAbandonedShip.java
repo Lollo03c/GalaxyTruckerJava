@@ -63,6 +63,7 @@ public final class SldAbandonedShip extends SldAdvCard {
                 .toList();
 
         playerIterator = allowedPlayers.iterator();
+        effectTaken = false;
     }
 
     // must be called after the init with the right player
@@ -115,7 +116,6 @@ public final class SldAbandonedShip extends SldAdvCard {
     @Override
     public void setNextPlayer() {
         if (playerIterator.hasNext() && !effectTaken) {
-
             this.actualPlayer = this.playerIterator.next();
             setState(CardState.CREW_REMOVE_CHOICE);
         } else {

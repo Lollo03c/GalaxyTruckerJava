@@ -38,10 +38,9 @@ public class ClientController {
     private int hourglassCounter = 0;
     private boolean pendingHourglass = false;
 
-    public int getHourglassCounter(){
+    public int getHourglassCounter() {
         return hourglassCounter;
     }
-
 
 
     private ClientController(ConnectionInfo connectionInfo) {
@@ -134,7 +133,7 @@ public class ClientController {
         if (oldState != state) {
             support.firePropertyChange("cardState", oldState, state);
             Logger.debug("CardState: " + oldState + " -> " + state);
-        }else{
+        } else {
             support.firePropertyChange("cardState", oldState, CardState.IDLE);
             support.firePropertyChange("cardState", CardState.IDLE, state);
             Logger.debug("CardState: " + oldState + " -> " + state);
@@ -253,11 +252,11 @@ public class ClientController {
         }
     }
 
-    public String getErrMessage(){
+    public String getErrMessage() {
         return choiceErrorMessage;
     }
 
-    public void resetErrMessage(){
+    public void resetErrMessage() {
         choiceErrorMessage = null;
     }
 
@@ -283,7 +282,7 @@ public class ClientController {
         synchronized (cardLock) {
             synchronized (flyboardLock) {
                 this.card = flyBoard.getSldAdvCardByID(idCard);
-                goodsToInsert = card.getGoods();
+                goodsToInsert = new ArrayList<>( card.getGoods());
                 Logger.debug("settata la carta: " + card.getCardName());
             }
         }
@@ -389,10 +388,10 @@ public class ClientController {
     }
 
     public void startHourglass() {
-        try{
+        try {
             pendingHourglass = true;
             server.startHourglass(idGame);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -443,7 +442,7 @@ public class ClientController {
         } else if (chosen == 8) {
             try {
                 server.startHourglass(idGame);
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             setState(GameState.BUILDING_SHIP);
@@ -617,7 +616,9 @@ public class ClientController {
     }
 
     public List<GoodType> getGoodsToInsert() {
-        return goodsToInsert;
+        synchronized (listLock) {
+            return new ArrayList<>(goodsToInsert);
+        }
     }
 
     public List<GoodType> getPlanetGoods() {
@@ -662,6 +663,7 @@ public class ClientController {
     }
 
     public void skipEffect() {
+        goodsToInsert.clear();
         try {
             server.skipEffect(idGame, nickname, card.getId());
         } catch (Exception e) {
@@ -678,9 +680,6 @@ public class ClientController {
     }
 
     public void addGood(int idComp, GoodType type) {
-        setCardState(CardState.IDLE);
-
-
         try {
             server.addGood(idGame, nickname, idComp, type);
         } catch (Exception e) {
@@ -696,12 +695,14 @@ public class ClientController {
 
     public void removePendingGood(String nick, GoodType type) {
         if (nick.equals(nickname)) {
-            goodsToInsert.remove(type);
+            synchronized (listLock) {
+                goodsToInsert.remove(type);
+                setCardState(CardState.GOODS_PLACEMENT);
+            }
         }
     }
 
     public void removeGood(int idComp, GoodType type) {
-        setCardState(CardState.IDLE);
 
         try {
             server.removeGood(idGame, nickname, idComp, type);
@@ -719,7 +720,9 @@ public class ClientController {
 
     public void addPendingGood(String nick, GoodType type) {
         if (nick.equals(nickname))
-            goodsToInsert.add(type);
+            synchronized (listLock) {
+                goodsToInsert.add(type);
+            }
     }
 
     public void setPlayerOnPlanet(String nickname, int choice) {
@@ -753,16 +756,15 @@ public class ClientController {
         }
     }
 
-    public void setRollResult(int number){
-        try{
+    public void setRollResult(int number) {
+        try {
             server.setRollResult(idGame, nickname, number);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
-    public void meteorHit(MeteorType type, Direction direction, int number){
+    public void meteorHit(MeteorType type, Direction direction, int number) {
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
 
@@ -772,30 +774,29 @@ public class ClientController {
         if (optCordinateHit.isEmpty()) {
             return;
         }
-        Cordinate cordinateHit = optCordinateHit.get();;
+        Cordinate cordinateHit = optCordinateHit.get();
+        ;
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         meteor.setCordinateHit(cordinateHit);
 
-        if (meteor.getType().equals(MeteorType.SMALL)){
-            if (componentHit.getConnector(direction).equals(Connector.FLAT)){
+        if (meteor.getType().equals(MeteorType.SMALL)) {
+            if (componentHit.getConnector(direction).equals(Connector.FLAT)) {
                 Logger.debug("componente piatto");
                 advanceMeteor();
-            }
-            else{
+            } else {
                 setCardState(CardState.SHIELD_SELECTION);
             }
-        }
-        else{
+        } else {
             List<Cordinate> validDrills = shipBoard.getDrills(direction);
 
-            if (validDrills.isEmpty()){
+            if (validDrills.isEmpty()) {
                 removeComponent(cordinateHit);
             }
 
-            if (direction.equals(Direction.FRONT)){
+            if (direction.equals(Direction.FRONT)) {
 
-                for (Cordinate cordDrill : validDrills){
+                for (Cordinate cordDrill : validDrills) {
                     if (cordDrill.getColumn() == number - shipBoard.getOffsetCol()) {
                         if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
                             advanceMeteor();
@@ -805,10 +806,9 @@ public class ClientController {
                         }
                     }
                 }
-            }
-            else if (direction.equals(Direction.BACK)){
-                for (Cordinate cordDrill : validDrills){
-                    if (Math.abs( cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
+            } else if (direction.equals(Direction.BACK)) {
+                for (Cordinate cordDrill : validDrills) {
+                    if (Math.abs(cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
                         if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
                             advanceMeteor();
                             return;
@@ -817,10 +817,9 @@ public class ClientController {
                         }
                     }
                 }
-            }
-            else{
-                for (Cordinate cordDrill : validDrills){
-                    if (Math.abs( cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
+            } else {
+                for (Cordinate cordDrill : validDrills) {
+                    if (Math.abs(cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
                         if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
                             advanceMeteor();
                             return;
@@ -833,41 +832,40 @@ public class ClientController {
         }
     }
 
-    public void removeBattery(int quantity){
-        try{
+    public void removeBattery(int quantity) {
+        try {
             server.removeBattery(idGame, nickname, quantity);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("");
         }
     }
 
-    public void removeBatteriesFromModel(List<Integer> batteryDepotId){
-        synchronized (flyboardLock){
-            for (int id : batteryDepotId){
+    public void removeBatteriesFromModel(List<Integer> batteryDepotId) {
+        synchronized (flyboardLock) {
+            for (int id : batteryDepotId) {
                 Logger.debug("Removed battery from component id " + id);
                 flyBoard.getComponentById(id).removeOneEnergy();
             }
         }
     }
 
-    public void advanceMeteor(){
-        try{
+    public void advanceMeteor() {
+        try {
             server.advanceMeteor(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeComponent(Cordinate cordinate){
-        try{
+    public void removeComponent(Cordinate cordinate) {
+        try {
             server.removeComponent(idGame, nickname, cordinate);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeComponentFromModel(String nickname, Cordinate cord){
+    public void removeComponentFromModel(String nickname, Cordinate cord) {
         synchronized (flyboardLock) {
             Logger.debug("removed component of " + nickname + " from cordinate " + cord);
             ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();

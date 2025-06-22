@@ -25,6 +25,7 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -54,6 +55,7 @@ public class Gui extends Application implements View {
     private static final String TILES_REL_PATH = "tiles/GT-new_tiles_16_for web";
     private static final String CARDBOARDS_REL_PATH = "cardboards/";
     private static final String ADV_CARD_REL_PATH = "advCards/GT-cards_";
+    private static final String OTHERS_REL_PATH = "others/";
     private static final String IMG_JPG_EXTENSION = ".jpg";
     private static final String IMG_PNG_EXTENSION = ".png";
 
@@ -78,6 +80,9 @@ public class Gui extends Application implements View {
     private final Map<Cordinate, ImageView> cordToImageViews = new HashMap<>();
     // indicates if the click on a component is enabled (for placement or for being removed from booked)
     private boolean isComponentBoxClickable = false;
+    private String depotAction = "MOVE";
+    private int depotId;
+    private GoodType goodToBePlaced = null;
     // list of coordinates for placement of rocket on the circuit
     private final List<Point2D> coordList = new ArrayList<>(List.of(
             new Point2D(0.2448, 0.2375),
@@ -145,6 +150,8 @@ public class Gui extends Application implements View {
     private Map<Cordinate, StackPane> modalShipCordToStackPane;
     private String modalErrorLabelMessage;
     private VBox modalShipContainer;
+    private Label modalHintTopLabel;
+    private HBox goodsBox;
     // modal stage for position choosing
     private Stage choosePositionStage;
     // view components for the circuit and card activation
@@ -884,7 +891,8 @@ public class Gui extends Application implements View {
         modalShipStage.initModality(Modality.APPLICATION_MODAL);
         modalShipStage.setTitle(nickname + "'s shipboard");
         modalShipContainer = new VBox(15);
-        modalShipStage.setScene(new Scene(modalShipContainer, 1200, 800));
+        modalShipStage.setScene(new Scene(modalShipContainer));
+        modalShipStage.setMaximized(true);
         modalShipStage.show();
         double stageHeight = modalShipStage.getHeight(), stageWidth = modalShipStage.getWidth();
         modalShipContainer.setAlignment(Pos.CENTER);
@@ -1185,25 +1193,35 @@ public class Gui extends Application implements View {
         switch (cardState) {
             case ENGINE_CHOICE -> engineChoiceView();
             case CREW_REMOVE_CHOICE -> crewRemoveChoiceAccept();
-
+            case ACCEPTATION_CHOICE -> {
+                acceptEffectStage(() -> {
+                    if (acceptEffect) {
+                        controller.applyEffect();
+                    } else {
+                        controller.skipEffect();
+                    }
+                });
+            }
+            case GOODS_PLACEMENT -> goodsPlacementView();
             case ERROR_CHOICE -> {
                 modalErrorLabelMessage = controller.getErrMessage();
                 controller.resetErrMessage();
             }
-            case IDLE -> {}
+            case IDLE -> {
+            }
             default -> genericErrorView(cardState);
         }
     }
 
     private void engineChoiceView() {
         modalShipboardView(controller.getNickname());
-        Label hintTopLabel = new Label();
+        modalHintTopLabel = new Label();
         ShipBoard ship = controller.getShipBoard();
         Map<Cordinate, Boolean> cordToActive = new HashMap<>();
         int maxAvailable;
         synchronized (controller.getShipboardLock()) {
             maxAvailable = Integer.min(ship.getQuantBatteries(), ship.getDoubleEngine().size());
-            hintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: 0");
+            modalHintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: 0");
             for (Cordinate cord : modalShipCordToStackPane.keySet()) {
                 StackPane sp = modalShipCordToStackPane.get(cord);
                 if (ship.getOptComponentByCord(cord).isPresent()) {
@@ -1212,24 +1230,24 @@ public class Gui extends Application implements View {
                         sp.setOnMouseClicked(evt -> {
                             if (!cordToActive.get(cord)) {
                                 int sum = 0;
-                                for(Boolean bool : cordToActive.values()){
-                                    if(bool)
+                                for (Boolean bool : cordToActive.values()) {
+                                    if (bool)
                                         sum++;
                                 }
-                                if(sum < maxAvailable){
+                                if (sum < maxAvailable) {
                                     cordToActive.put(cord, true);
-                                    hintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum+1));
+                                    modalHintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum + 1));
                                     sp.setStyle("-fx-border-color: green;" +
-                                                    "-fx-border-width: 4;");
+                                            "-fx-border-width: 4;");
                                 }
-                            }else{
+                            } else {
                                 cordToActive.put(cord, false);
                                 int sum = 0;
-                                for(Boolean bool : cordToActive.values()){
-                                    if(bool)
+                                for (Boolean bool : cordToActive.values()) {
+                                    if (bool)
                                         sum++;
                                 }
-                                hintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum));
+                                modalHintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: " + (sum));
                                 sp.setStyle("");
                             }
                         });
@@ -1248,7 +1266,8 @@ public class Gui extends Application implements View {
             modalShipStage.close();
             controller.activateDoubleEngine(i);
         });
-        modalShipContainer.getChildren().addFirst(hintTopLabel);
+        modalShipContainer.getChildren().remove(modalHintTopLabel);
+        modalShipContainer.getChildren().addFirst(modalHintTopLabel);
         modalShipContainer.getChildren().add(confirmBtn);
         if (modalErrorLabelMessage != null) {
             modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
@@ -1256,30 +1275,31 @@ public class Gui extends Application implements View {
         }
     }
 
-    private void crewRemoveChoiceAccept(){
+    private void crewRemoveChoiceAccept() {
         SldAdvCard card = controller.getPlayedCard();
 
-        switch(card){
-            case SldAbandonedShip s ->{
-                acceptEffectStage(this::crewRemoveChoice);
+        switch (card) {
+            case SldAbandonedShip s -> {
+                acceptEffectStage(this::crewRemoveChoiceView);
             }
             default -> {
                 acceptEffect = true;
+                crewRemoveChoiceView();
             }
         }
     }
 
-    private void crewRemoveChoice(){
-        if(acceptEffect){
+    private void crewRemoveChoiceView() {
+        if (acceptEffect) {
             SldAdvCard card = controller.getPlayedCard();
             int toRemove = card.getCrewLost();
             modalShipboardView(controller.getNickname());
-            Label hintTopLabel = new Label();
+            modalHintTopLabel = new Label();
             ShipBoard ship = controller.getShipBoard();
             Map<Cordinate, Integer> cordToRemoving = new HashMap<>();
             Button confirmBtn = new Button("Confirm");
             synchronized (controller.getShipboardLock()) {
-                hintTopLabel.setText("Click on the housing you want to remove crew from, click twice if you want to remove two members.\nCrew to remove: " + toRemove + ". Removed: 0\nTo undo a selection, click again");
+                modalHintTopLabel.setText("Click on the housing you want to remove crew from, click twice if you want to remove two members.\nCrew to remove: " + toRemove + ". Removed: 0\nTo undo a selection, click again");
                 for (Cordinate cord : modalShipCordToStackPane.keySet()) {
                     StackPane sp = modalShipCordToStackPane.get(cord);
                     if (ship.getOptComponentByCord(cord).isPresent()) {
@@ -1288,14 +1308,14 @@ public class Gui extends Application implements View {
                             sp.setOnMouseClicked(evt -> {
                                 int removed = cordToRemoving.values().stream().mapToInt(i -> i).sum();
                                 int maxRemovable = ship.getOptComponentByCord(cord).get().getGuests().size();
-                                if(cordToRemoving.get(cord) < maxRemovable && removed < toRemove){
-                                    if(cordToRemoving.get(cord) == 0){
+                                if (cordToRemoving.get(cord) < maxRemovable && removed < toRemove) {
+                                    if (cordToRemoving.get(cord) == 0) {
                                         cordToRemoving.put(cord, 1);
                                     } else if (cordToRemoving.get(cord) == 1) {
                                         cordToRemoving.put(cord, 2);
                                     }
-                                }else{
-                                    if(cordToRemoving.get(cord) == 2){
+                                } else {
+                                    if (cordToRemoving.get(cord) == 2) {
                                         cordToRemoving.put(cord, 1);
                                     } else if (cordToRemoving.get(cord) == 1) {
                                         cordToRemoving.put(cord, 0);
@@ -1303,7 +1323,7 @@ public class Gui extends Application implements View {
                                 }
                                 loadHousingSpecificObjects(ship.getOptComponentByCord(cord).get(), sp, cordToRemoving.get(cord));
                                 removed = cordToRemoving.values().stream().mapToInt(i -> i).sum();
-                                hintTopLabel.setText("Click on the housing you want to remove crew from, click twice if you want to remove two members.\nCrew to remove: " + toRemove + ". Removed: " + removed + "\nTo undo a selection, click again");
+                                modalHintTopLabel.setText("Click on the housing you want to remove crew from, click twice if you want to remove two members.\nCrew to remove: " + toRemove + ". Removed: " + removed + "\nTo undo a selection, click again");
                                 confirmBtn.setDisable(removed != toRemove);
 
                             });
@@ -1317,8 +1337,8 @@ public class Gui extends Application implements View {
             confirmBtn.setOnAction(evt -> {
                 modalShipStage.close();
                 List<Cordinate> cordsToRemove = new ArrayList<>();
-                for(Cordinate cord : cordToRemoving.keySet()){
-                    for(int i = 0; i < cordToRemoving.get(cord); i++){
+                for (Cordinate cord : cordToRemoving.keySet()) {
+                    for (int i = 0; i < cordToRemoving.get(cord); i++) {
                         cordsToRemove.add(cord);
                     }
                 }
@@ -1327,21 +1347,120 @@ public class Gui extends Application implements View {
             Button resetBtn = new Button("Reset");
             resetBtn.setOnAction(evt -> {
                 modalShipStage.close();
-                crewRemoveChoice();
+                crewRemoveChoiceView();
             });
-            modalShipContainer.getChildren().addFirst(hintTopLabel);
+            modalShipContainer.getChildren().remove(modalHintTopLabel);
+            modalShipContainer.getChildren().addFirst(modalHintTopLabel);
             btnBox.getChildren().addAll(resetBtn, confirmBtn);
             modalShipContainer.getChildren().add(btnBox);
             if (modalErrorLabelMessage != null) {
                 modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
                 modalErrorLabelMessage = null;
             }
-        }else{
+        } else {
             controller.skipEffect();
         }
     }
 
-    private void acceptEffectStage(Runnable postConfirmation){
+    private void goodsPlacementView() {
+        depotAction = "MOVE";
+        goodToBePlaced = null;
+        modalShipboardView(controller.getNickname());
+        modalHintTopLabel = new Label();
+        ShipBoard ship = controller.getShipBoard();
+        modalHintTopLabel.setText("Use the buttons or click on the depot you want to modify");
+        synchronized (controller.getShipboardLock()) {
+            for (Cordinate cord : modalShipCordToStackPane.keySet()) {
+                StackPane sp = modalShipCordToStackPane.get(cord);
+                if (ship.getOptComponentByCord(cord).isPresent()) {
+                    if (ship.getOptComponentByCord(cord).get().getType() == ComponentType.DEPOT) {
+                        sp.setOnMouseClicked(evt -> {
+                            switch (depotAction) {
+                                case "PLACE" -> {
+                                    controller.addGood(ship.getOptComponentByCord(cord).get().getId(), goodToBePlaced);
+                                    modalShipStage.close();
+                                }
+                                case "MOVE" -> {
+                                    depotId = ship.getOptComponentByCord(cord).get().getId();
+                                    modalGoodBoxView(new ArrayList<>(ship.getOptComponentByCord(cord).get().getStoredGoods()));
+                                }
+
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        List<GoodType> goods = controller.getGoodsToInsert();
+        HBox goodsBox = buildGoodList(goods, tilesSideLength/3, null);
+        HBox btnBox = new HBox(10);
+        Button placeGoodBtn = new Button("Place");
+        placeGoodBtn.setOnAction(evt -> {
+            if(goodToBePlaced != null){
+                depotAction = "PLACE";
+                backButton.setDisable(false);
+                placeGoodBtn.setDisable(true);
+                goodsBox.setDisable(true);
+                modalHintTopLabel.setText("Click on the depot in which you want to place the good");
+            }
+        });
+        Button backBtn = new Button("Back");
+        backBtn.setDisable(true);
+        backBtn.setOnAction(evt -> {
+            goodsBox.setDisable(false);
+            backButton.setDisable(true);
+            placeGoodBtn.setDisable(false);
+            modalHintTopLabel.setText("Use the buttons or click on the depot you want to modify");
+            goodToBePlaced = null;
+            goodsBox.getChildren().forEach(n -> n.setStyle(""));
+        });
+        Button finishBtn = new Button("End placement");
+        finishBtn.setOnAction(evt -> {
+            goodToBePlaced = null;
+            controller.skipEffect();
+            modalShipStage.close();
+        });
+        btnBox.getChildren().addAll(placeGoodBtn, backBtn, finishBtn);
+        modalShipStage.setOnCloseRequest(event -> {
+            goodToBePlaced = null;
+            controller.skipEffect();
+        });
+
+        modalShipContainer.getChildren().remove(modalHintTopLabel);
+        modalShipContainer.getChildren().addFirst(modalHintTopLabel);
+        modalShipContainer.getChildren().addAll(goodsBox, btnBox);
+        if (modalErrorLabelMessage != null) {
+            modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
+            modalErrorLabelMessage = null;
+        }
+    }
+
+    private void modalGoodBoxView(List<GoodType> goods){
+        Stage modal = new Stage();
+        modal.initModality(Modality.APPLICATION_MODAL);
+        modal.setTitle("Depot goods");
+        VBox box = new VBox(20);
+        box.setPadding(new Insets(20));
+        box.setAlignment(Pos.CENTER);
+        HBox btnBox = new HBox(10);
+        HBox goodBox = buildGoodList(goods, tilesSideLength, btnBox);
+        btnBox.setAlignment(Pos.CENTER);
+        Button discardButton = new Button("Remove good");
+        discardButton.setOnAction(evt ->{
+            controller.removeGood(depotId, goodToBePlaced);
+            goodToBePlaced = null;
+            modal.close();
+            modalShipStage.close();
+        });
+        btnBox.getChildren().addAll(discardButton);
+        box.getChildren().addAll(goodBox, btnBox);
+        btnBox.setDisable(true);
+        modal.setScene(new Scene(box));
+        modal.show();
+    }
+
+    private void acceptEffectStage(Runnable postConfirmation) {
         Stage acceptStage = new Stage();
         acceptStage.setTitle("Accept the effect");
         acceptStage.initModality(Modality.APPLICATION_MODAL);
@@ -1587,47 +1706,9 @@ public class Gui extends Application implements View {
                 Component c = ship.getOptComponentByCord(cord).get();
                 StackPane sp = map.get(cord);
                 switch (c.getType()) {
-                    case ComponentType.ENERGY_DEPOT -> {
-                        if (c.getEnergyQuantity() > 0) {
-                            VBox vbox = new VBox();
-                            vbox.setPadding(new Insets(tilesSideLength / 10));
-                            vbox.setAlignment(Pos.BOTTOM_CENTER);
-                            HBox hbox = new HBox(tilesSideLength / 14);
-                            hbox.setAlignment(Pos.CENTER);
-                            hbox.setBackground(new Background(new BackgroundFill(
-                                    Color.rgb(255, 255, 255, 0.5),
-                                    null,
-                                    null
-                            )));
-                            hbox.setPadding(new Insets(tilesSideLength / 18));
-                            vbox.getChildren().add(hbox);
-                            for (int i = 0; i < c.getEnergyQuantity(); i++) {
-                                hbox.getChildren().add(new Circle(tilesSideLength / 12, Color.GREEN));
-                            }
-                            sp.getChildren().add(vbox);
-                        }
-                    }
-                    case ComponentType.HOUSING -> {
-                        loadHousingSpecificObjects(c, sp, 0);
-                    }
-                    case ComponentType.DEPOT -> {
-                        if (!c.getStoredGoods().isEmpty()) {
-                            HBox hbox = new HBox(tilesSideLength / 12);
-                            hbox.setAlignment(Pos.CENTER);
-                            for (int i = 0; i < c.getStoredGoods().size(); i++) {
-                                Color color;
-                                switch (c.getStoredGoods().get(i)) {
-                                    case RED -> color = Color.RED;
-                                    case YELLOW -> color = Color.YELLOW;
-                                    case GREEN -> color = Color.GREEN;
-                                    case BLUE -> color = Color.BLUE;
-                                    default -> color = Color.BLACK;
-                                }
-                                hbox.getChildren().add(new Rectangle(tilesSideLength / 6, tilesSideLength / 6, color));
-                            }
-                            sp.getChildren().add(hbox);
-                        }
-                    }
+                    case ComponentType.ENERGY_DEPOT -> loadEnergySpecificObjects(c, sp);
+                    case ComponentType.HOUSING -> loadHousingSpecificObjects(c, sp, 0);
+                    case ComponentType.DEPOT -> loadDepotSpecificObjects(c, sp);
                     default -> {
                     }
                 }
@@ -1635,7 +1716,7 @@ public class Gui extends Application implements View {
         }
     }
 
-    private void loadHousingSpecificObjects(Component c, StackPane sp, int toCancel){
+    private void loadHousingSpecificObjects(Component c, StackPane sp, int toCancel) {
         if (!c.getGuests().isEmpty()) {
             sp.getChildren().retainAll(sp.getChildren().getFirst());
             HBox hbox = new HBox(tilesSideLength / 12);
@@ -1648,13 +1729,59 @@ public class Gui extends Application implements View {
                     case BROWN -> color = Color.SANDYBROWN;
                     default -> color = Color.BLACK;
                 }
-                if(toCancel > 0){
+                if (toCancel > 0) {
                     toCancel--;
-                }else{
+                } else {
                     hbox.getChildren().add(new Circle(tilesSideLength / 12, color));
                 }
             }
             sp.getChildren().add(hbox);
+        }
+    }
+
+    private void loadDepotSpecificObjects(Component c, StackPane sp) {
+
+        if (!c.getStoredGoods().isEmpty()) {
+            HBox hbox = new HBox(tilesSideLength / 12);
+            hbox.setAlignment(Pos.CENTER);
+            for (int i = 0; i < c.getStoredGoods().size(); i++) {
+                String goodName, tmpResourcePath;
+                switch (c.getStoredGoods().get(i)) {
+                    case RED -> goodName = "goodRed";
+                    case YELLOW -> goodName = "goodYellow";
+                    case GREEN -> goodName = "goodGreen";
+                    case BLUE -> goodName = "goodBlue";
+                    default -> goodName = "ERR";
+                }
+                tmpResourcePath = IMG_PATH + OTHERS_REL_PATH + goodName + IMG_PNG_EXTENSION;
+                Image img = new Image(getClass().getResourceAsStream(tmpResourcePath));
+                ImageView imgView = new ImageView(img);
+                imgView.setFitHeight(tilesSideLength / 5);
+                imgView.setPreserveRatio(true);
+                hbox.getChildren().add(imgView);
+            }
+            sp.getChildren().add(hbox);
+        }
+    }
+
+    private void loadEnergySpecificObjects(Component c, StackPane sp) {
+        if (c.getEnergyQuantity() > 0) {
+            VBox vbox = new VBox();
+            vbox.setPadding(new Insets(tilesSideLength / 10));
+            vbox.setAlignment(Pos.BOTTOM_CENTER);
+            HBox hbox = new HBox(tilesSideLength / 14);
+            hbox.setAlignment(Pos.CENTER);
+            hbox.setBackground(new Background(new BackgroundFill(
+                    Color.rgb(255, 255, 255, 0.5),
+                    null,
+                    null
+            )));
+            hbox.setPadding(new Insets(tilesSideLength / 18));
+            vbox.getChildren().add(hbox);
+            for (int i = 0; i < c.getEnergyQuantity(); i++) {
+                hbox.getChildren().add(new Circle(tilesSideLength / 12, Color.GREEN));
+            }
+            sp.getChildren().add(vbox);
         }
     }
 
@@ -1695,5 +1822,37 @@ public class Gui extends Application implements View {
         }
     }
 
+    private HBox buildGoodList(List<GoodType> goods, double sideLength, HBox btnBox){
+        HBox box = new HBox(10);
+        box.setAlignment(Pos.CENTER);
+
+        for (int i = 0; i < goods.size(); i++) {
+            final int index = i;
+            String goodName, tmpResourcePath;
+            switch (goods.get(i)) {
+                case RED -> goodName = "goodRed";
+                case YELLOW -> goodName = "goodYellow";
+                case GREEN -> goodName = "goodGreen";
+                case BLUE -> goodName = "goodBlue";
+                default -> goodName = "ERR";
+            }
+            tmpResourcePath = IMG_PATH + OTHERS_REL_PATH + goodName + IMG_PNG_EXTENSION;
+            Image img = new Image(getClass().getResourceAsStream(tmpResourcePath));
+            ImageView imgView = new ImageView(img);
+            imgView.setFitHeight(sideLength);
+            imgView.setPreserveRatio(true);
+            StackPane stackPane = new StackPane();
+            stackPane.getChildren().add(imgView);
+            box.getChildren().add(stackPane);
+            stackPane.setOnMouseClicked(evt -> {
+                goodToBePlaced = goods.get(index);
+                box.setDisable(true);
+                stackPane.setStyle("-fx-border-color: grey; -fx-border-width: 3");
+                if(btnBox != null)
+                    btnBox.setDisable(false);
+            });
+        }
+        return box;
+    }
 
 }
