@@ -316,7 +316,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(23);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(21);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -428,12 +428,11 @@ public class ServerController {
                 }
 
                 case SldPlanets sldPlanets -> {
-                    card.notifyGoodsPlacementFinished(game.getFlyboard().getPlayerByUsername(nickname));
-                    Logger.debug("ReadyToProceed: " + sldPlanets.getReadyToProceed());
-                    Logger.debug("AllPlayersPlacedGoods: " + sldPlanets.allPlayersPlacedGoods());
-                    if (sldPlanets.getReadyToProceed() && sldPlanets.allPlayersPlacedGoods()) {
-                        card.applyEffect();
-                    }
+                    sldPlanets.setNextPlanet();
+                }
+
+                case SldSlavers sldSlavers -> {
+                    sldSlavers.skipEffect();
                 }
 
                 default -> Logger.error("carta non implementata - per salto effetto");
@@ -451,6 +450,9 @@ public class ServerController {
         switch (card) {
             case SldAbandonedStation abandonedStation -> abandonedStation.applyEffect(player, true);
 
+            case SldSlavers sldSlavers -> {
+                sldSlavers.takeCredits();
+            }
             default -> Logger.error("effetto carta non applicabile");
         }
     }
@@ -468,15 +470,7 @@ public class ServerController {
             }
 
             case SldSlavers sldSlavers -> {
-//                Player player = flyBoard.getPlayerByUsername(nickname);
-//                sldSlavers.removeCrew(player, cordToRemove);
-//                for (VirtualClient client : game.getClients().values()) {
-//                    try {
-//                        client.removeCrew(nickname, cordToRemove);
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
+                sldSlavers.removeCrew(nickname, cordToRemove);
             }
 
             default -> Logger.error("Effetto carta non consentito");
@@ -552,7 +546,7 @@ public class ServerController {
 //        }
         Logger.debug("numero giocatori passati " + passedPlayers);
         if (passedPlayers == game.getNumPlayers() || card.getLandedPlayers().size() == card.getPlanets().size()) {
-            card.setReadyToProceed(true);
+            card.applyEffect();
         } else {
             card.setNextPlayer();
         }
@@ -582,6 +576,11 @@ public class ServerController {
                 sldPirates.loadPower(player, drillCordinates);
             }
 
+            case SldSlavers sldSlavers -> {
+                Player player = flyBoard.getPlayerByUsername(nickname);
+                sldSlavers.applyEffect(player, drillCordinates);
+            }
+
             default -> Logger.error("effetto carta non consentito");
         }
     }
@@ -593,7 +592,7 @@ public class ServerController {
         Player player = game.getFlyboard().getPlayerByUsername(nickname);
         switch (card) {
             case SldSlavers sldSlavers -> {
-                sldSlavers.applyEffect(player, wantsToActivate, activatedDrills);
+//                sldSlavers.applyEffect(player, wantsToActivate, activatedDrills);
             }
             default -> Logger.error("effetto carta non consentito");
         }

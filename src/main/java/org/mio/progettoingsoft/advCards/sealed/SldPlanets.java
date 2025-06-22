@@ -3,12 +3,11 @@ package org.mio.progettoingsoft.advCards.sealed;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.Planet;
-import org.mio.progettoingsoft.advCards.Planets;
-import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.LandOnPlanetEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 
@@ -20,6 +19,9 @@ public final class SldPlanets extends SldAdvCard {
     private Set<Player> finishedGoodsPlacement = new HashSet<>();
     private boolean readyToProceed = false;
 
+    private Iterator<Planet> planetIterator;
+    Planet actualPlanet;
+
     public boolean getReadyToProceed() {
         return readyToProceed;
     }
@@ -28,7 +30,7 @@ public final class SldPlanets extends SldAdvCard {
         this.readyToProceed = readyToProceed;
     }
 
-    public List<Player> getLandedPlayers() {
+    public Map<Planet, Player> getLandedPlayers() {
         return landedPlayers;
     }
 
@@ -43,14 +45,14 @@ public final class SldPlanets extends SldAdvCard {
         return finishedGoodsPlacement.size() == landedPlayers.size();
     }
 
-    private final List<Player> landedPlayers;
+    private final Map<Planet, Player> landedPlayers;
     private int passedPlayers;
 
     public SldPlanets(int id, int level, int daysLost, List<Planet> planets) {
         super(id, level);
         this.daysLost = daysLost;
         this.planets = planets;
-        this.landedPlayers = new ArrayList<>();
+        this.landedPlayers = new HashMap<>();
         this.passedPlayers = 0;
     }
 
@@ -82,21 +84,12 @@ public final class SldPlanets extends SldAdvCard {
 
     @Override
     public void init(GameServer game) {
-//        FlyBoard board = game.getFlyboard();
-//        if (board.getState() != GameState.DRAW_CARD) {
-//            throw new IllegalStateException("Illegal state: " + board.getState());
-//        }
-//        this.state = CardState.PLANET_CHOICE;
-//        board.setState(GameState.CARD_EFFECT);
+
         this.game = game;
         this.flyBoard = game.getFlyboard();
         this.allowedPlayers = new ArrayList<>(flyBoard.getScoreBoard());
         this.playerIterator = allowedPlayers.iterator();
-//        if (playerIterator.hasNext()) {
-//            actualPlayer = playerIterator.next();
-//        } else {
-//            throw new RuntimeException("No players allowed");
-//        }
+        this.planetIterator = planets.iterator();
     }
 
     @Override
@@ -118,7 +111,7 @@ public final class SldPlanets extends SldAdvCard {
                     throw new BadParameterException("This planet is already taken");
                 }
                 this.planets.get(planetIndex).land(actualPlayer);
-                landedPlayers.add(actualPlayer);
+                landedPlayers.put(planets.get(planetIndex), actualPlayer);
 //                boolean allTaken = true;
 //                for (Planet planet : this.planets) {
 //                    if (planet.getPlayer().isEmpty()) {
@@ -150,25 +143,11 @@ public final class SldPlanets extends SldAdvCard {
 
     public void applyEffect() {
         Logger.debug("applyEffect() called with landedPlayers: " + landedPlayers);
-        for (int i = landedPlayers.size() - 1; i >= 0; i--) {
-            Player p = landedPlayers.get(i);
-            flyBoard.moveDays(p, -daysLost);
+        for (Player player : landedPlayers.values()){
+            flyBoard.moveDays(player, -daysLost);
         }
-        setState(CardState.FINALIZED);
-//        boolean atLeastOneGiven = false;
-//        for (Planet planet : this.planets) {
-//            if (planet.getPlayer().isPresent()) {
-//                planet.getPlayer().get().giveGoods(planet.getGoods());
-//                flyBoard.moveDays(planet.getPlayer().get(), -daysLost);
-//                atLeastOneGiven = true;
-//            }
-//        }
 
-//        if (atLeastOneGiven) {
-//            this.state = CardState.GOODS_PLACEMENT;
-//        } else {
-//            this.state = CardState.FINALIZED;
-//        }
+        setNextPlanet();
     }
 
 //    private void nextPlayer(FlyBoard board) {
@@ -180,18 +159,6 @@ public final class SldPlanets extends SldAdvCard {
 //        }
 //    }
 
-    public void goodPlaced(Player player) {
-        if (this.state != CardState.GOODS_PLACEMENT) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (this.landedPlayers.remove(actualPlayer)) {
-            if (this.landedPlayers.isEmpty()) {
-                this.state = CardState.FINALIZED;
-            }
-        } else {
-            throw new BadPlayerException("The player " + player.getNickname() + " can't confirm goods placement");
-        }
-    }
 
     @Override
     public void setNextPlayer() {
@@ -203,6 +170,24 @@ public final class SldPlanets extends SldAdvCard {
 //            setState(CardState.FINALIZED);
         }
     }
+
+    public void setNextPlanet(){
+        if (planetIterator.hasNext()){
+            actualPlanet = planetIterator.next();
+            if (! landedPlayers.containsKey(actualPlanet)){
+                setNextPlanet();
+                return;
+            }
+
+            actualPlayer = landedPlayers.get(actualPlanet);
+            Event event = new LandOnPlanetEvent(landedPlayers.get(actualPlanet).getNickname(), actualPlanet);
+            game.addEvent(event);
+        }
+        else{
+            setState(CardState.FINALIZED);
+        }
+    }
+
 
     @Override
     public void finish(FlyBoard board) {

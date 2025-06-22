@@ -406,7 +406,6 @@ public class Tui implements View {
             int choice = numPlanet - 1;
             controller.landOnPlanet(choice);
             // ho messo qua la consegna delle merci come ha fatto toni su abandonedStation, non so se va bene
-//            controller.setState(GameState.GOODS_PLACEMENT);
         }
 
     }
@@ -881,6 +880,10 @@ public class Tui implements View {
                 controller.setState(GameState.DRILL_CHOICE);
             }
 
+            case SldSlavers sldSlavers  -> {
+                controller.applyEffect();
+            }
+
             default -> Logger.error("Effetto non permesso dalla carta");
         }
     }
@@ -1093,33 +1096,8 @@ public class Tui implements View {
                 System.out.println("Invalid input. Try again.");
             }
         }
-        switch(card){
-            case SldSlavers sldSlavers->{
-                boolean wantsToActivate = false;
-                System.out.println(" You selected" + activatedDrills.size() + " double drills");
-                double playerStrength = power + 2* activatedDrills.size();
-                Logger.debug("playerStrength: " + playerStrength + " cardStrength" + card.getStrength());
-                int cardStrength = card.getStrength();
-                if(playerStrength > cardStrength){
-                    System.out.println("Your fire power is higher than the one of the card, Do you want to get the credits?");
-                    String input = "";
-                    while(!input.equals("y") && !input.equals("n")){
-                        System.out.println("Enter y/n");
-                        input = scanner.nextLine().trim();
-                        if(input.equals("y")){
-                            wantsToActivate = true;
-                        } else if (input.equals("n")) {
-                            wantsToActivate = false;
-                        }
-                    }
-                }
-                controller.activateSlaver(activatedDrills,wantsToActivate);
-            }
-            default -> {
-                controller.activateDoubleDrills(activatedDrills);
-                Logger.debug("sono entrato nel default branch");
-            }
-        }
+
+        controller.activateDoubleDrills(activatedDrills);
 
     }
 

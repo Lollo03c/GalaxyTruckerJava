@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.Slaver;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
 import org.mio.progettoingsoft.model.events.Event;
@@ -12,6 +13,7 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,9 @@ public final class SldSlavers extends SldAdvCard {
     private final int credits;
     private final int daysLost;
     private final int crewLost;
+
+    private List<Player> lostPlayers = new ArrayList<>();
+    private Iterator<Player> loserIterator;
 
     @Override
     public String getCardName() {
@@ -80,7 +85,8 @@ public final class SldSlavers extends SldAdvCard {
             setState(CardState.DRILL_CHOICE);
         } else {
             Logger.debug("the effect of SldSlavers is over");
-            setState(CardState.FINALIZED);
+            loserIterator = lostPlayers.iterator();
+            setNextLoser();
         }
     }
 
@@ -119,7 +125,7 @@ public final class SldSlavers extends SldAdvCard {
         return 0;
     }
 
-    public void applyEffect(Player player, boolean wantsToActivate, List<Cordinate> drillsCordinate) {
+    public void applyEffect(Player player,List<Cordinate> drillsCordinate) {
         if (this.state != CardState.APPLYING && this.state != CardState.COMPARING && this.state != CardState.DRILL_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
@@ -128,97 +134,70 @@ public final class SldSlavers extends SldAdvCard {
             throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
+        ShipBoard shipBoard = player.getShipBoard();
+        shipBoard.removeEnergy(drillsCordinate.size());
+
         double power = player.getShipBoard().getBaseFirePower();
+        for (Cordinate cord : drillsCordinate)
+            power += shipBoard.getOptComponentByCord(cord).get().getFirePower(true);
 
-        if (this.state == CardState.DRILL_CHOICE) {
-            if (drillsCordinate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
-                throw new NotEnoughBatteriesException();
-            }
-
-            for (Cordinate c : drillsCordinate) {
-                Optional<Component> comp = actualPlayer.getShipBoard().getOptComponentByCord(c);
-                if (comp.isPresent()) {
-                    power += comp.get().getFirePower(true);
-                } else {
-                    throw new IllegalArgumentException("Invalid coordinate: " + c);
-                }
-            }
-
+        if (power < strength){
+            lostPlayers.add(player);
+            setNextPlayer();
         }
-        Logger.debug("il player " + player.getNickname()+" ha una potenza pari a " + power + " , la potenza della carta :" +strength);
-        if (power > this.strength) {
-            if (wantsToActivate) {
-                flyBoard.moveDays(actualPlayer, -this.daysLost);
-                actualPlayer.addCredits(this.credits);
-            }
-            setState(CardState.FINALIZED);
-        } else if (power < this.strength) {
-            setState(CardState.CREW_REMOVE_CHOICE);
-        } else {
-            this.setNextPlayer();
+        else if (power > strength){
+            actualPlayer = player;
+            setState(CardState.ACCEPTATION_CHOICE);
+        }
+        else{
+            setNextPlayer();
         }
     }
 
+    public void skipEffect(){
+        loserIterator = lostPlayers.iterator();
+        setNextLoser();
+    }
 
-    public void removeCrew(Player player, List<Cordinate> housingCordinatesList) {
-        Logger.debug("sono entrato nel metodo removeCrew di SldSlavers");
-        if (this.state != CardState.CREW_REMOVE_CHOICE) {
-            throw new IllegalStateException("Illegal state: " + this.state);
+    public void takeCredits(){
+        flyBoard.moveDays(actualPlayer, -daysLost);
+        actualPlayer.addCredits(credits);
+
+        loserIterator = lostPlayers.iterator();
+        setNextLoser();
+    }
+
+    public void setNextLoser(){
+        if (loserIterator.hasNext()){
+            actualPlayer = loserIterator.next();
+            setState(CardState.CREW_REMOVE_CHOICE);
+        }
+        else{
+            setState(CardState.FINALIZED);
+        }
+    }
+
+    public void removeCrew(String nickname, List<Cordinate> cordinates){
+        if (! nickname.equals(actualPlayer.getNickname())){
+            throw new IncorrectFlyBoardException("");
         }
 
-        if (!player.equals(this.actualPlayer)) {
-            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
+        for (Cordinate cord : cordinates){
+            int idComp = actualPlayer.getShipBoard().getOptComponentByCord(cord).get().getId();
+            flyBoard.getComponentById(idComp).removeGuest();
+
         }
 
-        if (housingCordinatesList.isEmpty()) {
-            throw new BadPlayerException("Empty list");
-        }
+        for (Cordinate cord : cordinates){
+            int idComp = actualPlayer.getShipBoard().getOptComponentByCord(cord).get().getId();
 
-        ShipBoard shipBoard = player.getShipBoard();
-
-        for (Cordinate cord : housingCordinatesList) {
-            Optional<Component> compOpt = shipBoard.getOptComponentByCord(cord);
-            if (compOpt.isPresent()) {
-                try {
-                    compOpt.get().removeGuest();
-                } catch (IncorrectShipBoardException e) {
-                    //todo impostare di nuovo lo stato
-
-                    return;
-                }
-                //todo devo comunicare agli altri che ho rimosso questa crew.
-            } else {
-                throw new IllegalArgumentException("Invalid coordinate: " + cord);
-            }
-        }
-
-        for (Cordinate cord : housingCordinatesList){
-            int idComp = shipBoard.getOptComponentByCord(cord).get().getId();
-            Event event = new RemoveGuestEvent(null, idComp);
+            Event event = new RemoveGuestEvent(nickname, idComp);
             game.addEvent(event);
         }
 
-        this.setNextPlayer();
+        setNextLoser();
+
+
+
     }
-
-
-    // removes players with no crew remaining
-    public void finish(FlyBoard board) {
-        if (this.state != CardState.FINALIZED) {
-            throw new IllegalStateException("Illegal state for 'finish': " + this.state);
-        }
-        List<Player> noCrewPlayers = new ArrayList<Player>();
-        for (Player p : board.getScoreBoard()) {
-            if (p.getShipBoard().getQuantityGuests() == 0) {
-                noCrewPlayers.add(p);
-            }
-        }
-        if (!noCrewPlayers.isEmpty()) {
-            // here the method should call a procedure or throw an exception to remove the players with no power
-            throw new RuntimeException("There's at least a player with no crew, not implemented yet");
-
-        }
-//        board.setState(GameState.DRAW_CARD);
-    }
-
 }
