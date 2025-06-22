@@ -8,6 +8,7 @@ import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -244,6 +245,12 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
+    public void cannonHit(CannonType type, Direction direction, int number) throws IOException{
+        Message message = new CannonMessage(0, null, type, direction, number);
+        sendMessage(message);
+    }
+
+    @Override
     public void removeBatteries(List<Integer> batteryDepotId) throws IOException{
         Message message = new BatteryMessage(0, null, batteryDepotId);
         sendMessage(message);
@@ -254,5 +261,12 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         Message message = new ComponentMessage(0, nickname, ComponentMessage.Action.REMOVE, -1, cord, -1);
         sendMessage(message);
     }
+
+    @Override
+    public void startedHourglass(int idGame) throws IOException{
+        Message message = new StartHourglassMessage(idGame," ");
+        sendMessage(message);
+    }
+
 
 }

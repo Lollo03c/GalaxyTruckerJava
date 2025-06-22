@@ -87,4 +87,5 @@ class ConnectorTest {
     void should_connect_flat_with_flat(){
         assertTrue(Connector.FLAT.isCompatible(Connector.FLAT));
     }
+
 }

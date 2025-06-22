@@ -345,7 +345,7 @@ public class ShipCell {
                 //Map<AlienType, Boolean> guestedAlien = component.getGuestedAlien();
 
                 if (isFirst) {
-                    String color = component.getHousingColorById(component.getId()).colorToString();
+                    String color = HousingColor.getHousingColorById(component.getId()).colorToString();
                     for(ColoredChar[] row : cell){
                         for(ColoredChar cc : row){
                             cc.setColor(color);

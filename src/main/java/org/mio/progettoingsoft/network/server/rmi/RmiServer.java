@@ -237,6 +237,13 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
+    public void advanceCannon(int idGame, String nickname) throws RemoteException{
+        executors.submit(() -> {
+           controller.advanceCannon(idGame, nickname);
+        });
+    }
+
+    @Override
     public void removeComponent(int idGame, String nickname, Cordinate cordinate) throws RemoteException{
         executors.submit(() -> {
             controller.removeComponent(idGame, nickname, cordinate);

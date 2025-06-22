@@ -19,11 +19,6 @@ public class DoubleDrill extends Drill{
         return 1f;
     }
 
-    @Override
-    public float getFirePower(){
-        return 0.0f;
-    }
-
     public String toString(){
         return super.toString() + " Direction: " + getDirection();
     }

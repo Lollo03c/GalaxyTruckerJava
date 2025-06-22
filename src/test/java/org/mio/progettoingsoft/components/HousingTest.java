@@ -6,7 +6,6 @@ import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.Connector;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
-import java.text.CollationElementIterator;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +26,7 @@ class HousingTest {
 
     @Test
     void shuold_add_1_member(){
+
         house.addGuest(GuestType.HUMAN);
 
         for (GuestType type : GuestType.values()){
@@ -80,8 +80,8 @@ class HousingTest {
             }
         }
 
-        house.removeGuest(GuestType.HUMAN);
-        house.removeGuest(GuestType.HUMAN);
+        house.removeGuest();
+        house.removeGuest();
         for (GuestType type : GuestType.values()){
             switch (type){
                 case HUMAN -> assertEquals(0, count(type));
@@ -89,12 +89,13 @@ class HousingTest {
             }
         }
 
+
     }
 
     @Test
     void shuold_not_remove_member_if_empty(){
         for (GuestType type : GuestType.values()){
-            assertThrows(IncorrectShipBoardException.class, () -> house.removeGuest(type));
+            assertThrows(IncorrectShipBoardException.class, () -> house.removeGuest());
         }
     }
 
@@ -111,6 +112,10 @@ class HousingTest {
 
             assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(type));
         }
+
+        assertTrue(house.getGuests().contains(GuestType.BROWN));
+        assertFalse(house.getGuests().contains(GuestType.PURPLE));
+        assertFalse(house.getGuests().contains(GuestType.HUMAN));
     }
 
     @Test
@@ -152,5 +157,60 @@ class HousingTest {
         assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(GuestType.BROWN));
         assertThrows(IncorrectShipBoardException.class, () -> house.addGuest(GuestType.PURPLE));
         house.addGuest(GuestType.HUMAN);
+    }
+
+    @Test
+    void should_test_string_conversion_with_alien_type(){
+        assertEquals(GuestType.PURPLE, GuestType.stringToAlienType("purple"));
+        assertEquals(GuestType.BROWN, GuestType.stringToAlienType("brown"));
+        assertEquals(GuestType.HUMAN, GuestType.stringToAlienType("asddsd"));
+
+        assertEquals("PURPLE", GuestType.PURPLE.toString());
+        assertEquals("BROWN", GuestType.BROWN.toString());
+        assertEquals("HUMAN", GuestType.HUMAN.toString());
+
+        assertEquals("\u001B[35m", GuestType.PURPLE.guestToColor());
+        assertEquals("\u001B[33m", GuestType.BROWN.guestToColor());
+        assertEquals("non importante", GuestType.HUMAN.guestToColor());
+    }
+
+    @Test
+    void should_test_housing_color(){
+        assertEquals(HousingColor.BLUE, HousingColor.stringToColor("blue"));
+        assertEquals(HousingColor.GREEN, HousingColor.stringToColor("green"));
+        assertEquals(HousingColor.YELLOW, HousingColor.stringToColor("yellow"));
+        assertEquals(HousingColor.RED, HousingColor.stringToColor("red"));
+        assertEquals(HousingColor.BLUE, HousingColor.stringToColor("fa"));
+
+        assertEquals(HousingColor.BLUE, HousingColor.getHousingColorById(33));
+        assertEquals(HousingColor.GREEN, HousingColor.getHousingColorById(34));
+        assertEquals(HousingColor.YELLOW, HousingColor.getHousingColorById(61));
+        assertEquals(HousingColor.RED, HousingColor.getHousingColorById(52));
+        assertEquals(HousingColor.BLUE, HousingColor.getHousingColorById(1));
+
+        for (HousingColor color : HousingColor.values()){
+            switch (color){
+                case BLUE -> {
+                    assertEquals(33, color.getIdByColor());
+                    assertEquals("\u001B[34m", color.colorToString());
+                }
+
+                case GREEN -> {
+                    assertEquals(34, color.getIdByColor());
+                    assertEquals("\u001B[32m", color.colorToString());
+                }
+
+                case YELLOW -> {
+                    assertEquals(61, color.getIdByColor());
+                    assertEquals("\u001B[33m", color.colorToString());
+                }
+
+                case RED-> {
+                    assertEquals(52, color.getIdByColor());
+                    assertEquals("\u001B[31m", color.colorToString());
+                }
+            }
+        }
+
     }
 }

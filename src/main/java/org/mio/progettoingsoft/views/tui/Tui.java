@@ -2,12 +2,14 @@ package org.mio.progettoingsoft.views.tui;
 
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
@@ -18,11 +20,14 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
+import javax.security.auth.login.LoginException;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
+
+import static org.mio.progettoingsoft.views.tui.CircuitCell.GREEN;
 
 public class Tui implements View {
     private Scanner scanner = new Scanner(System.in);
@@ -107,11 +112,19 @@ public class Tui implements View {
             }
 
             case FINISH_HOURGLASS -> {
-                System.out.println("Hourglass has finished its cycle number : " + controller.getHourglassCounter());
+                controller.setPendingHourglass(false);
+                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);
             }
 
             case FINISH_LAST_HOURGLASS -> {
-                //todo implementare logica secondo la quale la costruzione viene stoppata
+                //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
+                //di simile e deve processare l'input mi genera un'eccezione
+                if(!controller.getFinishedBuilding()){
+                    //controller.setState(GameState.CHOOSE_POSITION);
+                }
+                else{
+                    controller.setState(GameState.END_BUILDING);
+                }
             }
 
             case INVALID_SHIP_CHOICE -> {
@@ -137,8 +150,7 @@ public class Tui implements View {
                 printChoosePosition();
             }
             case END_BUILDING -> {
-                System.out.println("Waiting for other players" + RESET);
-
+                endBuildingMenu();
             }
 
             case UNABLE_UNCOVERED_COMPONENT -> {
@@ -169,6 +181,29 @@ public class Tui implements View {
             case GOODS_PLACEMENT -> goodPlacement();
 
 
+        }
+    }
+
+    private void endBuildingMenu(){
+        System.out.println("Waiting for other players" + RESET);
+        System.out.println("Type \"r\" to rotate hourglass");
+        String input = " ";
+        while(!input.equalsIgnoreCase("r")){
+            input = scanner.nextLine();
+        }
+        try{
+            controller.rotateHourglass();
+        } catch (CannotRotateHourglassException e) {
+            System.out.println(RED + e.getMessage() + RESET);
+            controller.setState(GameState.END_BUILDING);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof CannotRotateHourglassException) {
+                System.out.println(RED + cause.getMessage() + RESET);
+            } else {
+                throw e;
+            }
+            controller.setState(GameState.END_BUILDING);
         }
     }
 
@@ -462,6 +497,10 @@ public class Tui implements View {
             printStartGameInfo();
             System.out.println(BLUE + "It's time to build your ship!" + RESET);
             firstBuilding = false;
+            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partitaAdd commentMore actions
+            if(controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE)  && mode.equals(GameMode.NORMAL)){
+                controller.startHourglass();
+            }
         }
         int choice = -1;
         String input = "";
@@ -498,8 +537,20 @@ public class Tui implements View {
             controller.setState(GameState.BUILDING_SHIP);
             return;
         }
-
-        controller.handleBuildingShip(choice);
+        try {
+            controller.handleBuildingShip(choice);
+        } catch (CannotRotateHourglassException e) {
+            System.out.println(RED + e.getMessage() + RESET);
+            controller.setState(GameState.BUILDING_SHIP);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof CannotRotateHourglassException) {
+                System.out.println(RED + cause.getMessage() + RESET);
+            } else {
+                throw e;
+            }
+            controller.setState(GameState.BUILDING_SHIP);
+        }
         clearConsole();
     }
 
@@ -560,8 +611,10 @@ public class Tui implements View {
             }
         }
 
+        ShipBoard ship = controller.getShipBoard();
+        Cordinate cord = new Cordinate(row - ship.getOffsetRow(), column - ship.getOffsetCol());
         try {
-            controller.addComponent(Cordinate.convertWithOffset(row, column), rotation);
+            controller.addComponent(cord, rotation);
         } catch (InvalidCordinate e) {
             controller.setState(GameState.ERROR_PLACEMENT);
         }
@@ -1091,40 +1144,86 @@ public class Tui implements View {
     private void shieldSelection(){
         SldAdvCard card = controller.getPlayedCard();
         ShipBoard shipBoard = controller.getShipBoard();
+        Direction direction = null;
 
-        switch (card){
+        switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
                 Meteor meteor = controller.getMeteor();
+                direction = meteor.getDirection();
+            }
 
+            case SldPirates pirates -> {
+                CannonPenalty cannon = controller.getCannon();
+                direction = cannon.getDirection();
+            }
+
+            default -> Logger.error("caso non previsto");
+        }
+
+        boolean possibleToActivate = shipBoard.getQuantBatteries() > 0 && shipBoard.coveredByShield(direction);
+
+        switch (card) {
+            case SldMeteorSwarm meteorSwarm -> {
+                Meteor meteor = controller.getMeteor();
                 System.out.println("Expoxed connector on " + meteor.getCordinateHit());
-                boolean possibleToActivate = shipBoard.getQuantBatteries() > 0 && shipBoard.coveredByShield(meteor.getDirection());
 
-                if (possibleToActivate){
-                    String choice = "";
-                    while (choice.equals("")) {
-                        System.out.println("Activate a shield to protect (y/n) : ");
-                        choice = scanner.nextLine().trim().toLowerCase();
+            }
 
-                        if (!(choice.equals("y") || choice.equals("n"))){
-                            choice = "";
-                            continue;
-                        }
+            case SldPirates sldPirates -> {
+                CannonPenalty cannon = controller.getCannon();
+                System.out.println("Light cannot hit component in " + cannon.getCordinateHit());
+            }
 
-                        if (choice.equals("y")){
-                            controller.removeBattery(1);
-                        }
+            default -> Logger.error("caso non previsto");
+        }
 
+        String choice = "";
+        if (possibleToActivate){
+            while (choice.equals("")) {
+                System.out.println("Activate a shield to protect (y/n) : ");
+                choice = scanner.nextLine().trim().toLowerCase();
 
-                    }
+                if (!(choice.equals("y") || choice.equals("n"))){
+                    choice = "";
+                    continue;
                 }
-                else{
+
+                if (choice.equals("y")){
+                    controller.removeBattery(1);
+                }
+
+
+            }
+        }
+
+        if (choice.equals("n")) {
+            switch (card) {
+                case SldMeteorSwarm meteorSwarm -> {
+                    Meteor meteor = controller.getMeteor();
                     controller.removeComponent(meteor.getCordinateHit());
                 }
+
+                case SldPirates pirates -> {
+                    CannonPenalty cannon = controller.getCannon();
+                    controller.removeComponent(cannon.getCordinateHit());
+                }
+
+                default -> Logger.error("caso non previsto");
+            }
+        }
+
+        switch (card) {
+            case SldMeteorSwarm meteorSwarm -> {
                 controller.advanceMeteor();
             }
 
-            default -> Logger.error("no effect");
+            case SldPirates pirates -> {
+                controller.advanceMeteor();
+            }
+
+            default -> Logger.error("caso non previsto");
         }
+
     }
 
     private void askOneDoubleDrill(){

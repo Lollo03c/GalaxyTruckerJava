@@ -13,10 +13,6 @@ public class DoubleEngine extends Engine {
         super(id, ComponentType.DOUBLE_ENGINE, topConn, bottomConn, rightConn, leftConn);
     }
 
-    public int getEnginePower(){
-        return 0;
-    }
-
     public int getEnginePower(boolean activated){
         if (activated)
             return enginePower;

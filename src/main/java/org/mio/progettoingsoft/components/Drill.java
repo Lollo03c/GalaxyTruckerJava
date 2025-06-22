@@ -24,10 +24,6 @@ public class Drill extends Component {
         return this.direction;
     }
 
-    public void setDirection(Direction dir){
-        this.direction = dir;
-    }
-
     @Override
     public void rotateClockwise(){
         super.rotateClockwise();
@@ -38,26 +34,18 @@ public class Drill extends Component {
             case LEFT -> Direction.FRONT;
         };
     }
+//
+//    @Override
+//    public void rotateCounterClockwise(){
+//        super.rotateCounterClockwise();
+//        this.direction = switch(direction){
+//            case FRONT -> Direction.LEFT;
+//            case LEFT -> Direction.BACK;
+//            case BACK -> Direction.RIGHT;
+//            case RIGHT -> Direction.FRONT;
+//        };
+//    }
 
-    @Override
-    public void rotateCounterClockwise(){
-        super.rotateCounterClockwise();
-        this.direction = switch(direction){
-            case FRONT -> Direction.LEFT;
-            case LEFT -> Direction.BACK;
-            case BACK -> Direction.RIGHT;
-            case RIGHT -> Direction.FRONT;
-        };
-    }
-
-
-    @Override
-    public float getFirePower(){
-        if (direction.equals(Direction.FRONT))
-            return 1.0f;
-
-        return 0.5f;
-    }
 
     @Override
     public float getFirePower(boolean actived){

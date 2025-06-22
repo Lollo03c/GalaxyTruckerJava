@@ -22,7 +22,7 @@ public enum GuestType {
     public String toString(){
         return switch (this){
             case PURPLE -> "PURPLE";
-            case BROWN -> "BROWS";
+            case BROWN -> "BROWN";
             case HUMAN -> "HUMAN";
         };
     }

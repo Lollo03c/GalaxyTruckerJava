@@ -17,6 +17,7 @@ import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NoMoreComponentsException;
 import org.mio.progettoingsoft.model.FlyBoardEasy;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.Hourglass;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.Event;
@@ -34,7 +35,6 @@ import java.util.*;
  */
 
 public abstract class FlyBoard implements FlyBoardServer {
-    GameState state;
     private String messageToSend;
 
     private final GameMode mode;
@@ -45,7 +45,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     protected final List<Integer> deck;
 
-
+    protected boolean firstUseHourglass = true;
     public final List<Optional<Player>> circuit;
     private List<Player> scoreBoard = new ArrayList<>();
     protected final List<Integer> coveredComponents;
@@ -58,7 +58,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     private SldAdvCard playedCard;
 
-    private HourGlass hourGlass;
+
 
     private final List<Integer> availableConstructedShips;
 
@@ -75,6 +75,12 @@ public abstract class FlyBoard implements FlyBoardServer {
 
         coveredComponents.addAll(components.keySet());
         coveredComponents.removeAll(List.of(33, 34, 52, 61));
+
+        if (mode.equals(GameMode.EASY)){
+            for (Integer i = 137; i <= 148; i++){
+                coveredComponents.remove(i);
+            }
+        }
 
         Collections.shuffle(coveredComponents);
 
@@ -101,6 +107,8 @@ public abstract class FlyBoard implements FlyBoardServer {
         availableConstructedShips.addAll(List.of(1, 2, 3, 4));
 
     }
+
+    public abstract void startHourglass(int idGame);
 
     protected abstract void buildLittleDecks();
     public abstract void setLittleDecks(List<List<Integer>> decks);
@@ -137,12 +145,6 @@ public abstract class FlyBoard implements FlyBoardServer {
         return players.size();
     }
 
-    public Optional<Player> getPlayerByColor(HousingColor colorPlayerEnum){
-        return scoreBoard.stream()
-                .filter(p -> p.getColor().equals(colorPlayerEnum))
-                .findFirst();
-    }
-
     public List<Optional<Player>> getCircuit() {
         return circuit;
     }
@@ -170,10 +172,6 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public List<Player> getScoreBoard() {
         return scoreBoard;
-    }
-
-    public GameState getState(){
-        return state;
     }
 
     public List<Integer> getCoveredComponents() {
@@ -214,44 +212,26 @@ public abstract class FlyBoard implements FlyBoardServer {
         }
     }
 
-    public Integer chooseComponentFromUncoveredByIndex(int index) throws NoMoreComponentsException {
-        if (uncoveredComponents.isEmpty())
-            throw new NoMoreComponentsException("No more uncovered components.");
-
-        return uncoveredComponents.remove(index);
-    }
-
-    public Component chooseComponentFromUncoveredById(int id) throws NoMoreComponentsException {
-        if (uncoveredComponents.isEmpty())
-            throw new NoMoreComponentsException("No more uncovered components.");
-
-        Component comp = getComponentById(uncoveredComponents.stream().filter(c -> c == id).findFirst().get());
-        boolean removed = uncoveredComponents.remove(comp);
-        if (removed)
-            return comp;
-        throw new NoMoreComponentsException("It's not possible to remove the component.");
-    }
-
     public SldAdvCard getSldAdvCardByID(int id) {
         return sldAdvCards.get(id);
     }
 
-    // adds a player with the passed user and color (for the main housing), throws an exc if necessary
-    public void addPlayer(String username, HousingColor color) throws CannotAddPlayerException {
-
-        if (scoreBoard.stream().anyMatch(player -> player.getNickname().equals(username)))
-            throw new CannotAddPlayerException("Cannot add player with username " + username + ". Username already in use");
-        if (scoreBoard.stream().anyMatch(player -> player.getColor().equals(color)))
-            throw new CannotAddPlayerException("Cannot add player with color " + color + ". Color already in use");
-        if (scoreBoard.size() == 4)
-            throw new CannotAddPlayerException("Cannot add player. The game is full");
-
-        scoreBoard.add(new Player(username, color, mode, this));
-
-        if (scoreBoard.size() == 4){
-            state = GameState.BUILDING_SHIP;
-        }
-    }
+//    // adds a player with the passed user and color (for the main housing), throws an exc if necessary
+//    public void addPlayer(String username, HousingColor color) throws CannotAddPlayerException {
+//
+//        if (scoreBoard.stream().anyMatch(player -> player.getNickname().equals(username)))
+//            throw new CannotAddPlayerException("Cannot add player with username " + username + ". Username already in use");
+//        if (scoreBoard.stream().anyMatch(player -> player.getColor().equals(color)))
+//            throw new CannotAddPlayerException("Cannot add player with color " + color + ". Color already in use");
+//        if (scoreBoard.size() == 4)
+//            throw new CannotAddPlayerException("Cannot add player. The game is full");
+//
+//        scoreBoard.add(new Player(username, color, mode, this));
+//
+//        if (scoreBoard.size() == 4){
+//            state = GameState.BUILDING_SHIP;
+//        }
+//    }
 
 
     // adds a player to the circuit: it must be used ONLY for initialization
@@ -351,10 +331,6 @@ public abstract class FlyBoard implements FlyBoardServer {
 
         circuit.set(start, Optional.empty());
         circuit.set(index, Optional.of(player));
-    }
-
-    public void shuffleDeck() {
-        Collections.shuffle(deck);
     }
 
     public boolean isDeckEmpty() {
@@ -466,10 +442,6 @@ public abstract class FlyBoard implements FlyBoardServer {
         this.scoreBoard = players;
     }
 
-    public void setState(GameState state){
-        this.state = state;
-    }
-
     public List<Player> getPlayers(){
         return players;
     }
@@ -494,13 +466,6 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public void setPlayedCard(SldAdvCard card){
         this.playedCard = card;
-    }
-
-
-    public List<Integer> getAvailableConstructedShips(){
-        synchronized (availableConstructedShips) {
-            return availableConstructedShips;
-        }
     }
 
 

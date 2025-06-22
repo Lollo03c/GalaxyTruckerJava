@@ -188,6 +188,12 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
+    public void advanceCannon(int idGame, String nickname) throws IOException{
+        Message message = new AdvanceCannonMessage(idGame, nickname);
+        sendMessage(message);
+    }
+
+    @Override
     public void removeComponent(int idGame, String nickname, Cordinate cordinate) throws IOException{
         Message message = new ComponentMessage(idGame, nickname, ComponentMessage.Action.REMOVE, -1, cordinate, -1);
         sendMessage(message);

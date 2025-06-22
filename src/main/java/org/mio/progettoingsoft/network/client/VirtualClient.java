@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 
@@ -76,6 +77,11 @@ public interface VirtualClient extends Remote {
     void genericChoiceError(String msg) throws Exception;
 
     void meteorHit(MeteorType type, Direction direction, int number) throws Exception;
+
     void removeBatteries(List<Integer> batteryDepotId) throws Exception;
     void removeComponent(String nickname, Cordinate cord) throws Exception;
+
+    void cannonHit(CannonType type, Direction direction, int number) throws Exception;
+
+    void startedHourglass(int idGame) throws Exception;
 }

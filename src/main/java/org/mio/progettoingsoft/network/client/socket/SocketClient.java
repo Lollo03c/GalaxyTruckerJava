@@ -193,6 +193,13 @@ public class SocketClient implements Client {
                         });
                     }
 
+                    case StartHourglassMessage startHourglassMessage -> {
+                        executor.submit(() -> {
+                            controller.setPendingHourglass(true);
+                            controller.incrementHourglassCounter();
+                        });
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito");
                     }

@@ -43,27 +43,6 @@ public class Housing extends Component {
         guests.add(GuestType.HUMAN);
     }
     @Override
-    public HousingColor getHousingColorById(int id){
-        return switch (id) {
-            case 33 -> HousingColor.BLUE;
-            case 34 -> HousingColor.GREEN;
-            case 52 -> HousingColor.RED;
-            case 61 -> HousingColor.YELLOW;
-            default -> HousingColor.BLUE;
-        };
-    }
-    @Override
-    public boolean canAddGuest(GuestType type){
-        if (!guestAllowed.contains(type))
-            return false;
-
-        if (type.equals(GuestType.HUMAN))
-            return guests.size() <= 1;
-
-        return guests.isEmpty();
-    }
-
-    @Override
     public List<GuestType> getGuests(){
         return guests;
     }
@@ -74,14 +53,6 @@ public class Housing extends Component {
             throw new IncorrectShipBoardException("housing is empty");
 
         guests.removeLast();
-    }
-
-    @Override
-    public void removeGuest(GuestType type) throws IncorrectShipBoardException{
-        if (!guests.contains(type))
-            throw new IncorrectShipBoardException("guest not hosted in the housing");
-
-        guests.remove(type);
     }
 
     @Override

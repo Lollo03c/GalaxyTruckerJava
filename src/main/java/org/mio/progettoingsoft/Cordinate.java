@@ -80,7 +80,7 @@ public class Cordinate implements Serializable {
 
             @Override
             public boolean hasNext() {
-                return !(currentRow == 4 && currentCol == 6);
+                return currentRow < 5;
             }
 
             @Override
@@ -98,10 +98,6 @@ public class Cordinate implements Serializable {
                 return current;
             }
         };
-    }
-
-    public static Cordinate convertWithOffset(int row, int column) throws InvalidCordinate{
-        return new Cordinate(row - 5, column - 4);
     }
 
     @Override

@@ -2,12 +2,13 @@ package org.mio.progettoingsoft.model;
 
 import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Hourglass {
-    private final int durataSecondi = 120;
+    private final int durataSecondi = 5;
     private final int maxAttivazioni = 3;
     private int attivazioni = 0;
     private GameServer game;
@@ -21,7 +22,7 @@ public class Hourglass {
             System.out.println("La clessidra ha già raggiunto il numero massimo di attivazioni.");
             return;
         }
-
+        Logger.debug("La clessidra è stata avviata : " + attivazioni);
         attivazioni++;
         int numeroAttivazione = attivazioni;
 
