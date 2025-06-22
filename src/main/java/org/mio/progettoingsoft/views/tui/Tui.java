@@ -114,6 +114,9 @@ public class Tui implements View {
             case FINISH_HOURGLASS -> {
                 controller.setPendingHourglass(false);
                 System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);
+                if(controller.getFinishedBuilding()){
+                    controller.setState(GameState.END_BUILDING);
+                }
             }
 
             case FINISH_LAST_HOURGLASS -> {
