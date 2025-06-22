@@ -41,6 +41,7 @@ public class ClientController {
     private int hourglassCounter = 0;
     private boolean pendingHourglass = true;
     private boolean finishedBuilding = false;
+    private Boolean finishedLastHourglass = false;
 
     public boolean getFinishedBuilding(){
         return finishedBuilding;
@@ -61,6 +62,10 @@ public class ClientController {
     private ClientController(ConnectionInfo connectionInfo) {
         this.setState(GameState.START);
         this.connectionInfo = connectionInfo;
+    }
+
+    public boolean getPendingHourglass(){
+        return pendingHourglass;
     }
 
     public static void create(ConnectionInfo connectionInfo) {
@@ -111,6 +116,18 @@ public class ClientController {
         support.addPropertyChangeListener(listener);
     }
 
+    public void setFinishedLastHourglass(boolean finishedLastHourglass){
+        synchronized (this.finishedLastHourglass){
+            this.finishedLastHourglass = finishedLastHourglass;
+        }
+    }
+
+    public Boolean getFinishedLastHourglass(){
+        synchronized (this.finishedLastHourglass){
+            return this.finishedLastHourglass;
+        }
+    }
+
     public void setGameId(int gameId) {
         this.idGame = gameId;
     }
@@ -119,6 +136,12 @@ public class ClientController {
         GameState oldState;
         if(state.equals(GameState.FINISH_HOURGLASS))
             pendingHourglass = false;
+        synchronized (finishedLastHourglass){
+            if(state.equals(GameState.FINISH_LAST_HOURGLASS)){
+                finishedLastHourglass = true;
+                pendingHourglass = false;
+            }
+        }
         synchronized (stateLock) {
             oldState = this.gameState;
             this.gameState = state;

@@ -120,7 +120,10 @@ public class Tui implements View {
                 //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
                 //di simile e deve processare l'input mi genera un'eccezione
                 if(!controller.getFinishedBuilding()){
-                    //controller.setState(GameState.CHOOSE_POSITION);
+                    System.out.println(GREEN + "Last Hourglass is terminated : the time to build your shipBoard is over!"+ RESET);
+                    if(controller.getFlyBoard().getMode().equals(GameMode.NORMAL)){
+                        controller.handleBuildingShip(6);
+                    }
                 }
                 else{
                     controller.setState(GameState.END_BUILDING);
@@ -182,24 +185,26 @@ public class Tui implements View {
 
     private void endBuildingMenu(){
         System.out.println("Waiting for other players" + RESET);
-        System.out.println("Type \"r\" to rotate hourglass");
-        String input = " ";
-        while(!input.equalsIgnoreCase("r")){
-            input = scanner.nextLine();
-        }
-        try{
-            controller.rotateHourglass();
-        } catch (CannotRotateHourglassException e) {
-            System.out.println(RED + e.getMessage() + RESET);
-            controller.setState(GameState.END_BUILDING);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CannotRotateHourglassException) {
-                System.out.println(RED + cause.getMessage() + RESET);
-            } else {
-                throw e;
+        if (!controller.getFinishedLastHourglass() && !controller.getPendingHourglass()) {
+            System.out.println("Type \"r\" to rotate hourglass");
+            String input = " ";
+            while(!input.equalsIgnoreCase("r")){
+                input = scanner.nextLine();
             }
-            controller.setState(GameState.END_BUILDING);
+            try{
+                controller.rotateHourglass();
+            } catch (CannotRotateHourglassException e) {
+                System.out.println(RED + e.getMessage() + RESET);
+                controller.setState(GameState.END_BUILDING);
+            } catch (RuntimeException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof CannotRotateHourglassException) {
+                    System.out.println(RED + cause.getMessage() + RESET);
+                } else {
+                    throw e;
+                }
+                controller.setState(GameState.END_BUILDING);
+            }
         }
     }
 
@@ -536,7 +541,9 @@ public class Tui implements View {
             return;
         }
         try {
-            controller.handleBuildingShip(choice);
+            if(!controller.getFinishedLastHourglass()){
+                controller.handleBuildingShip(choice);
+            }
         } catch (CannotRotateHourglassException e) {
             System.out.println(RED + e.getMessage() + RESET);
             controller.setState(GameState.BUILDING_SHIP);
