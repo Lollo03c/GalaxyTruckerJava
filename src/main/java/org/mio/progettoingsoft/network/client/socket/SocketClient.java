@@ -200,8 +200,14 @@ public class SocketClient implements Client {
                         });
                     }
 
+                    case CannonMessage cannonMessage -> {
+                        executor.submit(() -> {
+                            controller.cannonHit(cannonMessage.getType(), cannonMessage.getDirection(), cannonMessage.getNumber());
+                        });
+                    }
+
                     default -> {
-                        Logger.error("Messaggio non gestito");
+                        Logger.error("Messaggio non gestito"  + message);
                     }
                 }
             } catch (InterruptedException e) {

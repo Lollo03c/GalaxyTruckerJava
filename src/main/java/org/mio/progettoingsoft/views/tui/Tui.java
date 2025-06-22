@@ -1206,7 +1206,9 @@ public class Tui implements View {
 
             case SldPirates pirates -> {
                 CannonPenalty cannon = controller.getCannon();
-                controller.removeComponent(cannon.getCordinateHit());
+                controller.advanceCannon(destroyedComp, !destroyedComp);
+
+
             }
 
             default -> Logger.error("caso non previsto");

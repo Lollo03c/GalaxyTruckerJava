@@ -237,9 +237,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void advanceCannon(int idGame, String nickname) throws RemoteException{
+    public void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) throws RemoteException{
         executors.submit(() -> {
-           controller.advanceCannon(idGame, nickname);
+           controller.advanceCannon(idGame, nickname, destroyed, energy);
         });
     }
 

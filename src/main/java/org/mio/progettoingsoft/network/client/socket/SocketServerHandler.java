@@ -188,8 +188,8 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void advanceCannon(int idGame, String nickname) throws IOException{
-        Message message = new AdvanceCannonMessage(idGame, nickname);
+    public void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) throws IOException{
+        Message message = new AdvanceCannonMessage(idGame, nickname, destroyed, energy);
         sendMessage(message);
     }
 

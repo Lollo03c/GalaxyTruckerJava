@@ -426,12 +426,12 @@ public class ClientController {
     }
 
     public void startHourglass() {
-        try {
-            pendingHourglass = true;
-            server.startHourglass(idGame);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            pendingHourglass = true;
+//            server.startHourglass(idGame);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     public void handleNickname(String nickname) {
@@ -939,18 +939,17 @@ public class ClientController {
 
         Optional<Cordinate> optCordinateHit = cannon.findHit(shipBoard, number);
         if (optCordinateHit.isEmpty()) {
-            advanceCannon();
+            advanceCannon(false, false);
             return;
         }
 
-        Cordinate cordinateHit = optCordinateHit.get();;
+        Cordinate cordinateHit = optCordinateHit.get();
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         cannon.setCordinateHit(cordinateHit);
 
         if (type.equals(CannonType.HEAVY)){
-            removeComponent(cordinateHit);
-            advanceCannon();
+            advanceCannon(true, false);
         }
         else{
             setCardState(CardState.SHIELD_SELECTION);
@@ -959,9 +958,9 @@ public class ClientController {
 
     }
 
-    public void advanceCannon(){
+    public void advanceCannon(boolean destroyed, boolean energy){
         try{
-            server.advanceCannon(idGame, nickname);
+            server.advanceCannon(idGame, nickname, destroyed, energy);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

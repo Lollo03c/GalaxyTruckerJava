@@ -20,12 +20,7 @@ public class Player {
     private ShipBoard shipBoard;
     private Component inHand;
     private boolean isRunning;
-
-    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
-    }
+    private FlyBoard flyBoard;
 
     /**
      * create a new instance of {@link Player}, it is called by the constructor of {@link FlyBoard}
@@ -35,6 +30,8 @@ public class Player {
      * @param flyboard : the {@link FlyBoard} he is being added
      */
     public Player(String nickname, HousingColor color, GameMode mode, FlyBoard flyboard) {
+        this.flyBoard = flyboard;
+
         this.nickname = nickname;
         credits = 0;
         this.color = color;
@@ -77,8 +74,8 @@ public class Player {
     public void addCredits(int quantity) {
         credits += quantity;
         Event event = new AddCreditsEvent(nickname, quantity);
-        support.firePropertyChange("addCredits", 0, event);
-        Logger.debug("evento movePlayer lanciato");
+        flyBoard.getSupport().firePropertyChange("addCredits", 0, event);
+        Logger.debug("evento addCresits lanciato");
 
     }
 

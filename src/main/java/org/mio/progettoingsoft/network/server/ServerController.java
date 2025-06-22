@@ -316,7 +316,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(19);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(23);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -647,14 +647,10 @@ public class ServerController {
                 CannonType type = cannon.getCannonType();
                 List<String> nicknameToHit = sldPirates.getPenaltyPlayers().stream().map(Player::getNickname).toList();
 
-                for (String nick : game.getClients().keySet()){
-                    if (nicknameToHit.contains(nick)){
-                        try{
-                            game.getClients().get(nick).cannonHit(type, direction, first + second);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+                for (Player player : sldPirates.getPenaltyPlayers()){
+                    String nick = player.getNickname();
+                    Event event = new CannonHitEvent(nick, type, direction, first + second);
+                    game.addEvent(event);
                 }
             }
 
@@ -695,13 +691,13 @@ public class ServerController {
         }
     }
 
-    public void advanceCannon(int idGame, String nickname){
+    public void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
 
         switch (card){
             case SldPirates pirates ->{
-                pirates.setNextCannon();
+                pirates.setNextCannon(nickname, destroyed, energy);
             }
 
             default -> Logger.error("Effect not taken");
@@ -709,16 +705,16 @@ public class ServerController {
     }
 
     public void startHourglass(int idGame) {
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        FlyBoard fly = game.getFlyboard();
-        fly.startHourglass(idGame);
-        for(VirtualClient client : game.getClients().values()){
-            try {
-                client.startedHourglass(idGame);
-            }catch (Exception e){
-                throw new RuntimeException(e);
-            }
-        }
+//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+//        FlyBoard fly = game.getFlyboard();
+//        fly.startHourglass(idGame);
+//        for(VirtualClient client : game.getClients().values()){
+//            try {
+//                client.startedHourglass(idGame);
+//            }catch (Exception e){
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
     public void removeComponent(int idGame, String nickname, Cordinate cord) {

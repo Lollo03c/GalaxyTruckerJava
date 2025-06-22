@@ -5,11 +5,15 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Pirate;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveComponentEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public final class SldPirates extends SldAdvCard{
     private final int strength;
@@ -57,7 +61,7 @@ public final class SldPirates extends SldAdvCard{
         this.game = game;
         this.flyBoard = game.getFlyboard();
 
-       allowedPlayers = new ArrayList<>(flyBoard.getPlayers());
+       allowedPlayers = new ArrayList<>(flyBoard.getScoreBoard());
        playerIterator = allowedPlayers.iterator();
 
        cannonIterator = cannons.iterator();
@@ -93,8 +97,9 @@ public final class SldPirates extends SldAdvCard{
     }
 
     public void setNextCannon(){
-        if (cannonIterator.hasNext()){
+        if (cannonIterator.hasNext() && !getPenaltyPlayers().isEmpty()){
             actualCannon = cannonIterator.next();
+            actualCannon.setPlayerstoHit(new ArrayList<>(getPenaltyPlayers()));
             setState(CardState.DICE_ROLL);
         }
         else{
@@ -102,11 +107,31 @@ public final class SldPirates extends SldAdvCard{
         }
     }
 
+    public void setNextCannon(String nickname, boolean destroyed, boolean energy){
+
+        Player player = flyBoard.getPlayerByUsername(nickname);
+
+        if (energy)
+            player.getShipBoard().removeEnergy(1);
+
+        if (destroyed) {
+            Optional<Cordinate> optCord = actualCannon.findHit(player.getShipBoard(), actualCannon.getNumber());
+            player.getShipBoard().removeComponent(optCord.get());
+
+            Event event = new RemoveComponentEvent(nickname, optCord.get());
+            game.addEvent(event);
+        }
+
+        actualCannon.getPlayerstoHit().remove(player);
+        if (actualCannon.getPlayerstoHit().isEmpty())
+            setNextCannon();
+    }
+
     public void loadPower(Player player, List<Cordinate> doubleDrills){
         ShipBoard shipBoard = player.getShipBoard();
         double power = shipBoard.getBaseFirePower();
 
-        for (Cordinate cord : doubleDrills){
+        for (Cordinate cord : doubleDrills) {
             if (shipBoard.getOptComponentByCord(cord).isEmpty())
                 throw new IncorrectShipBoardException("Not valid cord");
             Component comp = shipBoard.getOptComponentByCord(cord).get();
@@ -115,10 +140,18 @@ public final class SldPirates extends SldAdvCard{
                 throw new IncorrectShipBoardException("Not a drill to activate");
 
             power += comp.getFirePower(true);
+        }
 
-            if (power < this.strength){
-                this.penaltyPlayers.add(player);
-            }
+        if (power < (double) this.strength){
+            this.penaltyPlayers.add(player);
+            setNextPlayer();
+        }
+        else if (power > this.strength){
+            flyBoard.moveDays(player, -daysLost);
+            player.addCredits(credits);
+            player.getShipBoard().removeEnergy(doubleDrills.size());
+
+            setNextCannon();
         }
 
     }
