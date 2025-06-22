@@ -4,27 +4,26 @@ import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import java.util.Map;
 
-public final class MovePlayerEvent extends Event {
-    private final int steps;
+public final class AddPlayerCircuit extends Event{
+    private final int place;
 
-    public MovePlayerEvent(String nickname, int steps) {
+    public AddPlayerCircuit(String nickname, int place) {
         super(nickname);
-        this.steps = steps;
+        this.place = place;
     }
 
-    public int getSteps() {
-        return steps;
+    public int getPlace() {
+        return place;
     }
 
     @Override
-    public void send(Map<String, VirtualClient> clients) {
+    public void send(Map<String, VirtualClient> clients){
         for (VirtualClient client : clients.values()){
             try{
-                client.advancePlayer(nickname, steps);
+                client.addOtherPlayerToCircuit(nickname, place);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
 }

@@ -383,12 +383,9 @@ public class ClientController {
         }
     }
 
-    public void advancePlayer(String nickname, int steps, int energyToRemove) {
+    public void advancePlayer(String nickname, int steps) {
         int oldPos, newPos;
         synchronized (flyboardLock) {
-            if (this.nickname.equals(nickname)) {
-                shipBoard.removeEnergy(energyToRemove);
-            }
             Player player = flyBoard.getPlayerByUsername(nickname);
             oldPos = flyBoard.getPlayerPositionOnCircuit(nickname);
             flyBoard.moveDays(player, steps);
@@ -725,12 +722,10 @@ public class ClientController {
         support.firePropertyChange("credits", 0, tot);
     }
 
-    public void crewLost(String nick, List<Cordinate> housingCordinates) {
-        ShipBoard ship = flyBoard.getPlayerByUsername(nick).getShipBoard();
-
-        for (Cordinate cord : housingCordinates) {
-            Logger.info(nick + "lost crew member in " + cord);
-            ship.getOptComponentByCord(cord).get().removeGuest();
+    public void crewLost(int idComp) {
+        synchronized (flyBoard) {
+            Logger.info("lost crew member in " + idComp);
+            flyBoard.getComponentById(idComp).removeGuest();
         }
     }
 
@@ -769,7 +764,6 @@ public class ClientController {
         if (nick.equals(nickname)) {
             synchronized (listLock) {
                 goodsToInsert.remove(type);
-                setCardState(CardState.GOODS_PLACEMENT);
             }
         }
     }
@@ -828,23 +822,23 @@ public class ClientController {
         }
     }
 
-    public void setRollResult(int number) {
+    public void setRollResult(int first, int second) {
         try {
-            server.setRollResult(idGame, nickname, number);
+            server.setRollResult(idGame, nickname, first, second);
         } catch (Exception e) {
         }
     }
 
 
 
-    public void removeBattery(int quantity){
-        try{
-            server.removeBattery(idGame, nickname, quantity);
-        }
-        catch (Exception e){
-            throw new RuntimeException("");
-        }
-    }
+//    public void removeBattery(int quantity){
+//        try{
+//            server.removeBattery(idGame, nickname, quantity);
+//        }
+//        catch (Exception e){
+//            throw new RuntimeException("");
+//        }
+//    }
 
     public void removeBatteriesFromModel(List<Integer> batteryDepotId){
         synchronized (flyboardLock){
@@ -855,84 +849,88 @@ public class ClientController {
         }
     }
 
-    public void advanceMeteor(){
+    public void advanceMeteor(boolean destroyed, boolean energy){
         try{
-            server.advanceMeteor(idGame, nickname);
+            server.advanceMeteor(idGame, nickname, destroyed, energy);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public void meteorHit(MeteorType type, Direction direction, int number) {
+    public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cord) {
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
+        meteor.setCordinateHit(cord);
 
-        Optional<Cordinate> optCordinateHit = meteor.findHit(shipBoard, number);
-        if (optCordinateHit.isEmpty()) {
-            advanceMeteor();
-            return;
-        }
+        Logger.info(type + " " + direction + " " + number);
 
-        Cordinate cordinateHit = optCordinateHit.get();;
-        Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
-        meteor.setCordinateHit(cordinateHit);
-
-        if (meteor.getType().equals(MeteorType.SMALL)) {
-            if (componentHit.getConnector(direction).equals(Connector.FLAT)) {
-                Logger.debug("componente piatto");
-                advanceMeteor();
-            }
-            else{
-                setCardState(CardState.SHIELD_SELECTION);
-            }
-        }
-        else{
-            List<Cordinate> validDrills = shipBoard.getDrills(direction);
-
-            if (validDrills.isEmpty()){
-                removeComponent(cordinateHit);
-            }
-
-            if (direction.equals(Direction.FRONT)){
-
-                for (Cordinate cordDrill : validDrills){
-                    if (cordDrill.getColumn() == number - shipBoard.getOffsetCol()) {
-                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
-                            advanceMeteor();
-                            return;
-                        } else {
-                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
-                        }
-                    }
-                }
-            }
-            else if (direction.equals(Direction.BACK)){
-                for (Cordinate cordDrill : validDrills){
-                    if (Math.abs( cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
-                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
-                            advanceMeteor();
-                            return;
-                        } else {
-                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
-                        }
-                    }
-                }
-            }
-            else{
-                for (Cordinate cordDrill : validDrills){
-                    if (Math.abs( cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
-                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
-                            advanceMeteor();
-                            return;
-                        } else {
-                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
-                        }
-                    }
-                }
-            }
-        }
+//        Optional<Cordinate> optCordinateHit = meteor.findHit(shipBoard, number);
+//        if (optCordinateHit.isEmpty()) {
+//            advanceMeteor();
+//            return;
+//        }
+//
+//        Cordinate cordinateHit = optCordinateHit.get();;
+//        Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
+//
+//        meteor.setCordinateHit(cordinateHit);
+//
+//        if (meteor.getType().equals(MeteorType.SMALL)) {
+//            if (componentHit.getConnector(direction).equals(Connector.FLAT)) {
+//                Logger.debug("componente piatto");
+//                advanceMeteor();
+//            }
+//            else{
+//                setCardState(CardState.SHIELD_SELECTION);
+//            }
+//        }
+//        else{
+//            List<Cordinate> validDrills = shipBoard.getDrills(direction);
+//
+//            if (validDrills.isEmpty()){
+//                removeComponent(cordinateHit);
+//            }
+//
+//            if (direction.equals(Direction.FRONT)){
+//
+//                for (Cordinate cordDrill : validDrills){
+//                    if (cordDrill.getColumn() == number - shipBoard.getOffsetCol()) {
+//                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
+//                            advanceMeteor();
+//                            return;
+//                        } else {
+//                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
+//                        }
+//                    }
+//                }
+//            }
+//            else if (direction.equals(Direction.BACK)){
+//                for (Cordinate cordDrill : validDrills){
+//                    if (Math.abs( cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
+//                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
+//                            advanceMeteor();
+//                            return;
+//                        } else {
+//                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
+//                        }
+//                    }
+//                }
+//            }
+//            else{
+//                for (Cordinate cordDrill : validDrills){
+//                    if (Math.abs( cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
+//                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
+//                            advanceMeteor();
+//                            return;
+//                        } else {
+//                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     public void cannonHit(CannonType type, Direction direction, int number){
@@ -985,5 +983,12 @@ public class ClientController {
         }}
     public CannonPenalty getCannon() {
         return cannon;
+    }
+
+    public void removeBatteryFromModel(int idBatteryDepot){
+        Logger.debug("remove battery from " + idBatteryDepot);
+        synchronized (flyBoard){
+            flyBoard.getComponentById(idBatteryDepot).removeOneEnergy();
+        }
     }
 }

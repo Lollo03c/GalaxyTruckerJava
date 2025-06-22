@@ -5,23 +5,29 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.Map;
 
-public final class AddCreditsEvent extends Event{
-    private final int addedCredits;
-    public AddCreditsEvent(String nickname , int addedCredits) {
+public final class RemoveGuestEvent extends Event{
+    private final int idComp;
+
+    public RemoveGuestEvent(String nickname, int idComp) {
         super(nickname);
 
-        Logger.debug(nickname + " earned " + addedCredits + "value");
-        this.addedCredits = addedCredits;
+        Logger.debug("Removed crew memeber from " + idComp);
+        this.idComp = idComp;
+    }
+
+    public int getIdComp() {
+        return idComp;
     }
 
     @Override
-    public void send(Map<String, VirtualClient> clients) {
+    public void send(Map<String, VirtualClient> clients){
         for (VirtualClient client : clients.values()){
             try {
-                client.addCredits(nickname, addedCredits);
+                client.removeCrew(idComp);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
+
 }

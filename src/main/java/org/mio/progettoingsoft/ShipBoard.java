@@ -6,6 +6,9 @@ import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.ShipBoardEasy;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveEnergyEvent;
+import org.mio.progettoingsoft.model.events.RemoveGoodEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -202,7 +205,7 @@ public abstract class ShipBoard {
      * @param cord the {@link Cordinate} of the link to search the adjacent {@link Component}s
      * @return a Map<{@link Direction}, {@link Component}> consisting the adjacent {@link Component} and the relative {@link Direction}
      */
-    private Map<Direction, Component> getAdjacent(Cordinate cord) {
+    public Map<Direction, Component> getAdjacent(Cordinate cord) {
         Map<Direction, Component> adjacents = new HashMap();
 
         for (Direction dir : Direction.values()){
@@ -300,6 +303,10 @@ public abstract class ShipBoard {
 
         for (int id : idComps){
             flyBoard.getComponentById(id).removeOneEnergy();
+
+            Event event = new RemoveEnergyEvent(null, id);
+            flyBoard.getSupport().firePropertyChange("removeBattery", null, event);
+
         }
 
         return idComps;
@@ -398,8 +405,19 @@ public abstract class ShipBoard {
             if (getOptComponentByCord(cord).get().getEnginePower(true) == 0)
                 continue;
 
+
             if (! getOptComponentByCord(cord).get().getDirection().equals(Direction.BACK))
                 result.add(cord);
+            else{
+                try{
+                    Cordinate toCheck = new Cordinate(cord.getRow() + 1, cord.getColumn());
+
+                    if (getOptComponentByCord(toCheck).isPresent())
+                        result.add(cord);
+                } catch (InvalidCordinate e) {
+
+                }
+            }
         }
         return result;
     }
@@ -613,6 +631,9 @@ public abstract class ShipBoard {
         for (Integer idComp : result.keySet()){
             for (GoodType type : result.get(idComp)){
                 flyBoard.getComponentById(idComp).removeGood(type);
+
+                Event event = new RemoveGoodEvent("", idComp, type);
+                flyBoard.getSupport().firePropertyChange("removeGood", null, event);
             }
         }
 
@@ -789,11 +810,39 @@ public abstract class ShipBoard {
                 continue;
             Component comp = getOptComponentByCord(cord).get();
 
-            System.out.println(cord);
-
             if (comp.getFirePower(true) > 0 && comp.getDirection() != null && comp.getDirection().equals(direction))
                 result.add(cord);
         }
+        return result;
+    }
+
+    public List<Cordinate> possibleDrills(Direction direction, int number){
+        List<Cordinate> result = new ArrayList<>();
+        List<Cordinate> drills = getDrills(direction);
+
+        switch (direction){
+            case FRONT -> {
+                for (Cordinate cord : drills){
+                    if (cord.getColumn() == number)
+                        result.add(cord);
+                }
+            }
+
+            case BACK -> {
+                for (Cordinate cord : drills){
+                    if (Math.abs(cord.getColumn() - number) <= 1)
+                        result.add(cord);
+                }
+            }
+
+            case LEFT, RIGHT -> {
+                for (Cordinate cord : drills){
+                    if (Math.abs(cord.getRow() - number) <= 1)
+                        result.add(cord);
+                }
+            }
+        }
+
         return result;
     }
 

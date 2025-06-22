@@ -183,6 +183,8 @@ public class Tui implements View {
             case NEW_CARD -> printNewCard();
 
             case CARD_EFFECT -> cardEffect();
+
+
         }
     }
 
@@ -858,8 +860,7 @@ public class Tui implements View {
         while (!choice.equals("y") && !choice.equals("n")) {
             System.out.println("Do you want to accept the card effect (y/n) : ");
 
-            choice = scanner.nextLine();
-            //todo controllo input
+            choice = scanner.nextLine().trim().toLowerCase();
         }
 
         if (choice.equals("n")){
@@ -868,9 +869,12 @@ public class Tui implements View {
         }
 
         switch (card){
+            case SldAbandonedShip abandonedShip -> {
+                controller.setCardState(CardState.CREW_REMOVE_CHOICE);
+            }
+
             case SldAbandonedStation abandonedStation -> {
                 controller.applyEffect();
-                controller.setCardState(CardState.GOODS_PLACEMENT);
             }
 
             case SldSmugglers sldSmugglers ->{
@@ -884,27 +888,6 @@ public class Tui implements View {
     private void crewRemove() {
         SldAdvCard card = controller.getPlayedCard();
         Logger.debug("sono in crewRemove");
-        switch(card){
-            case SldAbandonedShip sldAbandonedShip -> {
-                String choice = "";
-                while (!choice.equals("y") && !choice.equals("n")) {
-                    System.out.println("Do you want to accept the card effect (y/n) : ");
-
-                    choice = scanner.nextLine();
-                    if(!choice.equals("y") && !choice.equals("n")){
-                        System.out.println(RED + "Invalid input please type y/n " + RESET);
-                    }
-                }
-
-
-                if (choice.equals("n")) {
-                    controller.skipEffect();
-                    return;
-                }
-            }
-            default -> {}
-        }
-
 
         int toRemove = card.getCrewLost();
         List<Cordinate> crewPositionsToRemove = new ArrayList<>();
@@ -1012,18 +995,27 @@ public class Tui implements View {
             }
             System.out.println("Select the type :");
             String chosenType = scanner.nextLine().trim().toUpperCase();
+
+            Logger.debug("good selezionato");
             GoodType type = GoodType.stringToGoodType(chosenType);
 
             List<Cordinate> availableDepots = shipBoard.getAvailableDepots(type);
-            for (int i = 0; i < availableDepots.size(); i++){
-                System.out.println(i+1 + ". " + availableDepots.get(i));
+
+            if (! availableDepots.isEmpty()) {
+                for (int i = 0; i < availableDepots.size(); i++) {
+                    System.out.println(i + 1 + ". " + availableDepots.get(i));
+                }
+                System.out.println("Select the depot by its number : ");
+                int chosenDepot = Integer.parseInt(scanner.nextLine().trim());
+
+                Component comp = shipBoard.getOptComponentByCord(availableDepots.get(chosenDepot - 1)).get();
+
+                controller.addGood(comp.getId(), type);
             }
-            System.out.println("Select the depot by its number : ");
-            int chosenDepot = Integer.parseInt(scanner.nextLine().trim());
-
-            Component comp = shipBoard.getOptComponentByCord(availableDepots.get(chosenDepot - 1)).get();
-
-            controller.addGood(comp.getId() , type);
+            else{
+                System.out.println("not enough space for the good chosen. Try to remove one first");
+                controller.setCardState(CardState.GOODS_PLACEMENT);
+            }
         }
         else if (choice.equals("2")){
             List<Cordinate> depotCords = new ArrayList<>();
@@ -1077,7 +1069,7 @@ public class Tui implements View {
         List<Cordinate> activatedDrills = new ArrayList<>();
 
         boolean stopAsking = false;
-        while (activatedDrills.size() < energyAvailable && activatedDrills.size() < drillCords.size() && !stopAsking){
+        while ( activatedDrills.size() < energyAvailable && activatedDrills.size() < drillCords.size() && !stopAsking) {
             System.out.println("You currently have " + energyAvailable + " batteries");
             System.out.println("Actual fire power : " + power);
 
@@ -1093,56 +1085,59 @@ public class Tui implements View {
                     stopAsking = true;
                 else {
                     activatedDrills.add(drillCords.get(choice - 1));
-                    power += ship.getOptComponentByCord(drillCords.get(choice -1)).get().getFirePower(true);
+                    power += ship.getOptComponentByCord(drillCords.get(choice - 1)).get().getFirePower(true);
                     energyAvailable--;
                 }
 
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid input. Try again.");
             }
-            switch(card){
-                case SldSlavers sldSlavers->{
-                    boolean wantsToActivate = false;
-                    System.out.println(" You selected" + activatedDrills.size() + " double drills");
-                    double playerStrength = power + 2* activatedDrills.size();
-                    Logger.debug("playerStrength: " + playerStrength + " cardStrength" + card.getStrength());
-                    int cardStrength = card.getStrength();
-                    if(playerStrength > cardStrength){
-                        System.out.println("Your fire power is higher than the one of the card, Do you want to get the credits?");
-                        String input = "";
-                        while(!input.equals("y") && !input.equals("n")){
-                            System.out.println("Enter y/n");
-                            input = scanner.nextLine().trim();
-                            if(input.equals("y")){
-                                wantsToActivate = true;
-                            } else if (input.equals("n")) {
-                                wantsToActivate = false;
-                            }
+        }
+        switch(card){
+            case SldSlavers sldSlavers->{
+                boolean wantsToActivate = false;
+                System.out.println(" You selected" + activatedDrills.size() + " double drills");
+                double playerStrength = power + 2* activatedDrills.size();
+                Logger.debug("playerStrength: " + playerStrength + " cardStrength" + card.getStrength());
+                int cardStrength = card.getStrength();
+                if(playerStrength > cardStrength){
+                    System.out.println("Your fire power is higher than the one of the card, Do you want to get the credits?");
+                    String input = "";
+                    while(!input.equals("y") && !input.equals("n")){
+                        System.out.println("Enter y/n");
+                        input = scanner.nextLine().trim();
+                        if(input.equals("y")){
+                            wantsToActivate = true;
+                        } else if (input.equals("n")) {
+                            wantsToActivate = false;
                         }
                     }
-                    controller.activateSlaver(activatedDrills,wantsToActivate);
                 }
-                default -> {
-                    controller.activateDoubleDrills(activatedDrills);
-                    Logger.debug("sono entrato nel default branch");
-                }
+                controller.activateSlaver(activatedDrills,wantsToActivate);
+            }
+            default -> {
+                controller.activateDoubleDrills(activatedDrills);
+                Logger.debug("sono entrato nel default branch");
             }
         }
+
     }
 
     private void rollDice(){
         System.out.println("You are the leader. Press enter to roll the dices");
         String pressed = scanner.nextLine();
 
-//        Random random = new Random();
-//        int first = random.nextInt(6) + 1;
-//        int second = random.nextInt(6) + 1;
+        Random random = new Random();
+        int first = random.nextInt(6) + 1;
+        int second = random.nextInt(6) + 1;
 
 
 //        controller.setRollResult(first + second);
 
-        //todo da cancellare questa riga
-        controller.setRollResult(8);
+//        //todo da cancellare questa riga
+//        int first = 3;
+//        int second = 3;
+        controller.setRollResult(first, second);
     }
 
     private void waitingRoll(){
@@ -1196,41 +1191,27 @@ public class Tui implements View {
                     continue;
                 }
 
-                if (choice.equals("y")){
-                    controller.removeBattery(1);
-                }
-
 
             }
         }
 
-        if (choice.equals("n")) {
-            switch (card) {
-                case SldMeteorSwarm meteorSwarm -> {
-                    Meteor meteor = controller.getMeteor();
-                    controller.removeComponent(meteor.getCordinateHit());
-                }
+        boolean destroyedComp = !choice.equals("y");
 
-                case SldPirates pirates -> {
-                    CannonPenalty cannon = controller.getCannon();
-                    controller.removeComponent(cannon.getCordinateHit());
-                }
-
-                default -> Logger.error("caso non previsto");
-            }
-        }
 
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
-                controller.advanceMeteor();
+                Meteor meteor = controller.getMeteor();
+                controller.advanceMeteor(destroyedComp, !destroyedComp);
             }
 
             case SldPirates pirates -> {
-                controller.advanceMeteor();
+                CannonPenalty cannon = controller.getCannon();
+                controller.removeComponent(cannon.getCordinateHit());
             }
 
             default -> Logger.error("caso non previsto");
         }
+
 
     }
 
@@ -1240,25 +1221,49 @@ public class Tui implements View {
         boolean activate = false;
 
         if (shipBoard.getQuantBatteries() > 0){
-            while (choice.equals("")) {
-                System.out.print("Activate one double drill (y/n) : ");
-                choice = scanner.nextLine().trim().toLowerCase();
+            switch (controller.getPlayedCard()) {
+                case SldMeteorSwarm meteorSwarm -> {
+                    System.out.println("hit on " + controller.getMeteor().getCordinateHit());
+                    Meteor meteor = controller.getMeteor();
+                    List<Cordinate> possibleDrills = shipBoard.possibleDrills(meteor.getDirection(), meteor.getNumber());
 
-                if (!(choice.equals("y") || choice.equals("n"))){
-                    choice = "";
-                    continue;
+
+                    if (possibleDrills.isEmpty()){
+                        System.out.println("No possibile drill to cover");
+                        controller.advanceMeteor(true, false);
+                        return;
+                    }
+
+                    for (Cordinate cord : possibleDrills){
+                        int idComp = shipBoard.getOptComponentByCord(cord).get().getId();
+                        if (controller.getFlyBoard().getComponentById(idComp).getFirePower(false) > 0) {
+                            controller.advanceMeteor(false, false);
+                            return;
+                        }
+
+                    }
+
+                    while (choice.equals("")) {
+                        System.out.print("Activate one double drill (y/n) : ");
+                        choice = scanner.nextLine().trim().toLowerCase();
+
+                        if (!(choice.equals("y") || choice.equals("n"))) {
+                            choice = "";
+                            continue;
+                        }
+                        boolean destroyed = choice.equals("y");
+                        controller.advanceMeteor(destroyed, !destroyed);
+                    }
                 }
-                activate = (choice.equals("y"));
+
+                default -> Logger.error("errore meteoirit");
             }
         }
 
-        if (activate){
-            controller.removeBattery(1);
-        }
-        else{
+        if (!activate){
             controller.removeComponent(controller.getMeteor().getCordinateHit());
         }
-        controller.advanceMeteor();
+//        controller.advanceMeteor();
     }
 
 //        try{

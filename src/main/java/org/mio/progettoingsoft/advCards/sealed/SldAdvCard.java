@@ -105,8 +105,8 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card doesn't have combat lines");
     }
 
-    public int getCrewNeeded() throws Exception {
-        throw new Exception("this card doesn't need crew");
+    public int getCrewNeeded() throws RuntimeException {
+        throw new RuntimeException("this card doesn't need crew");
     }
 
     public List<Meteor> getMeteors() {

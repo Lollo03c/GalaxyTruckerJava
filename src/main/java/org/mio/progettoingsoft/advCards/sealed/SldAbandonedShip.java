@@ -5,6 +5,9 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.AbandonedShip;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
@@ -71,7 +74,7 @@ public final class SldAbandonedShip extends SldAdvCard {
     // else, it does nothing, and it's ready for another call with the next player
     public void applyEffect(String nickname, boolean wantsToActivate, List<Cordinate> housingCordinatesList) {
         if (! nickname.equals(actualPlayer.getNickname())) {
-            throw new BadPlayerException("Not " + nickname + " turn to play");
+            throw new IncorrectFlyBoardException("Not " + nickname + " turn to play");
         }
 
 
@@ -81,13 +84,13 @@ public final class SldAbandonedShip extends SldAdvCard {
         if (player.equals(actualPlayer)) {
             if (wantsToActivate) {
                 if (housingCordinatesList == null) {
-                    throw new BadParameterException("List is null");
+                    throw new IncorrectFlyBoardException("List is null");
                 }
                 if (housingCordinatesList.isEmpty()) {
-                    throw new BadParameterException("List is empty");
+                    throw new IncorrectFlyBoardException("List is empty");
                 }
                 if (housingCordinatesList.size() != this.crewLost) {
-                    throw new BadParameterException("List has wrong size");
+                    throw new IncorrectFlyBoardException("List has wrong size");
                 }
 
                 for (Cordinate cord : housingCordinatesList) {
@@ -96,7 +99,25 @@ public final class SldAbandonedShip extends SldAdvCard {
                 flyBoard.moveDays(flyBoard.getPlayerByUsername(actualPlayer.getNickname()), -this.daysLost);
                 flyBoard.getPlayerByUsername(actualPlayer.getNickname()).addCredits(this.credits);
 
+                synchronized (game.getEventsQueue()){
+                    for (Cordinate cord : housingCordinatesList){
+                        int idComp = actualPlayer.getShipBoard().getOptComponentByCord(cord).get().getId();
+
+                        Event event = new RemoveGuestEvent(null, idComp);
+                        game.addEvent(event);
+                    }
+
+
+                    while (! game.getEventsQueue().isEmpty()) {
+                        try {
+                            game.getEventsQueue().wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
                 effectTaken = true;
+                setNextPlayer();
 
             } else {
                 return;
@@ -106,18 +127,12 @@ public final class SldAbandonedShip extends SldAdvCard {
         }
     }
 
-    public void finish(FlyBoard board) {
-        if (this.state != CardState.FINALIZED) {
-            throw new IllegalStateException("Illegal state for 'finish': " + this.state);
-        }
-//        board.setState(GameState.DRAW_CARD);
-    }
 
     @Override
     public void setNextPlayer() {
         if (playerIterator.hasNext() && !effectTaken) {
             this.actualPlayer = this.playerIterator.next();
-            setState(CardState.CREW_REMOVE_CHOICE);
+            setState(CardState.ACCEPTATION_CHOICE);
         } else {
             setState(CardState.FINALIZED);
         }

@@ -119,15 +119,15 @@ public class ServerMessageHandler implements Runnable {
                     }
 
                     case RollDiceMessage rollDiceMessage -> {
-                        serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getNumber());
+                        serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getFirst(), rollDiceMessage.getSecond());
                     }
 
-                    case BatteryMessage batteryMessage -> {
-                        serverController.removeBattery(batteryMessage.getGameId(), batteryMessage.getNickname(), batteryMessage.getQuantity());
-                    }
+//                    case BatteryMessage batteryMessage -> {
+//                        serverController.removeBattery(batteryMessage.getGameId(), batteryMessage.getNickname(), batteryMessage.getQuantity());
+//                    }
 
                     case AdvanceMeteorMessage advanceMeteorMessage -> {
-                        serverController.advanceMeteor(advanceMeteorMessage.getGameId(), advanceMeteorMessage.getNickname());
+                        serverController.advanceMeteor(advanceMeteorMessage.getGameId(), advanceMeteorMessage.getNickname(), advanceMeteorMessage.isDestroyed(), advanceMeteorMessage.isEnergy());
                     }
 
                     case AdvanceCannonMessage advanceCannonMessage -> {
@@ -138,7 +138,7 @@ public class ServerMessageHandler implements Runnable {
                     }
 
                     default -> {
-                        Logger.error("Messaggio non gestito lato server");
+                        Logger.error(message +  "Messaggio non gestito lato server");
                     }
                 }
             } catch (InterruptedException e) {

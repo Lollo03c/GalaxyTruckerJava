@@ -1,27 +1,32 @@
 package org.mio.progettoingsoft.model.events;
 
+import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.network.client.VirtualClient;
-import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.Map;
 
-public final class AddCreditsEvent extends Event{
-    private final int addedCredits;
-    public AddCreditsEvent(String nickname , int addedCredits) {
-        super(nickname);
+public final class SetPlayedCard extends Event{
+    private final int idCard;
 
-        Logger.debug(nickname + " earned " + addedCredits + "value");
-        this.addedCredits = addedCredits;
+    public SetPlayedCard(String nickname, int idCard) {
+        super(nickname);
+        this.idCard = idCard;
+    }
+
+    public int getIdCard() {
+        return idCard;
     }
 
     @Override
     public void send(Map<String, VirtualClient> clients) {
         for (VirtualClient client : clients.values()){
-            try {
-                client.addCredits(nickname, addedCredits);
+            try{
+                client.setPlayedCard(idCard);
+                client.setState(GameState.NEW_CARD);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+
         }
     }
 }

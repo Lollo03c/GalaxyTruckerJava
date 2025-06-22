@@ -216,23 +216,23 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void setRollResult(int idGame, String nickname, int number) throws RemoteException{
+    public void setRollResult(int idGame, String nickname, int first, int second) throws RemoteException{
         executors.submit(() -> {
-            controller.setRollResult(idGame, nickname, number);
+            controller.setRollResult(idGame, nickname, first, second);
         });
     }
 
-    @Override
-    public void removeBattery(int idGame, String nickname, int quantity) throws RemoteException{
-        executors.submit(() -> {
-            controller.removeBattery(idGame, nickname, quantity);
-        });
-    }
+//    @Override
+//    public void removeBattery(int idGame, String nickname, int quantity) throws RemoteException{
+//        executors.submit(() -> {
+//            controller.removeBattery(idGame, nickname, quantity);
+//        });
+//    }
 
     @Override
-    public void advanceMeteor(int idGame, String nickname) throws RemoteException{
+    public void advanceMeteor(int idGame, String nickname, boolean destroyed, boolean energy) throws RemoteException{
         executors.submit(() -> {
-            controller.advanceMeteor(idGame, nickname);
+            controller.advanceMeteor(idGame, nickname, destroyed, energy);
         });
     }
 

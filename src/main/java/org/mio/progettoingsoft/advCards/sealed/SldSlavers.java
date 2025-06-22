@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.Slaver;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 
@@ -176,11 +179,23 @@ public final class SldSlavers extends SldAdvCard {
         for (Cordinate cord : housingCordinatesList) {
             Optional<Component> compOpt = shipBoard.getOptComponentByCord(cord);
             if (compOpt.isPresent()) {
-                compOpt.get().removeGuest();
+                try {
+                    compOpt.get().removeGuest();
+                } catch (IncorrectShipBoardException e) {
+                    //todo impostare di nuovo lo stato
+
+                    return;
+                }
                 //todo devo comunicare agli altri che ho rimosso questa crew.
             } else {
                 throw new IllegalArgumentException("Invalid coordinate: " + cord);
             }
+        }
+
+        for (Cordinate cord : housingCordinatesList){
+            int idComp = shipBoard.getOptComponentByCord(cord).get().getId();
+            Event event = new RemoveGuestEvent(null, idComp);
+            game.addEvent(event);
         }
 
         this.setNextPlayer();

@@ -182,8 +182,8 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
-    public void advancePlayer(String nickname, int steps, int energyToRemove) throws RemoteException{
-        executors.submit(() -> controller.advancePlayer(nickname, steps, energyToRemove));
+    public void advancePlayer(String nickname, int steps) throws RemoteException{
+        executors.submit(() -> controller.advancePlayer(nickname, steps));
     }
 
     public void setPlayedCard(int idCard) throws RemoteException{
@@ -196,8 +196,8 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
-    public void removeCrew(String nickname, List<Cordinate> housingCordinates) throws RemoteException{
-        executors.submit(() -> controller.crewLost(nickname,housingCordinates));
+    public void removeCrew(int idComp) throws RemoteException{
+        executors.submit(() -> controller.crewLost(idComp));
     }
 
     @Override
@@ -241,16 +241,16 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     }
 
     @Override
-    public void meteorHit(MeteorType type, Direction direction, int number) throws RemoteException{
+    public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cordinate) throws RemoteException{
         executors.submit(() -> {
-            controller.meteorHit(type, direction, number);
+            controller.meteorHit(type, direction, number, cordinate);
         });
     }
 
     @Override
-    public void removeBatteries(List<Integer> batteryDepotId) throws RemoteException{
+    public void removeBattery(int batteryDepotId) throws RemoteException{
         executors.submit(() -> {
-            controller.removeBatteriesFromModel(batteryDepotId);
+            controller.removeBatteryFromModel(batteryDepotId);
         });
     }
 

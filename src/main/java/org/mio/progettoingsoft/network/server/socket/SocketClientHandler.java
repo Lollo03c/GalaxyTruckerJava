@@ -179,8 +179,8 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
-    public void advancePlayer(String nickname, int steps, int energyToRemove) throws IOException{
-        Message message = new AdvancePlayerMessage(0, nickname, steps, energyToRemove);
+    public void advancePlayer(String nickname, int steps) throws IOException{
+        Message message = new AdvancePlayerMessage(0, nickname, steps);
         sendMessage(message);
     }
 
@@ -197,8 +197,8 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
-    public void removeCrew(String nickname, List<Cordinate> housingCordinates)throws IOException{
-        Message message = new CrewRemoveMessage(0, nickname, housingCordinates);
+    public void removeCrew(int idComp )throws IOException{
+        Message message = new CrewRemoveMessage(0, "", idComp);
         sendMessage(message);
     }
 
@@ -239,8 +239,8 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
-    public void meteorHit(MeteorType type, Direction direction, int number) throws IOException{
-        Message message = new MeteorMessage(0, null, type, direction, number);
+    public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cordinate) throws IOException{
+        Message message = new MeteorMessage(0, null, type, direction, number, cordinate);
         sendMessage(message);
     }
 
@@ -251,7 +251,7 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     }
 
     @Override
-    public void removeBatteries(List<Integer> batteryDepotId) throws IOException{
+    public void removeBattery(int batteryDepotId) throws IOException{
         Message message = new BatteryMessage(0, null, batteryDepotId);
         sendMessage(message);
     }

@@ -8,6 +8,9 @@ import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.AbandonedStation;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.SetCardStateEvent;
+import org.mio.progettoingsoft.model.events.SetStateEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
@@ -77,36 +80,19 @@ public final class SldAbandonedStation extends SldAdvCard {
         if (this.state != CardState.ACCEPTATION_CHOICE) {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
-        this.state = CardState.APPLYING;
+
         if (actualPlayer.equals(player)) {
             if (wantsToApply) {
                 effectTaken = true;
                 flyBoard.moveDays(actualPlayer, -daysLost);
-                setState(CardState.GOODS_PLACEMENT);
+
+                Event event = new SetCardStateEvent(player.getNickname(), CardState.GOODS_PLACEMENT);
+                game.addEvent(event);
             }
-        } else {
-            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
+
     }
 
-    public void goodsPlaced(Player player) {
-        if (this.state != CardState.GOODS_PLACEMENT) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (player.equals(actualPlayer)) {
-            this.state = CardState.FINALIZED;
-        } else {
-            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't confirm goods placement");
-        }
-    }
-
-    @Override
-    public void finish(FlyBoard board) {
-        if (this.state != CardState.FINALIZED) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-//        board.setState(GameState.DRAW_CARD);
-    }
 
     @Override
     public void setNextPlayer(){
