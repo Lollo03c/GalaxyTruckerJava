@@ -1215,18 +1215,35 @@ public class Gui extends Application implements View {
      * card-specific view methods section
      */
 
+    /**
+     * method called in response to a change in the card state, based on the state asks the user to choose or notifies him about the state
+     * @param cardState: the current card state
+     */
     private void updateCardGui(CardState cardState) {
         switch (cardState) {
             case ENGINE_CHOICE -> engineChoiceView();
             case DRILL_CHOICE -> drillChoiceView();
-            case CREW_REMOVE_CHOICE -> crewRemoveChoiceAccept();
+            case CREW_REMOVE_CHOICE -> {
+                acceptEffect = true;
+                crewRemoveChoiceView();
+                acceptEffect = false;
+            }
             case ACCEPTATION_CHOICE -> {
                 acceptEffectStage(() -> {
-                    if (acceptEffect) {
-                        controller.applyEffect();
-                    } else {
-                        controller.skipEffect();
+                    SldAdvCard card = controller.getPlayedCard();
+                    switch (card) {
+                        case SldAbandonedShip s -> {
+                            crewRemoveChoiceView();
+                        }
+                        default -> {
+                            if (acceptEffect) {
+                                controller.applyEffect();
+                            } else {
+                                controller.skipEffect();
+                            }
+                        }
                     }
+
                 });
             }
             case GOODS_PLACEMENT -> goodsPlacementView();
@@ -1249,15 +1266,23 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * view for asking the user which double engine he wants to activate
+     */
     private void engineChoiceView() {
+        // renders the shipboard modal view (also the method load the map to access the stack panes in the grid)
         modalShipboardView(controller.getNickname());
         modalHintTopLabel = new Label();
         ShipBoard ship = controller.getShipBoard();
+        // map to store which engines the user want to activate
         Map<Cordinate, Boolean> cordToActive = new HashMap<>();
         int maxAvailable;
         synchronized (controller.getShipboardLock()) {
             maxAvailable = Integer.min(ship.getQuantBatteries(), ship.getDoubleEngine().size());
             modalHintTopLabel.setText("Click on the double engine you want to activate (or disable). Max available: " + maxAvailable + ". Now active: 0");
+            // set the following logic to the double engine stack panes:
+            // if the engine isn't active and the user click it the engine will be set activated (if possible)
+            // if the engine is active and the user click it the engine will be set not activated
             for (Cordinate cord : modalShipCordToStackPane.keySet()) {
                 StackPane sp = modalShipCordToStackPane.get(cord);
                 if (ship.getOptComponentByCord(cord).isPresent()) {
@@ -1291,6 +1316,7 @@ public class Gui extends Application implements View {
                 }
             }
         }
+        // when the user click the confirm button, the app sends the server the choice
         Button confirmBtn = new Button("Confirm");
         confirmBtn.setOnAction(evt -> {
             int i = 0;
@@ -1305,12 +1331,17 @@ public class Gui extends Application implements View {
         modalShipContainer.getChildren().remove(modalHintTopLabel);
         modalShipContainer.getChildren().addFirst(modalHintTopLabel);
         modalShipContainer.getChildren().add(confirmBtn);
+        // if an error occurs during the activation, the server set the modalErrorLabelMessage and the client displays it
         if (modalErrorLabelMessage != null) {
             modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
             modalErrorLabelMessage = null;
         }
     }
 
+    /**
+     * view for asking the user which double drills he wants to activate
+     * (for more in-code details, look at the engineChoiceView method)
+     */
     private void drillChoiceView() {
         modalShipboardView(controller.getNickname());
         modalHintTopLabel = new Label();
@@ -1353,7 +1384,7 @@ public class Gui extends Application implements View {
                 }
             }
         }
-        final SldAdvCard card = controller.getPlayedCard();
+        //when the user click the confirm button, the list of activated drills is sent to the server
         Button confirmBtn = new Button("Confirm");
         List<Cordinate> drillsToActivate = new ArrayList<>();
         confirmBtn.setOnAction(evt -> {
@@ -1363,29 +1394,7 @@ public class Gui extends Application implements View {
                 }
             }
             modalShipStage.close();
-            switch (card) {
-                case SldSlavers slavers -> {
-                    double playerStrenght;
-                    synchronized (controller.getShipboardLock()) {
-                        playerStrenght = controller.getShipBoard().getBaseFirePower();
-                        for (Cordinate cordinate : drillsToActivate) {
-                            if (controller.getShipBoard().getOptComponentByCord(cordinate).isPresent()) {
-                                playerStrenght += controller.getShipBoard().getOptComponentByCord(cordinate).get().getFirePower(true);
-                            }
-                        }
-                    }
-                    acceptEffect = false;
-                    if (playerStrenght > slavers.getStrength()) {
-                        acceptEffectStage(() -> {
-                            controller.activateSlaver(drillsToActivate, acceptEffect);
-                        });
-                    } else {
-                        controller.activateSlaver(drillsToActivate, acceptEffect);
-                    }
-
-                }
-                default -> controller.activateDoubleDrills(drillsToActivate);
-            }
+            controller.activateDoubleDrills(drillsToActivate);
         });
         modalShipContainer.getChildren().remove(modalHintTopLabel);
         modalShipContainer.getChildren().addFirst(modalHintTopLabel);
@@ -1396,20 +1405,10 @@ public class Gui extends Application implements View {
         }
     }
 
-    private void crewRemoveChoiceAccept() {
-        SldAdvCard card = controller.getPlayedCard();
-
-        switch (card) {
-            case SldAbandonedShip s -> {
-                acceptEffectStage(this::crewRemoveChoiceView);
-            }
-            default -> {
-                acceptEffect = true;
-                crewRemoveChoiceView();
-            }
-        }
-    }
-
+    /**
+     * if acceptEffect == true, displays the view for asking the user which human/alien he wants to remove from the shipboard
+     * else, it skips the effect without involving the user
+     */
     private void crewRemoveChoiceView() {
         if (acceptEffect) {
             SldAdvCard card = controller.getPlayedCard();
@@ -1483,6 +1482,13 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * Displays the view that allow the user to place, move or discard the goods in the ship and the goods he got,
+     * the depot stack panes have two different onClick actions:
+     * - "MOVE": opens a small window to remove a good from the depot
+     * - "PLACE": place the selected good in the depot.
+     * The available goods are displayed under the shipboard and the user can click on them and place them in the ship
+     */
     private void goodsPlacementView() {
         depotAction = "MOVE";
         goodToBePlaced = null;
@@ -1498,8 +1504,8 @@ public class Gui extends Application implements View {
                         sp.setOnMouseClicked(evt -> {
                             switch (depotAction) {
                                 case "PLACE" -> {
-                                    controller.addGood(ship.getOptComponentByCord(cord).get().getId(), goodToBePlaced);
                                     modalShipStage.close();
+                                    controller.addGood(ship.getOptComponentByCord(cord).get().getId(), goodToBePlaced);
                                 }
                                 case "MOVE" -> {
                                     depotId = ship.getOptComponentByCord(cord).get().getId();
@@ -1535,6 +1541,7 @@ public class Gui extends Application implements View {
             modalHintTopLabel.setText("Click on the good you want to place or on the depot you want to modify");
             goodToBePlaced = null;
             goodsBox.getChildren().forEach(n -> n.setStyle(""));
+            depotAction = "MOVE";
         });
         Button finishBtn = new Button("End placement");
         finishBtn.setOnAction(evt -> {
@@ -1557,6 +1564,10 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * small window that allows the user to choose the good to remove from the depot
+     * @param goods: the list of goods in the depot
+     */
     private void modalGoodBoxView(List<GoodType> goods) {
         Stage modal = new Stage();
         modal.initModality(Modality.APPLICATION_MODAL);
@@ -1569,10 +1580,10 @@ public class Gui extends Application implements View {
         btnBox.setAlignment(Pos.CENTER);
         Button discardButton = new Button("Remove good");
         discardButton.setOnAction(evt -> {
-            controller.removeGood(depotId, goodToBePlaced);
-            goodToBePlaced = null;
             modal.close();
             modalShipStage.close();
+            controller.removeGood(depotId, goodToBePlaced);
+            goodToBePlaced = null;
         });
         btnBox.getChildren().addAll(discardButton);
         box.getChildren().addAll(goodBox, btnBox);
@@ -1581,6 +1592,9 @@ public class Gui extends Application implements View {
         modal.show();
     }
 
+    /**
+     * displays the view that allow the user to choose the planet where he wants to land or not to land
+     */
     private void planetChoiceView() {
         Stage modal = new Stage();
         modal.initModality(Modality.APPLICATION_MODAL);
@@ -1616,6 +1630,11 @@ public class Gui extends Application implements View {
         modal.show();
     }
 
+    /**
+     * stage used to ask the user if he wants to apply the effect of a card, the method set the field "acceptEffect" to true or false depending on the choice,
+     * then it runs the passed Runnable
+     * @param postConfirmation: instructions executed after the user choice, either if the user choose yes or no (so it will depend on "acceptEffect")
+     */
     private void acceptEffectStage(Runnable postConfirmation) {
         Stage acceptStage = new Stage();
         acceptStage.setTitle("Accept the effect");
@@ -1645,6 +1664,10 @@ public class Gui extends Application implements View {
         acceptStage.show();
     }
 
+    /**
+     * modal stage to show a message to the user
+     * @param message: the shown message
+     */
     private void modalMessageStage(String message) {
         Stage modal = new Stage();
         modal.initModality(Modality.APPLICATION_MODAL);
@@ -1883,6 +1906,14 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * displays the crew members over the passed housing
+     * it is used either for generic ship displaying (toCancel=0) and for the removeCrewChoiceView,
+     * in that case toCancel is the temp number of members that the user wants to remove
+     * @param c: the housing that contains the crew
+     * @param sp: the StackPane that contains the housing image on the ship
+     * @param toCancel: the number of crew members the user wants to remove from the housing
+     */
     private void loadHousingSpecificObjects(Component c, StackPane sp, int toCancel) {
         if (!c.getGuests().isEmpty()) {
             sp.getChildren().retainAll(sp.getChildren().getFirst());
@@ -1906,6 +1937,11 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * displays the goods over the passed depot
+     * @param c: the depot that contains the goods
+     * @param sp: the StackPane that contains the depot image on the ship
+     */
     private void loadDepotSpecificObjects(Component c, StackPane sp) {
 
         if (!c.getStoredGoods().isEmpty()) {
@@ -1931,6 +1967,11 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * displays the energies over the passed depot
+     * @param c: the depot that contains the energy
+     * @param sp: the StackPane that contains the depot image on the ship
+     */
     private void loadEnergySpecificObjects(Component c, StackPane sp) {
         if (c.getEnergyQuantity() > 0) {
             VBox vbox = new VBox();
@@ -1989,9 +2030,18 @@ public class Gui extends Application implements View {
         }
     }
 
+    /**
+     * build a box displaying the passed goods
+     * @param goods: the goods to display in the box
+     * @param sideLength: the length of the image side
+     * @param btnBox: a button box (used only for modal displaying)
+     * @return a HBox which has as children the imageViews representing the goods
+     */
     private HBox buildGoodList(List<GoodType> goods, double sideLength, HBox btnBox) {
         HBox box = new HBox(10);
         box.setAlignment(Pos.CENTER);
+
+        Logger.debug(goods.toString());
 
         for (int i = 0; i < goods.size(); i++) {
             final int index = i;
@@ -2017,6 +2067,7 @@ public class Gui extends Application implements View {
                 stackPane.setStyle("-fx-border-color: grey; -fx-border-width: 3");
                 if (btnBox != null)
                     btnBox.setDisable(false);
+                placeGoodBtn.setDisable(false);
             });
         }
         return box;

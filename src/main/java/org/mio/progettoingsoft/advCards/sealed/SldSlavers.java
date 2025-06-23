@@ -84,7 +84,6 @@ public final class SldSlavers extends SldAdvCard {
             actualPlayer = playerIterator.next();
             setState(CardState.DRILL_CHOICE);
         } else {
-            Logger.debug("the effect of SldSlavers is over");
             loserIterator = lostPlayers.iterator();
             setNextLoser();
         }
@@ -140,7 +139,6 @@ public final class SldSlavers extends SldAdvCard {
         double power = player.getShipBoard().getBaseFirePower();
         for (Cordinate cord : drillsCordinate)
             power += shipBoard.getOptComponentByCord(cord).get().getFirePower(true);
-
         if (power < strength){
             lostPlayers.add(player);
             setNextPlayer();
@@ -196,8 +194,6 @@ public final class SldSlavers extends SldAdvCard {
         }
 
         setNextLoser();
-
-
 
     }
 }

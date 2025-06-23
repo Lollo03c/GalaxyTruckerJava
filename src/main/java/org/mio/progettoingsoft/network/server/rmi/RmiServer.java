@@ -188,9 +188,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void removeGood(int idGame, String nickaname, int compId, GoodType type) throws RemoteException{
+    public void removeGood(int idGame, String nickname, int compId, GoodType type) throws RemoteException{
         executors.submit(() ->
-            controller.removeGood(idGame, nickaname, idGame, type)
+            controller.removeGood(idGame, nickname, compId, type)
         );
     }
 

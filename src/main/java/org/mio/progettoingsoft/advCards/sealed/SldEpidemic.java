@@ -65,8 +65,11 @@ public final class SldEpidemic extends SldAdvCard {
             }
         }
 
+        setState(CardState.EPIDEMIC_END);
+    }
 
-
+    public void setNextPlayer(){
+        setState(CardState.FINALIZED);
     }
 
 }

@@ -296,7 +296,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(21);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(12);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -463,7 +463,7 @@ public class ServerController {
     public void addGood(int idGame, String nickname, int idComp, GoodType type) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         try {
-
+            Logger.debug("Adding good " + type + " to " + idComp);
             game.getFlyboard().getComponentById(idComp).addGood(type);
 
             Event event = new AddGoodEvent(null,idComp, type);

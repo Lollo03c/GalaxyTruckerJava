@@ -757,13 +757,12 @@ public class ClientController {
         if (nick.equals(nickname)) {
             synchronized (listLock) {
                 goodsToInsert.remove(type);
-                setCardState(CardState.GOODS_PLACEMENT);
             }
         }
     }
 
     public void removeGood(int idComp, GoodType type) {
-
+        Logger.debug("Ask the server for remove " + type + " from " + idComp);
         try {
             server.removeGood(idGame, nickname, idComp, type);
         } catch (Exception e) {
@@ -783,6 +782,7 @@ public class ClientController {
             synchronized (listLock) {
                 goodsToInsert.add(type);
             }
+        Logger.debug("Added to pending " + nick);
     }
 
     public void setPlayerOnPlanet(String nickname, int choice) {
@@ -790,14 +790,6 @@ public class ClientController {
         synchronized (cardLock) {
             Player player = flyBoard.getPlayerByUsername(nickname);
             card.getPlanets().get(choice).land(player);
-            if (this.nickname.equals(nickname)) {
-                tmpList = new ArrayList<>(card.getPlanets().get(choice).getGoods());
-            }
-        }
-        if (this.nickname.equals(nickname)) {
-            synchronized (listLock) {
-                goodsToInsert = new ArrayList<>(tmpList);
-            }
         }
     }
 
