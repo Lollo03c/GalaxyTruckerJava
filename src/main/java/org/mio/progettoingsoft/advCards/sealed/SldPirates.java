@@ -3,7 +3,6 @@ package org.mio.progettoingsoft.advCards.sealed;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
-import org.mio.progettoingsoft.advCards.Pirate;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.RemoveComponentEvent;

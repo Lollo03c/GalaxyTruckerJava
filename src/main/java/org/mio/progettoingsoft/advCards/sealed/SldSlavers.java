@@ -2,7 +2,6 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.Slaver;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
@@ -145,6 +144,7 @@ public final class SldSlavers extends SldAdvCard {
         }
         else if (power > strength){
             actualPlayer = player;
+            loserIterator = lostPlayers.iterator();
             setState(CardState.ACCEPTATION_CHOICE);
         }
         else{

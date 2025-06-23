@@ -2,7 +2,6 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.Epidemic;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
 import org.mio.progettoingsoft.model.events.SetStateEvent;

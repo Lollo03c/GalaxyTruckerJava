@@ -493,7 +493,6 @@ public abstract class FlyBoard implements FlyBoardServer {
      *
      * @return the list of all the Adventure Cards based on the {@link GameMode} of the game
      */
-    protected abstract Map<Integer, AdventureCard> loadAdventureCard();
 
     /**
      *

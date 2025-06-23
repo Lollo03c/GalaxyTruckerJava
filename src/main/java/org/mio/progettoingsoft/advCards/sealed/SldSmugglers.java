@@ -2,7 +2,6 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.Smugglers;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;

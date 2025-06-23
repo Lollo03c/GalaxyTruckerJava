@@ -110,6 +110,26 @@ public class ServerController {
         }
     }
 
+//    public void applyStardust(int idGame, SldStardust card) {
+//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+//        FlyBoard flyboard = game.getFlyboard();
+//        card.applyEffect(flyboard);
+//        /*List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
+//        for (Player p : reversedScoreboard){
+//            int exposedConnectors = p.getShipBoard().getExposedConnectors();
+//            flyboard.moveDays(p, -exposedConnectors);
+//        }*/
+//
+//        //SldAdvCard nextCard = flyboard.drawSldAdvCard();
+//        //String type = nextCard.getCardName().toUpperCase();
+//        //GameState next = GameState.stringToGameState(type);
+//
+//        //TODO settare il Gamestate allo stato della carta pescata
+//        //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
+//        //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
+//
+//    }
+
     public void drawUncovered(int idGame, String nickname, Integer idComponent) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -344,6 +364,7 @@ public class ServerController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public void drawCard(int idGame, String nickname) {

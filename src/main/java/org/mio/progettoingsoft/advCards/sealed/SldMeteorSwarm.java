@@ -3,7 +3,6 @@ package org.mio.progettoingsoft.advCards.sealed;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.advCards.Meteor;
-import org.mio.progettoingsoft.advCards.MeteorSwarm;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;

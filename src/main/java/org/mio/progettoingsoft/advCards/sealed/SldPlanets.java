@@ -22,23 +22,11 @@ public final class SldPlanets extends SldAdvCard {
     private Iterator<Planet> planetIterator;
     Planet actualPlanet;
 
-    public boolean getReadyToProceed() {
-        return readyToProceed;
-    }
-
-    public void setReadyToProceed(boolean readyToProceed) {
-        this.readyToProceed = readyToProceed;
-    }
 
     public Map<Planet, Player> getLandedPlayers() {
         return landedPlayers;
     }
 
-    public void notifyGoodsPlacementFinished(Player player) {
-        finishedGoodsPlacement.add(player);
-        Logger.debug("Player " + player.getNickname() + " finished goods placement");
-        Logger.debug("Players finished so far: " + finishedGoodsPlacement.size() + "/" + landedPlayers.size());
-    }
 
     @Override
     public boolean allPlayersPlacedGoods() {
@@ -186,14 +174,5 @@ public final class SldPlanets extends SldAdvCard {
         else{
             setState(CardState.FINALIZED);
         }
-    }
-
-
-    @Override
-    public void finish(FlyBoard board) {
-        if (this.state != CardState.FINALIZED) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-//        board.setState(GameState.DRAW_CARD);
     }
 }
