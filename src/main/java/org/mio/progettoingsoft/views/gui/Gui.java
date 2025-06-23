@@ -22,6 +22,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
@@ -34,6 +35,7 @@ import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
+import javax.swing.text.SimpleAttributeSet;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -152,6 +154,7 @@ public class Gui extends Application implements View {
     private String modalErrorLabelMessage;
     private VBox modalShipContainer;
     private Label modalHintTopLabel;
+    private Button placeGoodBtn;
     private HBox goodsBox;
     // modal stage for position choosing
     private Stage choosePositionStage;
@@ -932,7 +935,7 @@ public class Gui extends Application implements View {
                         )
                 )
         );
-        tilesSideLength = Math.min(stageHeight / 6, stageWidth / 10);
+        tilesSideLength = Math.min(stageHeight / 9, stageWidth / 16);
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 7; j++) {
                 if (!(
@@ -1227,11 +1230,20 @@ public class Gui extends Application implements View {
                 });
             }
             case GOODS_PLACEMENT -> goodsPlacementView();
+            case STARDUST_END -> {
+                int exposed;
+                synchronized (controller.getShipboardLock()) {
+                    exposed = controller.getShipBoard().getExposedConnectors();
+                }
+                modalMessageStage("Stardust has been played!\nYou had " + exposed + " exposed connectors, so you lost " + exposed + " days");
+            }
+            case EPIDEMIC_END -> modalMessageStage("Epidemic has been played!\nLook at your ship and check your crew!");
+            case PLANET_CHOICE -> planetChoiceView();
             case ERROR_CHOICE -> {
                 modalErrorLabelMessage = controller.getErrMessage();
                 controller.resetErrMessage();
             }
-            case IDLE -> {
+            case IDLE, FINALIZED -> {
             }
             default -> genericErrorView(cardState);
         }
@@ -1477,7 +1489,7 @@ public class Gui extends Application implements View {
         modalShipboardView(controller.getNickname());
         modalHintTopLabel = new Label();
         ShipBoard ship = controller.getShipBoard();
-        modalHintTopLabel.setText("Use the buttons or click on the depot you want to modify");
+        modalHintTopLabel.setText("Click on the good you want to place or on the depot you want to modify");
         synchronized (controller.getShipboardLock()) {
             for (Cordinate cord : modalShipCordToStackPane.keySet()) {
                 StackPane sp = modalShipCordToStackPane.get(cord);
@@ -1500,27 +1512,27 @@ public class Gui extends Application implements View {
                 }
             }
         }
-
         List<GoodType> goods = controller.getGoodsToInsert();
         HBox goodsBox = buildGoodList(goods, tilesSideLength / 3, null);
         HBox btnBox = new HBox(10);
-        Button placeGoodBtn = new Button("Place");
+        placeGoodBtn = new Button("Place");
+        Button backBtn = new Button("Back");
         placeGoodBtn.setOnAction(evt -> {
             if (goodToBePlaced != null) {
                 depotAction = "PLACE";
-                backButton.setDisable(false);
+                backBtn.setDisable(false);
                 placeGoodBtn.setDisable(true);
                 goodsBox.setDisable(true);
                 modalHintTopLabel.setText("Click on the depot in which you want to place the good");
             }
         });
-        Button backBtn = new Button("Back");
+        placeGoodBtn.setDisable(true);
         backBtn.setDisable(true);
         backBtn.setOnAction(evt -> {
             goodsBox.setDisable(false);
-            backButton.setDisable(true);
+            backBtn.setDisable(true);
             placeGoodBtn.setDisable(false);
-            modalHintTopLabel.setText("Use the buttons or click on the depot you want to modify");
+            modalHintTopLabel.setText("Click on the good you want to place or on the depot you want to modify");
             goodToBePlaced = null;
             goodsBox.getChildren().forEach(n -> n.setStyle(""));
         });
@@ -1569,6 +1581,41 @@ public class Gui extends Application implements View {
         modal.show();
     }
 
+    private void planetChoiceView() {
+        Stage modal = new Stage();
+        modal.initModality(Modality.APPLICATION_MODAL);
+        VBox box = new VBox(20);
+        box.setPadding(new Insets(20));
+        box.setAlignment(Pos.CENTER);
+        SldAdvCard card = controller.getPlayedCard();
+        String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + card.getId() + IMG_JPG_EXTENSION;
+        Image img = new Image(getClass().getResourceAsStream(tmpResourcePath));
+        ImageView imgView = new ImageView(img);
+        imgView.setPreserveRatio(true);
+        imgView.setFitHeight(tilesSideLength * 3);
+        HBox btnBox = new HBox(10);
+        btnBox.setAlignment(Pos.CENTER);
+        for (int i = 0; i < card.getPlanets().size(); i++) {
+            final int index = i;
+            if (card.getPlanets().get(i).getPlayer().isEmpty()) {
+                Button b = new Button("Land on planet " + (i + 1));
+                b.setOnAction(evt -> {
+                    controller.landOnPlanet(index);
+                    modal.close();
+                });
+                btnBox.getChildren().add(b);
+            }
+        }
+        Button noPlanetBtn = new Button("Don't land anywhere");
+        noPlanetBtn.setOnAction(evt -> {
+            controller.landOnPlanet(-1);
+            modal.close();
+        });
+        box.getChildren().addAll(imgView, btnBox, noPlanetBtn);
+        modal.setScene(new Scene(box));
+        modal.show();
+    }
+
     private void acceptEffectStage(Runnable postConfirmation) {
         Stage acceptStage = new Stage();
         acceptStage.setTitle("Accept the effect");
@@ -1596,6 +1643,17 @@ public class Gui extends Application implements View {
         center.getChildren().addAll(acceptLabel, btnBox);
         acceptStage.setScene(new Scene(center));
         acceptStage.show();
+    }
+
+    private void modalMessageStage(String message) {
+        Stage modal = new Stage();
+        modal.initModality(Modality.APPLICATION_MODAL);
+        VBox box = new VBox(10);
+        box.setPadding(new Insets(20));
+        Label infoLabel = new Label(message);
+        box.getChildren().addAll(infoLabel);
+        modal.setScene(new Scene(box));
+        modal.show();
     }
 
     /*

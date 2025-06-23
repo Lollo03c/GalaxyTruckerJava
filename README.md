@@ -7,14 +7,14 @@ held by prof. Alessandro Margara in the academic year 2024-2025.<br>
 
 | Functionality                | State |
 |:-----------------------------|:-----:|
-| Basic rules                  |  🟡   |
+| Basic rules                  |  ✅   |
 | Complete rules               |  🟡   |
 | CLI                          |  🟡   |
 | GUI                          |  🟡   |
 | Socket                       |  ✅   |
 | RMI                          |  ✅   |
-| First flight                 |  🟡   |
-| Multiple matches             |  🟡   |
+| Multiple matches             |  ✅   |
+| First flight                 |  ❌   |
 | Persistence                  |  ❌   |
 | Resilience to disconnections |  ❌   |
 

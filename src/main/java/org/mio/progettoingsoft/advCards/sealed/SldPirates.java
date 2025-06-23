@@ -57,7 +57,7 @@ public final class SldPirates extends SldAdvCard{
         this.game = game;
         this.flyBoard = game.getFlyboard();
 
-       allowedPlayers = new ArrayList<>(flyBoard.getPlayers());
+       allowedPlayers = new ArrayList<>(flyBoard.getScoreBoard());
        playerIterator = allowedPlayers.iterator();
 
        cannonIterator = cannons.iterator();

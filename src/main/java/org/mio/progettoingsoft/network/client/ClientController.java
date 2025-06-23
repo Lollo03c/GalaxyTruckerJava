@@ -42,18 +42,19 @@ public class ClientController {
     private boolean pendingHourglass = true;
     private boolean finishedBuilding = false;
 
-    public boolean getFinishedBuilding(){
+    public boolean getFinishedBuilding() {
         return finishedBuilding;
     }
-    public int getHourglassCounter(){
+
+    public int getHourglassCounter() {
         return hourglassCounter;
     }
 
-    public void setPendingHourglass(boolean pendingHourglass){
+    public void setPendingHourglass(boolean pendingHourglass) {
         this.pendingHourglass = pendingHourglass;
     }
 
-    public void incrementHourglassCounter(){
+    public void incrementHourglassCounter() {
         hourglassCounter++;
     }
 
@@ -117,7 +118,7 @@ public class ClientController {
 
     public void setState(GameState state) {
         GameState oldState;
-        if(state.equals(GameState.FINISH_HOURGLASS))
+        if (state.equals(GameState.FINISH_HOURGLASS))
             pendingHourglass = false;
         synchronized (stateLock) {
             oldState = this.gameState;
@@ -300,7 +301,7 @@ public class ClientController {
         synchronized (cardLock) {
             synchronized (flyboardLock) {
                 this.card = flyBoard.getSldAdvCardByID(idCard);
-                goodsToInsert = new ArrayList<>( card.getGoods());
+                goodsToInsert = new ArrayList<>(card.getGoods());
                 Logger.debug("settata la carta: " + card.getCardName());
             }
         }
@@ -460,11 +461,11 @@ public class ClientController {
             setState(GameState.CHOICE_BUILT);
         } else if (chosen == 8) {
             try {
-                if ( pendingHourglass ){
+                if (pendingHourglass) {
                     throw new CannotRotateHourglassException("hourglass timer is already started");
-                }else if (hourglassCounter == 2 && !getState().equals(GameState.END_BUILDING)) {
+                } else if (hourglassCounter == 2 && !getState().equals(GameState.END_BUILDING)) {
                     throw new CannotRotateHourglassException("you cannot rotate hourglass : you need to finish your ship building first");
-                }else if (hourglassCounter == 3) {
+                } else if (hourglassCounter == 3) {
                     throw new CannotRotateHourglassException("hourglass cannote be rotated anymore");
                 }
                 pendingHourglass = true;
@@ -479,14 +480,14 @@ public class ClientController {
     // this method is called only by the players who have already finished the ship building
     public void rotateHourglass() {
         try {
-            if ( pendingHourglass ){
+            if (pendingHourglass) {
                 throw new CannotRotateHourglassException("hourglass timer is already started");
             } else if (hourglassCounter == 3) {
                 throw new CannotRotateHourglassException("hourglass cannote be rotated anymore");
             }
             pendingHourglass = true;
             server.startHourglass(idGame);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         setState(GameState.END_BUILDING);
@@ -775,9 +776,18 @@ public class ClientController {
     }
 
     public void setPlayerOnPlanet(String nickname, int choice) {
+        List<GoodType> tmpList = null;
         synchronized (cardLock) {
             Player player = flyBoard.getPlayerByUsername(nickname);
             card.getPlanets().get(choice).land(player);
+            if (this.nickname.equals(nickname)) {
+                tmpList = new ArrayList<>(card.getPlanets().get(choice).getGoods());
+            }
+        }
+        if (this.nickname.equals(nickname)) {
+            synchronized (listLock) {
+                goodsToInsert = new ArrayList<>(tmpList);
+            }
         }
     }
 
@@ -813,27 +823,25 @@ public class ClientController {
     }
 
 
-
-    public void removeBattery(int quantity){
-        try{
+    public void removeBattery(int quantity) {
+        try {
             server.removeBattery(idGame, nickname, quantity);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("");
         }
     }
 
-    public void removeBatteriesFromModel(List<Integer> batteryDepotId){
-        synchronized (flyboardLock){
-            for (int id : batteryDepotId){
+    public void removeBatteriesFromModel(List<Integer> batteryDepotId) {
+        synchronized (flyboardLock) {
+            for (int id : batteryDepotId) {
                 Logger.debug("Removed battery from component id " + id);
                 flyBoard.getComponentById(id).removeOneEnergy();
             }
         }
     }
 
-    public void advanceMeteor(){
-        try{
+    public void advanceMeteor() {
+        try {
             server.advanceMeteor(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -851,7 +859,8 @@ public class ClientController {
             return;
         }
 
-        Cordinate cordinateHit = optCordinateHit.get();;
+        Cordinate cordinateHit = optCordinateHit.get();
+        ;
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         meteor.setCordinateHit(cordinateHit);
@@ -860,21 +869,19 @@ public class ClientController {
             if (componentHit.getConnector(direction).equals(Connector.FLAT)) {
                 Logger.debug("componente piatto");
                 advanceMeteor();
-            }
-            else{
+            } else {
                 setCardState(CardState.SHIELD_SELECTION);
             }
-        }
-        else{
+        } else {
             List<Cordinate> validDrills = shipBoard.getDrills(direction);
 
-            if (validDrills.isEmpty()){
+            if (validDrills.isEmpty()) {
                 removeComponent(cordinateHit);
             }
 
-            if (direction.equals(Direction.FRONT)){
+            if (direction.equals(Direction.FRONT)) {
 
-                for (Cordinate cordDrill : validDrills){
+                for (Cordinate cordDrill : validDrills) {
                     if (cordDrill.getColumn() == number - shipBoard.getOffsetCol()) {
                         if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
                             advanceMeteor();
@@ -884,10 +891,9 @@ public class ClientController {
                         }
                     }
                 }
-            }
-            else if (direction.equals(Direction.BACK)){
-                for (Cordinate cordDrill : validDrills){
-                    if (Math.abs( cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
+            } else if (direction.equals(Direction.BACK)) {
+                for (Cordinate cordDrill : validDrills) {
+                    if (Math.abs(cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
                         if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
                             advanceMeteor();
                             return;
@@ -896,10 +902,9 @@ public class ClientController {
                         }
                     }
                 }
-            }
-            else{
-                for (Cordinate cordDrill : validDrills){
-                    if (Math.abs( cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
+            } else {
+                for (Cordinate cordDrill : validDrills) {
+                    if (Math.abs(cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
                         if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
                             advanceMeteor();
                             return;
@@ -912,7 +917,7 @@ public class ClientController {
         }
     }
 
-    public void cannonHit(CannonType type, Direction direction, int number){
+    public void cannonHit(CannonType type, Direction direction, int number) {
         cannon = new CannonPenalty(direction, type);
         cannon.setNumber(number);
 
@@ -922,24 +927,24 @@ public class ClientController {
             return;
         }
 
-        Cordinate cordinateHit = optCordinateHit.get();;
+        Cordinate cordinateHit = optCordinateHit.get();
+        ;
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         cannon.setCordinateHit(cordinateHit);
 
-        if (type.equals(CannonType.HEAVY)){
+        if (type.equals(CannonType.HEAVY)) {
             removeComponent(cordinateHit);
             advanceCannon();
-        }
-        else{
+        } else {
             setCardState(CardState.SHIELD_SELECTION);
         }
 
 
     }
 
-    public void advanceCannon(){
-        try{
+    public void advanceCannon() {
+        try {
             server.advanceCannon(idGame, nickname);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -959,7 +964,9 @@ public class ClientController {
             Logger.debug("removed component of " + nickname + " from cordinate " + cord);
             ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
             otherShip.removeComponent(cord);
-        }}
+        }
+    }
+
     public CannonPenalty getCannon() {
         return cannon;
     }

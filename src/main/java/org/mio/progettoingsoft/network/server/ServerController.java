@@ -112,19 +112,6 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyboard = game.getFlyboard();
         card.applyEffect(flyboard);
-        /*List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
-        for (Player p : reversedScoreboard){
-            int exposedConnectors = p.getShipBoard().getExposedConnectors();
-            flyboard.moveDays(p, -exposedConnectors);
-        }*/
-
-        //SldAdvCard nextCard = flyboard.drawSldAdvCard();
-        //String type = nextCard.getCardName().toUpperCase();
-        //GameState next = GameState.stringToGameState(type);
-
-        //TODO settare il Gamestate allo stato della carta pescata
-        //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
-        //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
 
     }
 
@@ -315,7 +302,7 @@ public class ServerController {
             throw new NotYourTurnException();
         }
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(1);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(3);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 

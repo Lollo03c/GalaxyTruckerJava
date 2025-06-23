@@ -44,9 +44,7 @@ public final class SldStardust extends SldAdvCard{
             flyBoard.moveDays(player, -daysLost);
         }
 
-        setState(CardState.FINALIZED);
-
-
+        setState(CardState.STARDUST_END);
     }
 
     public void applyEffect(FlyBoard board) {
@@ -70,6 +68,8 @@ public final class SldStardust extends SldAdvCard{
 //        board.setState(GameState.DRAW_CARD);
     }
 
-
-
+    @Override
+    public void setNextPlayer() {
+        setState(CardState.FINALIZED);
+    }
 }

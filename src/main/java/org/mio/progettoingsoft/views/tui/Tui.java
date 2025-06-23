@@ -111,12 +111,12 @@ public class Tui implements View {
                 chooseBuiltShip();
             }
 
-            case FINISH_HOURGLASS -> {
+            case FINISH_HOURGLASS -> {/*
                 controller.setPendingHourglass(false);
-                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);
+                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);*/
             }
 
-            case FINISH_LAST_HOURGLASS -> {
+            case FINISH_LAST_HOURGLASS -> {/*
                 //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
                 //di simile e deve processare l'input mi genera un'eccezione
                 if(!controller.getFinishedBuilding()){
@@ -124,7 +124,7 @@ public class Tui implements View {
                 }
                 else{
                     controller.setState(GameState.END_BUILDING);
-                }
+                }*/
             }
 
             case INVALID_SHIP_CHOICE -> {
@@ -182,7 +182,7 @@ public class Tui implements View {
 
     private void endBuildingMenu(){
         System.out.println("Waiting for other players" + RESET);
-        System.out.println("Type \"r\" to rotate hourglass");
+        /*System.out.println("Type \"r\" to rotate hourglass");
         String input = " ";
         while(!input.equalsIgnoreCase("r")){
             input = scanner.nextLine();
@@ -200,7 +200,7 @@ public class Tui implements View {
                 throw e;
             }
             controller.setState(GameState.END_BUILDING);
-        }
+        }*/
     }
 
     /**
@@ -322,6 +322,10 @@ public class Tui implements View {
             case ASK_ONE_DOUBLE_DRILL -> askOneDoubleDrill();
 
             case GOODS_PLACEMENT -> goodPlacement();
+
+            case STARDUST_END -> stardustEndInfo();
+
+            case EPIDEMIC_END -> epidemicEndInfo();
 
             case FINALIZED -> {
 
@@ -1251,14 +1255,19 @@ public class Tui implements View {
         controller.advanceMeteor();
     }
 
-//        try{
-//            controller.removeCrew(crewPositionsToRemove);
-//        } catch (Exception e) {
-//            System.out.println(RED + "One of the coordindate you insert is not associated with a guest" + RESET);
-//            controller.setState(GameState.CARD_EFFECT);
-//            return ;
-//        }
+    private void stardustEndInfo(){
+        int exposedConn;
+        synchronized (controller.getShipboardLock()){
+            exposedConn = controller.getShipBoard().getExposedConnectors();
+        }
+        System.out.println("Stardust has been applied:");
+        System.out.println("You have " + exposedConn + " exposed connectors, so you lost " + exposedConn + " positions");
+    }
 
+    private void epidemicEndInfo(){
+        System.out.println("Epidemic has been applied:");
+        System.out.println("Look at your shipboard and check your crew!");
+    }
 
     private void clearConsole() {
         System.out.print("\033[H\033[2J");

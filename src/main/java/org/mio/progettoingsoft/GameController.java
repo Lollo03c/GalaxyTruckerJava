@@ -131,7 +131,6 @@ public class GameController {
             case PLANET_CHOICE -> {
                 try{
                     client.setCardState(CardState.PLANET_CHOICE);
-                    client.setState(GameState.CARD_EFFECT);
                 }catch (Exception e){
                     throw new RuntimeException(e);
                 }
@@ -139,7 +138,6 @@ public class GameController {
             case COMPARING -> {
                 try{
                     client.setCardState(CardState.COMPARING);
-                    client.setState(GameState.CARD_EFFECT);
                 }catch (Exception e){
                     throw new RuntimeException(e);
                 }
@@ -199,6 +197,16 @@ public class GameController {
                         }
                     }
 
+                }
+            }
+
+            case STARDUST_END -> {
+                for(VirtualClient c : game.getClients().values()){
+                    try {
+                        c.setCardState(CardState.STARDUST_END);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
 
