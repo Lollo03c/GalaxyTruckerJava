@@ -23,6 +23,7 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerController {
     /**
@@ -229,7 +230,46 @@ public class ServerController {
 
     }
 
-    public void endBuild(int idGame, String nickname) {
+    public void endValidation(int idGame, String nickname) {
+        Logger.info(nickname + " ended ship building, has removed incorrect components and now needs to validate his ship.");
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();
+        VirtualClient client = game.getClients().get(nickname);
+
+        if (!shipBoard.isShipValid()) {
+            Logger.error("Ship " + nickname + " is not valid.");
+
+            Event event1 = new SetStateEvent(nickname, GameState.WAITING);
+            Event event2 = new SetStateEvent(nickname, GameState.VALIDATION);
+            game.addEvent(event1);
+            game.addEvent(event2);
+        } else {
+            Logger.info("Ship " + nickname + " is valid.");
+            Player player = flyBoard.getPlayerByUsername(nickname);
+            flyBoard.getValidationPlayers().remove(player);
+
+            shipBoard.addGuestToShip();
+
+
+            if (flyBoard.getValidationPlayers().isEmpty()){
+                String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
+                for (String n : game.getClients().keySet()){
+                    if (n.equals(nickLeader)){
+                        Event event1 = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
+                        game.addEvent(event1);
+                    }
+                    else{
+                        Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
+                        game.addEvent(event1);
+                    }
+
+                }
+            }
+        }
+    }
+
+    public void getStartingPosition(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         List<Integer> availablePlaces = flyBoard.getAvailableStartingPositions();
@@ -269,23 +309,41 @@ public class ServerController {
 
             if (flyBoard.isReadyToAdventure()) {
 
-                String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
-                for (String n : game.getClients().keySet()){
-                    if (n.equals(nickLeader)){
-                        Event event1 = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
-                        game.addEvent(event1);
-                    }
-                    else{
-                        Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
-                        game.addEvent(event1);
-                    }
+                for (Player player : flyBoard.getScoreBoard()) {
+                    flyBoard.setValidationPlayers(flyBoard.getScoreBoard());
 
+                    Event eve = new SetStateEvent(player.getNickname(), GameState.VALIDATION);
+                    game.addEvent(eve);
                 }
+//                String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
+//                for (String n : game.getClients().keySet()){
+//                    if (n.equals(nickLeader)){
+//                        Event event1 = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
+//                        game.addEvent(event1);
+//                    }
+//                    else{
+//                        Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
+//                        game.addEvent(event1);
+//                    }
+//                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public void endBuild(int idGame, String nickname) {
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        List<Integer> availablePlaces = flyBoard.getAvailableStartingPositions();
+        VirtualClient client = game.getClients().get(nickname);
+        try {
+            client.setAvailablePlaces(availablePlaces);
+            client.setState(GameState.CHOOSE_POSITION);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void drawCard(int idGame, String nickname) {
@@ -295,8 +353,13 @@ public class ServerController {
         if (!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))) {
             throw new NotYourTurnException();
         }
+        SldAdvCard card = flyBoard.getSldAdvCardByID(12);
+
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        SldAdvCard card = flyBoard.getSldAdvCardByID(29);
+        while(game.getFlyboard().getScoreBoard().size() == 1 && (card.getId() == 16 || card.getId() == 36)){
+            int id = flyBoard.drawCard();
+            card = flyBoard.getSldAdvCardByID(id);
+        }
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
@@ -708,16 +771,40 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
-        if (!flyBoard.getNicknameList().contains(nickname)) {
-            throw new IncorrectFlyBoardException("Not player wit hthis nick");
+        if (!flyBoard.getNicknameList().contains(nickname)){
+            throw new IncorrectFlyBoardException("Not player with this nickname");
         }
 
         ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
         shipBoard.removeComponent(cord);
 
-        for (VirtualClient client : game.getClients().values()) {
-            try {
-                client.removeComponent(nickname, cord);
+        Map<String, VirtualClient> clients = game.getClients();
+        for (String nick : clients.keySet()){
+            try{
+                if(!nick.equals(nickname)){
+                    clients.get(nick).removeComponent(nickname, cord);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void removeComponentToAll(int idGame, String nickname, Cordinate cord) {
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
+        if (!flyBoard.getNicknameList().contains(nickname)){
+            throw new IncorrectFlyBoardException("Not player with this nickname");
+        }
+
+        ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        shipBoard.removeComponent(cord);
+
+        Map<String, VirtualClient> clients = game.getClients();
+        for (String nick : clients.keySet()){
+            try{
+                clients.get(nick).removeComponent(nickname, cord);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

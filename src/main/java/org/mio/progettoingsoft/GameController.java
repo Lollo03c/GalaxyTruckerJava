@@ -112,16 +112,17 @@ public class GameController {
 
     public void finishHourglass(int activation) {
         List<VirtualClient> clients =game.getClients().values().stream().toList();
-        for (VirtualClient client : clients){
-            try {
-                if(activation == 3){
-                    client.setState(GameState.FINISH_LAST_HOURGLASS);
+        if(!game.getFlyboard().isReadyToAdventure()) {
+            for (VirtualClient client : clients) {
+                try {
+                    if (activation == 3) {
+                        client.setState(GameState.FINISH_LAST_HOURGLASS);
+                    } else {
+                        client.setState(GameState.FINISH_HOURGLASS);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-                else {
-                    client.setState(GameState.FINISH_HOURGLASS);
-                }
-            }catch (Exception e){
-                throw new RuntimeException(e);
             }
         }
     }

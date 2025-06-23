@@ -126,8 +126,21 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
 
     @Override
     public void choosePlace(int idGame, String nickname, int place) throws RemoteException {
+        if(place == -1) {
+            executors.submit(() -> {
+                controller.getStartingPosition(idGame, nickname);
+            });
+        } else {
+            executors.submit(() -> {
+                controller.choosePlace(idGame, nickname, place);
+            });
+        }
+    }
+
+    @Override
+    public void endValidation(int idGame, String nickname) throws RemoteException {
         executors.submit(() -> {
-            controller.choosePlace(idGame, nickname, place);
+            controller.endValidation(idGame, nickname);
         });
     }
 
@@ -244,10 +257,16 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void removeComponent(int idGame, String nickname, Cordinate cordinate) throws RemoteException{
-        executors.submit(() -> {
-            controller.removeComponent(idGame, nickname, cordinate);
-        });
+    public void removeComponent(int idGame, String nickname, Cordinate cordinate, boolean toAllClient) throws RemoteException{
+        if (toAllClient) {
+            executors.submit(() -> {
+                controller.removeComponentToAll(idGame, nickname, cordinate);
+            });
+        } else {
+            executors.submit(() -> {
+                controller.removeComponent(idGame, nickname, cordinate);
+            });
+        }
     }
 
     @Override
@@ -256,8 +275,4 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
             controller.startHourglass(idGame);
         });
     }
-
-
-
-
 }

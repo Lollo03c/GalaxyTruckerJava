@@ -41,7 +41,12 @@ public class ServerMessageHandler implements Runnable {
                             }
 
                             case REMOVE -> {
-                                serverController.removeComponent(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
+                                if (componentMessage.isToAllClient()) {
+                                    serverController.removeComponentToAll(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
+                                } else {
+                                    serverController.removeComponent(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
+                                }
+
                             }
 
                             case DISCARD -> {
@@ -76,7 +81,15 @@ public class ServerMessageHandler implements Runnable {
                         serverController.endBuild(endBuildMessage.getGameId(), endBuildMessage.getNickname());
                     }
                     case ChoosePlacementMessage choosePlacementMessage -> {
-                        serverController.choosePlace(choosePlacementMessage.getGameId(), choosePlacementMessage.getNickname(), choosePlacementMessage.getPlace());
+                        if(choosePlacementMessage.getPlace() == -1) {
+                            serverController.getStartingPosition(choosePlacementMessage.getGameId(), choosePlacementMessage.getNickname());
+                        } else {
+                            serverController.choosePlace(choosePlacementMessage.getGameId(), choosePlacementMessage.getNickname(), choosePlacementMessage.getPlace());
+                        }
+                    }
+
+                    case EndValidationMessage endValidationMessage -> {
+                        serverController.endValidation(endValidationMessage.getGameId(), endValidationMessage.getNickname());
                     }
 
                     case DoubleEngineMessage doubleEngineMessage -> {

@@ -21,6 +21,7 @@ public class Player {
     private Component inHand;
     private boolean isRunning;
     private FlyBoard flyBoard;
+    private boolean retired = false;
 
     /**
      * create a new instance of {@link Player}, it is called by the constructor of {@link FlyBoard}
@@ -42,6 +43,14 @@ public class Player {
         this.isRunning = false;
 
 //        view = new View(this);
+    }
+
+    public void setRetired(boolean retired) {
+        this.retired = retired;
+    }
+
+    public boolean getRetired() {
+        return this.retired;
     }
 
 

@@ -142,14 +142,13 @@ public class Tui implements View {
 
             case VIEW_BOOKED -> viewBookedComponents();
             case SWITCH_BOOKED -> switchBookedComponents();
+            case END_BUILDING -> endBuildingMenu();
             case CHOOSE_POSITION -> {
-                System.out.println("Choose position");
+                System.out.print("Choose position: ");
                 printChoosePosition();
+                System.out.println("Waiting for other players" + RESET);
             }
-            case END_BUILDING -> {
-                endBuildingMenu();
-            }
-
+            case VALIDATION -> printValidationMenu();
             case UNABLE_UNCOVERED_COMPONENT -> {
                 System.out.println("Component is already been taken");
                 controller.setState(GameState.BUILDING_SHIP);
@@ -174,31 +173,6 @@ public class Tui implements View {
             case NEW_CARD -> printNewCard();
 
             case CARD_EFFECT -> cardEffect();
-        }
-    }
-
-    private void endBuildingMenu(){
-        System.out.println("Waiting for other players" + RESET);
-        if (!controller.getFinishedLastHourglass() && !controller.getPendingHourglass()) {
-            System.out.println("Type \"r\" to rotate hourglass");
-            String input = " ";
-            while(!input.equalsIgnoreCase("r")){
-                input = scanner.nextLine();
-            }
-            try{
-                controller.rotateHourglass();
-            } catch (CannotRotateHourglassException e) {
-                System.out.println(RED + e.getMessage() + RESET);
-                controller.setState(GameState.END_BUILDING);
-            } catch (RuntimeException e) {
-                Throwable cause = e.getCause();
-                if (cause instanceof CannotRotateHourglassException) {
-                    System.out.println(RED + cause.getMessage() + RESET);
-                } else {
-                    throw e;
-                }
-                controller.setState(GameState.END_BUILDING);
-            }
         }
     }
 
@@ -246,6 +220,93 @@ public class Tui implements View {
     private void printNewCard() {
         System.out.println("A new card has been drawn");
         controller.getPlayedCard().disegnaCard();
+    }
+
+    private void printValidationMenu() {
+        System.out.println(BLUE + "End building, validating ship:\n" + RESET);
+
+        List<Cordinate> incorrectComponents = controller.getIncorrectComponents();
+
+        String input = "";
+        while (!incorrectComponents.isEmpty()) {
+            controller.getShipBoard().drawShipboard();
+            System.out.println("Following components are not properly connected: " + incorrectComponents);
+            System.out.print("Select a incorrect component to remove from the list (1 - " + incorrectComponents.size() + "): ");
+            input = scanner.nextLine().trim().toLowerCase();
+
+            int choice = -1;
+            while(choice < 1 || choice > incorrectComponents.size()) {
+                try {
+                    choice = Integer.parseInt(input);
+
+                    if (choice < 1 || choice > incorrectComponents.size()) {
+                        System.out.println(RED + "Invalid choice!" + RESET);
+                    }
+                } catch (Exception e) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            }
+
+            controller.removeComponentImmediate(incorrectComponents.get(choice - 1));
+
+            incorrectComponents = controller.getIncorrectComponents();
+        }
+
+        List<Set<Component>> standAloneBlocks = controller.getStandAloneBlocks();
+        if (standAloneBlocks.size() > 1) {
+            System.out.println("There are blocks of components that are not connected to each other. These are the stand alone blocks:");
+            for (Set<Component> standAloneBlock : standAloneBlocks) {
+                System.out.println("Block: " + standAloneBlock.stream().map(Component::getCordinate).toList());
+            }
+
+            System.out.print("Which one do you want to keep? Select between 1 - " + standAloneBlocks.size() + ": ");
+            input = scanner.nextLine().trim().toLowerCase();
+            int choice = -1;
+            while(choice < 0){
+                try {
+                    choice = Integer.parseInt(input);
+
+                    if (choice < 1 || choice > standAloneBlocks.size()) {
+                        choice = -1;
+                        System.out.println(RED + "Invalid choice!" + RESET);
+                    }
+                } catch (Exception e) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            }
+
+            controller.removeStandAloneBlock(choice - 1);
+
+            System.out.println("Components removed!");
+        }
+
+        controller.endValidation();
+        System.out.println(BLUE + "End of validation phase." + RESET);
+    }
+
+    private void endBuildingMenu(){
+        System.out.println("Waiting for other players" + RESET);
+        if (!controller.getFinishedLastHourglass() && !controller.getPendingHourglass()) {
+            System.out.println("Type \"r\" to rotate hourglass");
+            String input = " ";
+            while(!input.equalsIgnoreCase("r")){
+                input = scanner.nextLine();
+            }
+            try{
+                controller.rotateHourglass();
+            } catch (CannotRotateHourglassException e) {
+                System.out.println(RED + e.getMessage() + RESET);
+                controller.setState(GameState.END_BUILDING);
+            } catch (RuntimeException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof CannotRotateHourglassException) {
+                    System.out.println(RED + cause.getMessage() + RESET);
+                } else {
+                    throw e;
+                }
+                controller.setState(GameState.END_BUILDING);
+            }
+        }
     }
 
     private void printChoosePosition() {

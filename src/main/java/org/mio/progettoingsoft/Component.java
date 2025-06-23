@@ -32,6 +32,23 @@ public abstract class Component {
     }
 
 
+    public int getRow() {
+        return row;
+    }
+    public int getColumn() {
+        return column;
+    }
+    public void setRow(int row){
+        this.row = row;
+    }
+    public void setColumn(int column){
+        this.column = column;
+    }
+
+    public Cordinate getCordinate(){
+        return new Cordinate(row,column);
+    }
+
     public ComponentType getType(){
         return type;
     }

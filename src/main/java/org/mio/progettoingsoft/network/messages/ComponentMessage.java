@@ -13,6 +13,7 @@ public final class ComponentMessage extends Message {
     private final int idComp;
     private final Cordinate cordinate;
     private final int rotations;
+    private final boolean toAllClient;
 
     public ComponentMessage(int gameId, String nickname, Action action, int idComp, Cordinate cordinate, int rotations) {
         super(gameId, nickname);
@@ -20,6 +21,16 @@ public final class ComponentMessage extends Message {
         this.idComp = idComp;
         this.cordinate = cordinate;
         this.rotations = rotations;
+        this.toAllClient = true;
+    }
+
+    public ComponentMessage(int gameId, String nickname, Action action, int idComp, Cordinate cordinate, int rotations, boolean toAllClient) {
+        super(gameId, nickname);
+        this.action = action;
+        this.idComp = idComp;
+        this.cordinate = cordinate;
+        this.rotations = rotations;
+        this.toAllClient = toAllClient;
     }
 
     public Action getAction() {
@@ -36,5 +47,9 @@ public final class ComponentMessage extends Message {
 
     public int getRotations() {
         return rotations;
+    }
+
+    public boolean isToAllClient() {
+        return toAllClient;
     }
 }

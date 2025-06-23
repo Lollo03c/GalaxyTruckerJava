@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network.client.socket;
 
+import org.controlsfx.validation.ValidationMessage;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
@@ -103,6 +104,12 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
+    public void endValidation(int idGame, String nickname) throws Exception{
+        Message message = new EndValidationMessage(idGame, nickname);
+        sendMessage(message);
+    }
+
+    @Override
     public void activateDoubleEngine(int idGame, String nickname, int number) throws IOException{
         Message message = new DoubleEngineMessage(idGame, nickname, number);
         sendMessage(message);
@@ -194,8 +201,8 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void removeComponent(int idGame, String nickname, Cordinate cordinate) throws IOException{
-        Message message = new ComponentMessage(idGame, nickname, ComponentMessage.Action.REMOVE, -1, cordinate, -1);
+    public void removeComponent(int idGame, String nickname, Cordinate cordinate, boolean toAllClient) throws IOException{
+        Message message = new ComponentMessage(idGame, nickname, ComponentMessage.Action.REMOVE, -1, cordinate, -1, toAllClient);
         sendMessage(message);
     }
 
@@ -204,7 +211,6 @@ public class SocketServerHandler implements VirtualServerSocket {
         Message message = new StartHourglassMessage(idGame, " wesh ");
         sendMessage(message);
     }
-
 
     /**
      * utility method used to send messages to the server
