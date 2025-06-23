@@ -58,6 +58,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     protected Map<Integer, SldAdvCard> sldAdvCards;
 
     private SldAdvCard playedCard;
+    private Map<GoodType, Integer> priceGoods = new EnumMap<>(GoodType.class);
 
 
 
@@ -76,7 +77,10 @@ public abstract class FlyBoard implements FlyBoardServer {
     protected FlyBoard(GameMode mode, Set<String> nicknames) {
         this.mode = mode;
         this.coveredComponents = new ArrayList<>();
-
+        priceGoods.put(GoodType.RED, 4);
+        priceGoods.put(GoodType.YELLOW, 3);
+        priceGoods.put(GoodType.GREEN, 2);
+        priceGoods.put(GoodType.BLUE, 1);
         coveredComponents.addAll(components.keySet());
         coveredComponents.removeAll(List.of(33, 34, 52, 61));
 
@@ -344,6 +348,64 @@ public abstract class FlyBoard implements FlyBoardServer {
         return deck.isEmpty();
     }
 
+    /**
+     * Method that gives rewards to players who finished the flight
+     */
+    public void assignCreditsForPositions(){
+        int i = 0;
+        int[] vettore = {4, 3, 2, 1};
+        for(Player p : scoreBoard){
+            p.addCredits(vettore[i]);
+            i++;
+        }
+    }
+
+    /**
+     * Method that assign credits to all players
+     */
+    public void assignCreditsForRemainingGoods(){
+        int total = 0;
+        for( Player p : players){
+            for(GoodType type : GoodType.values()){
+                int num = p.getShipBoard().getStoredQuantity(type);
+                total = total +num*priceGoods.get(type);
+            }
+            //if the players didn't finish the flight than the goods are sold for half price
+            if(p.getRetired()){
+                total = (int) Math.ceil(total/2);
+            }
+            p.addCredits(total);
+        }
+    }
+
+    /**
+     * Method that assigns 2 credits for the ship with less exposedConnectors
+     */
+    public void assignCreditsForBeautifulShip() {
+        List<Player> winners = new ArrayList<>();
+        int minExposed = Integer.MAX_VALUE;
+
+        for (Player p : scoreBoard) {
+            int exposed = p.getShipBoard().getExposedConnectors();
+
+            if (exposed < minExposed) {
+                winners.clear();
+                winners.add(p);
+                minExposed = exposed;
+            } else if (exposed == minExposed) {
+                winners.add(p);
+            }
+        }
+
+        for (Player p : winners) {
+            p.addCredits(2);
+        }
+    }
+
+
+
+
+
 
     /**
      *
@@ -473,6 +535,12 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public void setPlayedCard(SldAdvCard card){
         this.playedCard = card;
+    }
+
+    public int drawCard(){
+        int cardId = deck.getFirst();
+        deck.removeFirst();
+        return cardId;
     }
 
 
