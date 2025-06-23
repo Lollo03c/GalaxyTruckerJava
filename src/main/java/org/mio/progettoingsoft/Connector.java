@@ -35,16 +35,15 @@ public enum Connector {
     }
 
     public Boolean isCompatible(Connector other){
-        // Modified by Stefano: two flat are compatible, but the components have to be connected to another one (checked in other methods)
+        if ((this.equals(Connector.TRIPLE) && !other.equals(Connector.FLAT)) || (!this.equals(Connector.FLAT) && other.equals(Connector.TRIPLE)))
+            return true;
+
+        if (this.equals(other))
+            return true;
+
         if (this.equals(Connector.FLAT) && other.equals(Connector.FLAT))
             return true;
 
-        if (this.equals(Connector.FLAT) || other.equals(Connector.FLAT))
-            return false;
-
-        if (this.equals(Connector.TRIPLE) || other.equals(Connector.TRIPLE))
-            return true;
-
-        return this.equals(other);
+        return false;
     }
 }

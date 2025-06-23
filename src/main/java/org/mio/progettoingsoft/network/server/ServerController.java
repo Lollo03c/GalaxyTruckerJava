@@ -23,6 +23,7 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerController {
     /**
@@ -230,6 +231,30 @@ public class ServerController {
     }
 
     public void endBuild(int idGame, String nickname) {
+        Logger.info(nickname + " ended ship building, has removed incorrect components and now needs to validate his ship.");
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();
+        VirtualClient client = game.getClients().get(nickname);
+
+        if (!shipBoard.isShipValid()) {
+            Logger.error("Ship " + nickname + " is not valid.");
+            try {
+                client.setState(GameState.WAITING);
+                client.setState(GameState.END_BUILDING);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            Logger.info("Ship " + nickname + " is valid.");
+            try {
+                client.setState(GameState.CHOOSE_POSITION);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void getStartingPosition(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         List<Integer> availablePlaces = flyBoard.getAvailableStartingPositions();
@@ -708,16 +733,19 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
-        if (!flyBoard.getNicknameList().contains(nickname)) {
-            throw new IncorrectFlyBoardException("Not player wit hthis nick");
+        if (!flyBoard.getNicknameList().contains(nickname)){
+            throw new IncorrectFlyBoardException("Not player with this nickname");
         }
 
         ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
         shipBoard.removeComponent(cord);
 
-        for (VirtualClient client : game.getClients().values()) {
-            try {
-                client.removeComponent(nickname, cord);
+        Map<String, VirtualClient> clients = game.getClients();
+        for (String nick : clients.keySet()){
+            try{
+                if(!nick.equals(nickname)){
+                    clients.get(nick).removeComponent(nickname, cord);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

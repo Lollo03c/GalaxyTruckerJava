@@ -201,25 +201,25 @@ public abstract class ShipBoard {
     }
 
     /**
+     * Returns a map of all components adjacent to the given coordinate.
      *
-     * @param cord the {@link Cordinate} of the link to search the adjacent {@link Component}s
-     * @return a Map<{@link Direction}, {@link Component}> consisting the adjacent {@link Component} and the relative {@link Direction}
+     * @param cord the coordinate for which adjacent components should be found
+     * @return a map where the key is the {@link Direction} of the adjacent component relative
+     *         to the given coordinate, and the value is the corresponding {@link Component}
      */
     public Map<Direction, Component> getAdjacent(Cordinate cord) {
-        Map<Direction, Component> adjacents = new HashMap();
+        Map<Direction, Component> adjacent = new HashMap<>();
 
         for (Direction dir : Direction.values()){
             try{
                 Cordinate cordinate = new Cordinate(cord.getRow() + dir.offsetRow(), cord.getColumn() + dir.offsetCol());
                 Optional<Component> optComp = getOptComponentByCord(cordinate);
-                if (optComp.isPresent())
-                    adjacents.put(dir, optComp.get());
+                optComp.ifPresent(component -> adjacent.put(dir, component));
             }
             catch (InvalidCordinate e){
             }
-
         }
-        return adjacents;
+        return adjacent;
     }
 
     /// add the [Component] with given id, to the given rotation, after rotates it
@@ -243,6 +243,8 @@ public abstract class ShipBoard {
 
         if (!validPosition)
             throw new IncorrectShipBoardException("Not adjacent components");*/
+        component.setRow(cordinate.getRow());
+        component.setColumn(cordinate.getColumn());
 
         shipComponents[cordinate.getRow()][cordinate.getColumn()] = Optional.of(component);
         rotationMatrix[cordinate.getRow()][cordinate.getColumn()] = Optional.of(angle);
@@ -269,7 +271,6 @@ public abstract class ShipBoard {
             throw new IncorrectShipBoardException("tile is empty. nothing to remove");
 
         shipComponents[cordinate.getRow()][cordinate.getColumn()] = Optional.empty();
-
         discaredComponents++;
 
     }
@@ -387,50 +388,70 @@ public abstract class ShipBoard {
     }
 
     /**
+     * Returns a list of coordinates of incorrect engines.
+     * <p>
+     * An engine is considered incorrect if:
+     * <ul>
+     *   <li>It is not facing {@link Direction#BACK}</li>
+     *   <li>There is at least one component placed below it</li>
+     * </ul>
+     * If the engine is correctly facing down and there are no components below it until
+     * the bottom edge of the grid, it is considered correct.
+     * </p>
      *
-     * @return the list of {@link Cordinate} of the {@link Engine} and {@link DoubleEngine} placed incorrectly (not pointaing BACK-WARDS)
+     * @return a list of {@link Cordinate} objects representing the positions of incorrect engines.
      */
     public List<Cordinate> getIncorrectEngines() {
-        List<Cordinate> result = new ArrayList<>();
-
-        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
-            Cordinate cord = cordinateIterator.next();
-
-            //empty tile
-            if (getOptComponentByCord(cord).isEmpty())
-                continue;
-
-            //not an engine
-            if (getOptComponentByCord(cord).get().getEnginePower(true) == 0)
-                continue;
-
-
-            if (! getOptComponentByCord(cord).get().getDirection().equals(Direction.BACK))
-                result.add(cord);
-            else{
-                try{
-                    Cordinate toCheck = new Cordinate(cord.getRow() + 1, cord.getColumn());
-
-                    if (getOptComponentByCord(toCheck).isPresent())
-                        result.add(cord);
-                } catch (InvalidCordinate e) {
-
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     *
-     * @return the list {@link Cordinate} of the {@link Drill} and {@link DoubleDrill} place incorrectly -> if it points in a not empty tile
-     */
-    public List<Cordinate> getIncorrectDrills() {
         List<Cordinate> incorrect = new ArrayList<>();
 
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+            Optional<Component> optComponent = getOptComponentByCord(cord);
+
+            // empty tile or not engine
+            if (optComponent.isEmpty() || optComponent.get().getEnginePower(true) == 0)
+                continue;
+
+            if (!optComponent.get().getDirection().equals(Direction.BACK)) {
+                incorrect.add(cord);
+                continue;
+            }
+
+            int row = cord.getRow();
+
+            try {
+                while (true) {
+                    row ++;
+                    Cordinate nextCord = new Cordinate(row, cord.getColumn());
+
+                    if (getOptComponentByCord(nextCord).isPresent()){
+                        incorrect.add(cord);
+                        break;
+                    }
+                }
+            } catch (InvalidCordinate e) {
+                // Se esce dalla griglia senza trovare nulla, il cannone è corretto
+            }
+        }
+        return incorrect;
+    }
+
+    /**
+     * Returns a list of coordinates of incorrect drills.
+     * <p>
+     * A drill is considered incorrect if there is at least one other component
+     * in the direction it is facing. If there are no components in that direction
+     * up to the edge of the grid, the drill is considered correct.
+     * </p>
+     *
+     * @return a list of {@link Cordinate} objects representing the positions of incorrect drills.
+     */
+    public List<Cordinate> getIncorrectDrills() {
+        List<Cordinate> incorrect = new ArrayList<>();
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
 
             Optional<Component> optComp = getOptComponentByCord(cord);
@@ -438,15 +459,22 @@ public abstract class ShipBoard {
                 continue;
 
             Direction dir = optComp.get().getDirection();
+            int row = cord.getRow();
+            int col = cord.getColumn();
 
             try {
-                Cordinate toCheck =new Cordinate(cord.getRow() + dir.offsetRow(), cord.getColumn() + dir.offsetCol());
-                if (! getOptComponentByCord(toCheck).isEmpty())
-                    incorrect.add(cord);
+                while (true) {
+                    row += dir.offsetRow();
+                    col += dir.offsetCol();
+                    Cordinate nextCord = new Cordinate(row, col);
 
-            }
-            catch (InvalidCordinate e){
-
+                    if (getOptComponentByCord(nextCord).isPresent()) {
+                        incorrect.add(cord);
+                        break;
+                    }
+                }
+            } catch (InvalidCordinate e) {
+                // Se esce dalla griglia senza trovare nulla, il cannone è corretto
             }
         }
 
@@ -454,49 +482,112 @@ public abstract class ShipBoard {
     }
 
     /**
+     * Returns the set of coordinates of components that are incorrectly connected on the shipboard.
      *
-     * @return the set of all the {@link Cordinate} relative to the {@link Component} which are not correctly configured in the shipboard
+     * @return a {@link Set} of {@link Cordinate} objects representing the positions of components
+     *         that are not correctly connected based on their connectors.
      */
-    private Set<Cordinate> getIncorrectComponents() {
-        Set<Cordinate> incorrect = new HashSet<>();
-
-        incorrect.addAll(getIncorrectDrills());
-        incorrect.addAll(getIncorrectEngines());
+    public List<Cordinate> getIncorrectConnectedComponents() {
+        List<Cordinate> incorrect = new ArrayList<>();
 
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()){
-            Cordinate cordinate = cordinateIterator.next();
+            Cordinate cord = cordinateIterator.next();
+            Optional<Component> optComp = getOptComponentByCord(cord);
 
             //empty tile
-            if (getOptComponentByCord(cordinate).isEmpty())
+            if (optComp.isEmpty())
                 continue;
 
             //incorrect by connectors
-            Component comp = getOptComponentByCord(cordinate).get();
-            Map<Direction, Component> adjacent = getAdjacent(cordinate);
+            Component comp = optComp.get();
+            Map<Direction, Component> adjacent = getAdjacent(cord);
             for (Direction dir : adjacent.keySet()){
                 Component other = adjacent.get(dir);
-                if (! comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
-                    incorrect.add(cordinate);
+
+                if (!comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
+                    incorrect.add(cord);
                 }
             }
-
         }
         return incorrect;
     }
 
     /**
-     * metod called once the {@link ShipBoard} has being built to validate it
-     * @throws IncorrectShipBoardException if the {@link ShipBoard} is not valid
+     * Returns a list of groups of {@link Component}s that are not connected to each other
+     * through compatible connectors. Each group represents a disconnected "piece" of the ship.
+     * <p>
+     * If the ship is fully connected, this method returns a list with a single set.
+     * Otherwise, it returns multiple sets representing disconnected parts.
+     * </p>
+     *
+     * @return a list of sets of components that are not mutually connected.
      */
-    public void validateShip() throws IncorrectShipBoardException{
-        Set<Cordinate> incorrect = getIncorrectComponents();
-        if (!getIncorrectComponents().isEmpty())
-            throw new IncorrectShipBoardException("shipboard is not valid");
+    public List<Set<Component>> getMultiplePieces() {
+        List<Set<Component>> multiple = new ArrayList<>();
 
+        List<Component> allComponents = this.getComponents().stream()
+                .flatMap(Optional::stream)
+                .toList();
+
+        Set<Component> visited = new HashSet<>();
+
+        for (Component c : allComponents) {
+            if (visited.contains(c)) continue;
+
+            Set<Component> part = new HashSet<>();
+            Queue<Component> queue = new LinkedList<>();
+            queue.add(c);
+            part.add(c);
+            visited.add(c);
+
+            while (!queue.isEmpty()) {
+                Component comp = queue.poll();
+                Cordinate coord = new Cordinate(comp.getRow(), comp.getColumn());
+                Map<Direction, Component> adj = getAdjacent(coord);
+
+                for (Map.Entry<Direction, Component> entry : adj.entrySet()) {
+                    Direction dir = entry.getKey();
+                    Component neighbor = entry.getValue();
+
+                    if (!visited.contains(neighbor) &&
+                            comp.getConnector(dir).isCompatible(neighbor.getConnector(dir.getOpposite()))) {
+
+                        queue.add(neighbor);
+                        part.add(neighbor);
+                        visited.add(neighbor);
+                    }
+                }
+            }
+
+            multiple.add(part);
+        }
+
+        return multiple;
+    }
+
+    public List<Cordinate> getIncorrectComponents() {
+        List<Cordinate> incorrectComponents = getIncorrectConnectedComponents();
+        incorrectComponents.addAll(getIncorrectEngines());
+        incorrectComponents.addAll(getIncorrectDrills());
+
+        return new ArrayList<>(incorrectComponents.stream().distinct().toList());
+    }
+
+    public boolean isShipValid() {
+        if (!getIncorrectComponents().isEmpty())
+            return false;
+
+        if (getMultiplePieces().size() > 1)
+            return false;
+
+        return true;
+    }
+
+    public void addGuestToShip() {
         //set the allowedGuest to all the housing, based on the neaby AlienHousing
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cordinate = cordinateIterator.next();
 
             if (getOptComponentByCord(cordinate).isEmpty())
@@ -516,47 +607,6 @@ public abstract class ShipBoard {
             }
         }
     }
-
-    // this method returns the disconnected pieces (not only single components but group of them not interconnected)
-    // this method uses an algorithm of Breadth-First Search (a big thanks to API)
-//    public List<Set<Component>> getMultiplePieces(){
-//        List<Set<Component>> multiple = new ArrayList<>();
-//        if(this.getComponentsStream().findAny().isPresent()){
-//            int[][] visited = new int[rows][columns];
-//            for (int i = 0; i < rows; i++) {
-//                for (int j = 0; j < columns; j++) {
-//                    visited[i][j] = -1;
-//                }
-//            }
-//
-//            while(this.getComponentsStream().anyMatch(comp -> visited[comp.getRow()][comp.getColumn()] == -1)){
-//                Component c = this.getComponentsStream().filter(comp -> visited[comp.getRow()][comp.getColumn()] == -1).findFirst().get();
-//
-//                Queue<Component> queue = new LinkedList<>();
-//                queue.add(c);
-//                visited[c.getRow()][c.getColumn()] = 0;
-//
-//                Set<Component> part = new HashSet<>();
-//
-//                while (!queue.isEmpty()) {
-//                    Component comp = queue.remove();
-//                    part.add(comp);
-//                    Map<Direction, Component> adj = getAdjacentConnected(comp.getRow(), comp.getColumn());
-//                    for(Component component : adj.values()){
-//                        if(visited[component.getRow()][component.getColumn()] == -1){
-//                            visited[component.getRow()][component.getColumn()] = 0;
-//                            queue.add(component);
-//                        }
-//                    }
-//                    visited[comp.getRow()][comp.getColumn()] = 1;
-//                }
-//
-//                multiple.add(part);
-//
-//            }
-//        }
-//        return multiple;
-//    }
 
     /**
      *

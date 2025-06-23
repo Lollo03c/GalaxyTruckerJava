@@ -246,6 +246,85 @@ class ShipBoardTest {
     }
 
     @Test
+    void should_find_adjacent_components(){
+        first.addComponentToPosition(62, new Cordinate(2, 2), 0);
+        assertEquals(62, first.getAdjacent(new Cordinate(2, 3)).get(Direction.LEFT).getId());
+
+        first.addComponentToPosition(63, new Cordinate(1, 3), 0);
+        assertEquals(63, first.getAdjacent(new Cordinate(2, 3)).get(Direction.FRONT).getId());
+
+        first.addComponentToPosition(64, new Cordinate(2, 4), 0);
+        assertEquals(64, first.getAdjacent(new Cordinate(2, 3)).get(Direction.RIGHT).getId());
+
+        first.addComponentToPosition(65, new Cordinate(3, 3), 0);
+        assertEquals(65, first.getAdjacent(new Cordinate(2, 3)).get(Direction.BACK).getId());
+
+        first.addComponentToPosition(66, new Cordinate(1, 2), 0);
+        assertEquals(66, first.getAdjacent(new Cordinate(2, 2)).get(Direction.FRONT).getId());
+        assertEquals(66, first.getAdjacent(new Cordinate(1, 3)).get(Direction.LEFT).getId());
+        assertEquals(63, first.getAdjacent(new Cordinate(1, 2)).get(Direction.RIGHT).getId());
+    }
+
+    @Test
+    void should_find_incorrect_engines(){
+        first.addComponentToPosition(71, new Cordinate(1, 3), 0);
+        first.addComponentToPosition(72, new Cordinate(2, 5), 3); // upside
+        first.addComponentToPosition(73, new Cordinate(2, 0), 3);
+
+        first.addComponentToPosition(65, new Cordinate(4, 2), 0);
+        first.addComponentToPosition(74, new Cordinate(3, 2), 0);
+
+        first.addComponentToPosition(75, new Cordinate(4, 1), 0); // correct
+
+        assertEquals(4, first.getIncorrectEngines().size());
+    }
+
+    @Test
+    void should_find_incorrect_drills(){
+        // Around central housing
+        first.addComponentToPosition(101, new Cordinate(3, 3), 0);
+        first.addComponentToPosition(102, new Cordinate(2, 4), 1);
+        first.addComponentToPosition(103, new Cordinate(1, 3), 2);
+        first.addComponentToPosition(104, new Cordinate(2, 2), 3);
+
+        // Around ship
+        first.addComponentToPosition(105, new Cordinate(4, 4), 0);
+        first.addComponentToPosition(129, new Cordinate(2, 0), 3);
+        first.addComponentToPosition(127, new Cordinate(0, 3), 0); // correct
+
+        first.addComponentToPosition(65, new Cordinate(1, 5), 0); // depot
+        first.addComponentToPosition(106, new Cordinate(2, 5), 0);
+        assertEquals(6, first.getIncorrectDrills().size());
+    }
+
+//    @Test
+//    void should_find_incorrect_connected_components() {
+//        first.addComponentToPosition(1, new Cordinate(2, 2), 0);
+//        first.addComponentToPosition(2, new Cordinate(1, 3), 0);
+//        first.addComponentToPosition(3, new Cordinate(1, 4), 0);
+//        first.addComponentToPosition(4, new Cordinate(2, 4), 0);
+//        first.addComponentToPosition(5, new Cordinate(3, 3), 0);
+//        first.addComponentToPosition(12, new Cordinate(3, 4), 0);
+//
+//        assertEquals(4, first.getIncorrectConnectedComponents().size());
+//    }
+
+    @Test
+    void should_find_pieces_not_connected(){
+        first.addComponentToPosition(2, new Cordinate(1, 3), 0);
+        assertEquals(2, first.getMultiplePieces().size());
+
+        first.addComponentToPosition(3, new Cordinate(0, 3), 0);
+        first.addComponentToPosition(4, new Cordinate(3, 2), 0);
+        first.addComponentToPosition(1, new Cordinate(2, 2), 0);
+        first.addComponentToPosition(5, new Cordinate(3, 3), 0);
+        assertEquals(2, first.getMultiplePieces().size());
+
+        first.addComponentToPosition(6, new Cordinate(2, 5), 0);
+        assertEquals(3, first.getMultiplePieces().size());
+    }
+
+    @Test
     void should_get_drills(){
         yellow.drawShipboard();
 
@@ -411,92 +490,6 @@ class ShipBoardTest {
 //        assertEquals(2, size);
 //    }
 //
-//    @Test
-//    void should_find_two_blocks(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//        init(ship);
-//        assertEquals(1, ship.getMultiplePieces().size());
-//        ship.addComponentToPosition(new Depot(3, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 0, 2);
-//        assertEquals(2, ship.getMultiplePieces().size());
-//        for(Set<Component> comps : ship.getMultiplePieces()){
-//            System.out.println(ship.getMultiplePieces().indexOf(comps));
-//            for(Component comp : comps){
-//                System.out.println(comp);
-//            }
-//        }
-//    }
-//
-//    @Test
-//    void should_find_three_blocks_then_only_two(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//        init(ship);
-//        assertEquals(1, ship.getMultiplePieces().size());
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        ship.addComponentToPosition(new Depot(5, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 0, 2);
-//        ship.addComponentToPosition(new Depot(6, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 1, 2);
-//        ship.addComponentToPosition(new Depot(7, false, false, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE, Connector.TRIPLE), 4, 0);
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        assertEquals(3, ship.getMultiplePieces().size());
-//        for(Set<Component> comps : ship.getMultiplePieces()){
-//            System.out.println(ship.getMultiplePieces().indexOf(comps));
-//            for(Component comp : comps){
-//                System.out.println(comp);
-//            }
-//        }
-//        ship.addComponentToPosition(new Depot(8, false, false, Connector.TRIPLE, Connector.FLAT, Connector.TRIPLE, Connector.TRIPLE), 2, 2);
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        assertEquals(2, ship.getMultiplePieces().size());
-//        for(Set<Component> comps : ship.getMultiplePieces()){
-//            System.out.println(ship.getMultiplePieces().indexOf(comps));
-//            for(Component comp : comps){
-//                System.out.println(comp);
-//            }
-//        }
-//    }
-//
-//    @Test
-//    public void should_find_two_blocks_but_adjacent(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//        ship.addComponentToPosition(new Pipe(1, Connector.TRIPLE, Connector.SINGLE, Connector.FLAT, Connector.FLAT), 3, 3);
-//        ship.addComponentToPosition(new Pipe(2, Connector.FLAT, Connector.FLAT, Connector.FLAT, Connector.TRIPLE), 2, 4);
-//        assertEquals(1, ship.getMultiplePieces().size());
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        ship.addComponentToPosition(new Pipe(3, Connector.FLAT, Connector.SINGLE, Connector.FLAT, Connector.FLAT), 3, 4);
-//        ship.addComponentToPosition(new Pipe(3, Connector.SINGLE, Connector.FLAT, Connector.FLAT, Connector.FLAT), 4, 4);
-//        assertEquals(2, ship.getMultiplePieces().size());
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//    }
-//
-//    @Test
-//    void should_fail_due_to_flat_to_double(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//        init(ship);
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        ship.addComponentToPosition(new Depot(5, false, false, flat, flat, flat, Connector.DOUBLE), 3, 4);
-//        assertEquals(2, ship.getIncorrectComponents().size());
-//    }
-//
-//    @Test
-//    void should_pass_with_flat_to_flat(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//        init(ship);
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        ship.addComponentToPosition(new Pipe(5, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 4);
-//        ship.addComponentToPosition(new Pipe(6, Connector.FLAT, Connector.TRIPLE, Connector.FLAT, Connector.FLAT), 1, 3);
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//    }
-//
-//    /* Useless: in the rule book is not specified what to do with alien supports not connected to housings (they are like pipes)
-//        //alien housing positioning test
-//    @Test
-//    void should_fail_due_to_alien_housing_not_connected_to_housing(){
-//        ShipBoard ship = new ShipBoard(HousingColor.BLUE);
-//        init(ship);
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        ship.addComponentToPosition(new AlienHousing(5, AlienType.BROWN, Connector.FLAT, Connector.FLAT, Connector.DOUBLE, Connector.FLAT), 3, 1);
-//        assertEquals(0, ship.getIncorrectComponents().size());
-//        assertEquals(1, ship.getIncorrectAlienHousings().size());
-//    }
 //
 //    @Test
 //    void should_fail_due_to_alien_housing_connected_to_first_housing(){

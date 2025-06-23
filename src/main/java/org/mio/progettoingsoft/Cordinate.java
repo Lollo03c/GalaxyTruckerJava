@@ -3,10 +3,7 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class Cordinate implements Serializable {
     private final int row;
@@ -41,6 +38,11 @@ public class Cordinate implements Serializable {
 
         Cordinate other = (Cordinate) obj;
         return row == other.row && column == other.column;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, column);
     }
 
     public List<Cordinate> getAdjacent(){

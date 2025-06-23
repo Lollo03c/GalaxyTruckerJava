@@ -26,10 +26,7 @@ import org.mio.progettoingsoft.utils.Logger;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ClientController {
@@ -148,6 +145,7 @@ public class ClientController {
             oldState = this.gameState;
             this.gameState = state;
         }
+
         if (oldState == null || !oldState.equals(state)) {
             support.firePropertyChange("gameState", oldState, state);
 
@@ -463,6 +461,8 @@ public class ClientController {
             //server.playerReady()
             setState(GameState.END_BUILDING);
         } else if (chosen == 6) {
+            setState(GameState.END_BUILDING);
+
             try {
                 finishedBuilding = true;
                 server.endBuild(idGame, nickname);
@@ -639,6 +639,26 @@ public class ClientController {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public List<Cordinate> getIncorrectComponents() {
+        return shipBoard.getIncorrectComponents();
+    }
+
+    public List<Set<Component>> getStandAloneBlocks() {
+        return shipBoard.getMultiplePieces();
+    }
+
+    public void removeStandAloneBlock(int blockToKeep) {
+        List<Set<Component>> standAloneBlocks = shipBoard.getMultiplePieces();
+
+        List<Cordinate> componentsToRemove;
+        for (int i = 0; i < standAloneBlocks.size(); i++) {
+            if (i != blockToKeep) {
+                componentsToRemove = standAloneBlocks.get(i).stream().map(Component::getCordinate).toList();
+                removeComponents(componentsToRemove);
+            }
         }
     }
 
@@ -852,8 +872,30 @@ public class ClientController {
         }
     }
 
+    public void removeComponent(Cordinate cordinate){
+        try{
+            shipBoard.removeComponent(cordinate);
+            server.removeComponent(idGame, nickname, cordinate);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-    public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cord) {
+    public void removeComponents(List<Cordinate> cordinatesToRemove){
+        for (Cordinate cordinate : cordinatesToRemove) {
+            removeComponent(cordinate);
+        }
+    }
+
+    public void removeComponentFromModel(String nickname, Cordinate cord){
+        synchronized (flyboardLock) {
+            Logger.debug("removed component of " + nickname + " from cordinate " + cord);
+            ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+            otherShip.removeComponent(cord);
+        }
+    }
+
+    public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cord){
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
         meteor.setCordinateHit(cord);
@@ -958,22 +1000,6 @@ public class ClientController {
             server.advanceCannon(idGame, nickname, destroyed, energy);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void removeComponent(Cordinate cordinate) {
-        try {
-            server.removeComponent(idGame, nickname, cordinate);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void removeComponentFromModel(String nickname, Cordinate cord) {
-        synchronized (flyboardLock) {
-            Logger.debug("removed component of " + nickname + " from cordinate " + cord);
-            ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-            otherShip.removeComponent(cord);
         }
     }
 

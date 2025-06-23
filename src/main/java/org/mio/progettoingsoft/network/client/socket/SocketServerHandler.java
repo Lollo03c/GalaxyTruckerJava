@@ -205,7 +205,6 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
-
     /**
      * utility method used to send messages to the server
      *
