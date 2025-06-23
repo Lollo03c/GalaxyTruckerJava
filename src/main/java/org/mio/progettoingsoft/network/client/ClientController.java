@@ -91,6 +91,7 @@ public class ClientController {
     private final Object listLock = new Object();
     private final Object cardLock = new Object();
     private final Object cardStateLock = new Object();
+    private final Object hourglassLock = new Object();
     FlyBoard flyBoard;
     ShipBoard shipBoard;
 
@@ -118,13 +119,13 @@ public class ClientController {
     }
 
     public void setFinishedLastHourglass(boolean finishedLastHourglass){
-        synchronized (this.finishedLastHourglass){
+        synchronized (hourglassLock){
             this.finishedLastHourglass = finishedLastHourglass;
         }
     }
 
     public Boolean getFinishedLastHourglass(){
-        synchronized (this.finishedLastHourglass){
+        synchronized (hourglassLock){
             return this.finishedLastHourglass;
         }
     }
@@ -137,7 +138,7 @@ public class ClientController {
         GameState oldState;
         if (state.equals(GameState.FINISH_HOURGLASS))
             pendingHourglass = false;
-        synchronized (finishedLastHourglass){
+        synchronized (hourglassLock){
             if(state.equals(GameState.FINISH_LAST_HOURGLASS)){
                 finishedLastHourglass = true;
                 pendingHourglass = false;
