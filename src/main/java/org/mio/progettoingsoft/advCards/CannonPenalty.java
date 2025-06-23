@@ -29,7 +29,7 @@ public class CannonPenalty extends Penalty {
     }
 
     @Override
-    public PenaltyType getType(){
+    public PenaltyType getType() {
         return null;
     }
 
@@ -93,6 +93,7 @@ public class CannonPenalty extends Penalty {
         this.number = number;
     }
 
+    @Override
     public CannonType getCannonType() {
         return cannonType;
     }

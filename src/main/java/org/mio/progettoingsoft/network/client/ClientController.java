@@ -188,13 +188,13 @@ public class ClientController {
     }
 
 
-    public void applyStardust(SldStardust card) {
-        try {
-            server.applyStardust(idGame, nickname, card);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void applyStardust(SldStardust card) {
+//        try {
+//            server.applyStardust(idGame, nickname, card);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public String getNickname() {
         return nickname;

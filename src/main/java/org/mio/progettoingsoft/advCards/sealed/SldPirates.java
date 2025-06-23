@@ -8,6 +8,7 @@ import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.RemoveComponentEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
@@ -98,6 +99,8 @@ public final class SldPirates extends SldAdvCard{
 
     public void setNextCannon(){
         if (cannonIterator.hasNext() && !getPenaltyPlayers().isEmpty()){
+            actualPlayer = flyBoard.getScoreBoard().getFirst();
+
             actualCannon = cannonIterator.next();
             actualCannon.setPlayerstoHit(new ArrayList<>(getPenaltyPlayers()));
             setState(CardState.DICE_ROLL);
@@ -142,7 +145,9 @@ public final class SldPirates extends SldAdvCard{
             power += comp.getFirePower(true);
         }
 
+        Logger.debug(player.getNickname() + " " + power);
         if (power < (double) this.strength){
+            Logger.debug(player.getNickname() + " " + power);
             this.penaltyPlayers.add(player);
             setNextPlayer();
         }
@@ -151,6 +156,9 @@ public final class SldPirates extends SldAdvCard{
             player.addCredits(credits);
             player.getShipBoard().removeEnergy(doubleDrills.size());
 
+            setNextCannon();
+        }
+        else{
             setNextCannon();
         }
 

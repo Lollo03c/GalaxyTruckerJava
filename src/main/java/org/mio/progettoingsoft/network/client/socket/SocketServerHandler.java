@@ -79,16 +79,16 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
-    @Override
-    public void applyStardust(int idGame, String nickname, SldStardust card) {
-        Message message = new StardustMessage(idGame, nickname, card);
-        try{
-            sendMessage(message);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void applyStardust(int idGame, String nickname, SldStardust card) {
+//        Message message = new StardustMessage(idGame, nickname, card);
+//        try{
+//            sendMessage(message);
+//        }
+//        catch(IOException e){
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void endBuild(int idGame, String nickname) throws IOException{

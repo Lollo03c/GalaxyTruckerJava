@@ -54,6 +54,14 @@ class SldSmugglersTest {
     }
 
     @Test
+    void should_get_parameters(){
+        card.disegnaCard();
+        assertEquals(1, card.getDaysLost());
+        assertEquals(8, card.getStrength());
+        assertEquals(3, card.getStolenGoods());
+        assertEquals(3, card.getGoods().size());
+    }
+    @Test
     void should_add_some_goods() {
         SldSmugglers smugglers = (SldSmugglers) card;
 

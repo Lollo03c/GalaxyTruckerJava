@@ -109,25 +109,25 @@ public class ServerController {
         }
     }
 
-    public void applyStardust(int idGame, SldStardust card) {
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        FlyBoard flyboard = game.getFlyboard();
-        card.applyEffect(flyboard);
-        /*List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
-        for (Player p : reversedScoreboard){
-            int exposedConnectors = p.getShipBoard().getExposedConnectors();
-            flyboard.moveDays(p, -exposedConnectors);
-        }*/
-
-        //SldAdvCard nextCard = flyboard.drawSldAdvCard();
-        //String type = nextCard.getCardName().toUpperCase();
-        //GameState next = GameState.stringToGameState(type);
-
-        //TODO settare il Gamestate allo stato della carta pescata
-        //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
-        //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
-
-    }
+//    public void applyStardust(int idGame, SldStardust card) {
+//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+//        FlyBoard flyboard = game.getFlyboard();
+//        card.applyEffect(flyboard);
+//        /*List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
+//        for (Player p : reversedScoreboard){
+//            int exposedConnectors = p.getShipBoard().getExposedConnectors();
+//            flyboard.moveDays(p, -exposedConnectors);
+//        }*/
+//
+//        //SldAdvCard nextCard = flyboard.drawSldAdvCard();
+//        //String type = nextCard.getCardName().toUpperCase();
+//        //GameState next = GameState.stringToGameState(type);
+//
+//        //TODO settare il Gamestate allo stato della carta pescata
+//        //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
+//        //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
+//
+//    }
 
     public void drawUncovered(int idGame, String nickname, Integer idComponent) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
@@ -473,6 +473,9 @@ public class ServerController {
                 sldSlavers.removeCrew(nickname, cordToRemove);
             }
 
+            case SldCombatZone combatZone -> {
+                combatZone.removeCrew(nickname, cordToRemove);
+            }
             default -> Logger.error("Effetto carta non consentito");
         }
     }
@@ -579,6 +582,11 @@ public class ServerController {
             case SldSlavers sldSlavers -> {
                 Player player = flyBoard.getPlayerByUsername(nickname);
                 sldSlavers.applyEffect(player, drillCordinates);
+            }
+
+            case SldCombatZone combatZone -> {
+                Player player = flyBoard.getPlayerByUsername(nickname);
+                combatZone.setDrills(player, drillCordinates);
             }
 
             default -> Logger.error("effetto carta non consentito");

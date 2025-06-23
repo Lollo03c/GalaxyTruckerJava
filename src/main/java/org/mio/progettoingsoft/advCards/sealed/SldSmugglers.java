@@ -61,27 +61,27 @@ public final class SldSmugglers extends SldAdvCard {
         this.playerIterator = allowedPlayers.iterator();
     }
 
-    public int comparePower(FlyBoard board, Player player) {
-        if (this.state != CardState.COMPARING) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (actualPlayer.equals(player)) {
-            double base = player.getShipBoard().getBaseFirePower();
-            if (base > this.strength) {
-                this.state = CardState.APPLYING;
-                return 1;
-            } else if (base < this.strength) {
-                this.state = CardState.DRILL_CHOICE;
-                return -1;
-            } else {
-                this.state = CardState.DRILL_CHOICE;
-                return 0;
-            }
-        } else {
-            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
-        }
-
-    }
+//    public int comparePower(FlyBoard board, Player player) {
+//        if (this.state != CardState.COMPARING) {
+//            throw new IllegalStateException("Illegal state: " + this.state);
+//        }
+//        if (actualPlayer.equals(player)) {
+//            double base = player.getShipBoard().getBaseFirePower();
+//            if (base > this.strength) {
+//                this.state = CardState.APPLYING;
+//                return 1;
+//            } else if (base < this.strength) {
+//                this.state = CardState.DRILL_CHOICE;
+//                return -1;
+//            } else {
+//                this.state = CardState.DRILL_CHOICE;
+//                return 0;
+//            }
+//        } else {
+//            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
+//        }
+//
+//    }
 
     public void applyEffect(Player player, List<Cordinate> drillsCordinate) {
         stealGoods = false;

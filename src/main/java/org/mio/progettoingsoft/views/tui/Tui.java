@@ -2,9 +2,7 @@ package org.mio.progettoingsoft.views.tui;
 
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.CannonPenalty;
-import org.mio.progettoingsoft.advCards.Meteor;
-import org.mio.progettoingsoft.advCards.Planet;
+import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
@@ -138,12 +136,12 @@ public class Tui implements View {
                 controller.setState(GameState.CHOICE_BUILT);
             }
 
-            case STARDUST -> {
-                // la riga successiva è da eliminare e passargli la carta pescata
-                SldStardust card = new SldStardust(1, 1);
-                System.out.println("STARDUST was drown");
-                controller.applyStardust(card);
-            }
+//            case STARDUST -> {
+//                // la riga successiva è da eliminare e passargli la carta pescata
+//                SldStardust card = new SldStardust(1, 1);
+//                System.out.println("STARDUST was drown");
+//                controller.applyStardust(card);
+//            }
 
             case VIEW_DECK -> viewDeck();
 
@@ -891,8 +889,19 @@ public class Tui implements View {
     private void crewRemove() {
         SldAdvCard card = controller.getPlayedCard();
         Logger.debug("sono in crewRemove");
+        int toRemove = -1;
 
-        int toRemove = card.getCrewLost();
+        switch (controller.getPlayedCard()) {
+            case SldCombatZone combatZone ->{
+                for (CombatLine line : combatZone.getLines()){
+                    if (line.getPenalties().getFirst().getType().equals(PenaltyType.CREW))
+                        toRemove = line.getPenalties().getFirst().getAmount();
+                }
+            }
+            default -> {
+                toRemove = card.getCrewLost();
+            }
+        }
         List<Cordinate> crewPositionsToRemove = new ArrayList<>();
 
         System.out.println("Now you have to select " + toRemove + " guest, the selected ones will be deleted from your shipBoard");
