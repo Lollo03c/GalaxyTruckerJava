@@ -142,18 +142,13 @@ public class Tui implements View {
 
             case VIEW_BOOKED -> viewBookedComponents();
             case SWITCH_BOOKED -> switchBookedComponents();
-            case END_BUILDING -> {
-                printValidationMenu();
-            }
+            case END_BUILDING -> endBuildingMenu();
             case CHOOSE_POSITION -> {
                 System.out.print("Choose position: ");
                 printChoosePosition();
                 System.out.println("Waiting for other players" + RESET);
             }
-            case END_BUILDING -> {
-                endBuildingMenu();
-            }
-
+            case VALIDATION -> printValidationMenu();
             case UNABLE_UNCOVERED_COMPONENT -> {
                 System.out.println("Component is already been taken");
                 controller.setState(GameState.BUILDING_SHIP);
@@ -178,31 +173,6 @@ public class Tui implements View {
             case NEW_CARD -> printNewCard();
 
             case CARD_EFFECT -> cardEffect();
-        }
-    }
-
-    private void endBuildingMenu(){
-        System.out.println("Waiting for other players" + RESET);
-        if (!controller.getFinishedLastHourglass() && !controller.getPendingHourglass()) {
-            System.out.println("Type \"r\" to rotate hourglass");
-            String input = " ";
-            while(!input.equalsIgnoreCase("r")){
-                input = scanner.nextLine();
-            }
-            try{
-                controller.rotateHourglass();
-            } catch (CannotRotateHourglassException e) {
-                System.out.println(RED + e.getMessage() + RESET);
-                controller.setState(GameState.END_BUILDING);
-            } catch (RuntimeException e) {
-                Throwable cause = e.getCause();
-                if (cause instanceof CannotRotateHourglassException) {
-                    System.out.println(RED + cause.getMessage() + RESET);
-                } else {
-                    throw e;
-                }
-                controller.setState(GameState.END_BUILDING);
-            }
         }
     }
 
@@ -277,7 +247,7 @@ public class Tui implements View {
                 }
             }
 
-            controller.removeComponent(incorrectComponents.get(choice - 1));
+            controller.removeComponentImmediate(incorrectComponents.get(choice - 1));
 
             incorrectComponents = controller.getIncorrectComponents();
         }
@@ -310,8 +280,33 @@ public class Tui implements View {
             System.out.println("Components removed!");
         }
 
-        controller.endBuild();
+        controller.endValidation();
         System.out.println(BLUE + "End of validation phase." + RESET);
+    }
+
+    private void endBuildingMenu(){
+        System.out.println("Waiting for other players" + RESET);
+        if (!controller.getFinishedLastHourglass() && !controller.getPendingHourglass()) {
+            System.out.println("Type \"r\" to rotate hourglass");
+            String input = " ";
+            while(!input.equalsIgnoreCase("r")){
+                input = scanner.nextLine();
+            }
+            try{
+                controller.rotateHourglass();
+            } catch (CannotRotateHourglassException e) {
+                System.out.println(RED + e.getMessage() + RESET);
+                controller.setState(GameState.END_BUILDING);
+            } catch (RuntimeException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof CannotRotateHourglassException) {
+                    System.out.println(RED + cause.getMessage() + RESET);
+                } else {
+                    throw e;
+                }
+                controller.setState(GameState.END_BUILDING);
+            }
+        }
     }
 
     private void printChoosePosition() {

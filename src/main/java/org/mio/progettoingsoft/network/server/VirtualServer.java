@@ -26,6 +26,7 @@ public interface VirtualServer extends Remote {
 
     void endBuild(int idGame, String nickname) throws Exception;
     void choosePlace(int idGame, String nickname, int place) throws Exception;
+    void endValidation(int idGame, String nickname) throws Exception;
 //    void applyStardust(int idGame, String nickname, SldStardust card) throws Exception;
 
     void activateDoubleEngine(int idGame, String nickname, int number) throws Exception;
@@ -46,6 +47,6 @@ public interface VirtualServer extends Remote {
 //    void removeBattery(int idGame, String nickname, int quantity) throws Exception;
     void advanceMeteor(int idGame, String nickname, boolean destroyed, boolean energy) throws Exception;
     void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) throws Exception;
-    void removeComponent(int idGame, String nickname, Cordinate cordinate) throws Exception;
+    void removeComponent(int idGame, String nickname, Cordinate cordinate, boolean toAllClient) throws Exception;
     void startHourglass(int idGame) throws Exception;
 }

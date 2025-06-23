@@ -52,6 +52,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     private final List<Integer> uncoveredComponents;
 
     protected final List<Player> players;
+    private List<Player> validationPlayers;
 
     private Map<Integer, Component> components = loadComponentMap();
     protected Map<Integer, SldAdvCard> sldAdvCards;
@@ -488,4 +489,12 @@ public abstract class FlyBoard implements FlyBoardServer {
 
 
     public abstract ShipBoard getBuiltShip(HousingColor color);
+
+    public void setValidationPlayers(List<Player> players){
+        this.validationPlayers = new ArrayList<>(players);
+    }
+
+    public List<Player> getValidationPlayers(){
+        return validationPlayers;
+    }
 }

@@ -150,7 +150,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(59, new Cordinate(2, 1), 1);
         shipBoard.addComponentToPosition(54, new Cordinate(1, 4), 3);
 
-        shipBoard.validateShip();
+        shipBoard.addGuestToShip();
 
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
@@ -201,7 +201,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(56, new Cordinate(1, 4), 3);
         shipBoard.addComponentToPosition(31, new Cordinate(2, 5), 0);
 
-        shipBoard.validateShip();
+        shipBoard.addGuestToShip();
 
         shipBoard.getOptComponentByCord(new Cordinate(2, 1)).get().addGood(GoodType.RED);
         shipBoard.getOptComponentByCord(new Cordinate(2, 1)).get().addGood(GoodType.YELLOW);
@@ -260,7 +260,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(62, new Cordinate(1, 2), 2);
         shipBoard.addComponentToPosition(53, new Cordinate(3, 5), 2);
 
-        shipBoard.validateShip();
+        shipBoard.addGuestToShip();
 
         shipBoard.getOptComponentByCord(new Cordinate(1, 2)).get().addGood(GoodType.RED);
 

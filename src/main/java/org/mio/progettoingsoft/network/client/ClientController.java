@@ -662,6 +662,14 @@ public class ClientController {
         }
     }
 
+    public void endValidation() {
+        try {
+            server.endValidation(idGame, nickname);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void endBuild() {
         try {
             server.endBuild(idGame, nickname);
@@ -874,8 +882,16 @@ public class ClientController {
 
     public void removeComponent(Cordinate cordinate){
         try{
+            server.removeComponent(idGame, nickname, cordinate, true);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void removeComponentImmediate(Cordinate cordinate){
+        try{
             shipBoard.removeComponent(cordinate);
-            server.removeComponent(idGame, nickname, cordinate);
+            server.removeComponent(idGame, nickname, cordinate, false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -883,7 +899,7 @@ public class ClientController {
 
     public void removeComponents(List<Cordinate> cordinatesToRemove){
         for (Cordinate cordinate : cordinatesToRemove) {
-            removeComponent(cordinate);
+            removeComponentImmediate(cordinate);
         }
     }
 

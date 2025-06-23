@@ -41,7 +41,12 @@ public class ServerMessageHandler implements Runnable {
                             }
 
                             case REMOVE -> {
-                                serverController.removeComponent(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
+                                if (componentMessage.isToAllClient()) {
+                                    serverController.removeComponentToAll(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
+                                } else {
+                                    serverController.removeComponent(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
+                                }
+
                             }
 
                             case DISCARD -> {
@@ -81,6 +86,10 @@ public class ServerMessageHandler implements Runnable {
                         } else {
                             serverController.choosePlace(choosePlacementMessage.getGameId(), choosePlacementMessage.getNickname(), choosePlacementMessage.getPlace());
                         }
+                    }
+
+                    case EndValidationMessage endValidationMessage -> {
+                        serverController.endValidation(endValidationMessage.getGameId(), endValidationMessage.getNickname());
                     }
 
                     case DoubleEngineMessage doubleEngineMessage -> {
