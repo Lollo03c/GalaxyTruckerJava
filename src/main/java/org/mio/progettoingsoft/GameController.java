@@ -110,11 +110,11 @@ public class GameController {
 
     }
 
-    public void finishHourglass(int numeroAttivazione) {
+    public void finishHourglass(int activation) {
         List<VirtualClient> clients =game.getClients().values().stream().toList();
         for (VirtualClient client : clients){
             try {
-                if(numeroAttivazione == 3){
+                if(activation == 3){
                     client.setState(GameState.FINISH_LAST_HOURGLASS);
                 }
                 else {

@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft.model;
 
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 
@@ -8,13 +7,17 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Hourglass {
-    private final int durataSecondi = 5;
+    private static final int durataSecondi = 5;
     private final int maxAttivazioni = 3;
     private int attivazioni = 0;
     private GameServer game;
 
     public Hourglass(GameServer game) {
         this.game = game;
+    }
+
+    public static int getTotal(){
+        return durataSecondi;
     }
 
     public void avvia() {

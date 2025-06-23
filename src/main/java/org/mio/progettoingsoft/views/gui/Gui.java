@@ -1,5 +1,7 @@
 package org.mio.progettoingsoft.views.gui;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -20,6 +22,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.Planet;
@@ -34,6 +37,7 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
+import org.mio.progettoingsoft.model.Hourglass;
 
 import javax.swing.text.SimpleAttributeSet;
 import java.beans.PropertyChangeEvent;
@@ -120,6 +124,7 @@ public class Gui extends Application implements View {
             HousingColor.GREEN, Color.GREEN,
             HousingColor.YELLOW, Color.YELLOW
     ));
+    private int remainings, total, hourglassCycle;
 
     private Stage stage;
     private StackPane root;
@@ -137,6 +142,10 @@ public class Gui extends Application implements View {
     private ImageView inHandImageView;
     private Button loadShipBtn;
     private VBox viewOtherPlayersBox;
+    private Timeline hourglassTimeline;
+    private ProgressBar hourglassProgressBar;
+    private Label cycleLabel;
+    private Button rotateHourglassBtn;
     // modal stage and view components for the uncovered components "gallery"
     private Stage uncoveredComponentModalStage;
     private TilePane uncoveredComponentsTilePane;
@@ -203,6 +212,9 @@ public class Gui extends Application implements View {
                         creditsLabel.setText("Your credits: " + evt.getNewValue());
                     }
                 });
+            }
+            case "hourglassCounter" -> {
+                statesQueue.add(GameState.STARTED_HOURGLASS);
             }
         }
     }
@@ -286,8 +298,19 @@ public class Gui extends Application implements View {
             case IDLE -> {
             }
             case FINISH_HOURGLASS -> {
+                hourglassCycle = controller.getHourglassCounter();
+                if (hourglassCycle <= 2) {
+                    rotateHourglassBtn.setDisable(false);
+                }
             }
             case FINISH_LAST_HOURGLASS -> {
+            }
+            case STARTED_HOURGLASS -> {
+                remainings = total;
+                hourglassCycle = controller.getHourglassCounter();
+                cycleLabel.setText("Hourglass counter: " + hourglassCycle);
+                rotateHourglassBtn.setDisable(true);
+                hourglassTimeline.playFromStart();
             }
 
             default -> genericErrorView(state);
@@ -510,9 +533,38 @@ public class Gui extends Application implements View {
             hourglassBox.setPadding(new Insets(20));
             hourglassBox.setAlignment(Pos.CENTER);
             HBox.setHgrow(hourglassBox, Priority.ALWAYS);
+            total = Hourglass.getTotal();
+            remainings = total;
+            hourglassCycle = controller.getHourglassCounter();
+            hourglassProgressBar = new ProgressBar(1.0);
+            hourglassTimeline = new Timeline(
+                    new KeyFrame(Duration.seconds(1), event -> {
+                        remainings--;
+                        if (remainings >= 0) {
+                            double progress = (double) remainings / total;
+                            hourglassProgressBar.setProgress(progress);
+                        }
+                    })
+            );
+            hourglassTimeline.setCycleCount(total);
+            hourglassTimeline.playFromStart();
+
+            cycleLabel = new Label("Hourglass Cycle: " + hourglassCycle);
+            VBox cycleBox = new VBox(10);
+            cycleBox.setAlignment(Pos.CENTER);
+            cycleBox.getChildren().addAll(cycleLabel, hourglassProgressBar);
+
             Button endBuildBtn = new Button("Ship Ready!");
             endBuildBtn.setOnAction(event -> endBuild());
-            hourglassBox.getChildren().addAll(endBuildBtn);
+
+            rotateHourglassBtn = new Button("Rotate Hourglass");
+            rotateHourglassBtn.setOnAction(event -> {
+                if (controller.getHourglassCounter() < 2) {
+                    controller.startHourglass();
+                }
+            });
+            rotateHourglassBtn.setDisable(true);
+            hourglassBox.getChildren().addAll(rotateHourglassBtn, endBuildBtn, cycleBox);
 
             shipTopBox.getChildren().addAll(shipTilesDeckBox, shipAdvDeckBox, hourglassBox);
             shipViewBorderPane.setTop(shipTopBox);
@@ -1217,6 +1269,7 @@ public class Gui extends Application implements View {
 
     /**
      * method called in response to a change in the card state, based on the state asks the user to choose or notifies him about the state
+     *
      * @param cardState: the current card state
      */
     private void updateCardGui(CardState cardState) {
@@ -1566,6 +1619,7 @@ public class Gui extends Application implements View {
 
     /**
      * small window that allows the user to choose the good to remove from the depot
+     *
      * @param goods: the list of goods in the depot
      */
     private void modalGoodBoxView(List<GoodType> goods) {
@@ -1633,6 +1687,7 @@ public class Gui extends Application implements View {
     /**
      * stage used to ask the user if he wants to apply the effect of a card, the method set the field "acceptEffect" to true or false depending on the choice,
      * then it runs the passed Runnable
+     *
      * @param postConfirmation: instructions executed after the user choice, either if the user choose yes or no (so it will depend on "acceptEffect")
      */
     private void acceptEffectStage(Runnable postConfirmation) {
@@ -1666,6 +1721,7 @@ public class Gui extends Application implements View {
 
     /**
      * modal stage to show a message to the user
+     *
      * @param message: the shown message
      */
     private void modalMessageStage(String message) {
@@ -1838,7 +1894,6 @@ public class Gui extends Application implements View {
      * @param map:              map that link coordinates with the related imageView
      */
     private void fillShipboard(Optional<Integer>[][] idMatrix, Optional<Integer>[][] rotationsMatrix, List<Optional<Integer>> bookedComponents, Map<Cordinate, ImageView> map) {
-
         for (Cordinate cord : map.keySet()) {
             if (!cord.equals(new Cordinate(0, 5)) && !cord.equals(new Cordinate(0, 6))) {
                 if (idMatrix[cord.getRow()][cord.getColumn()].isPresent() && rotationsMatrix[cord.getRow()][cord.getColumn()].isPresent()) {
@@ -1910,8 +1965,9 @@ public class Gui extends Application implements View {
      * displays the crew members over the passed housing
      * it is used either for generic ship displaying (toCancel=0) and for the removeCrewChoiceView,
      * in that case toCancel is the temp number of members that the user wants to remove
-     * @param c: the housing that contains the crew
-     * @param sp: the StackPane that contains the housing image on the ship
+     *
+     * @param c:        the housing that contains the crew
+     * @param sp:       the StackPane that contains the housing image on the ship
      * @param toCancel: the number of crew members the user wants to remove from the housing
      */
     private void loadHousingSpecificObjects(Component c, StackPane sp, int toCancel) {
@@ -1939,7 +1995,8 @@ public class Gui extends Application implements View {
 
     /**
      * displays the goods over the passed depot
-     * @param c: the depot that contains the goods
+     *
+     * @param c:  the depot that contains the goods
      * @param sp: the StackPane that contains the depot image on the ship
      */
     private void loadDepotSpecificObjects(Component c, StackPane sp) {
@@ -1969,7 +2026,8 @@ public class Gui extends Application implements View {
 
     /**
      * displays the energies over the passed depot
-     * @param c: the depot that contains the energy
+     *
+     * @param c:  the depot that contains the energy
      * @param sp: the StackPane that contains the depot image on the ship
      */
     private void loadEnergySpecificObjects(Component c, StackPane sp) {
@@ -2032,9 +2090,10 @@ public class Gui extends Application implements View {
 
     /**
      * build a box displaying the passed goods
-     * @param goods: the goods to display in the box
+     *
+     * @param goods:      the goods to display in the box
      * @param sideLength: the length of the image side
-     * @param btnBox: a button box (used only for modal displaying)
+     * @param btnBox:     a button box (used only for modal displaying)
      * @return a HBox which has as children the imageViews representing the goods
      */
     private HBox buildGoodList(List<GoodType> goods, double sideLength, HBox btnBox) {

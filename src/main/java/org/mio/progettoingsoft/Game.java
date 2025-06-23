@@ -122,6 +122,14 @@ public class Game implements GameServer, GameClient {
             }
         }
 
+        flyboard.startHourglass(idGame);
+        for(VirtualClient client : getClients().values()){
+            try {
+                client.startedHourglass(idGame);
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
         Logger.info("Game " + idGame + " started");
     }
 

@@ -964,8 +964,6 @@ public class Tui implements View {
 
         String choice = "";
 
-        Logger.info("GOOD_PLACEMENT menu");
-
         shipBoard.drawShipboard();
 
         System.out.println("The following goods have to be placed");
@@ -1094,13 +1092,6 @@ public class Tui implements View {
         Random random = new Random();
         int first = random.nextInt(6) + 1;
         int second = random.nextInt(6) + 1;
-
-
-//        controller.setRollResult(first + second);
-
-//        //todo da cancellare questa riga
-//        int first = 3;
-//        int second = 3;
         controller.setRollResult(first, second);
     }
 

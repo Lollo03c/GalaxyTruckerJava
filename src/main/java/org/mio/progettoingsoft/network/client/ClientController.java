@@ -57,6 +57,7 @@ public class ClientController {
 
     public void incrementHourglassCounter() {
         hourglassCounter++;
+        support.firePropertyChange("hourglassCounter", null, hourglassCounter);
     }
 
 
@@ -65,7 +66,7 @@ public class ClientController {
         this.connectionInfo = connectionInfo;
     }
 
-    public boolean getPendingHourglass(){
+    public boolean getPendingHourglass() {
         return pendingHourglass;
     }
 
@@ -118,14 +119,14 @@ public class ClientController {
         support.addPropertyChangeListener(listener);
     }
 
-    public void setFinishedLastHourglass(boolean finishedLastHourglass){
-        synchronized (hourglassLock){
+    public void setFinishedLastHourglass(boolean finishedLastHourglass) {
+        synchronized (hourglassLock) {
             this.finishedLastHourglass = finishedLastHourglass;
         }
     }
 
-    public Boolean getFinishedLastHourglass(){
-        synchronized (hourglassLock){
+    public Boolean getFinishedLastHourglass() {
+        synchronized (hourglassLock) {
             return this.finishedLastHourglass;
         }
     }
@@ -138,8 +139,8 @@ public class ClientController {
         GameState oldState;
         if (state.equals(GameState.FINISH_HOURGLASS))
             pendingHourglass = false;
-        synchronized (hourglassLock){
-            if(state.equals(GameState.FINISH_LAST_HOURGLASS)){
+        synchronized (hourglassLock) {
+            if (state.equals(GameState.FINISH_LAST_HOURGLASS)) {
                 finishedLastHourglass = true;
                 pendingHourglass = false;
             }
@@ -624,21 +625,23 @@ public class ClientController {
     }
 
     public void assignBuild(String nick) {
-        HousingColor color = flyBoard.getPlayerByUsername(nick).getColor();
+        synchronized (shipboardLock) {
+            HousingColor color = flyBoard.getPlayerByUsername(nick).getColor();
 
-        try {
-            if (nick.equals(nickname)) {
-                flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(color));
-                shipBoard = flyBoard.getPlayerByUsername(nick).getShipBoard();
+            try {
+                if (nick.equals(nickname)) {
+                    flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(color));
+                    shipBoard = flyBoard.getPlayerByUsername(nick).getShipBoard();
 
-                Logger.debug(nick + " " + color + "assegnato");
-            } else {
-                //il ramo di else serve per non creare bug
-                Logger.debug(nick + " " + color);
-                flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(color));
+                    Logger.debug(nick + " " + color + "assegnato");
+                } else {
+                    //il ramo di else serve per non creare bug
+                    Logger.debug(nick + " " + color);
+                    flyBoard.getPlayerByUsername(nick).setShipBoard(flyBoard.getBuiltShip(color));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -825,7 +828,6 @@ public class ClientController {
     }
 
 
-
 //    public void removeBattery(int quantity){
 //        try{
 //            server.removeBattery(idGame, nickname, quantity);
@@ -844,8 +846,8 @@ public class ClientController {
         }
     }
 
-    public void advanceMeteor(boolean destroyed, boolean energy){
-        try{
+    public void advanceMeteor(boolean destroyed, boolean energy) {
+        try {
             server.advanceMeteor(idGame, nickname, destroyed, energy);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -943,18 +945,17 @@ public class ClientController {
 
         cannon.setCordinateHit(cordinateHit);
 
-        if (type.equals(CannonType.HEAVY)){
+        if (type.equals(CannonType.HEAVY)) {
             advanceCannon(true, false);
-        }
-        else{
+        } else {
             setCardState(CardState.SHIELD_SELECTION);
         }
 
 
     }
 
-    public void advanceCannon(boolean destroyed, boolean energy){
-        try{
+    public void advanceCannon(boolean destroyed, boolean energy) {
+        try {
             server.advanceCannon(idGame, nickname, destroyed, energy);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -981,9 +982,9 @@ public class ClientController {
         return cannon;
     }
 
-    public void removeBatteryFromModel(int idBatteryDepot){
+    public void removeBatteryFromModel(int idBatteryDepot) {
         Logger.debug("remove battery from " + idBatteryDepot);
-        synchronized (flyBoard){
+        synchronized (flyBoard) {
             flyBoard.getComponentById(idBatteryDepot).removeOneEnergy();
         }
     }
