@@ -69,9 +69,9 @@ public class ServerMessageHandler implements Runnable {
                     case BuildShipMessage buildShipMessage -> {
                         serverController.takeBuild(buildShipMessage.getGameId(), buildShipMessage.getNickname());
                     }
-                    case StardustMessage stardustMessage -> {
-                        serverController.applyStardust(stardustMessage.getGameId(), stardustMessage.getCard());
-                    }
+//                    case StardustMessage stardustMessage -> {
+//                        serverController.applyStardust(stardustMessage.getGameId(), stardustMessage.getCard());
+//                    }
                     case EndBuildMessage endBuildMessage -> {
                         serverController.endBuild(endBuildMessage.getGameId(), endBuildMessage.getNickname());
                     }
@@ -119,27 +119,29 @@ public class ServerMessageHandler implements Runnable {
                     }
 
                     case RollDiceMessage rollDiceMessage -> {
-                        serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getNumber());
+                        serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getFirst(), rollDiceMessage.getSecond());
                     }
 
-                    case BatteryMessage batteryMessage -> {
-                        serverController.removeBattery(batteryMessage.getGameId(), batteryMessage.getNickname(), batteryMessage.getQuantity());
-                    }
+//                    case BatteryMessage batteryMessage -> {
+//                        serverController.removeBattery(batteryMessage.getGameId(), batteryMessage.getNickname(), batteryMessage.getQuantity());
+//                    }
 
                     case AdvanceMeteorMessage advanceMeteorMessage -> {
-                        serverController.advanceMeteor(advanceMeteorMessage.getGameId(), advanceMeteorMessage.getNickname());
+                        serverController.advanceMeteor(advanceMeteorMessage.getGameId(), advanceMeteorMessage.getNickname(), advanceMeteorMessage.isDestroyed(), advanceMeteorMessage.isEnergy());
                     }
 
                     case AdvanceCannonMessage advanceCannonMessage -> {
-                        serverController.advanceCannon(advanceCannonMessage.getGameId(), advanceCannonMessage.getNickname());
+                        serverController.advanceCannon(advanceCannonMessage.getGameId(), advanceCannonMessage.getNickname(), advanceCannonMessage.isDestroyed(), advanceCannonMessage.isEnergy());
                     }
                     case StartHourglassMessage startHourglassMessage -> {
                         serverController.startHourglass(startHourglassMessage.getGameId());
                     }
 
                     default -> {
-                        Logger.error("Messaggio non gestito lato server");
+                        Logger.error(message +  "Messaggio non gestito lato server");
                     }
+
+
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

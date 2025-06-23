@@ -10,6 +10,8 @@ public class CannonPenalty extends Penalty {
     protected final Direction direction;
     protected final CannonType cannonType;
 
+    private List<Player> playerstoHit;
+
     protected int number;
     private Cordinate cordinateHit;
 
@@ -27,7 +29,7 @@ public class CannonPenalty extends Penalty {
     }
 
     @Override
-    public PenaltyType getType(){
+    public PenaltyType getType() {
         return null;
     }
 
@@ -48,6 +50,8 @@ public class CannonPenalty extends Penalty {
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()){
             Cordinate cord = cordinateIterator.next();
+            if (shipBoard.getOptComponentByCord(cord).isEmpty())
+                continue;
 
             switch (direction){
                 case LEFT, RIGHT -> {
@@ -89,6 +93,7 @@ public class CannonPenalty extends Penalty {
         this.number = number;
     }
 
+    @Override
     public CannonType getCannonType() {
         return cannonType;
     }
@@ -103,6 +108,14 @@ public class CannonPenalty extends Penalty {
 
     public Cordinate getCordinateHit() {
         return cordinateHit;
+    }
+
+    public List<Player> getPlayerstoHit() {
+        return playerstoHit;
+    }
+
+    public void setPlayerstoHit(List<Player> playerstoHit) {
+        this.playerstoHit = playerstoHit;
     }
 }
 

@@ -65,9 +65,10 @@ public interface VirtualClient extends Remote {
     void addOtherPlayerToCircuit(String nickname, int place) throws Exception;
 
     void setPlayedCard(int idCard) throws Exception;
-    void advancePlayer(String nickname, int steps, int energyToRemove) throws Exception;
+    void advancePlayer(String nickname, int steps) throws Exception;
     void addCredits(String nickname, int credits) throws Exception;
-    void removeCrew(String nickname, List<Cordinate> housingCordinates) throws Exception;
+
+    void removeCrew(int idComp) throws Exception;
     void addGood(int idComp, GoodType type) throws Exception;
     void removeGoodPendingList(String nickname, GoodType type) throws Exception;
 
@@ -76,9 +77,9 @@ public interface VirtualClient extends Remote {
     void setPlayerOnPlanet(String nickname, int choice) throws Exception;
     void genericChoiceError(String msg) throws Exception;
 
-    void meteorHit(MeteorType type, Direction direction, int number) throws Exception;
+    void meteorHit(MeteorType type, Direction direction, int number, Cordinate cordinate) throws Exception;
 
-    void removeBatteries(List<Integer> batteryDepotId) throws Exception;
+    void removeBattery(int batteryDepotId) throws Exception;
     void removeComponent(String nickname, Cordinate cord) throws Exception;
 
     void cannonHit(CannonType type, Direction direction, int number) throws Exception;

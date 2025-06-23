@@ -47,26 +47,19 @@ public final class SldStardust extends SldAdvCard{
         setState(CardState.STARDUST_END);
     }
 
-    public void applyEffect(FlyBoard board) {
-        /*if(this.state != CardState.APPLYING){
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }*/
-        List<Player> playersReverse = new ArrayList<>(board.getScoreBoard());
-        Collections.reverse(playersReverse);
-        for (Player player : playersReverse) {
-            int daysLost = player.getShipBoard().getExposedConnectors();
-            board.moveDays(player, -daysLost);
-        }
-        this.state = CardState.FINALIZED;
-    }
+//    public void applyEffect(FlyBoard board) {
+//        /*if(this.state != CardState.APPLYING){
+//            throw new IllegalStateException("Illegal state: " + this.state);
+//        }*/
+//        List<Player> playersReverse = new ArrayList<>(board.getScoreBoard());
+//        Collections.reverse(playersReverse);
+//        for (Player player : playersReverse) {
+//            int daysLost = player.getShipBoard().getExposedConnectors();
+//            board.moveDays(player, -daysLost);
+//        }
+//        this.state = CardState.FINALIZED;
+//    }
 
-    @Override
-    public void finish(FlyBoard board) {
-        if(this.state != CardState.FINALIZED){
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-//        board.setState(GameState.DRAW_CARD);
-    }
 
     @Override
     public void setNextPlayer() {

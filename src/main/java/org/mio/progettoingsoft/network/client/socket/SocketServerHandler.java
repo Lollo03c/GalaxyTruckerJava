@@ -79,16 +79,16 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
-    @Override
-    public void applyStardust(int idGame, String nickname, SldStardust card) {
-        Message message = new StardustMessage(idGame, nickname, card);
-        try{
-            sendMessage(message);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void applyStardust(int idGame, String nickname, SldStardust card) {
+//        Message message = new StardustMessage(idGame, nickname, card);
+//        try{
+//            sendMessage(message);
+//        }
+//        catch(IOException e){
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void endBuild(int idGame, String nickname) throws IOException{
@@ -170,26 +170,26 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void setRollResult(int idGame, String nickname, int number) throws IOException{
-        Message message = new RollDiceMessage(idGame, nickname, number);
+    public void setRollResult(int idGame, String nickname, int first, int second) throws IOException{
+        Message message = new RollDiceMessage(idGame, nickname, first, second);
+        sendMessage(message);
+    }
+
+//    @Override
+//    public void removeBattery(int idGame, String nickname, int quantity) throws IOException{
+//        Message message = new BatteryMessage(idGame, nickname, quantity);
+//        sendMessage(message);
+//    }
+
+    @Override
+    public void advanceMeteor(int idGame, String nickname, boolean destroyed, boolean energy) throws IOException{
+        Message message = new AdvanceMeteorMessage(idGame, nickname, destroyed, energy);
         sendMessage(message);
     }
 
     @Override
-    public void removeBattery(int idGame, String nickname, int quantity) throws IOException{
-        Message message = new BatteryMessage(idGame, nickname, quantity);
-        sendMessage(message);
-    }
-
-    @Override
-    public void advanceMeteor(int idGame, String nickname) throws IOException{
-        Message message = new AdvanceMeteorMessage(idGame, nickname);
-        sendMessage(message);
-    }
-
-    @Override
-    public void advanceCannon(int idGame, String nickname) throws IOException{
-        Message message = new AdvanceCannonMessage(idGame, nickname);
+    public void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) throws IOException{
+        Message message = new AdvanceCannonMessage(idGame, nickname, destroyed, energy);
         sendMessage(message);
     }
 

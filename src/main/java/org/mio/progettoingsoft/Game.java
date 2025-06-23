@@ -2,6 +2,7 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.Client;
@@ -13,9 +14,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
@@ -26,15 +25,26 @@ public class Game implements GameServer, GameClient {
     private GameMode mode;
     private int numPlayers;
 
-    private final BlockingQueue<Object> receivedMessages = new LinkedBlockingQueue<>();
-    private final GameController gameController = new GameController(this);
+    private final BlockingQueue<Event> eventsQueue = new LinkedBlockingQueue<>();
+    private final GameController gameController;
+    private final Object lock = new Object();
+
+    private final boolean testing;
+
 
     private Map<String, VirtualClient> clients = new HashMap<>();
 
-    private GameState gameState;
 
     public Game(int idGame) {
         this.idGame = idGame;
+        gameController = new GameController(this, eventsQueue);
+        testing = false;
+    }
+
+    public Game(int idGame, boolean testing){
+        this.idGame = idGame;
+        gameController = new GameController(this, eventsQueue, testing);
+        this.testing = testing;
     }
 
     @Override
@@ -90,7 +100,8 @@ public class Game implements GameServer, GameClient {
     @Override
     public void startGame(){
 
-        flyboard = FlyBoard.createFlyBoard(mode, clients.keySet());
+        if (!testing)
+            createFlyboard(mode, clients.keySet());
 
         gameController.registerListener();
 
@@ -118,10 +129,6 @@ public class Game implements GameServer, GameClient {
 //    public void addReceivedMessage(Message message){
 //        receivedMessages.add(message);
 //    }
-    public void setGameState(GameState newState){
-        this.gameState = newState;
-    }
-
     @Override
     public FlyBoard getFlyboard(){
         return flyboard;
@@ -141,6 +148,22 @@ public class Game implements GameServer, GameClient {
         return gameController;
     }
 
+    public void createFlyboard(GameMode mode, Set<String> nicknames) {
+        flyboard = FlyBoard.createFlyBoard(mode, nicknames);
+    }
 
+    @Override
+    public void addEvent(Event event){
+        eventsQueue.add(event);
+    }
 
+    @Override
+    public BlockingQueue<Event> getEventsQueue(){
+        return eventsQueue;
+    }
+
+    @Override
+    public Object getLock(){
+        return lock;
+    }
 }

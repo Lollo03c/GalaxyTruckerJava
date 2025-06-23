@@ -1,14 +1,20 @@
 package org.mio.progettoingsoft.network.messages;
 
 public final class RollDiceMessage extends Message{
-    private final int number;
+    private final int first;
+    private final int second;
 
-    public RollDiceMessage(int gameId, String nickname, int number) {
+    public RollDiceMessage(int gameId, String nickname, int first, int second) {
         super(gameId, nickname);
-        this.number = number;
+        this.first = first;
+        this.second = second;
     }
 
-    public int getNumber() {
-        return number;
+    public int getFirst() {
+        return first;
+    }
+
+    public int getSecond() {
+        return second;
     }
 }

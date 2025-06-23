@@ -2,15 +2,20 @@ package org.mio.progettoingsoft.advCards;
 
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.model.enums.MeteorType;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveComponentEvent;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.*;
 
 public class Meteor {
     protected final Direction direction;
     protected final MeteorType type;
-    private int number;
+    protected int number;
     private Cordinate cordinateHit;
     private final Set<String> nicksAnswered = new HashSet<>();
+
+    protected final Set<String> nickHit = new HashSet<>();
 
     public Meteor(Direction direction, MeteorType type) {
         this.direction = direction;
@@ -33,8 +38,18 @@ public class Meteor {
         return type;
     }
 
-    public void hit(Player player, int value){
+    public void hit(GameServer game, Player player, int value){
 
+    }
+
+    public void destroy(Player player, GameServer game){
+        Cordinate cord = findHit(player.getShipBoard(), number).get();
+
+        ShipBoard shipBoard = player.getShipBoard();
+        shipBoard.removeComponent(cord);
+
+        Event event = new RemoveComponentEvent(player.getNickname(), cord);
+        game.addEvent(event);
     }
 
     public Optional<Cordinate> findHit(ShipBoard shipBoard, int value){
@@ -49,6 +64,8 @@ public class Meteor {
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()){
             Cordinate cord = cordinateIterator.next();
+            if (shipBoard.getOptComponentByCord(cord).isEmpty())
+                continue;
 
             switch (direction){
                 case LEFT, RIGHT -> {
@@ -103,5 +120,9 @@ public class Meteor {
 
     public Set<String> getPlayerResponses() {
         return nicksAnswered;
+    }
+
+    public Set<String> getNickHit() {
+        return nickHit;
     }
 }

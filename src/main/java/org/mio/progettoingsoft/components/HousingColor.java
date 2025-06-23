@@ -1,9 +1,11 @@
 package org.mio.progettoingsoft.components;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public enum HousingColor implements Serializable {
-    BLUE, GREEN, RED, YELLOW;
+    YELLOW, BLUE, RED, GREEN;
 
     public static HousingColor stringToColor(String s){
         return switch(s){
@@ -42,5 +44,16 @@ public enum HousingColor implements Serializable {
             case GREEN -> "\u001B[32m";
             case YELLOW -> "\u001B[33m";
         };
+    }
+
+    public static List<HousingColor> getSorted(){
+        return new ArrayList<>(
+                List.of(
+                        BLUE,
+                        YELLOW,
+                        RED,
+                        GREEN
+                )
+        );
     }
 }

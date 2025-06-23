@@ -1,13 +1,17 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
+import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
@@ -18,7 +22,10 @@ public final class SldCombatZone extends SldAdvCard {
     private final List<CombatLine> lines;
     private int actualLineIndex;
     private Penalty tempPenalty;
+
     private Iterator<Penalty> penaltyIterator;
+    private Iterator<CombatLine> lineIterator;
+    private CombatLine actualLine;
 
     public SldCombatZone(int id, int level, List<CombatLine> lines) {
         super(id, level);
@@ -60,19 +67,54 @@ public final class SldCombatZone extends SldAdvCard {
 
     @Override
     public void init(GameServer game) {
-        FlyBoard board = game.getFlyboard();
-//        if (board.getState() != GameState.DRAW_CARD) {
-//            throw new IllegalStateException("Illegal state: " + board.getState());
-//        }
-//        board.setState(GameState.CARD_EFFECT);
-        this.allowedPlayers = board.getScoreBoard();
-        this.playerIterator = allowedPlayers.iterator();
-        switch (lines.getFirst().getCriterion()) {
-            case CREW -> this.state = CardState.APPLYING;
-            case ENGINE_POWER -> this.state = CardState.ENGINE_CHOICE;
-            case FIRE_POWER -> this.state = CardState.DRILL_CHOICE;
+
+        this.game = game;
+        flyBoard = game.getFlyboard();
+//
+        this.allowedPlayers = flyBoard.getScoreBoard();
+        lineIterator = lines.iterator();
+
+    }
+
+
+    public void setNextLine(){
+        if (lineIterator.hasNext()){
+            actualLine = lineIterator.next();
+            actualLine.applyEffect(game, this);
         }
-        this.actualLineIndex = 0;
+        else{
+            setState(CardState.FINALIZED);
+        }
+    }
+
+    public void setDrills(Player player, List<Cordinate> drillsCord){
+        double power = player.getShipBoard().getBaseFirePower();
+        for (Cordinate cord : drillsCord){
+            power += player.getShipBoard().getOptComponentByCord(cord).get().getFirePower(true);
+        }
+
+        actualLine.setValue(game, player, power);
+    }
+
+    public void removeCrew(String nickname, List<Cordinate> cordinates){
+        if (! nickname.equals(actualPlayer.getNickname())){
+            throw new IncorrectFlyBoardException("");
+        }
+
+        for (Cordinate cord : cordinates){
+            int idComp = actualPlayer.getShipBoard().getOptComponentByCord(cord).get().getId();
+            flyBoard.getComponentById(idComp).removeGuest();
+
+        }
+
+        for (Cordinate cord : cordinates){
+            int idComp = actualPlayer.getShipBoard().getOptComponentByCord(cord).get().getId();
+
+            Event event = new RemoveGuestEvent(nickname, idComp);
+            game.addEvent(event);
+        }
+
+        setNextLine();
     }
 
     public void prepareEngines(FlyBoard board, Player player, int numDoubleEngines) {

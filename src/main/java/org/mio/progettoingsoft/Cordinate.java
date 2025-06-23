@@ -105,5 +105,8 @@ public class Cordinate implements Serializable {
         return "(" + (row + 5) + ", " + (column + 4) + ")";
     }
 
+    public String realValue(){
+        return "( " + row + ", " + column + ") ";
+    }
 
 }

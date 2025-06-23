@@ -56,10 +56,6 @@ public final class SldMeteorSwarm extends SldAdvCard{
         return meteors;
     }
 
-    @Override
-    public void finish(FlyBoard board) {
-
-    }
 
     public synchronized void setNextMeteor(){
         if (meteorIterator.hasNext()){
@@ -75,7 +71,7 @@ public final class SldMeteorSwarm extends SldAdvCard{
         return actualMeteor;
     }
 
-    public synchronized void setNextMeteor(String nick){
+    public synchronized void setNextMeteor(String nick, boolean destroyed,  boolean energy){
         List<String> nicknames = flyBoard.getPlayers().stream().map(p -> p.getNickname()).toList();
         if (!nicknames.contains(nick)){
             Logger.error("eccezion");
@@ -86,8 +82,16 @@ public final class SldMeteorSwarm extends SldAdvCard{
         if (actualMeteor.getPlayerResponses().contains(nick))
             throw new IncorrectFlyBoardException("player has already answered");
 
-        actualMeteor.addPlayerResponses(nick);
-        if (actualMeteor.getPlayerResponses().size() == flyBoard.getPlayers().size())
+        if (energy){
+            flyBoard.getPlayerByUsername(nick).getShipBoard().removeEnergy(1);
+        }
+
+        if (destroyed){
+            actualMeteor.destroy(flyBoard.getPlayerByUsername(nick), game);
+        }
+
+        actualMeteor.getNickHit().remove(nick);
+        if (actualMeteor.getNickHit().isEmpty())
             setNextMeteor();
 
     }

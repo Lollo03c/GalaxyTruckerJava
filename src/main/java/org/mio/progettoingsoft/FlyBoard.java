@@ -68,6 +68,9 @@ public abstract class FlyBoard implements FlyBoardServer {
         support.addPropertyChangeListener(listener);
     }
 
+    public PropertyChangeSupport getSupport() {
+        return support;
+    }
 
     protected FlyBoard(GameMode mode, Set<String> nicknames) {
         this.mode = mode;
@@ -96,9 +99,12 @@ public abstract class FlyBoard implements FlyBoardServer {
         uncoveredComponents = new ArrayList<>();
         players = new ArrayList<>(nicknames.size());
 
-        Iterator<HousingColor> colorIter = Arrays.asList(HousingColor.values()).iterator();
-        for (String nick : nicknames){
-            players.add(new Player(nick, colorIter.next(), mode, this));
+//        Iterator<HousingColor> colorIter = Arrays.asList(HousingColor.values()).iterator();
+
+        List<String> nickList = nicknames.stream().sorted().toList();
+        List<HousingColor> ordered = HousingColor.getSorted();
+        for (int i = 0; i < nicknames.size(); i++){
+            players.add(new Player(nickList.get(i), HousingColor.getSorted().get(i), mode, this));
         }
 
         circuit = createCircuite();
@@ -194,9 +200,9 @@ public abstract class FlyBoard implements FlyBoardServer {
         return usernameList;
     }
 
-    public Integer drawComponent() throws NoMoreComponentsException {
+    public Integer drawComponent() throws IncorrectFlyBoardException {
         if (coveredComponents.isEmpty())
-            throw new NoMoreComponentsException("Covered components are not enough");
+            throw new IncorrectFlyBoardException("Covered components are not enough");
         return coveredComponents.removeLast();
     }
     /**
@@ -474,9 +480,9 @@ public abstract class FlyBoard implements FlyBoardServer {
 
             switch (color) {
                 case GREEN -> player.setShipBoard(ShipBoardNormal.buildFirst(this));
-                case RED -> player.setShipBoard(ShipBoardNormal.buildSecond(this));
-                case BLUE -> player.setShipBoard(ShipBoardNormal.buildThird(this));
-                case YELLOW -> player.setShipBoard(ShipBoardNormal.buildFourth(this));
+                case RED -> player.setShipBoard(ShipBoardNormal.buildRed(this));
+                case BLUE -> player.setShipBoard(ShipBoardNormal.buildBlue(this));
+                case YELLOW -> player.setShipBoard(ShipBoardNormal.buildYellow(this));
             }
     }
 

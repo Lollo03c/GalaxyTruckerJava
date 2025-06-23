@@ -5,9 +5,8 @@ import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.OpenSpace;
-import org.mio.progettoingsoft.exceptions.BadParameterException;
-import org.mio.progettoingsoft.exceptions.BadPlayerException;
-import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.exceptions.*;
+import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 
@@ -59,47 +58,33 @@ public final class SldOpenSpace extends SldAdvCard {
     // if the player is the last, it sets the card state to FINALIZED (to accept only finish calls)
     // else, it sets the card state to ENGINE_CHOICE to accept other calls with next players
     public void applyEffect(Player player, int numDoubleEngines) {
-        if (this.state != CardState.ENGINE_CHOICE) {
-            throw new IllegalStateException("The effect can't be applied or has been already applied: " + this.state);
-        }
         if (!flyBoard.getScoreBoard().contains(player)) {
-            throw new BadPlayerException("The player " + player.getNickname() + " is not in the board");
+            throw new IncorrectFlyBoardException("player not found");
         }
 
         this.state = CardState.APPLYING;
 
         if (player.equals(actualPlayer)) {
             if (numDoubleEngines > actualPlayer.getShipBoard().getQuantBatteries()) {
-                throw new NotEnoughBatteriesException();
+                throw new IncorrectShipBoardException("not enough batteries");
             }
             if (numDoubleEngines < 0) {
-                throw new BadParameterException("The number of selected engines is less than zero");
+                throw new IncorrectShipBoardException("The number of selected engines is less than zero");
             }
             if (numDoubleEngines > actualPlayer.getShipBoard().getDoubleEngine().size()) {
-                throw new BadParameterException("The number of selected engines is more than the actual engines");
+                throw new IncorrectShipBoardException("The number of selected engines is more than the actual engines");
             }
             player.getShipBoard().removeEnergy(numDoubleEngines);
             int base = player.getShipBoard().getBaseEnginePower();
             int power = base + numDoubleEngines * 2;
 
             flyBoard.moveDays(actualPlayer, power);
+            setNextPlayer();
 
         } else {
-            throw new BadPlayerException("The player " + actualPlayer.getNickname() + " can't play " + this.getCardName() + " at the moment");
+            throw new IncorrectFlyBoardException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
         }
 
-    }
-
-    // removes the players with no power
-    public void finish(FlyBoard board) {
-        if (this.state != CardState.FINALIZED) {
-            throw new IllegalStateException("Illegal state for 'finish': " + this.state);
-        }
-        if (!noPowerPlayers.isEmpty()) {
-            // here the method should call a procedure or throw an exception to remove the players with no power
-            throw new RuntimeException("There's at least a player with no power, not implemented yet");
-        }
-//        board.setState(GameState.DRAW_CARD);
     }
 
     @Override

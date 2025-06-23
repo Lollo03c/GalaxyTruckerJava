@@ -4,13 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.model.enums.CannonType;
 
 import java.util.List;
 
 public abstract class Penalty {
     private PenaltyType type;
     public abstract PenaltyType getType();
-
+    public CannonType getCannonType() {
+        return null;
+    }
     public void apply(String json, Player player) throws Exception{}
 
     public void apply(FlyBoard board, Player player){}

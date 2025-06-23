@@ -8,6 +8,7 @@ public final class CannonMessage extends Message {
     private final Direction direction;
     private final int number;
 
+
     public CannonMessage(int gameId, String nickname, CannonType type, Direction direction, int number) {
         super(gameId, nickname);
         this.type = type;

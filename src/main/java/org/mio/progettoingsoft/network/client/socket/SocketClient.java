@@ -134,7 +134,7 @@ public class SocketClient implements Client {
                     }
 
                     case AdvancePlayerMessage advancePlayerMessage ->
-                            executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps(), advancePlayerMessage.getEnergyToRemove()));
+                            executor.submit(() -> controller.advancePlayer(advancePlayerMessage.getNickname(), advancePlayerMessage.getSteps()));
 
                     case AddPlayerMessage addPlayerMessage -> {
                         executor.submit(() -> {
@@ -154,7 +154,7 @@ public class SocketClient implements Client {
 
                     case CrewRemoveMessage crewRemoveMessage ->
                         executor.submit(() -> {
-                            controller.crewLost(crewRemoveMessage.getNickname(), crewRemoveMessage.getCordinates());
+                            controller.crewLost(crewRemoveMessage.getIdComp());
                         });
 
                     case GoodMessage goodMessage ->{
@@ -183,13 +183,13 @@ public class SocketClient implements Client {
 
                     case MeteorMessage meteorMessage -> {
                         executor.submit(() -> {
-                            controller.meteorHit(meteorMessage.getType(), meteorMessage.getDirection(), meteorMessage.getNumber());
+                            controller.meteorHit(meteorMessage.getType(), meteorMessage.getDirection(), meteorMessage.getNumber(), meteorMessage.getCordinate());
                         });
                     }
 
                     case BatteryMessage batteryMessage -> {
                         executor.submit(() -> {
-                            controller.removeBatteriesFromModel(batteryMessage.getBatteryDepotId());
+                            controller.removeBatteryFromModel(batteryMessage.getBatteryDepotId());
                         });
                     }
 
@@ -200,8 +200,14 @@ public class SocketClient implements Client {
                         });
                     }
 
+                    case CannonMessage cannonMessage -> {
+                        executor.submit(() -> {
+                            controller.cannonHit(cannonMessage.getType(), cannonMessage.getDirection(), cannonMessage.getNumber());
+                        });
+                    }
+
                     default -> {
-                        Logger.error("Messaggio non gestito");
+                        Logger.error("Messaggio non gestito"  + message);
                     }
                 }
             } catch (InterruptedException e) {

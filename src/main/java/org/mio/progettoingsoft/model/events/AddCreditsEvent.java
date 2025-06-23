@@ -1,12 +1,27 @@
 package org.mio.progettoingsoft.model.events;
 
+import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.utils.Logger;
+
+import java.util.Map;
+
 public final class AddCreditsEvent extends Event{
     private final int addedCredits;
-    public AddCreditsEvent(String nickname , int newCreditsValue) {
+    public AddCreditsEvent(String nickname , int addedCredits) {
         super(nickname);
-        this.addedCredits = newCreditsValue;
+
+        Logger.debug(nickname + " earned " + addedCredits + "value");
+        this.addedCredits = addedCredits;
     }
-    public int getAddedCredits() {
-        return addedCredits;
+
+    @Override
+    public void send(Map<String, VirtualClient> clients) {
+        for (VirtualClient client : clients.values()){
+            try {
+                client.addCredits(nickname, addedCredits);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

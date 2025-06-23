@@ -274,10 +274,10 @@ public class FlyBoardNormal extends FlyBoard  {
     public ShipBoard getBuiltShip(HousingColor color){
         synchronized (this) {
             return switch (color) {
-                case RED -> ShipBoardNormal.buildSecond(this);
-                case YELLOW -> ShipBoardNormal.buildFourth(this);
+                case RED -> ShipBoardNormal.buildRed(this);
+                case YELLOW -> ShipBoardNormal.buildYellow(this);
                 case GREEN -> ShipBoardNormal.buildFirst(this);
-                case BLUE -> ShipBoardNormal.buildThird(this);
+                case BLUE -> ShipBoardNormal.buildBlue(this);
                 default -> null;
             };
         }

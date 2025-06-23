@@ -3,9 +3,13 @@ package org.mio.progettoingsoft.advCards.sealed;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.Epidemic;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
+import org.mio.progettoingsoft.model.events.SetStateEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,42 +31,42 @@ public final class SldEpidemic extends SldAdvCard {
 
     // all players have to play the card, so all of them are added to the list
     public void init(GameServer game){
-        FlyBoard board = game.getFlyboard();
-//        if(board.getState() != GameState.DRAW_CARD){
-//            throw new IllegalStateException("Illegal state: " + board.getState());
-//        }
-        this.allowedPlayers = board.getScoreBoard();
-        this.state = CardState.APPLYING;
-    }
+        this.game = game;
+        this.flyBoard = game.getFlyboard();
 
-    // apply the effect of the card on all players (this card doesn't need player interaction)
-    public void applyEffect(FlyBoard board){
-//        for (Player player : this.allowedPlayers) {
-//            Set<Component> toDoRemove = new HashSet<>();
-//            // for each housing directly connected to another housing, verifies if they all contain at least a member
-//            // (human/alien) and adds them to those from which one member will be removed
-//            player.getShipBoard().getComponentsStream()
-//                    .filter(c -> c.getType().equals(ComponentType.HOUSING))
-//                    .forEach(c -> {
-//                        Map<Direction, Component> adj = player.getShipBoard().getAdjacentConnected(c.getRow(), c.getColumn());
-//                        adj.forEach((direction, component) -> {
-//                            if (component.getType().equals(ComponentType.HOUSING) && c.getQuantityGuests() > 0 && component.getQuantityGuests() > 0) {
-//                                toDoRemove.add(component);
-//                            }
-//                        });
-//                    });
-//            // removes a crew member from each selected housing
-//            for (Component c : toDoRemove) {
-//                c.removeGuest();
-//            }
-//        }
-        this.state = CardState.FINALIZED;
-    }
+        actualPlayer = flyBoard.getScoreBoard().getFirst();
 
-    public void finish(FlyBoard board){
-        if(this.state != CardState.FINALIZED){
-            throw new IllegalStateException("Illegal state for 'finish': " + this.state);
+        for (Player player : flyBoard.getScoreBoard()){
+            ShipBoard ship = player.getShipBoard();
+
+            Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+            Set<Component> toRemove = new HashSet<>();
+
+            while (cordinateIterator.hasNext()){
+                Cordinate cord = cordinateIterator.next();
+                if (ship.getOptComponentByCord(cord).isEmpty())
+                    continue;
+                Component comp = ship.getOptComponentByCord(cord).get();
+
+                Map<Direction, Component> ajdacents = ship.getAdjacent(cord);
+                for (Direction dir : ajdacents.keySet()){
+                    if (!comp.getGuests().isEmpty() && !ajdacents.get(dir).getGuests().isEmpty()){
+                        toRemove.add(comp);
+                        toRemove.add(ajdacents.get(dir));
+                    }
+                }
+            }
+
+            for (Component c : toRemove){
+                c.removeGuest();
+
+                Event removeGuestEvent = new RemoveGuestEvent(null, c.getId());
+                game.addEvent(removeGuestEvent);
+            }
         }
-//        board.setState(GameState.DRAW_CARD);
+
+
+
     }
+
 }

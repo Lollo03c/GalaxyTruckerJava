@@ -1,7 +1,12 @@
 package org.mio.progettoingsoft.model.events;
 
-public abstract sealed class Event permits MovePlayerEvent, AddCreditsEvent {
-    private final String nickname;
+import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.utils.Logger;
+
+import java.util.Map;
+
+public abstract sealed class Event permits AddCreditsEvent, AddGoodEvent, AddPendingGoodEvent, AddPlayerCircuit, CannonHitEvent, GenericErrorEvent, LandOnPlanetEvent, MetoriteEvent, MovePlayerEvent, RemoveComponentEvent, RemoveEnergyEvent, RemoveGoodEvent, RemoveGuestEvent, RemovePendingGoodEvent, SetCardStateEvent, SetPlayedCard, SetStateEvent {
+    protected final String nickname;
 
     public Event(String nickname) {
         this.nickname = nickname;
@@ -9,5 +14,9 @@ public abstract sealed class Event permits MovePlayerEvent, AddCreditsEvent {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public void send(Map<String, VirtualClient> clients){
+        Logger.error("invio messaggio non supportato");
     }
 }

@@ -2,9 +2,7 @@ package org.mio.progettoingsoft.views.tui;
 
 import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.CannonPenalty;
-import org.mio.progettoingsoft.advCards.Meteor;
-import org.mio.progettoingsoft.advCards.Planet;
+import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
@@ -111,32 +109,31 @@ public class Tui implements View {
                 chooseBuiltShip();
             }
 
-            case FINISH_HOURGLASS -> {/*
+            case FINISH_HOURGLASS -> {
                 controller.setPendingHourglass(false);
-                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);*/
+                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);
+                if(controller.getFinishedBuilding()){
+                    controller.setState(GameState.END_BUILDING);
+                }
             }
 
-            case FINISH_LAST_HOURGLASS -> {/*
+            case FINISH_LAST_HOURGLASS -> {
                 //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
                 //di simile e deve processare l'input mi genera un'eccezione
                 if(!controller.getFinishedBuilding()){
-                    //controller.setState(GameState.CHOOSE_POSITION);
+                    System.out.println(GREEN + "Last Hourglass is terminated : the time to build your shipBoard is over!"+ RESET);
+                    if(controller.getFlyBoard().getMode().equals(GameMode.NORMAL)){
+                        controller.handleBuildingShip(6);
+                    }
                 }
                 else{
                     controller.setState(GameState.END_BUILDING);
-                }*/
+                }
             }
 
             case INVALID_SHIP_CHOICE -> {
                 System.out.println("Invalid ship choice");
                 controller.setState(GameState.CHOICE_BUILT);
-            }
-
-            case STARDUST -> {
-                // la riga successiva è da eliminare e passargli la carta pescata
-                SldStardust card = new SldStardust(1, 1);
-                System.out.println("STARDUST was drown");
-                controller.applyStardust(card);
             }
 
             case VIEW_DECK -> viewDeck();
@@ -182,25 +179,27 @@ public class Tui implements View {
 
     private void endBuildingMenu(){
         System.out.println("Waiting for other players" + RESET);
-        /*System.out.println("Type \"r\" to rotate hourglass");
-        String input = " ";
-        while(!input.equalsIgnoreCase("r")){
-            input = scanner.nextLine();
-        }
-        try{
-            controller.rotateHourglass();
-        } catch (CannotRotateHourglassException e) {
-            System.out.println(RED + e.getMessage() + RESET);
-            controller.setState(GameState.END_BUILDING);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CannotRotateHourglassException) {
-                System.out.println(RED + cause.getMessage() + RESET);
-            } else {
-                throw e;
+        if (!controller.getFinishedLastHourglass() && !controller.getPendingHourglass()) {
+            System.out.println("Type \"r\" to rotate hourglass");
+            String input = " ";
+            while(!input.equalsIgnoreCase("r")){
+                input = scanner.nextLine();
             }
-            controller.setState(GameState.END_BUILDING);
-        }*/
+            try{
+                controller.rotateHourglass();
+            } catch (CannotRotateHourglassException e) {
+                System.out.println(RED + e.getMessage() + RESET);
+                controller.setState(GameState.END_BUILDING);
+            } catch (RuntimeException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof CannotRotateHourglassException) {
+                    System.out.println(RED + cause.getMessage() + RESET);
+                } else {
+                    throw e;
+                }
+                controller.setState(GameState.END_BUILDING);
+            }
+        }
     }
 
     /**
@@ -400,7 +399,6 @@ public class Tui implements View {
             int choice = numPlanet - 1;
             controller.landOnPlanet(choice);
             // ho messo qua la consegna delle merci come ha fatto toni su abandonedStation, non so se va bene
-//            controller.setState(GameState.GOODS_PLACEMENT);
         }
 
     }
@@ -540,7 +538,9 @@ public class Tui implements View {
             return;
         }
         try {
-            controller.handleBuildingShip(choice);
+            if(!controller.getFinishedLastHourglass()){
+                controller.handleBuildingShip(choice);
+            }
         } catch (CannotRotateHourglassException e) {
             System.out.println(RED + e.getMessage() + RESET);
             controller.setState(GameState.BUILDING_SHIP);
@@ -799,25 +799,7 @@ public class Tui implements View {
     }
 
     private void chooseBuiltShip() {
-//        System.out.println("Available built ships setup");
-//        synchronized (controller.getFlyBoard().getAvailableConstructedShips()) {
-//            for (int index : controller.getFlyBoard().getAvailableConstructedShips())
-//                System.out.println(index);
-//        }
-
         controller.builtDefault();
-//        try {
-//            int chosen;
-//            chosen = Integer.parseInt(scanner.nextLine());
-//
-//            if (!controller.getFlyBoard().getAvailableConstructedShips().contains(chosen))
-//                throw new Exception("");
-//
-//            controller.builtDefault(chosen);
-//        } catch (Exception e) {
-//            controller.setState(GameState.INVALID_SHIP_CHOICE);
-//        }
-
     }
 
     private void engineChoice() {
@@ -852,8 +834,7 @@ public class Tui implements View {
         while (!choice.equals("y") && !choice.equals("n")) {
             System.out.println("Do you want to accept the card effect (y/n) : ");
 
-            choice = scanner.nextLine();
-            //todo controllo input
+            choice = scanner.nextLine().trim().toLowerCase();
         }
 
         if (choice.equals("n")){
@@ -862,13 +843,20 @@ public class Tui implements View {
         }
 
         switch (card){
+            case SldAbandonedShip abandonedShip -> {
+                controller.setCardState(CardState.CREW_REMOVE_CHOICE);
+            }
+
             case SldAbandonedStation abandonedStation -> {
                 controller.applyEffect();
-                controller.setCardState(CardState.GOODS_PLACEMENT);
             }
 
             case SldSmugglers sldSmugglers ->{
                 controller.setState(GameState.DRILL_CHOICE);
+            }
+
+            case SldSlavers sldSlavers  -> {
+                controller.applyEffect();
             }
 
             default -> Logger.error("Effetto non permesso dalla carta");
@@ -878,29 +866,19 @@ public class Tui implements View {
     private void crewRemove() {
         SldAdvCard card = controller.getPlayedCard();
         Logger.debug("sono in crewRemove");
-        switch(card){
-            case SldAbandonedShip sldAbandonedShip -> {
-                String choice = "";
-                while (!choice.equals("y") && !choice.equals("n")) {
-                    System.out.println("Do you want to accept the card effect (y/n) : ");
+        int toRemove = -1;
 
-                    choice = scanner.nextLine();
-                    if(!choice.equals("y") && !choice.equals("n")){
-                        System.out.println(RED + "Invalid input please type y/n " + RESET);
-                    }
-                }
-
-
-                if (choice.equals("n")) {
-                    controller.skipEffect();
-                    return;
+        switch (controller.getPlayedCard()) {
+            case SldCombatZone combatZone ->{
+                for (CombatLine line : combatZone.getLines()){
+                    if (line.getPenalties().getFirst().getType().equals(PenaltyType.CREW))
+                        toRemove = line.getPenalties().getFirst().getAmount();
                 }
             }
-            default -> {}
+            default -> {
+                toRemove = card.getCrewLost();
+            }
         }
-
-
-        int toRemove = card.getCrewLost();
         List<Cordinate> crewPositionsToRemove = new ArrayList<>();
 
         System.out.println("Now you have to select " + toRemove + " guest, the selected ones will be deleted from your shipBoard");
@@ -1006,18 +984,27 @@ public class Tui implements View {
             }
             System.out.println("Select the type :");
             String chosenType = scanner.nextLine().trim().toUpperCase();
+
+            Logger.debug("good selezionato");
             GoodType type = GoodType.stringToGoodType(chosenType);
 
             List<Cordinate> availableDepots = shipBoard.getAvailableDepots(type);
-            for (int i = 0; i < availableDepots.size(); i++){
-                System.out.println(i+1 + ". " + availableDepots.get(i));
+
+            if (! availableDepots.isEmpty()) {
+                for (int i = 0; i < availableDepots.size(); i++) {
+                    System.out.println(i + 1 + ". " + availableDepots.get(i));
+                }
+                System.out.println("Select the depot by its number : ");
+                int chosenDepot = Integer.parseInt(scanner.nextLine().trim());
+
+                Component comp = shipBoard.getOptComponentByCord(availableDepots.get(chosenDepot - 1)).get();
+
+                controller.addGood(comp.getId(), type);
             }
-            System.out.println("Select the depot by its number : ");
-            int chosenDepot = Integer.parseInt(scanner.nextLine().trim());
-
-            Component comp = shipBoard.getOptComponentByCord(availableDepots.get(chosenDepot - 1)).get();
-
-            controller.addGood(comp.getId() , type);
+            else{
+                System.out.println("not enough space for the good chosen. Try to remove one first");
+                controller.setCardState(CardState.GOODS_PLACEMENT);
+            }
         }
         else if (choice.equals("2")){
             List<Cordinate> depotCords = new ArrayList<>();
@@ -1071,7 +1058,7 @@ public class Tui implements View {
         List<Cordinate> activatedDrills = new ArrayList<>();
 
         boolean stopAsking = false;
-        while (activatedDrills.size() < energyAvailable && activatedDrills.size() < drillCords.size() && !stopAsking){
+        while ( activatedDrills.size() < energyAvailable && activatedDrills.size() < drillCords.size() && !stopAsking) {
             System.out.println("You currently have " + energyAvailable + " batteries");
             System.out.println("Actual fire power : " + power);
 
@@ -1087,56 +1074,34 @@ public class Tui implements View {
                     stopAsking = true;
                 else {
                     activatedDrills.add(drillCords.get(choice - 1));
-                    power += ship.getOptComponentByCord(drillCords.get(choice -1)).get().getFirePower(true);
+                    power += ship.getOptComponentByCord(drillCords.get(choice - 1)).get().getFirePower(true);
                     energyAvailable--;
                 }
 
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid input. Try again.");
             }
-            switch(card){
-                case SldSlavers sldSlavers->{
-                    boolean wantsToActivate = false;
-                    System.out.println(" You selected" + activatedDrills.size() + " double drills");
-                    double playerStrength = power + 2* activatedDrills.size();
-                    Logger.debug("playerStrength: " + playerStrength + " cardStrength" + card.getStrength());
-                    int cardStrength = card.getStrength();
-                    if(playerStrength > cardStrength){
-                        System.out.println("Your fire power is higher than the one of the card, Do you want to get the credits?");
-                        String input = "";
-                        while(!input.equals("y") && !input.equals("n")){
-                            System.out.println("Enter y/n");
-                            input = scanner.nextLine().trim();
-                            if(input.equals("y")){
-                                wantsToActivate = true;
-                            } else if (input.equals("n")) {
-                                wantsToActivate = false;
-                            }
-                        }
-                    }
-                    controller.activateSlaver(activatedDrills,wantsToActivate);
-                }
-                default -> {
-                    controller.activateDoubleDrills(activatedDrills);
-                    Logger.debug("sono entrato nel default branch");
-                }
-            }
         }
+
+        controller.activateDoubleDrills(activatedDrills);
+
     }
 
     private void rollDice(){
         System.out.println("You are the leader. Press enter to roll the dices");
         String pressed = scanner.nextLine();
 
-//        Random random = new Random();
-//        int first = random.nextInt(6) + 1;
-//        int second = random.nextInt(6) + 1;
+        Random random = new Random();
+        int first = random.nextInt(6) + 1;
+        int second = random.nextInt(6) + 1;
 
 
 //        controller.setRollResult(first + second);
 
-        //todo da cancellare questa riga
-        controller.setRollResult(8);
+//        //todo da cancellare questa riga
+//        int first = 3;
+//        int second = 3;
+        controller.setRollResult(first, second);
     }
 
     private void waitingRoll(){
@@ -1190,41 +1155,29 @@ public class Tui implements View {
                     continue;
                 }
 
-                if (choice.equals("y")){
-                    controller.removeBattery(1);
-                }
-
 
             }
         }
 
-        if (choice.equals("n")) {
-            switch (card) {
-                case SldMeteorSwarm meteorSwarm -> {
-                    Meteor meteor = controller.getMeteor();
-                    controller.removeComponent(meteor.getCordinateHit());
-                }
+        boolean destroyedComp = !choice.equals("y");
 
-                case SldPirates pirates -> {
-                    CannonPenalty cannon = controller.getCannon();
-                    controller.removeComponent(cannon.getCordinateHit());
-                }
-
-                default -> Logger.error("caso non previsto");
-            }
-        }
 
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
-                controller.advanceMeteor();
+                Meteor meteor = controller.getMeteor();
+                controller.advanceMeteor(destroyedComp, !destroyedComp);
             }
 
             case SldPirates pirates -> {
-                controller.advanceMeteor();
+                CannonPenalty cannon = controller.getCannon();
+                controller.advanceCannon(destroyedComp, !destroyedComp);
+
+
             }
 
             default -> Logger.error("caso non previsto");
         }
+
 
     }
 
@@ -1234,25 +1187,49 @@ public class Tui implements View {
         boolean activate = false;
 
         if (shipBoard.getQuantBatteries() > 0){
-            while (choice.equals("")) {
-                System.out.print("Activate one double drill (y/n) : ");
-                choice = scanner.nextLine().trim().toLowerCase();
+            switch (controller.getPlayedCard()) {
+                case SldMeteorSwarm meteorSwarm -> {
+                    System.out.println("hit on " + controller.getMeteor().getCordinateHit());
+                    Meteor meteor = controller.getMeteor();
+                    List<Cordinate> possibleDrills = shipBoard.possibleDrills(meteor.getDirection(), meteor.getNumber());
 
-                if (!(choice.equals("y") || choice.equals("n"))){
-                    choice = "";
-                    continue;
+
+                    if (possibleDrills.isEmpty()){
+                        System.out.println("No possibile drill to cover");
+                        controller.advanceMeteor(true, false);
+                        return;
+                    }
+
+                    for (Cordinate cord : possibleDrills){
+                        int idComp = shipBoard.getOptComponentByCord(cord).get().getId();
+                        if (controller.getFlyBoard().getComponentById(idComp).getFirePower(false) > 0) {
+                            controller.advanceMeteor(false, false);
+                            return;
+                        }
+
+                    }
+
+                    while (choice.equals("")) {
+                        System.out.print("Activate one double drill (y/n) : ");
+                        choice = scanner.nextLine().trim().toLowerCase();
+
+                        if (!(choice.equals("y") || choice.equals("n"))) {
+                            choice = "";
+                            continue;
+                        }
+                        boolean destroyed = choice.equals("y");
+                        controller.advanceMeteor(destroyed, !destroyed);
+                    }
                 }
-                activate = (choice.equals("y"));
+
+                default -> Logger.error("errore meteoirit");
             }
         }
 
-        if (activate){
-            controller.removeBattery(1);
-        }
-        else{
+        if (!activate){
             controller.removeComponent(controller.getMeteor().getCordinateHit());
         }
-        controller.advanceMeteor();
+//        controller.advanceMeteor();
     }
 
     private void stardustEndInfo(){

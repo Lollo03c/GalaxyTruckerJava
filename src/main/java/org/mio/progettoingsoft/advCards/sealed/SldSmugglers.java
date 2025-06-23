@@ -6,6 +6,10 @@ import org.mio.progettoingsoft.advCards.Smugglers;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.GenericErrorEvent;
+import org.mio.progettoingsoft.model.events.SetCardStateEvent;
+import org.mio.progettoingsoft.model.events.SetStateEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
@@ -57,70 +61,64 @@ public final class SldSmugglers extends SldAdvCard {
         this.playerIterator = allowedPlayers.iterator();
     }
 
-    public int comparePower(FlyBoard board, Player player) {
-        if (this.state != CardState.COMPARING) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (actualPlayer.equals(player)) {
-            double base = player.getShipBoard().getBaseFirePower();
-            if (base > this.strength) {
-                this.state = CardState.APPLYING;
-                return 1;
-            } else if (base < this.strength) {
-                this.state = CardState.DRILL_CHOICE;
-                return -1;
-            } else {
-                this.state = CardState.DRILL_CHOICE;
-                return 0;
-            }
-        } else {
-            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
-        }
+//    public int comparePower(FlyBoard board, Player player) {
+//        if (this.state != CardState.COMPARING) {
+//            throw new IllegalStateException("Illegal state: " + this.state);
+//        }
+//        if (actualPlayer.equals(player)) {
+//            double base = player.getShipBoard().getBaseFirePower();
+//            if (base > this.strength) {
+//                this.state = CardState.APPLYING;
+//                return 1;
+//            } else if (base < this.strength) {
+//                this.state = CardState.DRILL_CHOICE;
+//                return -1;
+//            } else {
+//                this.state = CardState.DRILL_CHOICE;
+//                return 0;
+//            }
+//        } else {
+//            throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
+//        }
+//
+//    }
 
-    }
-
-    public void applyEffect(Player player, boolean wantsToActivate, List<Cordinate> drillsCordinate) {
+    public void applyEffect(Player player, List<Cordinate> drillsCordinate) {
         stealGoods = false;
         giverReward = false;
 
-        if (!wantsToActivate)
-            return;
 
         if (player.equals(this.actualPlayer)) {
             double power = player.getShipBoard().getBaseFirePower();
             ShipBoard shipBoard = player.getShipBoard();
 
             if (drillsCordinate.size() > actualPlayer.getShipBoard().getQuantBatteries()) {
-                throw new NotEnoughBatteriesException();
+                Event event = new GenericErrorEvent(player.getNickname(), "too many double drills activated for the energy stored");
+                game.addEvent(event);
             }
 
             for (Cordinate cordinate : drillsCordinate){
                 power += shipBoard.getOptComponentByCord(cordinate).get().getFirePower(true);
             }
+            shipBoard.removeEnergy(drillsCordinate.size());
 
+            System.out.println("power "+ power + "over " + strength);
             if (power > this.strength) {
-                giverReward = true;
-                flyBoard.moveDays(player, -daysLost);
                 effectTaken = true;
+                flyBoard.moveDays(player, -daysLost);
+                setState(CardState.GOODS_PLACEMENT);
+
+
+
 
             } else if (power < this.strength) {
-                stealGoods = true;
+                shipBoard.stoleGood(stolenGoods);
+                setNextPlayer();
             } else {
-
+                setNextPlayer();
             }
         }else{
             throw new BadPlayerException("The player " + player.getNickname() + " can't play " + this.getCardName() + " at the moment");
-        }
-    }
-
-    public void goodPlaced(FlyBoard board, Player player) {
-        if(this.state != CardState.GOODS_PLACEMENT){
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (player.equals(this.actualPlayer)) {
-            this.state = CardState.FINALIZED;
-        }else{
-            throw new BadPlayerException("The player " + player.getNickname() + " cannot confirm goods placement at the moment");
         }
     }
 
@@ -139,13 +137,6 @@ public final class SldSmugglers extends SldAdvCard {
         return new SldSmugglers(id, level, stolenGoods, rewards, strength, daysLost);
     }
 
-    @Override
-    public void finish(FlyBoard board) {
-        if(this.state != CardState.FINALIZED){
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-//        board.setState(GameState.DRAW_CARD);
-    }
 
     @Override
     public void setNextPlayer(){
@@ -156,13 +147,5 @@ public final class SldSmugglers extends SldAdvCard {
         else{
             setState(CardState.FINALIZED);
         }
-    }
-
-    public boolean isGiverReward() {
-        return giverReward;
-    }
-
-    public boolean isStealGoods() {
-        return stealGoods;
     }
 }

@@ -16,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, SldOpenSpace, SldSlavers, SldAbandonedStation, SldCombatZone, SldStardust, SldSmugglers, SldPlanets, SldPirates, SldMeteorSwarm {
     private final int level;
@@ -81,7 +82,7 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         this.state = CardState.IDLE;
     }
 
-    public List<Player> getLandedPlayers() {
+    public Map<Planet, Player> getLandedPlayers() {
         throw new RuntimeException("this card does not have any landed players");
     }
 
@@ -105,8 +106,8 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
         throw new RuntimeException("this card doesn't have combat lines");
     }
 
-    public int getCrewNeeded() throws Exception {
-        throw new Exception("this card doesn't need crew");
+    public int getCrewNeeded() throws RuntimeException {
+        throw new RuntimeException("this card doesn't need crew");
     }
 
     public List<Meteor> getMeteors() {
