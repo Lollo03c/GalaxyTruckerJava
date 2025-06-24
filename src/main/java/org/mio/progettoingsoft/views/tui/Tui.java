@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
@@ -921,6 +922,364 @@ public class Tui implements View {
 
     }
 
+    /**
+     * Message shown to the client after the registration success, asks for the nickname
+     */
+    private void askNickname() {
+        String nickname = "";
+
+        while (true) {
+            System.out.print("Insert your nickname: ");
+            nickname = scanner.nextLine();
+
+            if (!nickname.isEmpty()) {
+                break;
+            }
+
+            System.out.println(RED + "Nickname cannot be empty!" + RESET);
+        }
+
+        controller.handleNickname(nickname);
+        clearConsole();
+    }
+
+    /**
+     * Message to ask the client for game settings (only if the player is the first joining that match)
+     */
+    private void printGameModeMenu() {
+        int nPlayers = -1;
+        int choice = -1;
+        String input = "";
+
+        while (nPlayers < 2 || nPlayers > 4) {
+            System.out.print("Insert number of players of the game (2-4): ");
+
+            input = scanner.nextLine();
+
+            try {
+                nPlayers = Integer.parseInt(input);
+
+                if (nPlayers < 2 || nPlayers > 4) {
+                    System.out.println(RED + "Invalid number of players!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid number of players!" + RESET);
+            }
+        }
+
+        while (choice < 1 || choice > 2) {
+            System.out.println("Select game mode: ");
+            System.out.println("1 : Easy Mode");
+            System.out.println("2 : Normal Mode");
+            System.out.print("Make your choice: ");
+
+            input = scanner.nextLine();
+
+            try {
+                choice = Integer.parseInt(input);
+
+                if (choice < 1 || choice > 2) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid choice!" + RESET);
+            }
+        }
+
+        GameInfo gameInfo = new GameInfo(-1, choice == 1 ? GameMode.EASY : GameMode.NORMAL, nPlayers);
+        controller.handleGameInfo(gameInfo);
+        clearConsole();
+    }
+
+    private void checkEndBuilding() {
+
+    }
+
+    /**
+     * Message to notify the clients the start of the game
+     */
+    private void printStartGameInfo() {
+        System.out.println(BLUE + "The game has started!" + RESET);
+        System.out.println("Players:");
+
+        printPlayersName();
+
+        //controller.setState(GameState.WAITING);
+    }
+
+    /**
+     * Message to show building ship menu
+     */
+    private void buildingShipMenu() {
+        GameMode mode = controller.getFlyBoard().getMode();
+        if (firstBuilding) {
+            printStartGameInfo();
+            System.out.println(BLUE + "It's time to build your ship!" + RESET);
+            firstBuilding = false;
+            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partitaAdd commentMore actions
+            if(controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE)  && mode.equals(GameMode.NORMAL)){
+                controller.startHourglass();
+            }
+        }
+        int choice = -1;
+        String input = "";
+
+        System.out.println("1 : Pick covered component");
+        System.out.println("2 : Pick uncovered component");
+        System.out.println("3 : Pick booked component");
+        System.out.println("4 : View other player's ship");
+
+        if (mode.equals(GameMode.NORMAL)) {
+            System.out.println("5 : Look at decks");
+            System.out.println("6 : End ship building");
+            System.out.println("7 : Load automatic shipboard");
+            System.out.println("8 : Rotate hourglass");
+        } else {
+            System.out.println("5 : end building ship");
+        }
+        System.out.print("Make your choice: ");
+
+        input = scanner.nextLine();
+
+        try {
+            choice = Integer.parseInt(input);
+
+            if (choice < 1) {
+                throw new Exception("");
+            } else if (mode.equals(GameMode.NORMAL) && choice > 8) {
+                throw new Exception("");
+            } else if (mode.equals(GameMode.EASY) && choice > 5) {
+                throw new Exception("");
+            }
+        } catch (Exception e) {
+            System.out.println(RED + "Invalid choice!" + RESET);
+            controller.setState(GameState.BUILDING_SHIP);
+            return;
+        }
+        try {
+            if(!controller.getFinishedLastHourglass()){
+                controller.handleBuildingShip(choice);
+            }
+        } catch (CannotRotateHourglassException e) {
+            System.out.println(RED + e.getMessage() + RESET);
+            controller.setState(GameState.BUILDING_SHIP);
+        } catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof CannotRotateHourglassException) {
+                System.out.println(RED + cause.getMessage() + RESET);
+            } else {
+                throw e;
+            }
+            controller.setState(GameState.BUILDING_SHIP);
+        }
+        clearConsole();
+    }
+
+    /**
+     * Prints the menu to add component, asks for row, column and rotation
+     */
+    private void addComponent() {
+        String input = "";
+
+        int row = 0;
+        while (row < 5 || row > 9) {
+            System.out.print("Insert row: ");
+
+            input = scanner.nextLine();
+
+            try {
+                row = Integer.parseInt(input);
+
+                if (row < 5 || row > 9) {
+                    System.out.println(RED + "Invalid row!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid row!" + RESET);
+            }
+        }
+
+        int column = 0;
+        while (column < 4 || column > 10) {
+            System.out.print("Insert column: ");
+
+            input = scanner.nextLine();
+
+            try {
+                column = Integer.parseInt(input);
+
+                if (column < 4 || column > 10) {
+                    System.out.println(RED + "Invalid column!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid column!" + RESET);
+            }
+        }
+
+        int rotation = -1;
+        while (rotation < 0 || rotation > 3) {
+            System.out.print("Insert rotation: ");
+
+            input = scanner.nextLine();
+
+            try {
+                rotation = Integer.parseInt(input);
+
+                if (rotation < 0 || rotation > 3) {
+                    System.out.println(RED + "Invalid rotation!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid rotation!" + RESET);
+            }
+        }
+
+        ShipBoard ship = controller.getShipBoard();
+        Cordinate cord = new Cordinate(row - ship.getOffsetRow(), column - ship.getOffsetCol());
+        try {
+            controller.addComponent(cord, rotation);
+        } catch (InvalidCordinate e) {
+            controller.setState(GameState.ERROR_PLACEMENT);
+        }
+        clearConsole();
+    }
+
+    private void viewShipBuilding() {
+        System.out.println("These are the players: ");
+        printPlayersName();
+
+        String chosenPlayer = "";
+
+        while (true) {
+            System.out.print("Insert nickname to look at: ");
+            chosenPlayer = scanner.nextLine();
+
+            try {
+                if (chosenPlayer.isEmpty()) {
+                    System.out.println(RED + "Invalid nickname!" + RESET);
+                } else {
+                    controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard().drawShipboard();
+                    break;
+                }
+            } catch (IncorrectFlyBoardException e) {
+                System.out.println(RED + "Invalid nickname!" + RESET);
+            }
+        }
+    }
+
+    private void componentMenu() {
+        System.out.println("This is the component you've drawn:");
+        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();
+        controller.getShipBoard().drawShipboard();
+
+        int choice = -1;
+        String input = "";
+
+        while (choice < 1 || choice > 3) {
+            System.out.println("1 : Insert in the shipboard");
+            System.out.println("2 : Put back in the deck");
+            System.out.println("3 : Save for later");
+            System.out.print("Make your choice: ");
+
+            input = scanner.nextLine();
+
+            try {
+                choice = Integer.parseInt(input);
+
+                if (choice < 1 || choice > 3) {
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            } catch (Exception e) {
+                System.out.println(RED + "Invalid choice!" + RESET);
+            }
+        }
+
+        if (choice == 1) {
+            controller.setState(GameState.ADD_COMPONENT);
+        } else if (choice == 2) {
+            controller.discardComponent();
+        } else if (choice == 3) {
+            controller.bookComponent();
+        }
+    }
+
+    private void drawUncoveredComponents() {
+        int count = 1;
+        if (controller.getFlyBoard().getUncoveredComponents().isEmpty()) {
+            System.out.println("No uncovered Components");
+            controller.setState(GameState.BUILDING_SHIP);
+            return;
+        }
+
+        for (int idComp : controller.getFlyBoard().getUncoveredComponents()) {
+            System.out.println("Component #" + idComp);
+            Component component = controller.getFlyBoard().getComponentById(idComp);
+            new ShipCell(component).drawCell();
+        }
+
+        System.out.print("Select component to draw (-1 to null) : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        //todo controllo dell'input
+
+        if (chosen == -1)
+            controller.setState(GameState.BUILDING_SHIP);
+        else
+            controller.drawUncovered(chosen);
+    }
+
+    private void viewDecksList() {
+        System.out.println("Available decks : ");
+        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()) {
+            System.out.println("Deck #" + numberDeck);
+        }
+        System.out.print("Choose deck number : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        controller.bookDeck(chosen);
+    }
+
+    private void viewDeck() {
+        System.out.println("hai in mano il deck #" + controller.getInHandDeck());
+
+        for (int cardId : controller.getFlyBoard().getLittleDecks().get(controller.getInHandDeck()))
+            controller.getFlyBoard().getSldAdvCardByID(cardId).disegnaCard();
+
+        System.out.println("premere invio per continuare");
+
+        String buffer = scanner.nextLine();
+        controller.freeDeck();
+    }
+
+    private void printPlayersName() {
+        synchronized (controller.getFlyboardLock()) {
+            FlyBoard flyBoard = controller.getFlyBoard();
+            int count = 1;
+
+            for (Player player : flyBoard.getPlayers()) {
+                System.out.println((count++) + " " + player.getNickname() + " : " + player.getColor());
+            }
+        }
+    }
+
+    private void viewBookedComponents() {
+        List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
+        int count = 1;
+
+        for (Optional<Integer> booked : bookedComponents) {
+            if (booked.isEmpty())
+                continue;
+
+            System.out.println("Component # " + count++);
+            Component component = controller.getFlyBoard().getComponentById(booked.get());
+            new ShipCell(component).drawCell();
+        }
+
+        System.out.print("Select component to draw (-1 to null) : ");
+        int chosen = Integer.parseInt(scanner.nextLine());
+
+        //todo controllo dell'input
+        controller.choseBookedComponent(chosen);
+    }
+
     private void chooseBuiltShip() {
         controller.builtDefault();
     }
@@ -997,19 +1356,8 @@ public class Tui implements View {
     private void crewRemove() {
         SldAdvCard card = controller.getPlayedCard();
         Logger.debug("sono in crewRemove");
-        int toRemove = -1;
+        int toRemove = card.getCrewLost();
 
-        switch (controller.getPlayedCard()) {
-            case SldCombatZone combatZone ->{
-                for (CombatLine line : combatZone.getLines()){
-                    if (line.getPenalties().getFirst().getType().equals(PenaltyType.CREW))
-                        toRemove = line.getPenalties().getFirst().getAmount();
-                }
-            }
-            default -> {
-                toRemove = card.getCrewLost();
-            }
-        }
         List<Cordinate> crewPositionsToRemove = new ArrayList<>();
 
         System.out.println("Now you have to select " + toRemove + " guest, the selected ones will be deleted from your shipBoard");
@@ -1253,6 +1601,11 @@ public class Tui implements View {
                 direction = cannon.getDirection();
             }
 
+            case SldCombatZone combatZone -> {
+                CannonPenalty cannon =controller.getCannon();
+                direction = cannon.getDirection();
+            }
+
             default -> Logger.error("caso non previsto");
         }
 
@@ -1269,6 +1622,13 @@ public class Tui implements View {
                 CannonPenalty cannon = controller.getCannon();
                 System.out.println("Light cannot hit component in " + cannon.getCordinateHit());
             }
+
+            case SldCombatZone combatZone -> {
+                CannonPenalty cannon = controller.getCannon();
+                System.out.println("Light cannot hit component in " + cannon.getCordinateHit());
+            }
+
+
 
             default -> Logger.error("caso non previsto");
         }
@@ -1299,6 +1659,10 @@ public class Tui implements View {
 
             case SldPirates pirates -> {
                 CannonPenalty cannon = controller.getCannon();
+                controller.advanceCannon(destroyedComp, !destroyedComp);
+            }
+
+            case SldCombatZone combatZone -> {
                 controller.advanceCannon(destroyedComp, !destroyedComp);
             }
 

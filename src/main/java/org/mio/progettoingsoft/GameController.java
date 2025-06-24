@@ -2,6 +2,7 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.advCards.sealed.SldCombatZone;
 import org.mio.progettoingsoft.model.events.*;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -172,17 +173,35 @@ public class GameController {
             }
 
             case DICE_ROLL -> {
-                String leaderNickname = game.getFlyboard().getScoreBoard().getFirst().getNickname();
-                Map<String, VirtualClient> clients = game.getClients();
+                switch (card) {
+                    case SldCombatZone combatZone -> {
+                        Map<String, VirtualClient> clients = game.getClients();
 
-                for (String nick : clients.keySet() ){
-                    if (nick.equals(leaderNickname)){
-                        Event event = new SetCardStateEvent(nick, CardState.DICE_ROLL);
-                        game.addEvent(event);
+                        for (String nick : clients.keySet()) {
+                            if (nick.equals(combatZone.getActualPlayer().getNickname())) {
+                                Event event = new SetCardStateEvent(nick, CardState.DICE_ROLL);
+                                game.addEvent(event);
+                            } else {
+                                Event event = new SetCardStateEvent(nick, CardState.WAITING_ROLL);
+                                game.addEvent(event);
+                            }
+                        }
                     }
-                    else{
-                        Event event = new SetCardStateEvent(nick, CardState.WAITING_ROLL);
-                        game.addEvent(event);
+
+                    default -> {
+
+                        String leaderNickname = game.getFlyboard().getScoreBoard().getFirst().getNickname();
+                        Map<String, VirtualClient> clients = game.getClients();
+
+                        for (String nick : clients.keySet()) {
+                            if (nick.equals(leaderNickname)) {
+                                Event event = new SetCardStateEvent(nick, CardState.DICE_ROLL);
+                                game.addEvent(event);
+                            } else {
+                                Event event = new SetCardStateEvent(nick, CardState.WAITING_ROLL);
+                                game.addEvent(event);
+                            }
+                        }
                     }
                 }
             }

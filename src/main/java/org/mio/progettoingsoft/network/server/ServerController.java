@@ -368,7 +368,8 @@ public class ServerController {
         if (!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))) {
             throw new NotYourTurnException();
         }
-        SldAdvCard card = flyBoard.getSldAdvCardByID(flyBoard.drawCard());
+//        SldAdvCard card = flyBoard.getSldAdvCardByID(flyBoard.drawCard());
+        SldAdvCard card = flyBoard.getSldAdvCardByID(16);
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
         while(game.getFlyboard().getScoreBoard().size() == 1 && (card.getId() == 16 || card.getId() == 36)){
@@ -440,6 +441,12 @@ public class ServerController {
                         throw new RuntimeException(ex);
                     }
                 }
+            }
+
+            case SldCombatZone combatZone -> {
+                combatZone.getEnginePower().put(player, number);
+
+                combatZone.setNextPlayerEngine();
             }
 
             default -> {
@@ -717,9 +724,6 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
 
-        if (!nickname.equals(game.getFlyboard().getScoreBoard().getFirst().getNickname()))
-            throw new IncorrectFlyBoardException("Not the leader");
-
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
                 Logger.info("e' uscito " + first + " e " + second);
@@ -748,6 +752,18 @@ public class ServerController {
                     Event event = new CannonHitEvent(nick, type, direction, first + second);
                     game.addEvent(event);
                 }
+            }
+
+            case SldCombatZone combatZone -> {
+                CannonPenalty cannon = combatZone.getActualCannon();
+                cannon.setNumber(first + second);
+                Direction direction = cannon.getDirection();
+                CannonType type = cannon.getCannonType();
+
+                Player player = combatZone.getActualPlayer();
+
+                Event event = new CannonHitEvent(nickname, type, direction, first + second);
+                game.addEvent(event);
             }
 
             default -> Logger.error("No effect for setRollResult");
@@ -794,6 +810,10 @@ public class ServerController {
         switch (card){
             case SldPirates pirates ->{
                 pirates.setNextCannon(nickname, destroyed, energy);
+            }
+
+            case SldCombatZone combatZone -> {
+                combatZone.setNextCannon(nickname, destroyed, energy);
             }
 
             default -> Logger.error("Effect not taken");
