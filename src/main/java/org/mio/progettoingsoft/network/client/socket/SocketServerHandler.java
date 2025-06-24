@@ -170,11 +170,11 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
-    @Override
-    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate)throws IOException{
-        Message message = new ActivateSlaversMessage(idGame,nickname,activatedDrills,wantsToActivate);
-        sendMessage(message);
-    }
+//    @Override
+//    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate)throws IOException{
+//        Message message = new ActivateSlaversMessage(idGame,nickname,activatedDrills,wantsToActivate);
+//        sendMessage(message);
+//    }
 
     @Override
     public void setRollResult(int idGame, String nickname, int first, int second) throws IOException{

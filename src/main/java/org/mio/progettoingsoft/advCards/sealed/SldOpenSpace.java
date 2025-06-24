@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class SldOpenSpace extends SldAdvCard {
-    private List<Player> noPowerPlayers;
+    private final List<Player> noPowerPlayers = new ArrayList<>();
 
     public SldOpenSpace(int id, int level) {
         super(id, level);

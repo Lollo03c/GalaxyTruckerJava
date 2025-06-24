@@ -688,36 +688,36 @@ public class ServerController {
         }
     }
 
-    public void activateSlaver(int idGame, String nickname, List<Cordinate> activatedDrills, boolean wantsToActivate) {
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        SldAdvCard card = game.getFlyboard().getPlayedCard();
-        Logger.debug("player: " + nickname + " ha attivato " + activatedDrills + " doppicannoni");
-        Player player = game.getFlyboard().getPlayerByUsername(nickname);
-        switch (card) {
-            case SldSlavers sldSlavers -> {
-//                sldSlavers.applyEffect(player, wantsToActivate, activatedDrills);
-            }
-            default -> Logger.error("effetto carta non consentito");
-        }
-    }
+//    public void activateSlaver(int idGame, String nickname, List<Cordinate> activatedDrills, boolean wantsToActivate) {
+//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+//        SldAdvCard card = game.getFlyboard().getPlayedCard();
+//        Logger.debug("player: " + nickname + " ha attivato " + activatedDrills + " doppicannoni");
+//        Player player = game.getFlyboard().getPlayerByUsername(nickname);
+//        switch (card) {
+//            case SldSlavers sldSlavers -> {
+////                sldSlavers.applyEffect(player, wantsToActivate, activatedDrills);
+//            }
+//            default -> Logger.error("effetto carta non consentito");
+//        }
+//    }
 
 
-    private void stealGoods(GameServer game, Player player, int numberStolenGoods) {
-        Logger.debug(player.getNickname() + "steal goods");
-        Map<Integer, List<GoodType>> stolenGoods = player.getShipBoard().stoleGood(numberStolenGoods);
-
-        for (Integer idComp : stolenGoods.keySet()) {
-            for (GoodType type : stolenGoods.get(idComp)) {
-                for (VirtualClient client : game.getClients().values()) {
-                    try {
-                        client.removeGood(idComp, type);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-    }
+//    private void stealGoods(GameServer game, Player player, int numberStolenGoods) {
+//        Logger.debug(player.getNickname() + "steal goods");
+//        Map<Integer, List<GoodType>> stolenGoods = player.getShipBoard().stoleGood(numberStolenGoods);
+//
+//        for (Integer idComp : stolenGoods.keySet()) {
+//            for (GoodType type : stolenGoods.get(idComp)) {
+//                for (VirtualClient client : game.getClients().values()) {
+//                    try {
+//                        client.removeGood(idComp, type);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public void setRollResult(int idGame, String nickname, int first, int second) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);

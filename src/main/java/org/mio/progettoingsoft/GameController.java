@@ -229,25 +229,25 @@ public class GameController {
 //                }
             }
 
-            case STARDUST_END -> {
-                for(VirtualClient c : game.getClients().values()){
-                    try {
-                        c.setCardState(CardState.STARDUST_END);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-
-            case EPIDEMIC_END -> {
-                for(VirtualClient c : game.getClients().values()){
-                    try {
-                        c.setCardState(CardState.EPIDEMIC_END);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
+//            case STARDUST_END -> {
+//                for(VirtualClient c : game.getClients().values()){
+//                    try {
+//                        c.setCardState(CardState.STARDUST_END);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//
+//            case EPIDEMIC_END -> {
+//                for(VirtualClient c : game.getClients().values()){
+//                    try {
+//                        c.setCardState(CardState.EPIDEMIC_END);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
 
             default -> {
             }

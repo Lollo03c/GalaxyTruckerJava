@@ -127,9 +127,9 @@ public class ServerMessageHandler implements Runnable {
                         serverController.landOnPlanet(landOnPlanetMessage.getGameId(), landOnPlanetMessage.getNickname(), landOnPlanetMessage.getChoice());
                     }
 
-                    case ActivateSlaversMessage activateSlaversMessage -> {
-                        serverController.activateSlaver(activateSlaversMessage.getGameId(), activateSlaversMessage.getNickname(), activateSlaversMessage.getActivatedDrills(),activateSlaversMessage.getWantsToActivate());
-                    }
+//                    case ActivateSlaversMessage activateSlaversMessage -> {
+//                        serverController.activateSlaver(activateSlaversMessage.getGameId(), activateSlaversMessage.getNickname(), activateSlaversMessage.getActivatedDrills(),activateSlaversMessage.getWantsToActivate());
+//                    }
 
                     case RollDiceMessage rollDiceMessage -> {
                         serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getFirst(), rollDiceMessage.getSecond());

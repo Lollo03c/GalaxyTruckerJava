@@ -837,13 +837,13 @@ public class ClientController {
         }
     }
 
-    public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate) {
-        try {
-            server.activateSlaver(idGame, nickname, activatedDrills, wantsToActivate);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate) {
+//        try {
+//            server.activateSlaver(idGame, nickname, activatedDrills, wantsToActivate);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void setRollResult(int first, int second) {
         try {

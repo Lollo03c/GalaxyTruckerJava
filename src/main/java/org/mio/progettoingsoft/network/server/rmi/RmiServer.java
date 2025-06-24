@@ -226,12 +226,12 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         });
     }
 
-    @Override
-    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate){
-        executors.submit(() ->{
-           controller.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
-        });
-    }
+//    @Override
+//    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate){
+//        executors.submit(() ->{
+//           controller.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
+//        });
+//    }
 
     @Override
     public void setRollResult(int idGame, String nickname, int first, int second) throws RemoteException{
