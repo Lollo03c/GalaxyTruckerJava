@@ -25,11 +25,10 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.advCards.CannonPenalty;
+import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
-import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
-import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
-import org.mio.progettoingsoft.advCards.sealed.SldSlavers;
+import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
@@ -44,6 +43,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 /**
  * GUI class: we decided to use the JavaFX framework
@@ -117,6 +117,7 @@ public class Gui extends Application implements View {
             new Point2D(0.1279, 0.4083),
             new Point2D(0.1775, 0.3056)
     ));
+    private final List<Color> colors = new ArrayList<>();
     // map from Housing color to actual color
     private final Map<HousingColor, Color> housingColors = new HashMap<>(Map.of(
             HousingColor.BLUE, Color.BLUE,
@@ -241,6 +242,7 @@ public class Gui extends Application implements View {
         this.stage.setScene(new Scene(root));
         this.stage.setMaximized(true);
         shipViewBorderPane = new BorderPane();
+
         this.stage.show();
         screenHeight = Screen.getPrimary().getBounds().getHeight();
         screenWidth = Screen.getPrimary().getBounds().getWidth();
@@ -264,6 +266,7 @@ public class Gui extends Application implements View {
         });
         thread.setDaemon(true);
         thread.start();
+        fillColors();
     }
 
     /**
@@ -289,6 +292,7 @@ public class Gui extends Application implements View {
             case UNABLE_DECK -> inspectDeckView(false);
             case CHOOSE_POSITION -> choosePositionView(false);
             case WRONG_POSITION -> choosePositionView(true);
+            case VALIDATION -> validationShipView();
             case END_BUILDING -> waitingForAdventureStartView();
             case DRAW_CARD -> advStartedView(false);
             case YOU_CAN_DRAW_CARD -> advStartedView(true);
@@ -528,7 +532,6 @@ public class Gui extends Application implements View {
             }
 
             /* Time management commands */
-            // this functionality is still to be implemented (both in TUI and GUI)
             HBox hourglassBox = new HBox(10);
             hourglassBox.setPadding(new Insets(20));
             hourglassBox.setAlignment(Pos.CENTER);
@@ -1032,6 +1035,65 @@ public class Gui extends Application implements View {
         }
     }
 
+    private void validationShipView() {
+        List<Cordinate> incorrect;
+        synchronized (controller.getShipboardLock()) {
+            incorrect = new ArrayList<>(controller.getShipBoard().getIncorrectComponents());
+        }
+        List<Set<Cordinate>> standAloneBlocks = new ArrayList<>();
+        synchronized (controller.getShipboardLock()) {
+            List<Set<Component>> temp = controller.getShipBoard().getMultiplePieces();
+            for (Set<Component> set : temp) {
+                Set<Cordinate> cordSet = set.stream()
+                        .map(c -> new Cordinate(c.getRow(), c.getColumn()))
+                        .collect(Collectors.toSet());
+                standAloneBlocks.add(cordSet);
+            }
+        }
+        String message = "";
+        if (!incorrect.isEmpty()) {
+            modalShipboardView(controller.getNickname());
+            message = "It seems you have some incorrect components...\nClick on the one you want to remove";
+            for (Cordinate cordinate : incorrect) {
+                StackPane sp = modalShipCordToStackPane.get(cordinate);
+                sp.setStyle("-fx-border-color: red; -fx-border-width: 3");
+                sp.setOnMouseClicked(event -> {
+                    controller.removeComponentImmediate(cordinate);
+                    modalShipStage.close();
+                    controller.setState(GameState.VALIDATION);
+                });
+            }
+        } else if (standAloneBlocks.size() > 1) {
+            modalShipboardView(controller.getNickname());
+            message = "It seems your shipboard is made of more stand-alone blocks\nClick on the one you want to keep";
+            for (int i = 0; i < standAloneBlocks.size(); i++) {
+                final int index = i;
+                for (Cordinate cord : standAloneBlocks.get(i)) {
+                    StackPane sp = modalShipCordToStackPane.get(cord);
+
+                    Color color = colors.get(i);
+                    String colorCss = String.format("rgba(%d, %d, %d, %.2f)",
+                            (int) (color.getRed() * 255),
+                            (int) (color.getGreen() * 255),
+                            (int) (color.getBlue() * 255),
+                            color.getOpacity());
+
+                    sp.setStyle("-fx-border-color: " + colorCss + "; -fx-border-width: 3");
+
+                    sp.setOnMouseClicked(event -> {
+                        modalShipStage.close();
+                        controller.removeStandAloneBlocks(index);
+                        controller.setState(GameState.VALIDATION);
+                    });
+                }
+            }
+        }else{
+            controller.endValidation();
+        }
+        Label messageLabel = new Label(message);
+        modalShipContainer.getChildren().addFirst(messageLabel);
+    }
+
     /**
      * this method creates and shows a modal stage to ask the user in which position he wants to be placed on the circuit,
      * it is shown when the user decides to stop building or when the time ends
@@ -1309,6 +1371,9 @@ public class Gui extends Application implements View {
             }
             case EPIDEMIC_END -> modalMessageStage("Epidemic has been played!\nLook at your ship and check your crew!");
             case PLANET_CHOICE -> planetChoiceView();
+            case DICE_ROLL -> diceRollView(true);
+            case WAITING_ROLL -> diceRollView(false);
+            case SHIELD_SELECTION -> shieldChoiceView();
             case ERROR_CHOICE -> {
                 modalErrorLabelMessage = controller.getErrMessage();
                 controller.resetErrMessage();
@@ -1617,6 +1682,74 @@ public class Gui extends Application implements View {
         }
     }
 
+    private void shieldChoiceView() {
+        modalShipboardView(controller.getNickname());
+        synchronized (controller.getShipboardLock()) {
+            ShipBoard shipBoard = controller.getShipBoard();
+            Direction direction = null;
+            Cordinate cord = null;
+            String alertMessage = "";
+
+            switch (controller.getPlayedCard()) {
+                case SldMeteorSwarm meteorSwarm -> {
+                    Meteor meteor = controller.getMeteor();
+                    direction = meteor.getDirection();
+                    cord = meteor.getCordinateHit();
+                    alertMessage = "Small meteor coming from " + direction + "!\nThe component could be destroyed!";
+                }
+
+                case SldPirates pirates -> {
+                    CannonPenalty cannon = controller.getCannon();
+                    direction = cannon.getDirection();
+                    cord = cannon.getCordinateHit();
+                    alertMessage = "Light cannon coming from " + direction + "!\nThe component could be destroyed!";
+                }
+
+                default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
+            }
+
+            modalShipContainer.getChildren().addFirst(new Label(alertMessage));
+
+            Button noBtn = new Button();
+            HBox btnBox = new HBox(10);
+            btnBox.setAlignment(Pos.CENTER);
+            if (shipBoard.getQuantBatteries() > 0 && shipBoard.coveredByShield(direction)) {
+                Label activateLabel = new Label("Do you want to activate a shield?");
+                Button yesBtn = new Button("Yes");
+                yesBtn.setOnAction(evt -> {
+                    switch (controller.getPlayedCard()) {
+                        case SldMeteorSwarm meteorSwarm -> {
+                            controller.advanceMeteor(false, true);
+                        }
+                        case SldPirates pirates -> {
+                            controller.advanceCannon(false, true);
+                        }
+                        default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
+                    }
+                });
+                noBtn.setText("No");
+                modalShipContainer.getChildren().add(activateLabel);
+                btnBox.getChildren().addAll(yesBtn);
+            } else {
+                noBtn.setText("Go ahead");
+            }
+            noBtn.setOnAction(evt -> {
+                switch (controller.getPlayedCard()) {
+                    case SldMeteorSwarm meteorSwarm -> {
+                        controller.advanceMeteor(true, false);
+                    }
+                    case SldPirates pirates -> {
+                        controller.advanceCannon(true, false);
+                    }
+                    default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
+                }
+            });
+            btnBox.getChildren().addAll(noBtn);
+            modalShipContainer.getChildren().addAll(btnBox);
+            modalShipCordToStackPane.get(cord).setStyle("-fx-border-color: red; -fx-border-width: 3");
+        }
+    }
+
     /**
      * small window that allows the user to choose the good to remove from the depot
      *
@@ -1684,6 +1817,33 @@ public class Gui extends Application implements View {
         modal.show();
     }
 
+    private void diceRollView(boolean isLeader) {
+        Stage modal = new Stage();
+        modal.initModality(Modality.APPLICATION_MODAL);
+        VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(20));
+        Label meteorLabel = new Label("A meteor is arriving...");
+        Label actionLabel = new Label();
+        box.getChildren().addAll(meteorLabel, actionLabel);
+        if (isLeader) {
+            actionLabel.setText("Press to roll the dice");
+            Button rollBtn = new Button("Roll dice");
+            rollBtn.setOnAction(evt -> {
+                Random random = new Random();
+                int first = random.nextInt(6) + 1;
+                int second = random.nextInt(6) + 1;
+                modal.close();
+                controller.setRollResult(first, second);
+            });
+            box.getChildren().addAll(rollBtn);
+        } else {
+            actionLabel.setText("Wait for the leader to roll the dice");
+        }
+        modal.setScene(new Scene(box));
+        modal.show();
+    }
+
     /**
      * stage used to ask the user if he wants to apply the effect of a card, the method set the field "acceptEffect" to true or false depending on the choice,
      * then it runs the passed Runnable
@@ -1728,6 +1888,7 @@ public class Gui extends Application implements View {
         Stage modal = new Stage();
         modal.initModality(Modality.APPLICATION_MODAL);
         VBox box = new VBox(10);
+        box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(20));
         Label infoLabel = new Label(message);
         box.getChildren().addAll(infoLabel);
@@ -1884,6 +2045,30 @@ public class Gui extends Application implements View {
     /*
      * utility methods
      */
+
+    private void fillColors() {
+        double r, g, b;
+        Random rand = new Random();
+        for (int i = 0; i < 35; i++) {
+            r = rand.nextDouble();
+            g = rand.nextDouble();
+            b = rand.nextDouble();
+            Color newCol = Color.color(r, g, b);
+            boolean isOk = colors.stream().allMatch(col -> colorDistance(col, newCol) > 0.3);
+            if (isOk) {
+                colors.add(newCol);
+            } else {
+                i--;
+            }
+        }
+    }
+
+    private double colorDistance(Color c1, Color c2) {
+        double dr = c1.getRed() - c2.getRed();
+        double dg = c1.getGreen() - c2.getGreen();
+        double db = c1.getBlue() - c2.getBlue();
+        return Math.sqrt(dr * dr + dg * dg + db * db);
+    }
 
     /**
      * place the images of the components in the shipboard grid based on the parameters given

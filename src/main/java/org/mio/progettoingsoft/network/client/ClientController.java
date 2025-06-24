@@ -3,13 +3,9 @@ package org.mio.progettoingsoft.network.client;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
-import org.mio.progettoingsoft.advCards.PenaltyType;
-import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
@@ -23,7 +19,6 @@ import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.*;
@@ -653,7 +648,7 @@ public class ClientController {
         return shipBoard.getMultiplePieces();
     }
 
-    public void removeStandAloneBlock(int blockToKeep) {
+    public void removeStandAloneBlocks(int blockToKeep) {
         List<Set<Component>> standAloneBlocks = shipBoard.getMultiplePieces();
 
         List<Cordinate> componentsToRemove;
@@ -919,73 +914,6 @@ public class ClientController {
         meteor.setCordinateHit(cord);
 
         Logger.info(type + " " + direction + " " + number);
-
-
-//        Optional<Cordinate> optCordinateHit = meteor.findHit(shipBoard, number);
-//        if (optCordinateHit.isEmpty()) {
-//            advanceMeteor();
-//            return;
-//        }
-//
-//        Cordinate cordinateHit = optCordinateHit.get();;
-//        Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
-//
-//        meteor.setCordinateHit(cordinateHit);
-//
-//        if (meteor.getType().equals(MeteorType.SMALL)) {
-//            if (componentHit.getConnector(direction).equals(Connector.FLAT)) {
-//                Logger.debug("componente piatto");
-//                advanceMeteor();
-//            }
-//            else{
-//                setCardState(CardState.SHIELD_SELECTION);
-//            }
-//        }
-//        else{
-//            List<Cordinate> validDrills = shipBoard.getDrills(direction);
-//
-//            if (validDrills.isEmpty()){
-//                removeComponent(cordinateHit);
-//            }
-//
-//            if (direction.equals(Direction.FRONT)){
-//
-//                for (Cordinate cordDrill : validDrills){
-//                    if (cordDrill.getColumn() == number - shipBoard.getOffsetCol()) {
-//                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
-//                            advanceMeteor();
-//                            return;
-//                        } else {
-//                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
-//                        }
-//                    }
-//                }
-//            }
-//            else if (direction.equals(Direction.BACK)){
-//                for (Cordinate cordDrill : validDrills){
-//                    if (Math.abs( cordDrill.getColumn() - (number - shipBoard.getOffsetCol())) <= 1) {
-//                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
-//                            advanceMeteor();
-//                            return;
-//                        } else {
-//                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
-//                        }
-//                    }
-//                }
-//            }
-//            else{
-//                for (Cordinate cordDrill : validDrills){
-//                    if (Math.abs( cordDrill.getRow() - (number - shipBoard.getOffsetRow())) <= 1) {
-//                        if (shipBoard.getOptComponentByCord(cordDrill).get().getFirePower(true) == 1) {
-//                            advanceMeteor();
-//                            return;
-//                        } else {
-//                            setCardState(CardState.ASK_ONE_DOUBLE_DRILL);
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     public void cannonHit(CannonType type, Direction direction, int number) {

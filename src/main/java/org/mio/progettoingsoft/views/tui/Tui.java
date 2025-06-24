@@ -1,11 +1,9 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
@@ -13,12 +11,10 @@ import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
-import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 
-import javax.security.auth.login.LoginException;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -275,7 +271,7 @@ public class Tui implements View {
                 }
             }
 
-            controller.removeStandAloneBlock(choice - 1);
+            controller.removeStandAloneBlocks(choice - 1);
 
             System.out.println("Components removed!");
         }
@@ -1223,8 +1219,6 @@ public class Tui implements View {
             case SldPirates pirates -> {
                 CannonPenalty cannon = controller.getCannon();
                 controller.advanceCannon(destroyedComp, !destroyedComp);
-
-
             }
 
             default -> Logger.error("caso non previsto");
