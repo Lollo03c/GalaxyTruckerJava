@@ -100,7 +100,9 @@ public class Tui implements View {
                 System.out.println(RED + "You can't take this deck." + RESET);
                 controller.setState(GameState.BUILDING_SHIP);
             }
-
+            case END_BUILDING -> endBuildingMenu();
+            case CHOOSE_POSITION -> printChoosePosition();
+            case VALIDATION -> printValidationMenu();
 
 
             case WRONG_POSITION -> {
@@ -119,7 +121,6 @@ public class Tui implements View {
                     controller.setState(GameState.END_BUILDING);
                 }
             }
-
             case FINISH_LAST_HOURGLASS -> {
                 //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
                 //di simile e deve processare l'input mi genera un'eccezione
@@ -145,17 +146,6 @@ public class Tui implements View {
 //                System.out.println("STARDUST was drown");
 //                controller.applyStardust(card);
 //            }
-
-
-
-
-            case END_BUILDING -> endBuildingMenu();
-            case CHOOSE_POSITION -> {
-                System.out.print("Choose position: ");
-                printChoosePosition();
-                System.out.println("Waiting for other players" + RESET);
-            }
-            case VALIDATION -> printValidationMenu();
 
             case DRAW_CARD -> {
                 printWaitingTheLeader();
@@ -608,8 +598,11 @@ public class Tui implements View {
         controller.bookDeck(chosen);
     }
 
+    /**
+     * Prints selected deck
+     */
     private void viewDeck() {
-        System.out.println("Hai in mano il deck #" + controller.getInHandDeck());
+        System.out.println("Deck #" + controller.getInHandDeck() + " in hand.");
         printDeck();
         System.out.println("Press enter to continue...");
         String buffer = scanner.nextLine();
@@ -617,87 +610,14 @@ public class Tui implements View {
         controller.freeDeck();
     }
 
-    private void printWaitingTheLeader() {
-        System.out.println("The effect of the card is over, this is the actual circuit");
-        synchronized (controller.getFlyboardLock()) {
-            controller.getFlyBoard().drawScoreboard();
-            controller.getFlyBoard().drawCircuit();
-        }
-        System.out.println("Waiting for the leader to draw a new card");
-    }
-
-    private void printNewCard() {
-        System.out.println("A new card has been drawn");
-        controller.getPlayedCard().disegnaCard();
-    }
-
-    private void printValidationMenu() {
-        System.out.println(BLUE + "End building, validating ship:\n" + RESET);
-
-        List<Cordinate> incorrectComponents = controller.getIncorrectComponents();
-
-        String input = "";
-        while (!incorrectComponents.isEmpty()) {
-            controller.getShipBoard().drawShipboard();
-            System.out.println("Following components are not properly connected: " + incorrectComponents);
-            System.out.print("Select a incorrect component to remove from the list (1 - " + incorrectComponents.size() + "): ");
-            input = scanner.nextLine().trim().toLowerCase();
-
-            int choice = -1;
-            while(choice < 1 || choice > incorrectComponents.size()) {
-                try {
-                    choice = Integer.parseInt(input);
-
-                    if (choice < 1 || choice > incorrectComponents.size()) {
-                        System.out.println(RED + "Invalid choice!" + RESET);
-                    }
-                } catch (Exception e) {
-                    System.out.println(RED + "Invalid choice!" + RESET);
-                }
-            }
-
-            controller.removeComponentImmediate(incorrectComponents.get(choice - 1));
-
-            incorrectComponents = controller.getIncorrectComponents();
-        }
-
-        List<Set<Component>> standAloneBlocks = controller.getStandAloneBlocks();
-        if (standAloneBlocks.size() > 1) {
-            System.out.println("There are blocks of components that are not connected to each other. These are the stand alone blocks:");
-            for (Set<Component> standAloneBlock : standAloneBlocks) {
-                System.out.println("Block: " + standAloneBlock.stream().map(Component::getCordinate).toList());
-            }
-
-            System.out.print("Which one do you want to keep? Select between 1 - " + standAloneBlocks.size() + ": ");
-            input = scanner.nextLine().trim().toLowerCase();
-            int choice = -1;
-            while(choice < 0){
-                try {
-                    choice = Integer.parseInt(input);
-
-                    if (choice < 1 || choice > standAloneBlocks.size()) {
-                        choice = -1;
-                        System.out.println(RED + "Invalid choice!" + RESET);
-                    }
-                } catch (Exception e) {
-                    System.out.println(RED + "Invalid choice!" + RESET);
-                }
-            }
-
-            controller.removeStandAloneBlocks(choice - 1);
-
-            System.out.println("Components removed!");
-        }
-
-        controller.endValidation();
-        System.out.println(BLUE + "End of validation phase." + RESET);
-    }
-
+    /**
+     * Prints end of building menu
+     */
     private void endBuildingMenu(){
-        System.out.println("Waiting for other players" + RESET);
+        System.out.println(BLUE + "Waiting for other players" + RESET);
         if (!controller.getFinishedLastHourglass() && !controller.getPendingHourglass()) {
+            String input = "";
             System.out.println("Type \"r\" to rotate hourglass");
-            String input = " ";
             while(!input.equalsIgnoreCase("r")){
                 input = scanner.nextLine();
             }
@@ -718,46 +638,148 @@ public class Tui implements View {
         }
     }
 
+    /**
+     * Prints choose position menu
+     */
     private void printChoosePosition() {
+        clearConsole();
+        System.out.println("Choose position: ");
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
         String input = "";
         int choice = -1;
         int k = 0;
         while (!availablePlaces.contains(choice)) {
             controller.getFlyBoard().drawCircuit();
-            System.out.println("In which of these available position do you want to start ?");
+            System.out.println("In which of these available position do you want to start?");
             for (Integer i : availablePlaces) {
                 k = FlyBoardNormal.indexToPosition(i);
                 System.out.println(k);
             }
+            System.out.print("Make a choice: ");
             input = scanner.nextLine();
             try {
                 choice = Integer.parseInt(input);
                 choice = FlyBoardNormal.positionToIndex(choice);
                 if (!availablePlaces.contains(choice)) {
+                    clearConsole();
                     System.out.println(RED + "Invalid choice!" + RESET);
                 }
             } catch (Exception e) {
+                clearConsole();
                 System.out.println(RED + "Invalid choice!" + RESET);
             }
         }
         controller.choosePlace(choice);
+
+        System.out.println(BLUE + "Waiting for other players" + RESET);
     }
 
+    /**
+     * Prints validation menu
+     */
+    private void printValidationMenu() {
+        clearConsole();
+        System.out.println(BLUE + "END BUILDING PHASE, IT'S NOW TIME TO VALIDATE YOUR SHIP:" + RESET);
+
+        List<Cordinate> incorrectComponents = controller.getIncorrectComponents();
+
+        String input = "";
+        while (!incorrectComponents.isEmpty()) {
+            int choice = -1;
+            while(choice < 1 || choice > incorrectComponents.size()) {
+                controller.getShipBoard().drawShipboard();
+                System.out.println("Following components are not properly connected: " + incorrectComponents);
+                System.out.print("Select a incorrect component to remove from the list (1 - " + incorrectComponents.size() + "): ");
+                input = scanner.nextLine().trim().toLowerCase();
+
+                try {
+                    choice = Integer.parseInt(input);
+
+                    if (choice < 1 || choice > incorrectComponents.size()) {
+                        clearConsole();
+                        System.out.println(RED + "Invalid choice!" + RESET);
+                    }
+                } catch (Exception e) {
+                    clearConsole();
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            }
+
+            controller.removeComponentImmediate(incorrectComponents.get(choice - 1));
+            incorrectComponents = controller.getIncorrectComponents();
+        }
+
+        List<Set<Component>> standAloneBlocks = controller.getStandAloneBlocks();
+        if (standAloneBlocks.size() > 1) {
+            int choice = -1;
+            while(choice < 0){
+                System.out.println("There are blocks of components that are not connected to each other. These are the stand alone blocks:");
+                for (Set<Component> standAloneBlock : standAloneBlocks) {
+                    System.out.println("Block: " + standAloneBlock.stream().map(Component::getCordinate).toList());
+                }
+
+                System.out.print("Which one do you want to keep? Select between 1 - " + standAloneBlocks.size() + ": ");
+                input = scanner.nextLine().trim().toLowerCase();
+
+                try {
+                    choice = Integer.parseInt(input);
+
+                    if (choice < 1 || choice > standAloneBlocks.size()) {
+                        choice = -1;
+                        clearConsole();
+                        System.out.println(RED + "Invalid choice!" + RESET);
+                    }
+                } catch (Exception e) {
+                    clearConsole();
+                    System.out.println(RED + "Invalid choice!" + RESET);
+                }
+            }
+
+            controller.removeStandAloneBlocks(choice - 1);
+            System.out.println(GREEN + "Components removed!" + RESET);
+        }
+
+        controller.endValidation();
+        System.out.println(BLUE + "End of validation phase." + RESET);
+    }
+
+    /**
+     * Prints initial circuit
+     */
+    private void printWaitingTheLeader() {
+        clearConsole();
+        System.out.println("The effect of the card is over, this is the actual circuit:");
+        synchronized (controller.getFlyboardLock()) {
+            controller.getFlyBoard().drawScoreboard();
+            controller.getFlyBoard().drawCircuit();
+        }
+        System.out.println("Waiting for the leader to draw a new card...");
+    }
+
+    /**
+     * Prints initial circuit for leader
+     */
     private void printDrawCardMenu() {
-        System.out.println("The effect of the card is over, this is the actual circuit");
+        clearConsole();
+        System.out.println("The effect of the card is over, this is the actual circuit: ");
         synchronized (controller.getFlyboardLock()) {
             controller.getFlyBoard().drawScoreboard();
             controller.getFlyBoard().drawCircuit();
         }
         String input = "";
         while (!input.equalsIgnoreCase("d")) {
-            System.out.println("You are the leader! You can draw a Card, type \"d\" to draw a Card");
+            System.out.println("You are the leader! You can draw a Card, type \"d\" to draw a Card: ");
             input = scanner.nextLine();
             if (input.equalsIgnoreCase("d")) {
                 controller.drawNewAdvCard();
             }
         }
+    }
+
+    private void printNewCard() {
+        clearConsole();
+        System.out.println("A new card has been drawn");
+        controller.getPlayedCard().disegnaCard();
     }
 
     public void cardEffect() {
@@ -848,7 +870,7 @@ public class Tui implements View {
             SldAdvCard card = controller.getPlayedCard();
             List<Planet> planets = card.getPlanets();
             List<Planet> availablePlanets = new ArrayList<>();
-            availablePlanets = planets.stream().filter(x->!x.getPlayer().isPresent()).collect(Collectors.toList());
+            availablePlanets = planets.stream().filter(x->!x.getPlayer().isPresent()).toList();
             System.out.println("Which planet do you want to land on?");
             for (Planet planet : availablePlanets) {
                 System.out.println(planets.indexOf(planet)+1);
