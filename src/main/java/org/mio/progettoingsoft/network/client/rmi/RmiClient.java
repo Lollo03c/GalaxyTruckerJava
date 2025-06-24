@@ -79,8 +79,6 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     public void setNickname(String nickname) throws RemoteException{
         executors.submit(() -> {
             controller.setNickname(nickname);
-            System.out.println("nickname corretto");
-            controller.setState(GameState.WAITING);
         });
     }
 
@@ -100,7 +98,9 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
 
     @Override
     public void setGameId(int idGame) {
-        controller.setGameId(idGame);
+        executors.submit(() ->
+            controller.setGameId(idGame)
+        );
     }
 
     @Override
@@ -276,6 +276,12 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         });
     }
 
+    @Override
+    public void leaveFlight(String nickname) throws RemoteException{
+        executors.submit(() -> {
+            controller.leaveFlightFromModel(nickname);
+        });
+    }
 
 
 }

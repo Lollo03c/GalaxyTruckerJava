@@ -189,20 +189,30 @@ public class GameController {
 
             case FINALIZED -> {
                 Map<String,VirtualClient> clients = game.getClients();
+                FlyBoard flyBoard = game.getFlyboard();
+                flyBoard.refreshWaitingPlayers();
 
-                Set<String> nicknames = clients.keySet();
-                String leader = game.getFlyboard().getScoreBoard().getFirst().getNickname();
-                for (String n : nicknames) {
-                    if (n.equals(leader)) {
-                        Event event = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
-                        game.addEvent(event);
-                    }
-                    else{
-                        Event event = new SetStateEvent(n, GameState.DRAW_CARD);
-                        game.addEvent(event);
-                    }
+                List<Player> score = flyBoard.getScoreBoard();
+                for (Player p : score){
+                    String n = p.getNickname();
 
+                    Event eve = new SetCardStateEvent(n, CardState.ASK_LEAVE);
+                    game.addEvent(eve);
                 }
+
+//                Set<String> nicknames = clients.keySet();
+//                String leader = game.getFlyboard().getScoreBoard().getFirst().getNickname();
+//                for (String n : nicknames) {
+//                    if (n.equals(leader)) {
+//                        Event event = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
+//                        game.addEvent(event);
+//                    }
+//                    else{
+//                        Event event = new SetStateEvent(n, GameState.DRAW_CARD);
+//                        game.addEvent(event);
+//                    }
+//
+//                }
             }
 
             case STARDUST_END -> {

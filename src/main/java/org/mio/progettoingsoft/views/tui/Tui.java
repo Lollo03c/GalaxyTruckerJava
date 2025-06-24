@@ -96,7 +96,10 @@ public class Tui implements View {
 
             case ADD_COMPONENT -> addComponent();
 
-            case VIEW_SHIP_BUILDING -> viewShipBuilding();
+            case VIEW_SHIP_BUILDING -> {
+                viewShipBuilding();
+                controller.setState(GameState.BUILDING_SHIP);
+            }
 
             case DRAW_UNCOVERED_COMPONENTS -> drawUncoveredComponents();
 
@@ -135,6 +138,13 @@ public class Tui implements View {
                 System.out.println("Invalid ship choice");
                 controller.setState(GameState.CHOICE_BUILT);
             }
+
+//            case STARDUST -> {
+//                // la riga successiva è da eliminare e passargli la carta pescata
+//                SldStardust card = new SldStardust(1, 1);
+//                System.out.println("STARDUST was drown");
+//                controller.applyStardust(card);
+//            }
 
             case VIEW_DECK -> viewDeck();
 
@@ -387,6 +397,7 @@ public class Tui implements View {
 
             case EPIDEMIC_END -> epidemicEndInfo();
 
+            case ASK_LEAVE ->  askLeave();
             case FINALIZED -> {
 
             }
@@ -1153,6 +1164,13 @@ public class Tui implements View {
         Random random = new Random();
         int first = random.nextInt(6) + 1;
         int second = random.nextInt(6) + 1;
+
+
+//        controller.setRollResult(first + second);
+
+//        //todo da cancellare questa riga
+//        int first = 3;
+//        int second = 3;
         controller.setRollResult(first, second);
     }
 
@@ -1292,6 +1310,50 @@ public class Tui implements View {
         System.out.println("Stardust has been applied:");
         System.out.println("You have " + exposedConn + " exposed connectors, so you lost " + exposedConn + " positions");
     }
+    private void askLeave(){
+        int chose = 0;
+
+        while (chose == 0) {
+            System.out.println("1. Leave flight");
+            System.out.println("2. View flyboard");
+            System.out.println("3. View other player's shipboard");
+            System.out.println("4. Keep flying");
+
+            System.out.print("Make your decision : ");
+            try{
+                chose = Integer.parseInt(scanner.nextLine());
+
+                if (chose < 0 || chose > 4){
+                    System.out.println(RED + "invalid option. Try again.");
+                    controller.setCardState(CardState.ASK_LEAVE);
+                }
+
+                switch (chose){
+                    case 1 -> controller.leaveFlight(true);
+                    case 2 -> {
+                        controller.getFlyBoard().drawCircuit();
+                        controller.setCardState(CardState.ASK_LEAVE);
+                    }
+                    case 3 -> {
+                        viewShipBuilding();
+                        controller.setCardState(CardState.ASK_LEAVE);
+                    }
+                    case 4 -> controller.leaveFlight(false);
+                }
+            } catch (NumberFormatException e) {
+                chose = 0;
+            }
+        }
+
+    }
+
+//        try{
+//            controller.removeCrew(crewPositionsToRemove);
+//        } catch (Exception e) {
+//            System.out.println(RED + "One of the coordindate you insert is not associated with a guest" + RESET);
+//            controller.setState(GameState.CARD_EFFECT);
+//            return ;
+//        }
 
     private void epidemicEndInfo(){
         System.out.println("Epidemic has been applied:");

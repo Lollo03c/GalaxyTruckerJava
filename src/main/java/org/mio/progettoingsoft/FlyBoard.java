@@ -58,6 +58,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     protected Map<Integer, SldAdvCard> sldAdvCards;
 
     private SldAdvCard playedCard;
+    private List<Player> waitingPlayers;
     private Map<GoodType, Integer> priceGoods = new EnumMap<>(GoodType.class);
 
 
@@ -556,6 +557,14 @@ public abstract class FlyBoard implements FlyBoardServer {
 
 
     public abstract ShipBoard getBuiltShip(HousingColor color);
+
+    public void refreshWaitingPlayers(){
+        waitingPlayers = new ArrayList<>(scoreBoard);
+    }
+
+    public List<Player> getWaitingPlayers(){
+        return waitingPlayers;
+    }
 
     public void setValidationPlayers(List<Player> players){
         this.validationPlayers = new ArrayList<>(players);

@@ -72,6 +72,7 @@ public final class SldPlanets extends SldAdvCard {
 
     @Override
     public void init(GameServer game) {
+        passedPlayers = 0;
 
         this.game = game;
         this.flyBoard = game.getFlyboard();

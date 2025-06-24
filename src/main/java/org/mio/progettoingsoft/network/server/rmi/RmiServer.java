@@ -14,18 +14,23 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     private final ServerController controller;
     private final ConnectionInfo connectionInfo;
-    private ExecutorService executors = Executors.newFixedThreadPool(4);
+    private ExecutorService executors = new ThreadPoolExecutor(
+            0,                          // corePoolSize
+            Integer.MAX_VALUE,          // maximumPoolSize
+            0L, TimeUnit.MILLISECONDS,  // keepAliveTime = 0 ⇒ i thread restano attivi
+            new SynchronousQueue<>()
+    );
 
     public RmiServer(ConnectionInfo connectionInfo) throws RemoteException {
         super(); // automatic export of UnicastRemoteObject
@@ -159,9 +164,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void leaveFlight(int idGame, String nickname) throws RemoteException {
+    public void leaveFlight(int idGame, String nickname, boolean leave) throws RemoteException {
         executors.submit(() -> {
-            controller.leaveFlight(idGame, nickname);
+            controller.leaveFlight(idGame, nickname, leave);
         });
     }
 

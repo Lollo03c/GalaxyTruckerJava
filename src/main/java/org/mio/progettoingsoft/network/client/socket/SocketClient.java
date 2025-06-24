@@ -76,7 +76,7 @@ public class SocketClient implements Client {
                         controller.setIdClient(welcomeMessage.getClientId());
                     }
                     case StateMessage stateMessage -> {
-                        controller.setState(stateMessage.getState());
+                        executor.submit(() ->controller.setState(stateMessage.getState()));
                     }
 
                     case CardStateMessage cardStateMessage ->{
@@ -84,7 +84,9 @@ public class SocketClient implements Client {
                     }
 
                     case NicknameMessage nicknameMessage -> {
-                        controller.setNickname(nicknameMessage.getNickname());
+                        executor.submit(() ->
+                            controller.setNickname(nicknameMessage.getNickname())
+                        );
                     }
 
                     case GameIdMessage gameIdMessage -> {
@@ -203,6 +205,12 @@ public class SocketClient implements Client {
                     case CannonMessage cannonMessage -> {
                         executor.submit(() -> {
                             controller.cannonHit(cannonMessage.getType(), cannonMessage.getDirection(), cannonMessage.getNumber());
+                        });
+                    }
+
+                    case LeaveMessage leaveMessage -> {
+                        executor.submit(() -> {
+                            controller.leaveFlightFromModel(leaveMessage.getNickname());
                         });
                     }
 

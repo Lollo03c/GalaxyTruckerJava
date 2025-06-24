@@ -23,6 +23,7 @@ import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
 
+import javax.swing.text.html.Option;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -728,9 +729,9 @@ public class ClientController {
         return toInsert;
     }
 
-    public void leaveFlight() {
+    public void leaveFlight(boolean leave) {
         try {
-            server.leaveFlight(idGame, nickname);
+            server.leaveFlight(idGame, nickname, leave);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1028,6 +1029,25 @@ public class ClientController {
         Logger.debug("remove battery from " + idBatteryDepot);
         synchronized (flyBoard) {
             flyBoard.getComponentById(idBatteryDepot).removeOneEnergy();
+        }
+    }
+
+    public void leaveFlightFromModel(String nickname){
+        synchronized (flyboardLock){
+            Player player = flyBoard.getPlayerByUsername(nickname);
+            flyBoard.getScoreBoard().remove(player);
+
+            for (int i = 0; i < flyBoard.getCircuit().size(); i++){
+                Optional<Player> optionalPlayer = flyBoard.getCircuit().get(i);
+
+                if (optionalPlayer.isEmpty())
+                    continue;
+
+                if (optionalPlayer.get().getNickname().equals(nickname)){
+                    flyBoard.getCircuit().set(i, Optional.empty());
+                    return;
+                }
+            }
         }
     }
 }

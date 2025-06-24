@@ -1873,7 +1873,7 @@ public class Gui extends Application implements View {
         Button confirmBtn = new Button("Confirm");
         confirmBtn.setOnAction(evt -> {
             alertStage.close();
-            controller.leaveFlight();
+            controller.leaveFlight(true);
         });
         btnBox.getChildren().addAll(cancelBtn, confirmBtn);
         center.getChildren().addAll(alertLabel, btnBox);
