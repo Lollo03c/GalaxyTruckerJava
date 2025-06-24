@@ -53,15 +53,9 @@ public class ServerController {
         GameManager gameManager = GameManager.getInstance();
         GameServer game = gameManager.getWaitingGame();
         game.setupGame(gameInfo.mode(), gameInfo.nPlayers());
-        try {
-            game.getClients().get(nickname).setState(GameState.WAITING_PLAYERS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) {
-        GameManager gameManager = GameManager.getInstance();
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
 
         ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();

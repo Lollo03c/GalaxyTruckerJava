@@ -89,6 +89,7 @@ public class Tui implements View {
                 System.out.println(RED + "You can't take this component." + RESET);
                 controller.setState(GameState.DRAW_UNCOVERED_COMPONENTS);
             }
+            case VIEW_BOOKED -> viewBookedComponents();
             case SWITCH_BOOKED -> switchBookedComponents();
             case VIEW_SHIP_BUILDING -> viewShipBuilding();
             case VIEW_DECKS_LIST -> viewDecksList();
@@ -146,7 +147,7 @@ public class Tui implements View {
 
 
 
-            case VIEW_BOOKED -> viewBookedComponents();
+
             case END_BUILDING -> endBuildingMenu();
             case CHOOSE_POSITION -> {
                 System.out.print("Choose position: ");
@@ -355,7 +356,7 @@ public class Tui implements View {
 
             System.out.println("1 : Insert in the shipboard");
             System.out.println("2 : Put back in the deck");
-            System.out.println("3 : Save for later");
+            System.out.println("3 : Book for later");
             System.out.print("Make your choice: ");
             input = scanner.nextLine();
 
@@ -505,42 +506,92 @@ public class Tui implements View {
     /**
      * Prints menu to switch components
      */
+    private void viewBookedComponents() {
+        List<Integer> bookedComponentIds = controller.getShipBoard().getBookedComponents().stream()
+                .flatMap(Optional::stream)
+                .toList();
+
+        int count = 1;
+        for (Integer id : bookedComponentIds) {
+            System.out.println("Component # " + id);
+            Component component = controller.getFlyBoard().getComponentById(id);
+            new ShipCell(component).drawCell();
+        }
+
+        int chosen;
+        while (true) {
+            System.out.print("Select component to draw (-1 to null): ");
+            String input = scanner.nextLine();
+
+            try {
+                chosen = Integer.parseInt(input);
+
+                if (chosen == -1) {
+                    clearConsole();
+                    System.out.println(GREEN + "No component selected." + RESET);
+                    controller.setState(GameState.COMPONENT_MENU);
+                    return;
+                }
+
+                if (bookedComponentIds.contains(chosen)) {
+                    controller.choseBookedComponent(chosen);
+                    break;
+                } else {
+                    clearConsole();
+                    System.out.println(RED + "Invalid component index." + RESET);
+                }
+
+            } catch (NumberFormatException e) {
+                clearConsole();
+                System.out.println(RED + "Invalid input. Please enter a number." + RESET);
+            }
+        }
+
+    }
+
+    /**
+     * Prints menu to switch components
+     */
     private void switchBookedComponents() {
-        List<Integer> possibles = new ArrayList<>();
+        List<Integer> bookedComponentIds = controller.getShipBoard().getBookedComponents().stream()
+                .flatMap(Optional::stream)
+                .toList();
 
-        List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
-        for (Optional<Integer> optComp : bookedComponents) {
-            if (optComp.isEmpty())
-                continue;
-
-            possibles.add(optComp.get());
-            System.out.println("Component #" + optComp.get());
-            new ShipCell(controller.getFlyBoard().getComponentById(optComp.get())).drawCell();
+        int count = 1;
+        for (Integer id : bookedComponentIds) {
+            System.out.println("Component # " + id);
+            Component component = controller.getFlyBoard().getComponentById(id);
+            new ShipCell(component).drawCell();
         }
 
         int chosenComp;
         while (true) {
-            System.out.print("Select the component to switch (enter to escape): ");
-            String string = scanner.nextLine();
+            System.out.print("Select the component to switch (-1 to cancel): ");
+            String input = scanner.nextLine();
 
-            if (string.equals("")) {
-                controller.setState(GameState.COMPONENT_MENU);
-                return;
-            } else {
-                try {
-                    chosenComp = Integer.parseInt(string);
-                    if (!possibles.contains(chosenComp))
-                        throw new NumberFormatException("");
+            try {
+                chosenComp = Integer.parseInt(input);
 
-                    break;
-                } catch (NumberFormatException e) {
-                    System.out.println(RED + "Invalid chosen component" + RESET);
-                    throw new RuntimeException(e);
+                if (chosenComp == -1) {
+                    clearConsole();
+                    System.out.println(GREEN + "No switch component." + RESET);
+                    controller.setState(GameState.COMPONENT_MENU);
+                    return;
                 }
+
+                if (bookedComponentIds.contains(chosenComp)) {
+                    controller.bookComponent(bookedComponentIds.indexOf(chosenComp));
+                    break;
+                } else {
+                    clearConsole();
+                    System.out.println(RED + "Invalid chosen component." + RESET);
+                }
+
+            } catch (NumberFormatException e) {
+                clearConsole();
+                System.out.println(RED + "Invalid input. Please enter a number." + RESET);
             }
         }
-
-        controller.bookComponent(possibles.indexOf(chosenComp));
     }
 
     /**
@@ -868,26 +919,6 @@ public class Tui implements View {
             // ho messo qua la consegna delle merci come ha fatto toni su abandonedStation, non so se va bene
         }
 
-    }
-
-    private void viewBookedComponents() {
-        List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
-        int count = 1;
-
-        for (Optional<Integer> booked : bookedComponents) {
-            if (booked.isEmpty())
-                continue;
-
-            System.out.println("Component # " + count++);
-            Component component = controller.getFlyBoard().getComponentById(booked.get());
-            new ShipCell(component).drawCell();
-        }
-
-        System.out.print("Select component to draw (-1 to null) : ");
-        int chosen = Integer.parseInt(scanner.nextLine());
-
-        //todo controllo dell'input
-        controller.choseBookedComponent(chosen);
     }
 
     private void chooseBuiltShip() {
