@@ -222,53 +222,6 @@ public class Tui implements View {
     }
 
     /**
-     * Message to ask the client for game settings (only if the player is the first joining that match)
-     */
-    private void printGameModeMenu() {
-        int nPlayers = -1;
-        int choice = -1;
-        String input = "";
-
-        while (nPlayers < 2 || nPlayers > 4) {
-            System.out.print("Insert number of players of the game (2-4): ");
-            input = scanner.nextLine();
-
-            try {
-                nPlayers = Integer.parseInt(input);
-
-                if (nPlayers < 2 || nPlayers > 4) {
-                    System.out.println(RED + "Invalid number of players!" + RESET);
-                }
-            } catch (Exception e) {
-                System.out.println(RED + "Invalid number of players!" + RESET);
-            }
-        }
-
-        while (choice < 1 || choice > 2) {
-            System.out.println("Select game mode: ");
-            System.out.println("1 : Easy Mode");
-            System.out.println("2 : Normal Mode");
-            System.out.print("Make your choice: ");
-            input = scanner.nextLine();
-
-            try {
-                choice = Integer.parseInt(input);
-
-                if (choice < 1 || choice > 2) {
-                    System.out.println(RED + "Invalid choice!" + RESET);
-                }
-            } catch (Exception e) {
-                System.out.println(RED + "Invalid choice!" + RESET);
-            }
-        }
-
-        GameInfo gameInfo = new GameInfo(-1, choice == 1 ? GameMode.EASY : GameMode.NORMAL, nPlayers);
-        controller.handleGameInfo(gameInfo);
-        clearConsole();
-        controller.setState(GameState.WAITING_PLAYERS);
-    }
-
-    /**
      * Message to notify the clients the start of the game
      */
     private void printStartGameInfo() {
@@ -923,27 +876,6 @@ public class Tui implements View {
     }
 
     /**
-     * Message shown to the client after the registration success, asks for the nickname
-     */
-    private void askNickname() {
-        String nickname = "";
-
-        while (true) {
-            System.out.print("Insert your nickname: ");
-            nickname = scanner.nextLine();
-
-            if (!nickname.isEmpty()) {
-                break;
-            }
-
-            System.out.println(RED + "Nickname cannot be empty!" + RESET);
-        }
-
-        controller.handleNickname(nickname);
-        clearConsole();
-    }
-
-    /**
      * Message to ask the client for game settings (only if the player is the first joining that match)
      */
     private void printGameModeMenu() {
@@ -993,18 +925,6 @@ public class Tui implements View {
 
     private void checkEndBuilding() {
 
-    }
-
-    /**
-     * Message to notify the clients the start of the game
-     */
-    private void printStartGameInfo() {
-        System.out.println(BLUE + "The game has started!" + RESET);
-        System.out.println("Players:");
-
-        printPlayersName();
-
-        //controller.setState(GameState.WAITING);
     }
 
     /**
@@ -1142,29 +1062,6 @@ public class Tui implements View {
         clearConsole();
     }
 
-    private void viewShipBuilding() {
-        System.out.println("These are the players: ");
-        printPlayersName();
-
-        String chosenPlayer = "";
-
-        while (true) {
-            System.out.print("Insert nickname to look at: ");
-            chosenPlayer = scanner.nextLine();
-
-            try {
-                if (chosenPlayer.isEmpty()) {
-                    System.out.println(RED + "Invalid nickname!" + RESET);
-                } else {
-                    controller.getFlyBoard().getPlayerByUsername(chosenPlayer).getShipBoard().drawShipboard();
-                    break;
-                }
-            } catch (IncorrectFlyBoardException e) {
-                System.out.println(RED + "Invalid nickname!" + RESET);
-            }
-        }
-    }
-
     private void componentMenu() {
         System.out.println("This is the component you've drawn:");
         new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();
@@ -1226,39 +1123,6 @@ public class Tui implements View {
             controller.drawUncovered(chosen);
     }
 
-    private void viewDecksList() {
-        System.out.println("Available decks : ");
-        for (int numberDeck : controller.getFlyBoard().getAvailableDecks()) {
-            System.out.println("Deck #" + numberDeck);
-        }
-        System.out.print("Choose deck number : ");
-        int chosen = Integer.parseInt(scanner.nextLine());
-
-        controller.bookDeck(chosen);
-    }
-
-    private void viewDeck() {
-        System.out.println("hai in mano il deck #" + controller.getInHandDeck());
-
-        for (int cardId : controller.getFlyBoard().getLittleDecks().get(controller.getInHandDeck()))
-            controller.getFlyBoard().getSldAdvCardByID(cardId).disegnaCard();
-
-        System.out.println("premere invio per continuare");
-
-        String buffer = scanner.nextLine();
-        controller.freeDeck();
-    }
-
-    private void printPlayersName() {
-        synchronized (controller.getFlyboardLock()) {
-            FlyBoard flyBoard = controller.getFlyBoard();
-            int count = 1;
-
-            for (Player player : flyBoard.getPlayers()) {
-                System.out.println((count++) + " " + player.getNickname() + " : " + player.getColor());
-            }
-        }
-    }
 
     private void viewBookedComponents() {
         List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();

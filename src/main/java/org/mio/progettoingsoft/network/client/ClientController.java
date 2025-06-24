@@ -645,6 +645,10 @@ public class ClientController {
     }
 
     public List<Set<Component>> getStandAloneBlocks() {
+        shipBoard.removedBookedComponent(0);
+        shipBoard.removedBookedComponent(1);
+
+
         return shipBoard.getMultiplePieces();
     }
 

@@ -525,6 +525,8 @@ public abstract class ShipBoard {
      * @return a list of sets of components that are not mutually connected.
      */
     public List<Set<Component>> getMultiplePieces() {
+
+
         List<Set<Component>> multiple = new ArrayList<>();
 
         List<Component> allComponents = this.getComponents().stream()
