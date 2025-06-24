@@ -648,7 +648,7 @@ public class ClientController {
         return shipBoard.getMultiplePieces();
     }
 
-    public void removeStandAloneBlock(int blockToKeep) {
+    public void removeStandAloneBlocks(int blockToKeep) {
         List<Set<Component>> standAloneBlocks = shipBoard.getMultiplePieces();
 
         List<Cordinate> componentsToRemove;
