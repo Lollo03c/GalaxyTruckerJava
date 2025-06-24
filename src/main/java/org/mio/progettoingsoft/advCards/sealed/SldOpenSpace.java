@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.advCards.OpenSpace;
 import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.interfaces.GameServer;

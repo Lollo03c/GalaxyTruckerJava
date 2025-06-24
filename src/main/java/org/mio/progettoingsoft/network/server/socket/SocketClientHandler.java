@@ -268,5 +268,11 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         sendMessage(message);
     }
 
+    @Override
+    public void leaveFlight(String nickname) throws IOException{
+        Message message = new LeaveMessage(0, nickname, true);
+        sendMessage(message);
+    }
+
 
 }

@@ -85,4 +85,5 @@ public interface VirtualClient extends Remote {
     void cannonHit(CannonType type, Direction direction, int number) throws Exception;
 
     void startedHourglass(int idGame) throws Exception;
+    void leaveFlight(String nickname) throws Exception;
 }

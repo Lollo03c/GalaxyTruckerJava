@@ -110,6 +110,26 @@ public class ServerController {
         }
     }
 
+//    public void applyStardust(int idGame, SldStardust card) {
+//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+//        FlyBoard flyboard = game.getFlyboard();
+//        card.applyEffect(flyboard);
+//        /*List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
+//        for (Player p : reversedScoreboard){
+//            int exposedConnectors = p.getShipBoard().getExposedConnectors();
+//            flyboard.moveDays(p, -exposedConnectors);
+//        }*/
+//
+//        //SldAdvCard nextCard = flyboard.drawSldAdvCard();
+//        //String type = nextCard.getCardName().toUpperCase();
+//        //GameState next = GameState.stringToGameState(type);
+//
+//        //TODO settare il Gamestate allo stato della carta pescata
+//        //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
+//        //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
+//
+//    }
+
     public void drawUncovered(int idGame, String nickname, Integer idComponent) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -344,6 +364,7 @@ public class ServerController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public void drawCard(int idGame, String nickname) {
@@ -433,20 +454,51 @@ public class ServerController {
         }
     }
 
-    public void leaveFlight(int idGame, String nickname) {
-        //TODO: this is only for testing of the circuit update, this must be replaced with the actual functionality
+    public void leaveFlight(int idGame, String nickname, boolean leave) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        FlyBoard flyBoard = game.getFlyboard();
-        flyBoard.moveDays(flyBoard.getPlayerByUsername(nickname), 4);
+        synchronized (game.getLock()){
+            FlyBoard flyBoard = game.getFlyboard();
 
-        for (String nick : game.getClients().keySet()) {
-            VirtualClient client = game.getClients().get(nick);
-            try {
-                client.advancePlayer(nickname, 4);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            Player player = flyBoard.getPlayerByUsername(nickname);
+            List<Player> watingPlayers = flyBoard.getWaitingPlayers();
+            watingPlayers.remove(player);
+
+            if (leave){
+                flyBoard.getScoreBoard().remove(player);
+                Event event = new LeavePlayerEvent(nickname);
+                game.addEvent(event);
+            }
+
+            if (watingPlayers.isEmpty()) {
+                Set<String> nicknames = game.getClients().keySet();
+                String leader = game.getFlyboard().getScoreBoard().getFirst().getNickname();
+                for (String n : nicknames) {
+                    if (n.equals(leader)) {
+                        Event event = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
+                        game.addEvent(event);
+                    } else {
+                        Event event = new SetStateEvent(n, GameState.DRAW_CARD);
+                        game.addEvent(event);
+                    }
+
+                }
             }
         }
+
+
+//        //TODO: this is only for testing of the circuit update, this must be replaced with the actual functionality
+//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+//        FlyBoard flyBoard = game.getFlyboard();
+//        flyBoard.moveDays(flyBoard.getPlayerByUsername(nickname), 4);
+//
+//        for (String nick : game.getClients().keySet()) {
+//            VirtualClient client = game.getClients().get(nick);
+//            try {
+//                client.advancePlayer(nickname, 4);
+//            } catch (Exception e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
     public void skipEffect(int idGame, String nickname, int idCard) {
@@ -591,14 +643,14 @@ public class ServerController {
 //            }
 //        }
         Logger.debug("numero giocatori passati " + passedPlayers);
-        if (passedPlayers == game.getNumPlayers() || card.getLandedPlayers().size() == card.getPlanets().size()) {
+        if (passedPlayers == game.getFlyboard().getScoreBoard().size() || card.getLandedPlayers().size() == card.getPlanets().size()) {
             card.applyEffect();
         } else {
             card.setNextPlayer();
         }
-        if (game.getFlyboard().getScoreBoard().getLast().equals(player) && choice == -1 && card.allPlayersPlacedGoods()) {
-            card.applyEffect();
-        }
+//        if (game.getFlyboard().getScoreBoard().getLast().equals(player) && choice == -1 && card.allPlayersPlacedGoods()) {
+//            card.applyEffect();
+//        }
 
     }
 
@@ -755,16 +807,16 @@ public class ServerController {
     }
 
     public void startHourglass(int idGame) {
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        FlyBoard fly = game.getFlyboard();
-        fly.startHourglass(idGame);
-        for(VirtualClient client : game.getClients().values()){
-            try {
-                client.startedHourglass(idGame);
-            }catch (Exception e){
-                throw new RuntimeException(e);
-            }
-        }
+//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+//        FlyBoard fly = game.getFlyboard();
+//        fly.startHourglass(idGame);
+//        for(VirtualClient client : game.getClients().values()){
+//            try {
+//                client.startedHourglass(idGame);
+//            }catch (Exception e){
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
     public void removeComponent(int idGame, String nickname, Cordinate cord) {

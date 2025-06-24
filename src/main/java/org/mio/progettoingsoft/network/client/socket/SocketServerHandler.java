@@ -116,8 +116,8 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void leaveFlight(int idGame, String nickname) throws IOException {
-        Message message = new LeaveMessage(idGame, nickname);
+    public void leaveFlight(int idGame, String nickname, boolean leave) throws IOException {
+        Message message = new LeaveMessage(idGame, nickname, leave);
         sendMessage(message);
     }
 

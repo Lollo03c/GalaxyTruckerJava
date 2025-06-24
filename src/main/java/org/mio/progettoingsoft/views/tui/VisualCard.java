@@ -378,10 +378,7 @@ public class VisualCard {
         list.add(pl2);
         list.add(pl);
         list.add(pl);
-        AdventureCard planets = new Planets(1,2,2,list);
-        AdventureCard card = new Stardust(2,2);
-        AdventureCard card2 = new Slaver(2,2,6,3,2,4);
-        AdventureCard card3 = new Smugglers(2,2,9,5,4,goods);
+
         SldAdvCard card89 = new SldSmugglers(2,2,4,goods,9,5);
         List<CannonPenalty> penalties = new ArrayList<>();
         penalties.add(new LightCannon(Direction.FRONT));

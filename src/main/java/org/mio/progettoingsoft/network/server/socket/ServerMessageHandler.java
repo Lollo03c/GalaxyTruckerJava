@@ -97,7 +97,7 @@ public class ServerMessageHandler implements Runnable {
                     }
 
                     case LeaveMessage leaveMessage -> {
-                        serverController.leaveFlight(leaveMessage.getGameId(), leaveMessage.getNickname());
+                        serverController.leaveFlight(leaveMessage.getGameId(), leaveMessage.getNickname(), leaveMessage.isLeave());
                     }
                     case DrawCardMessage drawCardMessage -> {
                         serverController.drawCard(drawCardMessage.getGameId(), drawCardMessage.getNickname());
