@@ -4,6 +4,8 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
+import org.mio.progettoingsoft.advCards.sealed.SldAbandonedStation;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
@@ -342,10 +344,6 @@ public class ClientController {
         synchronized (otherShipboard) {
             otherShipboard.addComponentToPosition(idComp, cordinate, rotations);
         }
-    }
-
-    public void updateState() {
-
     }
 
     public void addAvailableDeck(int deckNumber) {
