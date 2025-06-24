@@ -68,6 +68,8 @@ public class Tui implements View {
 
     private void updateTui(GameState state) {
         switch (state) {
+
+
             case START -> printConnectionMenu();
             case NICKNAME -> askNickname();
             case WAITING -> checkEndBuilding();
@@ -714,9 +716,6 @@ public class Tui implements View {
                 System.out.println(RED + "Invalid nickname!" + RESET);
             }
         }
-
-
-        controller.setState(GameState.BUILDING_SHIP);
     }
 
     private void componentMenu() {
@@ -873,24 +872,32 @@ public class Tui implements View {
     }
 
     private void engineChoice() {
+
         int maxAvailable;
         synchronized (controller.getShipboardLock()) {
             ShipBoard shipBoard = controller.getShipBoard();
+            shipBoard.drawShipboard();
             maxAvailable = Integer.min(shipBoard.getQuantBatteries(), shipBoard.getDoubleEngine().size());
         }
-        int activated = -1;
-        while (activated < 0 || activated > maxAvailable) {
-            System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : )");
-            try {
-                activated = scanner.nextInt();
-            }catch(InputMismatchException e){
-                scanner.next();
-                activated = -1;
+
+        if (maxAvailable > 0) {
+            int activated = -1;
+            while (activated < 0 || activated > maxAvailable) {
+                System.out.println("Select the number of double engines to activate (max " + maxAvailable + " : )");
+                try {
+                    activated = scanner.nextInt();
+                } catch (InputMismatchException e) {
+                    scanner.next();
+                    activated = -1;
+                }
+                if (activated >= 0 && activated <= maxAvailable)
+                    controller.activateDoubleEngine(activated);
+                else
+                    System.out.println(RED + "Invalid activated engine" + RESET);
             }
-            if (activated >= 0 && activated <= maxAvailable)
-                controller.activateDoubleEngine(activated);
-            else
-                System.out.println(RED + "Invalid activated engine" + RESET);
+        }
+        else{
+            controller.activateDoubleEngine(0);
         }
     }
 

@@ -897,6 +897,22 @@ public abstract class ShipBoard {
         return result;
     }
 
+    public int getNumberHumans(){
+        long sum = 0;
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            if (getOptComponentByCord(cord).isEmpty())
+                continue;
+
+            Component comp = getOptComponentByCord(cord).get();
+            sum += comp.getGuests().stream().filter(guest -> guest.equals(GuestType.HUMAN)).count();
+        }
+
+        return (int) sum;
+    }
+
 
 }
 

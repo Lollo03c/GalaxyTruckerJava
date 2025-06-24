@@ -374,26 +374,26 @@ public class ServerController {
         if (!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))) {
             throw new NotYourTurnException();
         }
-        SldAdvCard card = flyBoard.getSldAdvCardByID(12);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(flyBoard.drawCard());
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
         while(game.getFlyboard().getScoreBoard().size() == 1 && (card.getId() == 16 || card.getId() == 36)){
             int id = flyBoard.drawCard();
             card = flyBoard.getSldAdvCardByID(id);
+
         }
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
-        for (VirtualClient client : game.getClients().values()) {
-            try {
-                client.setPlayedCard(card.getId());
-                //setto a tutti i client lo stato NEW_CARD, così la mostra a tutti poi lo switch in base al tipo
-                //di carta e al player lo fa il ClientController
-                client.setState(GameState.NEW_CARD);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        Event first = new SetCardPlayedEvent(null, card.getId());
+        game.addEvent(first);
+
+        for (Player player : flyBoard.getPlayers()) {
+
+            Event second = new SetStateEvent(player.getNickname(), GameState.NEW_CARD);
+            game.addEvent(second);
+
         }
         card.init(game);
 

@@ -10,6 +10,7 @@ import org.mio.progettoingsoft.utils.Logger;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -103,6 +104,10 @@ public class GameController {
                     Event event = (RemoveGoodEvent) evt.getNewValue();
                     game.addEvent(event);
                 }
+                else if ("leavePlayer".equals(evt.getPropertyName())){
+                    Event event = (LeavePlayerEvent) evt.getNewValue();
+                    game.addEvent(event);
+                }
             }
         });
 
@@ -188,8 +193,17 @@ public class GameController {
             }
 
             case FINALIZED -> {
+
                 Map<String,VirtualClient> clients = game.getClients();
                 FlyBoard flyBoard = game.getFlyboard();
+
+                for (int i = 0; i < flyBoard.getScoreBoard().size(); i++){
+                    Player p = flyBoard.getScoreBoard().get(i);
+
+                    if (p.getShipBoard().getNumberHumans() == 0){
+                        flyBoard.leavePlayer(player);
+                    }
+                }
                 flyBoard.refreshWaitingPlayers();
 
                 List<Player> score = flyBoard.getScoreBoard();
