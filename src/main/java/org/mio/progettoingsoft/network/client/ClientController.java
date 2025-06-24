@@ -54,6 +54,8 @@ public class ClientController {
 
 
     private ClientController(ConnectionInfo connectionInfo) {
+        Logger.setMinLevel(Logger.Level.WARNING);
+
         this.setState(GameState.START);
         this.connectionInfo = connectionInfo;
     }

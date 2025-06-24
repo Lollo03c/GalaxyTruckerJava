@@ -507,6 +507,7 @@ public abstract class ShipBoard {
 
                 if (!comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
                     incorrect.add(cord);
+                    break;
                 }
             }
         }

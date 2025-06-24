@@ -30,7 +30,7 @@ public class ClientMain {
         Scanner in = new Scanner(System.in);
         int choice = 0;
         while(choice != 1 && choice != 2) {
-            System.out.println("1 : GUI\n2 : TUI\nMake your choice: ");
+            System.out.print("1 : GUI\n2 : TUI\nMake your choice: ");
             try {
                 choice = in.nextInt();
             } catch (Exception e) {

@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
+import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
+import org.mio.progettoingsoft.model.ShipBoardEasy;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
@@ -38,7 +40,7 @@ class ShipBoardTest {
 
     private FlyBoard flyBoard;
     private ShipBoard first, second, third, fourth;
-    private ShipBoard yellow;
+    private ShipBoard yellow, validationTestShipBoard;
     @BeforeEach
     void setup(){
         flyBoard = FlyBoard.createFlyBoard(GameMode.NORMAL, Set.of("Antonio", "Andrea", "Lorenzo", "Stefano"));
@@ -48,6 +50,8 @@ class ShipBoardTest {
         fourth = flyBoard.getPlayerByUsername("Stefano").getShipBoard();
 
         yellow = ShipBoardNormal.buildYellow(flyBoard);
+
+        validationTestShipBoard = new ShipBoardNormal(HousingColor.RED, flyBoard);
     }
 
     @Test
@@ -247,81 +251,81 @@ class ShipBoardTest {
 
     @Test
     void should_find_adjacent_components(){
-        first.addComponentToPosition(62, new Cordinate(2, 2), 0);
-        assertEquals(62, first.getAdjacent(new Cordinate(2, 3)).get(Direction.LEFT).getId());
+        validationTestShipBoard.addComponentToPosition(62, new Cordinate(2, 2), 0);
+        assertEquals(62, validationTestShipBoard.getAdjacent(new Cordinate(2, 3)).get(Direction.LEFT).getId());
 
-        first.addComponentToPosition(63, new Cordinate(1, 3), 0);
-        assertEquals(63, first.getAdjacent(new Cordinate(2, 3)).get(Direction.FRONT).getId());
+        validationTestShipBoard.addComponentToPosition(63, new Cordinate(1, 3), 0);
+        assertEquals(63, validationTestShipBoard.getAdjacent(new Cordinate(2, 3)).get(Direction.FRONT).getId());
 
-        first.addComponentToPosition(64, new Cordinate(2, 4), 0);
-        assertEquals(64, first.getAdjacent(new Cordinate(2, 3)).get(Direction.RIGHT).getId());
+        validationTestShipBoard.addComponentToPosition(64, new Cordinate(2, 4), 0);
+        assertEquals(64, validationTestShipBoard.getAdjacent(new Cordinate(2, 3)).get(Direction.RIGHT).getId());
 
-        first.addComponentToPosition(65, new Cordinate(3, 3), 0);
-        assertEquals(65, first.getAdjacent(new Cordinate(2, 3)).get(Direction.BACK).getId());
+        validationTestShipBoard.addComponentToPosition(65, new Cordinate(3, 3), 0);
+        assertEquals(65, validationTestShipBoard.getAdjacent(new Cordinate(2, 3)).get(Direction.BACK).getId());
 
-        first.addComponentToPosition(66, new Cordinate(1, 2), 0);
-        assertEquals(66, first.getAdjacent(new Cordinate(2, 2)).get(Direction.FRONT).getId());
-        assertEquals(66, first.getAdjacent(new Cordinate(1, 3)).get(Direction.LEFT).getId());
-        assertEquals(63, first.getAdjacent(new Cordinate(1, 2)).get(Direction.RIGHT).getId());
+        validationTestShipBoard.addComponentToPosition(66, new Cordinate(1, 2), 0);
+        assertEquals(66, validationTestShipBoard.getAdjacent(new Cordinate(2, 2)).get(Direction.FRONT).getId());
+        assertEquals(66, validationTestShipBoard.getAdjacent(new Cordinate(1, 3)).get(Direction.LEFT).getId());
+        assertEquals(63, validationTestShipBoard.getAdjacent(new Cordinate(1, 2)).get(Direction.RIGHT).getId());
     }
 
     @Test
     void should_find_incorrect_engines(){
-        first.addComponentToPosition(71, new Cordinate(1, 3), 0);
-        first.addComponentToPosition(72, new Cordinate(2, 5), 3); // upside
-        first.addComponentToPosition(73, new Cordinate(2, 0), 3);
+        validationTestShipBoard.addComponentToPosition(71, new Cordinate(1, 3), 0);
+        validationTestShipBoard.addComponentToPosition(72, new Cordinate(2, 5), 3); // upside
+        validationTestShipBoard.addComponentToPosition(73, new Cordinate(2, 0), 3);
 
-        first.addComponentToPosition(65, new Cordinate(4, 2), 0);
-        first.addComponentToPosition(74, new Cordinate(3, 2), 0);
+        validationTestShipBoard.addComponentToPosition(65, new Cordinate(4, 2), 0);
+        validationTestShipBoard.addComponentToPosition(74, new Cordinate(3, 2), 0);
 
-        first.addComponentToPosition(75, new Cordinate(4, 1), 0); // correct
+        validationTestShipBoard.addComponentToPosition(75, new Cordinate(4, 1), 0); // correct
 
-        assertEquals(4, first.getIncorrectEngines().size());
+        assertEquals(4, validationTestShipBoard.getIncorrectEngines().size());
     }
 
     @Test
     void should_find_incorrect_drills(){
         // Around central housing
-        first.addComponentToPosition(101, new Cordinate(3, 3), 0);
-        first.addComponentToPosition(102, new Cordinate(2, 4), 1);
-        first.addComponentToPosition(103, new Cordinate(1, 3), 2);
-        first.addComponentToPosition(104, new Cordinate(2, 2), 3);
+        validationTestShipBoard.addComponentToPosition(101, new Cordinate(3, 3), 0);
+        validationTestShipBoard.addComponentToPosition(102, new Cordinate(2, 4), 1);
+        validationTestShipBoard.addComponentToPosition(103, new Cordinate(1, 3), 2);
+        validationTestShipBoard.addComponentToPosition(104, new Cordinate(2, 2), 3);
 
         // Around ship
-        first.addComponentToPosition(105, new Cordinate(4, 4), 0);
-        first.addComponentToPosition(129, new Cordinate(2, 0), 3);
-        first.addComponentToPosition(127, new Cordinate(0, 3), 0); // correct
+        validationTestShipBoard.addComponentToPosition(105, new Cordinate(4, 4), 0);
+        validationTestShipBoard.addComponentToPosition(129, new Cordinate(2, 0), 3);
+        validationTestShipBoard.addComponentToPosition(127, new Cordinate(0, 3), 0); // correct
 
-        first.addComponentToPosition(65, new Cordinate(1, 5), 0); // depot
-        first.addComponentToPosition(106, new Cordinate(2, 5), 0);
-        assertEquals(6, first.getIncorrectDrills().size());
+        validationTestShipBoard.addComponentToPosition(65, new Cordinate(1, 5), 0); // depot
+        validationTestShipBoard.addComponentToPosition(106, new Cordinate(2, 5), 0);
+        assertEquals(6, validationTestShipBoard.getIncorrectDrills().size());
     }
 
-//    @Test
-//    void should_find_incorrect_connected_components() {
-//        first.addComponentToPosition(1, new Cordinate(2, 2), 0);
-//        first.addComponentToPosition(2, new Cordinate(1, 3), 0);
-//        first.addComponentToPosition(3, new Cordinate(1, 4), 0);
-//        first.addComponentToPosition(4, new Cordinate(2, 4), 0);
-//        first.addComponentToPosition(5, new Cordinate(3, 3), 0);
-//        first.addComponentToPosition(12, new Cordinate(3, 4), 0);
-//
-//        assertEquals(4, first.getIncorrectConnectedComponents().size());
-//    }
+    @Test
+    void should_find_incorrect_connected_components() {
+        validationTestShipBoard.addComponentToPosition(10, new Cordinate(2, 2), 0);
+        validationTestShipBoard.addComponentToPosition(2, new Cordinate(1, 3), 0);
+        validationTestShipBoard.addComponentToPosition(3, new Cordinate(1, 4), 0);
+        validationTestShipBoard.addComponentToPosition(4, new Cordinate(2, 4), 0);
+        validationTestShipBoard.addComponentToPosition(5, new Cordinate(3, 3), 0);
+        validationTestShipBoard.addComponentToPosition(12, new Cordinate(3, 4), 0);
+
+        assertEquals(5, validationTestShipBoard.getIncorrectConnectedComponents().size());
+    }
 
     @Test
     void should_find_pieces_not_connected(){
-        first.addComponentToPosition(2, new Cordinate(1, 3), 0);
-        assertEquals(2, first.getMultiplePieces().size());
+        validationTestShipBoard.addComponentToPosition(2, new Cordinate(1, 3), 0);
+        assertEquals(2, validationTestShipBoard.getMultiplePieces().size());
 
-        first.addComponentToPosition(3, new Cordinate(0, 3), 0);
-        first.addComponentToPosition(4, new Cordinate(3, 2), 0);
-        first.addComponentToPosition(1, new Cordinate(2, 2), 0);
-        first.addComponentToPosition(5, new Cordinate(3, 3), 0);
-        assertEquals(2, first.getMultiplePieces().size());
+        validationTestShipBoard.addComponentToPosition(3, new Cordinate(0, 3), 0);
+        validationTestShipBoard.addComponentToPosition(4, new Cordinate(3, 2), 0);
+        validationTestShipBoard.addComponentToPosition(1, new Cordinate(2, 2), 0);
+        validationTestShipBoard.addComponentToPosition(5, new Cordinate(3, 3), 0);
+        assertEquals(2, validationTestShipBoard.getMultiplePieces().size());
 
-        first.addComponentToPosition(6, new Cordinate(2, 5), 0);
-        assertEquals(3, first.getMultiplePieces().size());
+        validationTestShipBoard.addComponentToPosition(6, new Cordinate(2, 5), 0);
+        assertEquals(3, validationTestShipBoard.getMultiplePieces().size());
     }
 
     @Test

@@ -54,6 +54,7 @@ public class Tui implements View {
 
     @Override
     public void run() {
+        Logger.setMinLevel(Logger.Level.WARNING);
         this.updateTui(GameState.START);
         try {
             while (true) {
@@ -359,6 +360,7 @@ public class Tui implements View {
 
     public void cardEffect() {
         Logger.debug("[cardEffect] chiamato con stato: " + controller.getCardState());
+
         switch (controller.getCardState()) {
             case ENGINE_CHOICE -> {
                 engineChoice();
