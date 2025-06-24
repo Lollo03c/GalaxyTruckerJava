@@ -467,7 +467,7 @@ public class Tui implements View {
 
         int count = 1;
         for (Integer id : bookedComponentIds) {
-            System.out.println("Component # " + id);
+            System.out.println("Component # " + count++);
             Component component = controller.getFlyBoard().getComponentById(id);
             new ShipCell(component).drawCell();
         }
@@ -483,11 +483,11 @@ public class Tui implements View {
                 if (chosen == -1) {
                     clearConsole();
                     System.out.println(GREEN + "No component selected." + RESET);
-                    controller.setState(GameState.COMPONENT_MENU);
+                    controller.setState(GameState.BUILDING_SHIP);
                     return;
                 }
 
-                if (bookedComponentIds.contains(chosen)) {
+                if (chosen > 0 && chosen < count) {
                     controller.choseBookedComponent(chosen);
                     break;
                 } else {
@@ -927,222 +927,7 @@ public class Tui implements View {
 
     }
 
-    /**
-     * Message to show building ship menu
-     */
-    private void buildingShipMenu() {
-        GameMode mode = controller.getFlyBoard().getMode();
-        if (firstBuilding) {
-            printStartGameInfo();
-            System.out.println(BLUE + "It's time to build your ship!" + RESET);
-            firstBuilding = false;
-            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partitaAdd commentMore actions
-            if(controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE)  && mode.equals(GameMode.NORMAL)){
-                controller.startHourglass();
-            }
-        }
-        int choice = -1;
-        String input = "";
 
-        System.out.println("1 : Pick covered component");
-        System.out.println("2 : Pick uncovered component");
-        System.out.println("3 : Pick booked component");
-        System.out.println("4 : View other player's ship");
-
-        if (mode.equals(GameMode.NORMAL)) {
-            System.out.println("5 : Look at decks");
-            System.out.println("6 : End ship building");
-            System.out.println("7 : Load automatic shipboard");
-            System.out.println("8 : Rotate hourglass");
-        } else {
-            System.out.println("5 : end building ship");
-        }
-        System.out.print("Make your choice: ");
-
-        input = scanner.nextLine();
-
-        try {
-            choice = Integer.parseInt(input);
-
-            if (choice < 1) {
-                throw new Exception("");
-            } else if (mode.equals(GameMode.NORMAL) && choice > 8) {
-                throw new Exception("");
-            } else if (mode.equals(GameMode.EASY) && choice > 5) {
-                throw new Exception("");
-            }
-        } catch (Exception e) {
-            System.out.println(RED + "Invalid choice!" + RESET);
-            controller.setState(GameState.BUILDING_SHIP);
-            return;
-        }
-        try {
-            if(!controller.getFinishedLastHourglass()){
-                controller.handleBuildingShip(choice);
-            }
-        } catch (CannotRotateHourglassException e) {
-            System.out.println(RED + e.getMessage() + RESET);
-            controller.setState(GameState.BUILDING_SHIP);
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CannotRotateHourglassException) {
-                System.out.println(RED + cause.getMessage() + RESET);
-            } else {
-                throw e;
-            }
-            controller.setState(GameState.BUILDING_SHIP);
-        }
-        clearConsole();
-    }
-
-    /**
-     * Prints the menu to add component, asks for row, column and rotation
-     */
-    private void addComponent() {
-        String input = "";
-
-        int row = 0;
-        while (row < 5 || row > 9) {
-            System.out.print("Insert row: ");
-
-            input = scanner.nextLine();
-
-            try {
-                row = Integer.parseInt(input);
-
-                if (row < 5 || row > 9) {
-                    System.out.println(RED + "Invalid row!" + RESET);
-                }
-            } catch (Exception e) {
-                System.out.println(RED + "Invalid row!" + RESET);
-            }
-        }
-
-        int column = 0;
-        while (column < 4 || column > 10) {
-            System.out.print("Insert column: ");
-
-            input = scanner.nextLine();
-
-            try {
-                column = Integer.parseInt(input);
-
-                if (column < 4 || column > 10) {
-                    System.out.println(RED + "Invalid column!" + RESET);
-                }
-            } catch (Exception e) {
-                System.out.println(RED + "Invalid column!" + RESET);
-            }
-        }
-
-        int rotation = -1;
-        while (rotation < 0 || rotation > 3) {
-            System.out.print("Insert rotation: ");
-
-            input = scanner.nextLine();
-
-            try {
-                rotation = Integer.parseInt(input);
-
-                if (rotation < 0 || rotation > 3) {
-                    System.out.println(RED + "Invalid rotation!" + RESET);
-                }
-            } catch (Exception e) {
-                System.out.println(RED + "Invalid rotation!" + RESET);
-            }
-        }
-
-        ShipBoard ship = controller.getShipBoard();
-        Cordinate cord = new Cordinate(row - ship.getOffsetRow(), column - ship.getOffsetCol());
-        try {
-            controller.addComponent(cord, rotation);
-        } catch (InvalidCordinate e) {
-            controller.setState(GameState.ERROR_PLACEMENT);
-        }
-        clearConsole();
-    }
-
-    private void componentMenu() {
-        System.out.println("This is the component you've drawn:");
-        new ShipCell(controller.getFlyBoard().getComponentById(controller.getInHandComponent())).drawCell();
-        controller.getShipBoard().drawShipboard();
-
-        int choice = -1;
-        String input = "";
-
-        while (choice < 1 || choice > 3) {
-            System.out.println("1 : Insert in the shipboard");
-            System.out.println("2 : Put back in the deck");
-            System.out.println("3 : Save for later");
-            System.out.print("Make your choice: ");
-
-            input = scanner.nextLine();
-
-            try {
-                choice = Integer.parseInt(input);
-
-                if (choice < 1 || choice > 3) {
-                    System.out.println(RED + "Invalid choice!" + RESET);
-                }
-            } catch (Exception e) {
-                System.out.println(RED + "Invalid choice!" + RESET);
-            }
-        }
-
-        if (choice == 1) {
-            controller.setState(GameState.ADD_COMPONENT);
-        } else if (choice == 2) {
-            controller.discardComponent();
-        } else if (choice == 3) {
-            controller.bookComponent();
-        }
-    }
-
-    private void drawUncoveredComponents() {
-        int count = 1;
-        if (controller.getFlyBoard().getUncoveredComponents().isEmpty()) {
-            System.out.println("No uncovered Components");
-            controller.setState(GameState.BUILDING_SHIP);
-            return;
-        }
-
-        for (int idComp : controller.getFlyBoard().getUncoveredComponents()) {
-            System.out.println("Component #" + idComp);
-            Component component = controller.getFlyBoard().getComponentById(idComp);
-            new ShipCell(component).drawCell();
-        }
-
-        System.out.print("Select component to draw (-1 to null) : ");
-        int chosen = Integer.parseInt(scanner.nextLine());
-
-        //todo controllo dell'input
-
-        if (chosen == -1)
-            controller.setState(GameState.BUILDING_SHIP);
-        else
-            controller.drawUncovered(chosen);
-    }
-
-
-    private void viewBookedComponents() {
-        List<Optional<Integer>> bookedComponents = controller.getShipBoard().getBookedComponents();
-        int count = 1;
-
-        for (Optional<Integer> booked : bookedComponents) {
-            if (booked.isEmpty())
-                continue;
-
-            System.out.println("Component # " + count++);
-            Component component = controller.getFlyBoard().getComponentById(booked.get());
-            new ShipCell(component).drawCell();
-        }
-
-        System.out.print("Select component to draw (-1 to null) : ");
-        int chosen = Integer.parseInt(scanner.nextLine());
-
-        //todo controllo dell'input
-        controller.choseBookedComponent(chosen);
-    }
 
     private void chooseBuiltShip() {
         controller.builtDefault();
