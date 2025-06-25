@@ -71,6 +71,8 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.addComponentToPosition(51, new Cordinate(3, 6), 3);
         shipBoard.addComponentToPosition(148, new Cordinate(4,6), 0);
 
+        shipBoard.addGuestToShip();
+
         shipBoard.getOptComponentByCord(new Cordinate(1,2)).get().addGood(GoodType.BLUE);
         shipBoard.getOptComponentByCord(new Cordinate(1,2)).get().addGood(GoodType.GREEN);
         shipBoard.getOptComponentByCord(new Cordinate(4,0)).get().addGood(GoodType.BLUE);
@@ -152,7 +154,7 @@ public class ShipBoardNormal extends ShipBoard {
 
         shipBoard.addGuestToShip();
 
-        /*
+
 
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
@@ -164,7 +166,7 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.HUMAN);
 
-         */
+
         shipBoard.getOptComponentByCord(new Cordinate(3, 6)).get().addGood(GoodType.RED);
         shipBoard.getOptComponentByCord(new Cordinate(3, 5)).get().addGood(GoodType.YELLOW);
         shipBoard.getOptComponentByCord(new Cordinate(3, 5)).get().addGood(GoodType.BLUE);
@@ -210,7 +212,7 @@ public class ShipBoardNormal extends ShipBoard {
 
         shipBoard.getOptComponentByCord(new Cordinate(2, 1)).get().addGood(GoodType.RED);
         shipBoard.getOptComponentByCord(new Cordinate(2, 1)).get().addGood(GoodType.YELLOW);
-        /*
+
 
         shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
@@ -218,19 +220,19 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.getOptComponentByCord(new Cordinate(2, 4)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(2, 4)).get().addGuest(GuestType.HUMAN);
 
-         */
+
         shipBoard.getOptComponentByCord(new Cordinate(2, 5)).get().addGood(GoodType.YELLOW);
         shipBoard.getOptComponentByCord(new Cordinate(2, 5)).get().addGood(GoodType.GREEN);
         shipBoard.getOptComponentByCord(new Cordinate(2, 5)).get().addGood(GoodType.BLUE);
 
-        /*
+
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.BROWN);
         shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
 
         shipBoard.getOptComponentByCord(new Cordinate(2, 2)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(2, 2)).get().addGuest(GuestType.HUMAN);
-         */
+
         shipBoard.getOptComponentByCord(new Cordinate(4, 2)).get().addGood(GoodType.RED);
 
 
@@ -277,8 +279,8 @@ public class ShipBoardNormal extends ShipBoard {
 
         shipBoard.getOptComponentByCord(new Cordinate(1, 2)).get().addGood(GoodType.RED);
 
-//        shipBoard.getOptComponentByCord(new Cordinate(1, 4)).get().addGuest(GuestType.HUMAN);
-//        shipBoard.getOptComponentByCord(new Cordinate(1, 4)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(1, 4)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(1, 4)).get().addGuest(GuestType.HUMAN);
 
         shipBoard.getOptComponentByCord(new Cordinate(1, 5)).get().addGood(GoodType.BLUE);
         shipBoard.getOptComponentByCord(new Cordinate(1, 5)).get().addGood(GoodType.GREEN);
@@ -287,16 +289,16 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.getOptComponentByCord(new Cordinate(2, 0)).get().addGood(GoodType.GREEN);
         shipBoard.getOptComponentByCord(new Cordinate(2, 0)).get().addGood(GoodType.YELLOW);
 
-//        shipBoard.getOptComponentByCord(new Cordinate(2, 2)).get().addGuest(GuestType.PURPLE);
-//        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
-//        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
-//
-//        shipBoard.getOptComponentByCord(new Cordinate(2, 5)).get().addGuest(GuestType.HUMAN);
-//        shipBoard.getOptComponentByCord(new Cordinate(2, 5)).get().addGuest(GuestType.HUMAN);
-//
-//        shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
-//        shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
-//        shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.BROWN);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 2)).get().addGuest(GuestType.PURPLE);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
+
+        shipBoard.getOptComponentByCord(new Cordinate(2, 5)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 5)).get().addGuest(GuestType.HUMAN);
+
+        shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.BROWN);
         return shipBoard;
     }
 

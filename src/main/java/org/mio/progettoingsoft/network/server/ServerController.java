@@ -370,7 +370,7 @@ public class ServerController {
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
         int id = flyBoard.drawCard();
         //if id is 999 the deck is empty
-        id = 999;
+//        id = ;
         if(id == 999){
             setEndGame(idGame);
             return;

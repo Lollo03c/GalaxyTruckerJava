@@ -98,7 +98,10 @@ public class Tui implements View {
             }
             case VIEW_BOOKED -> viewBookedComponents();
             case SWITCH_BOOKED -> switchBookedComponents();
-            case VIEW_SHIP_BUILDING -> viewShipBuilding();
+            case VIEW_SHIP_BUILDING -> {
+                viewShipBuilding();
+                controller.setState(GameState.BUILDING_SHIP);
+            }
             case VIEW_DECKS_LIST -> viewDecksList();
             case VIEW_DECK -> viewDeck();
             case UNABLE_DECK -> {
@@ -185,6 +188,8 @@ public class Tui implements View {
             case YOU_CAN_ROTATE_HOURGLASS -> printYouCanRotateHourglass();
 
             case ENDGAME -> endgame();
+
+            case ADD_CREW -> addCrewMenu();
         }
     }
     private void endgame() {
@@ -653,7 +658,6 @@ public class Tui implements View {
                 System.out.println(RED + "Invalid nickname!" + RESET);
             }
         }
-        controller.setState(GameState.BUILDING_SHIP);
     }
 
     /**
@@ -1366,6 +1370,7 @@ public class Tui implements View {
 
 
 
+
             default -> Logger.error("caso non previsto");
         }
 
@@ -1385,6 +1390,7 @@ public class Tui implements View {
         }
 
         boolean destroyedComp = !choice.equals("y");
+        System.out.println("Waiting other player to make a decision.");
 
 
         switch (card) {
@@ -1637,6 +1643,7 @@ public class Tui implements View {
                 }
             }
 
+            shipBoard.getOptComponentByCord(chosenCord).get().addGuest(guestSelected);
             alreadyInserted.add(guestSelected);
 
             if (addedCrew.containsKey(chosenCord)){

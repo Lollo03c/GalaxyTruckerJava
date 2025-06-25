@@ -136,6 +136,9 @@ public class GameController {
 
     public void update(SldAdvCard card){
         Player player = card.getActualPlayer();
+        if (player == null){
+            player = game.getFlyboard().getScoreBoard().getFirst();
+        }
         String username = player.getNickname();
 
 //        VirtualClient client = game.getClients().get(player.getNickname());

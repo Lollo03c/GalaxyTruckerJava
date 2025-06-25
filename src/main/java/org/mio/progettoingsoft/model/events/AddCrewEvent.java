@@ -18,11 +18,13 @@ public final class AddCrewEvent extends Event{
 
     @Override
     public void send(Map<String, VirtualClient> clients) {
-        for (VirtualClient client : clients.values()){
-            try{
-                client.addCrewMember(nickname, cord,  type);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        for (String nick : clients.keySet()){
+            if (! nickname.equals(nick)) {
+                try {
+                    clients.get(nick).addCrewMember(nickname, cord, type);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
