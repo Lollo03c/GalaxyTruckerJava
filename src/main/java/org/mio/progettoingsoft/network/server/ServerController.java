@@ -266,11 +266,19 @@ public class ServerController {
 
             shipBoard.addGuestToShip();
 
+
             if (flyBoard.getValidationPlayers().isEmpty()){
-                flyBoard.setAddCrewPlayers(flyBoard.getScoreBoard());
-                for (Player p : flyBoard.getScoreBoard()){
-                    Event event = new SetStateEvent(p.getNickname(), GameState.ADD_CREW);
-                    game.addEvent(event);
+                String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
+                for (String n : game.getClients().keySet()){
+                    if (n.equals(nickLeader)){
+                        Event event1 = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
+                        game.addEvent(event1);
+                    }
+                    else{
+                        Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
+                        game.addEvent(event1);
+                    }
+
                 }
             }
         }
@@ -367,8 +375,20 @@ public class ServerController {
         SldAdvCard card = flyBoard.getSldAdvCardByID(29);
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
+        int id = flyBoard.drawCard();
+        //if id is 999 the deck is empty
+        id = 999;
+        if(id == 999){
+            setEndGame(idGame);
+            return;
+        }
+        card = flyBoard.getSldAdvCardByID(id);
         while(game.getFlyboard().getScoreBoard().size() == 1 && (card.getId() == 16 || card.getId() == 36)){
-            int id = flyBoard.drawCard();
+            id = flyBoard.drawCard();
+            if( id == 999 ) {
+                setEndGame(idGame);
+                return;
+            }
             card = flyBoard.getSldAdvCardByID(id);
 
         }
@@ -396,6 +416,20 @@ public class ServerController {
         }
 
 
+    }
+
+    private void setEndGame(int idGame){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+        flyBoard.assignCreditsForPositions();
+        flyBoard.assignCreditsForBeautifulShip();
+        flyBoard.assignCreditsForRemainingGoods();
+        flyBoard.penaltyForDiscardedComponents();
+
+        for (String nick : game.getClients().keySet()) {
+            Event event = new SetStateEvent(nick, GameState.ENDGAME);
+            game.addEvent(event);
+        }
     }
 
     public void drawCardTest(int idGame, String nickname, int idCard) {
@@ -805,16 +839,16 @@ public class ServerController {
     }
 
     public void startHourglass(int idGame) {
-//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-//        FlyBoard fly = game.getFlyboard();
-//        fly.startHourglass(idGame);
-//        for(VirtualClient client : game.getClients().values()){
-//            try {
-//                client.startedHourglass(idGame);
-//            }catch (Exception e){
-//                throw new RuntimeException(e);
-//            }
-//        }
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard fly = game.getFlyboard();
+        fly.startHourglass(idGame);
+        for(VirtualClient client : game.getClients().values()){
+            try {
+                client.startedHourglass(idGame);
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void removeComponent(int idGame, String nickname, Cordinate cord) {
