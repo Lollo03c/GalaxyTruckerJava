@@ -139,6 +139,8 @@ public class Tui implements View {
                 controller.setState(GameState.CHOICE_BUILT);
             }
 
+            case ADD_CREW -> addCrewMenu();
+
 //            case STARDUST -> {
 //                // la riga successiva è da eliminare e passargli la carta pescata
 //                SldStardust card = new SldStardust(1, 1);
