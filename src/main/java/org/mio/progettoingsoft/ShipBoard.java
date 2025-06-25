@@ -856,21 +856,21 @@ public abstract class ShipBoard {
         switch (direction) {
             case FRONT -> {
                 for (Cordinate cord : drills) {
-                    if (cord.getColumn() == number)
+                    if (cord.getColumn() == number - 4)
                         result.add(cord);
                 }
             }
 
             case BACK -> {
                 for (Cordinate cord : drills) {
-                    if (Math.abs(cord.getColumn() - number) <= 1)
+                    if (Math.abs((4 + cord.getColumn()) - number) <= 1)
                         result.add(cord);
                 }
             }
 
             case LEFT, RIGHT -> {
                 for (Cordinate cord : drills) {
-                    if (Math.abs(cord.getRow() - number) <= 1)
+                    if (Math.abs((5 + cord.getRow()) - number) <= 1)
                         result.add(cord);
                 }
             }

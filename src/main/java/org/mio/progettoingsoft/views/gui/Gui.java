@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -1432,6 +1433,11 @@ public class Gui extends Application implements View {
             String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
             Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             cardImageView.setImage(cardBackImage);
+            if (modalDiceRollStage != null) {
+                if (modalDiceRollStage.isShowing()) {
+                    modalDiceRollStage.close();
+                }
+            }
         }
     }
 
@@ -1444,6 +1450,7 @@ public class Gui extends Application implements View {
         cardImageView.setImage(cardImage);
         drawCardButton.setVisible(false);
         waitingForLeaderLabel.setVisible(false);
+
     }
 
     /*
@@ -2021,6 +2028,7 @@ public class Gui extends Application implements View {
         }
         modalDiceRollStage = new Stage();
         modalDiceRollStage.initModality(Modality.APPLICATION_MODAL);
+        modalDiceRollStage.setOnCloseRequest(Event::consume);
         VBox box = new VBox(10);
         if (oldMeteorMessage != null) {
             Label oldMeteorLabel = new Label(oldMeteorMessage);
