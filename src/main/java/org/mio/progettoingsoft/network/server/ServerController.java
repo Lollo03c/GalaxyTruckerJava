@@ -22,9 +22,7 @@ import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ServerController {
     /**
@@ -867,17 +865,53 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
+        Player player = flyBoard.getPlayerByUsername(nickname);
+        if (!flyBoard.getAddCrewPlayers().contains(player)){
+            return;
+        }
         ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        List<GuestType> flatInserted = new ArrayList<>();
+
+        boolean valid = true;
         for (Cordinate cord : addedCrew.keySet()){
             for (GuestType type : addedCrew.get(cord)) {
                 int idComp = ship.getOptComponentByCord(cord).get().getId();
                 Component comp = flyBoard.getComponentById(idComp);
 
-                comp.addGuest(type);
+                if (!comp.canAddGuest(type))
+                    valid = false;
+
+                flatInserted.add(type);
 
                 Event event = new AddCrewEvent(nickname, cord, type);
                 game.addEvent(event);
             }
+        }
+
+        if (Collections.frequency(flatInserted, GuestType.BROWN) > 1)
+            valid = false;
+
+        if (Collections.frequency(flatInserted, GuestType.PURPLE) > 1)
+            valid = false;
+
+        if (valid) {
+            for (Cordinate cord : addedCrew.keySet()) {
+                for (GuestType type : addedCrew.get(cord)) {
+                    int idComp = ship.getOptComponentByCord(cord).get().getId();
+                    Component comp = flyBoard.getComponentById(idComp);
+                    comp.addGuest(type);
+
+                    Event event = new AddCrewEvent(nickname, cord, type);
+                    game.addEvent(event);
+                }
+            }
+        }
+        else{
+            Event event1 = new SetStateEvent(nickname, GameState.IDLE);
+            game.addEvent(event1);
+
+            Event event = new SetStateEvent(nickname, GameState.ADD_CREW);
+            game.addEvent(event);
         }
 
 

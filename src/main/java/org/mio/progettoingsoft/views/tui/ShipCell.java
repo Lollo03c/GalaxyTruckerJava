@@ -3,11 +3,15 @@ package org.mio.progettoingsoft.views.tui;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.Component;
+import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class ShipCell {
     public static final String RESET = "\u001B[0m";
@@ -516,7 +520,17 @@ public class ShipCell {
         fullDepot.addGood(GoodType.YELLOW);
         fullDepot.addGood(GoodType.GREEN);
 
-        ShipCell cella = new ShipCell(fullDepot);
+        int gameId = 1;
+        HashSet<String> nicks = new HashSet<>(Set.of("antonio", "andrea", "lollo"));
+        GameServer game;
+        game = new Game(gameId, true);
+        GameManager.getInstance().getOngoingGames().put(gameId, game);
+        game.setupGame(GameMode.NORMAL, 3);
+        game.createFlyboard(GameMode.NORMAL, nicks);
+
+        game.startGame();
+        FlyBoard flyBoard = game.getFlyboard();
+        ShipCell cella = new ShipCell(flyBoard.getComponentById(102));
         cella.drawCell();
         //cella.computeCell();
         //System.out.println(cella);
