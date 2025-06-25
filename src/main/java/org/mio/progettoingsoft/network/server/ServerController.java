@@ -368,7 +368,8 @@ public class ServerController {
         SldAdvCard card = flyBoard.getSldAdvCardByID(29);
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        int id = flyBoard.drawCard();
+//        int id = flyBoard.drawCard();
+        int id = 5;
         //if id is 999 the deck is empty
 //        id = ;
         if(id == 999){
@@ -452,7 +453,6 @@ public class ServerController {
 
                 try {
                     openSpace.applyEffect(player, number);
-                    openSpace.setNextPlayer();
                 } catch (IllegalStateException | BadParameterException | BadPlayerException |
                          NotEnoughBatteriesException e) {
                     VirtualClient client = game.getClients().get(nickname);

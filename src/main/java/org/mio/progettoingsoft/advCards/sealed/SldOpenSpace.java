@@ -55,7 +55,6 @@ public final class SldOpenSpace extends SldAdvCard {
             throw new IncorrectFlyBoardException("player not found");
         }
 
-        this.state = CardState.APPLYING;
 
         if (player.equals(actualPlayer)) {
             if (numDoubleEngines > actualPlayer.getShipBoard().getQuantBatteries()) {
@@ -69,9 +68,9 @@ public final class SldOpenSpace extends SldAdvCard {
             }
             player.getShipBoard().removeEnergy(numDoubleEngines);
             int base = player.getShipBoard().getBaseEnginePower();
-            int power = base + numDoubleEngines * 2;
+            int power = base + (numDoubleEngines * 2);
 
-            if (base == 0){
+            if (power == 0){
                 noPowerPlayers.add(player);
             }
 

@@ -147,8 +147,6 @@ public class Tui implements View {
                 controller.setState(GameState.CHOICE_BUILT);
             }
 
-            case ADD_CREW -> addCrewMenu();
-
 //            case STARDUST -> {
 //                // la riga successiva è da eliminare e passargli la carta pescata
 //                SldStardust card = new SldStardust(1, 1);
@@ -1173,12 +1171,8 @@ public class Tui implements View {
     private void goodPlacement(){
         SldAdvCard card = controller.getPlayedCard();
         List<GoodType> toInsert = new ArrayList<>();
-        switch (card){
-            case SldPlanets planets -> {
-                toInsert = controller.getPlanetGoods();
-            }
-            default -> toInsert = controller.getGoodsToInsert();
-        }
+
+        toInsert = controller.getGoodsToInsert();
         ShipBoard shipBoard = controller.getShipBoard();
 
         String choice = "";
