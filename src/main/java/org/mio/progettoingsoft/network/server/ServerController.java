@@ -489,6 +489,9 @@ public class ServerController {
                 flyBoard.getScoreBoard().remove(player);
                 Event event = new LeavePlayerEvent(nickname);
                 game.addEvent(event);
+                if(flyBoard.getScoreBoard().isEmpty()){
+                    setEndGame(idGame);
+                }
             }
 
             if (watingPlayers.isEmpty()) {

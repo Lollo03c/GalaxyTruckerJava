@@ -23,6 +23,7 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.LeavePlayerEvent;
 import org.mio.progettoingsoft.model.events.MovePlayerEvent;
+import org.mio.progettoingsoft.model.events.SetStateEvent;
 import org.mio.progettoingsoft.model.interfaces.FlyBoardServer;
 import org.mio.progettoingsoft.utils.Logger;
 
@@ -311,8 +312,8 @@ public abstract class FlyBoard implements FlyBoardServer {
                     scoreBoard.set(position1, player2.orElse(player));
                     scoreBoard.set(position2, player);
                 } else {
-                    //player2 viene doppiato e quindi eliminato(?)
-                    //no player2 viene doppiato e quindi rimane fermo dove si trova, semplicemente viene superata da player
+                    //player2 is doubled and so removed from scoreBoard
+                    leavePlayer(player2.get());
                 }
             }
         }

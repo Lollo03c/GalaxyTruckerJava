@@ -6,6 +6,8 @@ import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
+import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.SetStateEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.utils.Logger;
 
@@ -52,7 +54,9 @@ public final class SldOpenSpace extends SldAdvCard {
     // else, it sets the card state to ENGINE_CHOICE to accept other calls with next players
     public void applyEffect(Player player, int numDoubleEngines) {
         if (!flyBoard.getScoreBoard().contains(player)) {
-            throw new IncorrectFlyBoardException("player not found");
+            setNextPlayer();
+            return;
+            //throw new IncorrectFlyBoardException("player not found");
         }
 
 
@@ -91,6 +95,8 @@ public final class SldOpenSpace extends SldAdvCard {
         } else {
             for (Player player : noPowerPlayers){
                 flyBoard.leavePlayer(player);
+                Event event = new SetStateEvent(player.getNickname(), GameState.REMOVED_FROM_FLYBOARD);
+                game.addEvent(event);
             }
             setState(CardState.FINALIZED);
         }

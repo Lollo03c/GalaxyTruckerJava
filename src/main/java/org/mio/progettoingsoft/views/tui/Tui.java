@@ -59,7 +59,7 @@ public class Tui implements View {
 
     @Override
     public void run() {
-        Logger.setMinLevel(Logger.Level.DEBUG);
+        Logger.setMinLevel(Logger.Level.WARNING);
         this.updateTui(GameState.START);
         try {
             while (true) {
@@ -188,6 +188,8 @@ public class Tui implements View {
             case ENDGAME -> endgame();
 
             case ADD_CREW -> addCrewMenu();
+
+            case REMOVED_FROM_FLYBOARD -> System.out.println("You have been removed from ScoreBoard now you are just a spectator till the end of the flight, please wait");
         }
     }
     private void endgame() {

@@ -224,8 +224,11 @@ public class GameController {
 
                     if (p.getShipBoard().getNumberHumans() == 0){
                         flyBoard.leavePlayer(player);
+                        Event event = new SetStateEvent(p.getNickname(), GameState.REMOVED_FROM_FLYBOARD);
+                        game.addEvent(event);
                     }
                 }
+
                 flyBoard.refreshWaitingPlayers();
 
                 List<Player> score = flyBoard.getScoreBoard();
@@ -234,6 +237,17 @@ public class GameController {
 
                     Event eve = new SetCardStateEvent(n, CardState.ASK_LEAVE);
                     game.addEvent(eve);
+                }
+                if(flyBoard.getScoreBoard().isEmpty()){
+                    flyBoard.assignCreditsForPositions();
+                    flyBoard.assignCreditsForBeautifulShip();
+                    flyBoard.assignCreditsForRemainingGoods();
+                    flyBoard.penaltyForDiscardedComponents();
+
+                    for (String nick : game.getClients().keySet()) {
+                        Event event = new SetStateEvent(nick, GameState.ENDGAME);
+                        game.addEvent(event);
+                    }
                 }
 
 //                Set<String> nicknames = clients.keySet();
