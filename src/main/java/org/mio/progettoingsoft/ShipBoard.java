@@ -420,22 +420,9 @@ public abstract class ShipBoard {
             }
 
             try {
-<<<<<<< Updated upstream
-                while (true) {
-                    row ++;
-                    Cordinate nextCord = new Cordinate(row, cord.getColumn());
-
-                    if (getOptComponentByCord(nextCord).isPresent()){
-                        incorrect.add(cord);
-                        Logger.debug("Incorrect engine " + cord + " id " + getOptComponentByCord(cord).get().getId());
-                        break;
-                    }
-                }
-=======
                 // if engine has a component below is incorrect
                 if (getOptComponentByCord(new Cordinate(cord.getRow() + 1, cord.getColumn())).isPresent())
                     incorrect.add(cord);
->>>>>>> Stashed changes
             } catch (InvalidCordinate e) {
                 // Se esce dalla griglia senza trovare nulla, il cannone è corretto
             }
@@ -470,22 +457,8 @@ public abstract class ShipBoard {
             int col = cord.getColumn() + dir.offsetCol();
 
             try {
-<<<<<<< Updated upstream
-                while (true) {
-                    row += dir.offsetRow();
-                    col += dir.offsetCol();
-                    Cordinate nextCord = new Cordinate(row, col);
-
-                    if (getOptComponentByCord(nextCord).isPresent()) {
-                        incorrect.add(cord);
-                        Logger.debug("Incorrect drill " + cord + " id " + getOptComponentByCord(cord).get().getId());
-                        break;
-                    }
-                }
-=======
                 if (getOptComponentByCord(new Cordinate(row, col)).isPresent())
                     incorrect.add(cord);
->>>>>>> Stashed changes
             } catch (InvalidCordinate e) {
                 // Se esce dalla griglia senza trovare nulla, il cannone è corretto
             }
