@@ -47,6 +47,11 @@ public class Tui implements View {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case "gameState" -> {
+                if ((GameState) evt.getNewValue() == GameState.YOU_CAN_ROTATE_HOURGLASS) {
+                    if(statesQueue.contains(GameState.YOU_CAN_ROTATE_HOURGLASS)) {
+                       return;
+                    }
+                }
                 statesQueue.add((GameState) evt.getNewValue());
             }
         }
@@ -117,7 +122,7 @@ public class Tui implements View {
                 System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);
                 if(controller.getFinishedBuilding()){
                     controller.setState(GameState.END_BUILDING);
-                    controller.setState(GameState.YOU_CAN_ROTATE_HOURGLASS);
+                    //controller.setState(GameState.YOU_CAN_ROTATE_HOURGLASS);
                 }
             }
             case FINISH_LAST_HOURGLASS -> {
@@ -182,7 +187,6 @@ public class Tui implements View {
             case ENDGAME -> endgame();
         }
     }
-
     private void endgame() {
         int index = 1;
         Logger.debug("SONO ENTRATO IN ENDGAME");
@@ -197,6 +201,10 @@ public class Tui implements View {
     }
 
     private void printYouCanRotateHourglass() {
+        if(controller.getPendingHourglass()) {
+            //controller.setState(GameState.END_BUILDING);
+            return;
+        }
         String input = "";
         while (!input.equalsIgnoreCase("y") && !input.equalsIgnoreCase("n")) {
             System.out.println("Do you want to rotate hourglass? y/n");
