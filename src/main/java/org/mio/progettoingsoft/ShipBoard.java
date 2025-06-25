@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public abstract class ShipBoard {
     private final Optional<Component>[][] shipComponents;
-    private final Optional<Integer> [][] rotationMatrix;
+    private final Optional<Integer>[][] rotationMatrix;
 
     private List<Optional<Integer>> bookedComponents;
 
@@ -41,15 +41,15 @@ public abstract class ShipBoard {
     /**
      * static method used to create an istance of ShipBoard based on the {@link GameMode}
      *
-     * @param mode the {@link GameMode} of the game
-     * @param color the {@link Housing} of the shipboard
+     * @param mode     the {@link GameMode} of the game
+     * @param color    the {@link Housing} of the shipboard
      * @param flyBoard of {@link FlyBoard} used to get the {@link Component} and {@link AdventureCard} lists
      * @return
      */
-    public static ShipBoard createShipBoard(GameMode mode, HousingColor color, FlyBoard flyBoard){
+    public static ShipBoard createShipBoard(GameMode mode, HousingColor color, FlyBoard flyBoard) {
         ShipBoard shipBoard = null;
 
-        switch (mode){
+        switch (mode) {
             case EASY -> shipBoard = new ShipBoardEasy(color, flyBoard);
             case NORMAL -> shipBoard = new ShipBoardNormal(color, flyBoard);
         }
@@ -57,9 +57,10 @@ public abstract class ShipBoard {
         return shipBoard;
     }
 
-    public void drawShipboard(){}
+    public void drawShipboard() {
+    }
 
-    public HousingColor getHousingColor(){
+    public HousingColor getHousingColor() {
         return housingColor;
     }
 
@@ -102,7 +103,6 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return the list of banneed {@link Cordinate} based on the {@link GameMode} of the game
      */
     protected abstract List<Cordinate> getBannedCoordinates();
@@ -111,33 +111,30 @@ public abstract class ShipBoard {
         long counted = bookedComponents.stream()
                 .filter(Optional::isPresent).count();
 
-        if (counted == 0){
+        if (counted == 0) {
             shipComponents[0][5] = Optional.of(flyBoard.getComponentById(bookedComponent));
             bookedComponents.set(0, Optional.of(bookedComponent));
-        }
-        else if (counted == 1) {
+        } else if (counted == 1) {
             shipComponents[0][6] = Optional.of(flyBoard.getComponentById(bookedComponent));
             bookedComponents.set(1, Optional.of(bookedComponent));
-        }
-        else
+        } else
             throw new IncorrectShipBoardException("");
     }
 
-    public void swapBookComponent(int bookedComponent, int position){
+    public void swapBookComponent(int bookedComponent, int position) {
         shipComponents[0][5 + position] = Optional.of(flyBoard.getComponentById(bookedComponent));
         bookedComponents.set(position, Optional.of(bookedComponent));
     }
 
 
     /**
-     *
      * @return the list of the id of the booked Component
      */
     public List<Optional<Integer>> getBookedComponents() {
         return bookedComponents;
     }
 
-    public void removedBookedComponent(int position){
+    public void removedBookedComponent(int position) {
         shipComponents[0][5 + position] = Optional.empty();
         bookedComponents.set(position, Optional.empty());
     }
@@ -161,12 +158,11 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return the total engine power when all {@link DoubleEngine} are not activated
      */
     public int getBaseEnginePower() {
-        int enginePower = getCompStream().mapToInt(comp -> comp.getEnginePower(false)).sum();;
-        if (enginePower > 0){
+        int enginePower = getCompStream().mapToInt(comp -> comp.getEnginePower(false)).sum();
+        if (enginePower > 0) {
             boolean alienPresent = getCompStream().anyMatch(comp -> comp.getGuests().contains(GuestType.BROWN));
             if (alienPresent)
                 enginePower += 2;
@@ -177,12 +173,11 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return the total fire power when all {@link DoubleDrill} are not activated
      */
     public double getBaseFirePower() {
-        double firePower = getCompStream().mapToDouble (comp -> comp.getFirePower(false)).sum();
-        if (firePower > 0){
+        double firePower = getCompStream().mapToDouble(comp -> comp.getFirePower(false)).sum();
+        if (firePower > 0) {
             boolean alienPresent = getCompStream().anyMatch(comp -> comp.getGuests().contains(GuestType.PURPLE));
             if (alienPresent)
                 firePower += 2;
@@ -191,11 +186,10 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @param type the {@link GoodType} to search for
      * @return the number of goods of the given {@link GoodType} contained in the shipboard
      */
-    public int getStoredQuantity(GoodType type){
+    public int getStoredQuantity(GoodType type) {
         return (int) getCompStream().flatMap(comp -> comp.getStoredGoods().stream())
                 .filter(t -> t.equals(type))
                 .count();
@@ -206,18 +200,17 @@ public abstract class ShipBoard {
      *
      * @param cord the coordinate for which adjacent components should be found
      * @return a map where the key is the {@link Direction} of the adjacent component relative
-     *         to the given coordinate, and the value is the corresponding {@link Component}
+     * to the given coordinate, and the value is the corresponding {@link Component}
      */
     public Map<Direction, Component> getAdjacent(Cordinate cord) {
         Map<Direction, Component> adjacent = new HashMap<>();
 
-        for (Direction dir : Direction.values()){
-            try{
+        for (Direction dir : Direction.values()) {
+            try {
                 Cordinate cordinate = new Cordinate(cord.getRow() + dir.offsetRow(), cord.getColumn() + dir.offsetCol());
                 Optional<Component> optComp = getOptComponentByCord(cordinate);
                 optComp.ifPresent(component -> adjacent.put(dir, component));
-            }
-            catch (InvalidCordinate e){
+            } catch (InvalidCordinate e) {
             }
         }
         return adjacent;
@@ -226,8 +219,8 @@ public abstract class ShipBoard {
     /// add the [Component] with given id, to the given rotation, after rotates it
     ///
     /// @param componentId the id of the [Component] to insert
-    /// @param cordinate the position where to insert id
-    /// @param angle the angle to rotate
+    /// @param cordinate   the position where to insert id
+    /// @param angle       the angle to rotate
     /// @throws IncorrectShipBoardException if the cordinate is invalid
     public void addComponentToPosition(int componentId, Cordinate cordinate, int angle) throws IncorrectShipBoardException {
         if (bannedCoordinates.contains(cordinate))
@@ -254,20 +247,20 @@ public abstract class ShipBoard {
 
     /**
      * return the {@link Component} if present, Optional.of otherwise
+     *
      * @param cordinate the {@link Cordinate} for the search
      * @return
      */
-    public Optional<Component> getOptComponentByCord(Cordinate cordinate){
+    public Optional<Component> getOptComponentByCord(Cordinate cordinate) {
         return shipComponents[cordinate.getRow()][cordinate.getColumn()];
     }
 
 
     /**
-     *
      * @param cordinate the {@link Cordinate} of the tile to empty
      * @throws IncorrectShipBoardException if the tile is already empty
      */
-    public void removeComponent(Cordinate cordinate) throws IncorrectShipBoardException{
+    public void removeComponent(Cordinate cordinate) throws IncorrectShipBoardException {
         if (getOptComponentByCord(cordinate).isEmpty())
             throw new IncorrectShipBoardException("tile is empty. nothing to remove");
 
@@ -279,22 +272,23 @@ public abstract class ShipBoard {
 
     /**
      * remove the given quantity of energy from {@link EnergyDepot} if possible, throws {@link IncorrectShipBoardException} otherwise
+     *
      * @param quantiy the quanity to remove
      * @return the list of id {@link Component} from which the energy have been taken
      * @throws IncorrectShipBoardException if not enough energy to remove
      */
-    public List<Integer> removeEnergy(int quantiy) throws IncorrectShipBoardException{
+    public List<Integer> removeEnergy(int quantiy) throws IncorrectShipBoardException {
         List<Integer> idComps = new ArrayList<>();
 
         Iterator<Component> iterator = getCompIterator();
-        while(iterator.hasNext() && quantiy > 0){
+        while (iterator.hasNext() && quantiy > 0) {
             Component comp = iterator.next();
 
-            if (comp.getEnergyQuantity() > 0){
+            if (comp.getEnergyQuantity() > 0) {
                 int toRemove = Integer.min(quantiy, comp.getEnergyQuantity());
                 quantiy -= toRemove;
 
-                for (int i = 0; i < toRemove; i++){
+                for (int i = 0; i < toRemove; i++) {
                     idComps.add(comp.getId());
                 }
             }
@@ -303,7 +297,7 @@ public abstract class ShipBoard {
         if (quantiy > 0)
             throw new IncorrectShipBoardException("not enought energy to remove");
 
-        for (int id : idComps){
+        for (int id : idComps) {
             flyBoard.getComponentById(id).removeOneEnergy();
 
             Event event = new RemoveEnergyEvent(null, id);
@@ -316,18 +310,16 @@ public abstract class ShipBoard {
 
 
     /**
-     *
      * @return the iterator which enable to iterator over all the components in the shipboard
      */
-    private Iterator<Component> getCompIterator(){
+    private Iterator<Component> getCompIterator() {
         return Stream.of(shipComponents).flatMap(Stream::of).filter(Optional::isPresent).map(Optional::get).iterator();
     }
 
     /**
-     *
      * @return the stream of the components in the shipboard
      */
-    private Stream<Component> getCompStream(){
+    private Stream<Component> getCompStream() {
         return Stream.of(shipComponents).flatMap(Stream::of).filter(Optional::isPresent).map(Optional::get);
     }
 
@@ -343,9 +335,9 @@ public abstract class ShipBoard {
         Optional<Integer>[][] matrix = new Optional[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                if(shipComponents[i][j].isPresent()){
+                if (shipComponents[i][j].isPresent()) {
                     matrix[i][j] = Optional.of(shipComponents[i][j].get().getId());
-                }else{
+                } else {
                     matrix[i][j] = Optional.empty();
                 }
             }
@@ -356,15 +348,16 @@ public abstract class ShipBoard {
 
     /**
      * used only for the GUI rendering
+     *
      * @return a NEW matrix of optional: empty if the position doesn't contain a component, the rotation of the component (related to the image) if present
      */
-    public Optional<Integer>[][] getComponentRotationsMatrix(){
+    public Optional<Integer>[][] getComponentRotationsMatrix() {
         Optional<Integer>[][] matrix = new Optional[rows][columns];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                if(rotationMatrix[i][j].isPresent()){
+                if (rotationMatrix[i][j].isPresent()) {
                     matrix[i][j] = Optional.of(rotationMatrix[i][j].get());
-                }else{
+                } else {
                     matrix[i][j] = Optional.empty();
                 }
             }
@@ -374,7 +367,6 @@ public abstract class ShipBoard {
 
 
     /**
-     *
      * @return the total number of energy left
      */
     public int getQuantBatteries() {
@@ -405,7 +397,7 @@ public abstract class ShipBoard {
 
         // Itereo sui components
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
             Optional<Component> optComponent = getOptComponentByCord(cord);
 
@@ -471,13 +463,13 @@ public abstract class ShipBoard {
      * Returns the set of coordinates of components that are incorrectly connected on the shipboard.
      *
      * @return a {@link Set} of {@link Cordinate} objects representing the positions of components
-     *         that are not correctly connected based on their connectors.
+     * that are not correctly connected based on their connectors.
      */
     public List<Cordinate> getIncorrectConnectedComponents() {
         List<Cordinate> incorrect = new ArrayList<>();
 
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
             Optional<Component> optComp = getOptComponentByCord(cord);
 
@@ -488,10 +480,10 @@ public abstract class ShipBoard {
             //incorrect by connectors
             Component comp = optComp.get();
             Map<Direction, Component> adjacent = getAdjacent(cord);
-            for (Direction dir : adjacent.keySet()){
+            for (Direction dir : adjacent.keySet()) {
                 Component other = adjacent.get(dir);
 
-                if (!comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
+                if (!comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))) {
                     incorrect.add(cord);
                     Logger.debug("Incorrect connected: " + cord + " id " + getOptComponentByCord(cord).get().getId());
                     break;
@@ -588,14 +580,17 @@ public abstract class ShipBoard {
                 continue;
 
             Component component = getOptComponentByCord(cordinate).get();
-            if (component.getType().equals(ComponentType.HOUSING)){
+            if (component.getType().equals(ComponentType.HOUSING)) {
                 Map<Direction, Component> adjacents = getAdjacent(cordinate);
 
-                for (Component comp : adjacents.values()){
-                    try {
-                        component.addAllowedGuest(comp.getColorAlien());
-                    } catch (IncorrectShipBoardException e) {
+                for (Direction dir : adjacents.keySet()) {
+                    Component other = adjacents.get(dir);
+                    if (component.getConnector(dir).isConnected(other.getConnector(dir.getOpposite()))) {
+                        try {
+                            component.addAllowedGuest(other.getColorAlien());
+                        } catch (IncorrectShipBoardException e) {
 
+                        }
                     }
                 }
             }
@@ -603,14 +598,13 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return the number of exposed connectors of the shipboard
      */
     public int getExposedConnectors() {
         int numExposedConnectors = 0;
 
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cordinate = cordinateIterator.next();
 
             if (getOptComponentByCord(cordinate).isEmpty())
@@ -619,7 +613,7 @@ public abstract class ShipBoard {
             Component comp = getOptComponentByCord(cordinate).get();
             Map<Direction, Component> adjacents = getAdjacent(cordinate);
 
-            for (Direction dir : Direction.values()){
+            for (Direction dir : Direction.values()) {
                 if (!comp.getConnector(dir).equals(Connector.FLAT) && !adjacents.containsKey(dir))
                     numExposedConnectors++;
             }
@@ -629,7 +623,6 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return the number of guests hosted in the shipBoard
      */
     public int getQuantityGuests() {
@@ -639,7 +632,6 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @param quantity int : quantity of goods / batteries to stole
      */
     public Map<Integer, List<GoodType>> stoleGood(int quantity) {
@@ -648,23 +640,23 @@ public abstract class ShipBoard {
         Iterator<GoodType> typeIterator = GoodType.sortedList.iterator();
 
 
-        while (quantity > 0 && typeIterator.hasNext()){
+        while (quantity > 0 && typeIterator.hasNext()) {
             GoodType type = typeIterator.next();
             Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
 
-            while (quantity > 0 && cordinateIterator.hasNext()){
+            while (quantity > 0 && cordinateIterator.hasNext()) {
                 Cordinate cord = cordinateIterator.next();
                 if (getOptComponentByCord(cord).isEmpty())
                     continue;
 
                 Component comp = getOptComponentByCord(cord).get();
-                if (comp.getStoredGoods().contains(type)){
+                if (comp.getStoredGoods().contains(type)) {
                     int contained = (int) comp.getStoredGoods().stream().filter(t -> t.equals(type)).count();
                     quantity -= Integer.min(quantity, contained);
 
                     if (result.containsKey(comp.getId()))
                         result.get(comp.getId()).add(type);
-                    else{
+                    else {
                         result.put(comp.getId(), new ArrayList<>());
                         result.get(comp.getId()).add(type);
                     }
@@ -672,8 +664,8 @@ public abstract class ShipBoard {
             }
         }
 
-        for (Integer idComp : result.keySet()){
-            for (GoodType type : result.get(idComp)){
+        for (Integer idComp : result.keySet()) {
+            for (GoodType type : result.get(idComp)) {
                 flyBoard.getComponentById(idComp).removeGood(type);
 
                 Event event = new RemoveGoodEvent("", idComp, type);
@@ -681,7 +673,7 @@ public abstract class ShipBoard {
             }
         }
 
-        if (quantity > 0){
+        if (quantity > 0) {
             try {
                 removeEnergy(Integer.min(quantity, getQuantBatteries()));
             } catch (IncorrectShipBoardException e) {
@@ -737,7 +729,7 @@ public abstract class ShipBoard {
 //    }
 
 
-    public void keepPart(int row, int col){
+    public void keepPart(int row, int col) {
 //        List<Set<Component>> multiple = Collections.emptyList(); // getMultiplePieces();
 //        int partToKeep = -1;
 //        for(int i = 0; i < multiple.size(); i++){
@@ -766,32 +758,30 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return the {@link List} of {@link Optional} of {@link Component} of the components in the {@link ShipBoard}
      */
-    public List<Optional<Component>> getComponents(){
+    public List<Optional<Component>> getComponents() {
         return Stream.of(shipComponents)
                 .flatMap(Arrays::stream)
                 .collect(Collectors.toList());
     }
 
     /**
-     *
      * @param type : the {@link GoodType} to search for availability
      * @return a {@link List} of {@link Cordinate} for the valid spots of the {@link Depot}
      */
-    public List<Cordinate> getAvailableDepots(GoodType type){
+    public List<Cordinate> getAvailableDepots(GoodType type) {
         List<Cordinate> cordinates = new ArrayList<>();
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
 
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
 
             if (shipComponents[cord.getRow()][cord.getColumn()].isEmpty())
                 continue;
 
             Component comp = shipComponents[cord.getRow()][cord.getColumn()].get();
-            if (comp.canContainsGood(type)){
+            if (comp.canContainsGood(type)) {
                 cordinates.add(cord);
             }
         }
@@ -800,13 +790,12 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return a {@link List} of {@link Cordinate} for the valid spots of {@link DoubleDrill}
      */
-    public List<Cordinate> getDoubleDrills(){
+    public List<Cordinate> getDoubleDrills() {
         List<Cordinate> drillCords = new ArrayList<>();
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
             if (this.getOptComponentByCord(cord).isEmpty())
                 continue;
@@ -821,12 +810,13 @@ public abstract class ShipBoard {
 
     /**
      * check whether exists a {@link Shield} which can cover the given {@link Direction}
+     *
      * @param direction : the {@link Direction} to search
      * @return whether a {@link Shield} exists
      */
-    public boolean coveredByShield(Direction direction){
+    public boolean coveredByShield(Direction direction) {
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
 
             if (getOptComponentByCord(cord).isEmpty())
@@ -840,14 +830,13 @@ public abstract class ShipBoard {
     }
 
     /**
-     *
      * @return a {@link List} of {@link Cordinate} for the valid spots of {@link DoubleDrill}
      */
-    public List<Cordinate> getDrills(Direction direction){
+    public List<Cordinate> getDrills(Direction direction) {
         List<Cordinate> result = new ArrayList<>();
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
 
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
 
             if (getOptComponentByCord(cord).isEmpty())
@@ -860,28 +849,28 @@ public abstract class ShipBoard {
         return result;
     }
 
-    public List<Cordinate> possibleDrills(Direction direction, int number){
+    public List<Cordinate> possibleDrills(Direction direction, int number) {
         List<Cordinate> result = new ArrayList<>();
         List<Cordinate> drills = getDrills(direction);
 
-        switch (direction){
+        switch (direction) {
             case FRONT -> {
-                for (Cordinate cord : drills){
-                    if (cord.getColumn() == number)
+                for (Cordinate cord : drills) {
+                    if (cord.getColumn() == number - 4)
                         result.add(cord);
                 }
             }
 
             case BACK -> {
-                for (Cordinate cord : drills){
-                    if (Math.abs(cord.getColumn() - number) <= 1)
+                for (Cordinate cord : drills) {
+                    if (Math.abs((4 + cord.getColumn()) - number) <= 1)
                         result.add(cord);
                 }
             }
 
             case LEFT, RIGHT -> {
-                for (Cordinate cord : drills){
-                    if (Math.abs(cord.getRow() - number) <= 1)
+                for (Cordinate cord : drills) {
+                    if (Math.abs((5 + cord.getRow()) - number) <= 1)
                         result.add(cord);
                 }
             }
@@ -890,10 +879,10 @@ public abstract class ShipBoard {
         return result;
     }
 
-    public int getNumberHumans(){
+    public int getNumberHumans() {
         long sum = 0;
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
 
             if (getOptComponentByCord(cord).isEmpty())
@@ -906,11 +895,11 @@ public abstract class ShipBoard {
         return (int) sum;
     }
 
-    public List<Cordinate> getAvailableHousing(GuestType type){
+    public List<Cordinate> getAvailableHousing(GuestType type) {
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         List<Cordinate> availableCord = new ArrayList<>();
 
-        while (cordinateIterator.hasNext()){
+        while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
 
             if (getOptComponentByCord(cord).isEmpty())

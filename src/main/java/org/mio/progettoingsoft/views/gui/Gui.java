@@ -4,6 +4,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -30,6 +31,7 @@ import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -126,6 +128,8 @@ public class Gui extends Application implements View {
             HousingColor.YELLOW, Color.YELLOW
     ));
     private int remainings, total, hourglassCycle;
+    private boolean readyToInsert;
+    private GuestType guestTypeToInsert;
 
     private Stage stage;
     private StackPane root;
@@ -299,6 +303,7 @@ public class Gui extends Application implements View {
             case DRAW_CARD -> advStartedView(false);
             case YOU_CAN_DRAW_CARD -> advStartedView(true);
             case NEW_CARD -> loadNewCard();
+            case ADD_CREW -> addCrewView();
             case CARD_EFFECT -> {
             }
             case IDLE -> {
@@ -970,7 +975,7 @@ public class Gui extends Application implements View {
         modalShipStage.setTitle(nickname + "'s shipboard");
         modalShipContainer = new VBox(15);
         modalShipStage.setScene(new Scene(modalShipContainer));
-        modalShipStage.setMaximized(true);
+        modalShipStage.setOnCloseRequest(evt -> {});
         modalShipStage.show();
         double stageHeight = modalShipStage.getHeight(), stageWidth = modalShipStage.getWidth();
         modalShipContainer.setAlignment(Pos.CENTER);
@@ -1097,6 +1102,118 @@ public class Gui extends Application implements View {
             controller.endValidation();
         }
 
+    }
+
+    private void addCrewView(){
+        modalShipboardView(controller.getNickname());
+        Map<Cordinate, List<GuestType>> addedCrew = new HashMap<>();
+        Label topLabel = new Label("Click on the housing you want to populate!");
+        Label errLabel = new Label("Cannot place crew in the selected housing");
+        modalShipContainer.getChildren().addFirst(errLabel);
+        errLabel.setVisible(false);
+        modalShipContainer.getChildren().addFirst(topLabel);
+        HBox btnBox = new HBox(15);
+        HBox confBtnBox = new HBox(25);
+        btnBox.setAlignment(Pos.CENTER);
+        confBtnBox.setAlignment(Pos.CENTER);
+        Button addHumanButton = new Button("Add Human");
+        Button addBrownAlienButton = new Button("Add Brown Alien");
+        Button addPurpleAlienButton = new Button("Add Purple Alien");
+        Button crewBackButton = new Button("Back");
+        crewBackButton.setDisable(true);
+        Button resetButton = new Button("Reset");
+        Button confirmButton = new Button("Confirm");
+        addHumanButton.setOnAction(event -> {
+            crewBackButton.setDisable(false);
+            addHumanButton.setDisable(true);
+            addPurpleAlienButton.setDisable(true);
+            addBrownAlienButton.setDisable(true);
+            readyToInsert = true;
+            guestTypeToInsert = GuestType.HUMAN;
+            topLabel.setVisible(true);
+            errLabel.setVisible(false);
+        });
+        addPurpleAlienButton.setOnAction(event -> {
+            crewBackButton.setDisable(false);
+            addHumanButton.setDisable(true);
+            addPurpleAlienButton.setDisable(true);
+            addBrownAlienButton.setDisable(true);
+            readyToInsert = true;
+            guestTypeToInsert = GuestType.PURPLE;
+            topLabel.setVisible(true);
+            errLabel.setVisible(false);
+        });
+        addBrownAlienButton.setOnAction(event -> {
+            crewBackButton.setDisable(false);
+            addHumanButton.setDisable(true);
+            addPurpleAlienButton.setDisable(true);
+            addBrownAlienButton.setDisable(true);
+            readyToInsert = true;
+            guestTypeToInsert = GuestType.BROWN;
+            topLabel.setVisible(true);
+            errLabel.setVisible(false);
+        });
+        crewBackButton.setOnAction(event -> {
+            crewBackButton.setDisable(true);
+            addHumanButton.setDisable(false);
+            addPurpleAlienButton.setDisable(false);
+            addBrownAlienButton.setDisable(false);
+            readyToInsert = false;
+            guestTypeToInsert = null;
+            topLabel.setVisible(false);
+        });
+        confirmButton.setOnAction(event -> {
+            modalShipStage.close();
+            controller.addCrew(addedCrew);
+        });
+        resetButton.setOnAction(evt ->{
+            modalShipStage.close();
+            controller.setState(GameState.ADD_CREW);
+        });
+        modalShipStage.setOnCloseRequest(event -> {
+            controller.addCrew(Collections.emptyMap());
+        });
+        btnBox.getChildren().addAll(addHumanButton, addPurpleAlienButton, addBrownAlienButton, crewBackButton);
+        confBtnBox.getChildren().addAll(resetButton, confirmButton);
+        modalShipContainer.getChildren().addAll(btnBox, confBtnBox);
+
+        synchronized (controller.getShipboardLock()) {
+        for(Cordinate cord : modalShipCordToStackPane.keySet()){
+            if(controller.getShipBoard().getOptComponentByCord(cord).isPresent() && controller.getShipBoard().getOptComponentByCord(cord).get().getType().equals(ComponentType.HOUSING)){
+                Component c = controller.getShipBoard().getOptComponentByCord(cord).get();
+                StackPane sp = modalShipCordToStackPane.get(cord);
+                sp.setOnMouseClicked(event -> {
+                    if(readyToInsert){
+                        addedCrew.computeIfAbsent(cord, k -> new ArrayList<>());
+                        if(!(addedCrew.get(cord).size() > 1 ||
+                                addedCrew.get(cord).contains(GuestType.BROWN) ||
+                                addedCrew.get(cord).contains(GuestType.PURPLE)
+                        )){
+                            if(guestTypeToInsert == GuestType.HUMAN){
+                                addedCrew.get(cord).add(GuestType.HUMAN);
+                                insertHousingObjects(sp, addedCrew.get(cord));
+                            }else{
+                                if(c.canAddGuest(guestTypeToInsert)){
+                                    addedCrew.get(cord).add(guestTypeToInsert);
+                                    insertHousingObjects(sp, addedCrew.get(cord));
+                                }else{
+                                    errLabel.setVisible(true);
+                                }
+                            }
+                        }else{
+                            errLabel.setVisible(true);
+                        }
+                        crewBackButton.setDisable(true);
+                        addHumanButton.setDisable(false);
+                        addPurpleAlienButton.setDisable(false);
+                        addBrownAlienButton.setDisable(false);
+                        readyToInsert = false;
+                        guestTypeToInsert = null;
+                        topLabel.setVisible(false);
+                    }
+                });
+            }
+        }}
     }
 
     /**
@@ -1316,6 +1433,11 @@ public class Gui extends Application implements View {
             String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
             Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             cardImageView.setImage(cardBackImage);
+            if (modalDiceRollStage != null) {
+                if (modalDiceRollStage.isShowing()) {
+                    modalDiceRollStage.close();
+                }
+            }
         }
     }
 
@@ -1328,6 +1450,7 @@ public class Gui extends Application implements View {
         cardImageView.setImage(cardImage);
         drawCardButton.setVisible(false);
         waitingForLeaderLabel.setVisible(false);
+
     }
 
     /*
@@ -1905,6 +2028,7 @@ public class Gui extends Application implements View {
         }
         modalDiceRollStage = new Stage();
         modalDiceRollStage.initModality(Modality.APPLICATION_MODAL);
+        modalDiceRollStage.setOnCloseRequest(Event::consume);
         VBox box = new VBox(10);
         if (oldMeteorMessage != null) {
             Label oldMeteorLabel = new Label(oldMeteorMessage);
@@ -2028,6 +2152,7 @@ public class Gui extends Application implements View {
      */
     private void handleGameInfo(int nPlayers, boolean isNormal) {
         GameInfo info = new GameInfo(-1, isNormal ? GameMode.NORMAL : GameMode.EASY, nPlayers);
+        controller.setState(GameState.WAITING);
         controller.handleGameInfo(info);
     }
 
@@ -2270,6 +2395,25 @@ public class Gui extends Application implements View {
                 }
             }
             sp.getChildren().add(hbox);
+        }
+    }
+
+    private void insertHousingObjects(StackPane sp, List<GuestType> guests){
+        if(guests != null && !guests.isEmpty()){
+            sp.getChildren().retainAll(sp.getChildren().getFirst());
+            HBox box = new HBox(tilesSideLength / 12);
+            box.setAlignment(Pos.CENTER);
+            for (int i = 0; i < guests.size(); i++) {
+                Color color;
+                switch (guests.get(i)) {
+                    case HUMAN -> color = Color.DARKSLATEGREY;
+                    case PURPLE -> color = Color.FUCHSIA;
+                    case BROWN -> color = Color.SANDYBROWN;
+                    default -> color = Color.BLACK;
+                }
+                box.getChildren().add(new Circle(tilesSideLength / 12, color));
+            }
+            sp.getChildren().add(box);
         }
     }
 
