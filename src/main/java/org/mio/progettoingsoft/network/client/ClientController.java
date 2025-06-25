@@ -217,7 +217,9 @@ public class ClientController {
     }
 
     public GameInfo getGameInfo() {
-        return new GameInfo(idGame, flyBoard.getMode(), flyBoard.getNumPlayers());
+        synchronized (flyboardLock) {
+            return new GameInfo(idGame, flyBoard.getMode(), flyBoard.getNumPlayers());
+        }
     }
 
     public Object getFlyboardLock() {
@@ -882,16 +884,16 @@ public class ClientController {
         }
     }
 
-    public void removeComponent(Cordinate cordinate){
-        try{
+    public void removeComponent(Cordinate cordinate) {
+        try {
             server.removeComponent(idGame, nickname, cordinate, true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void removeComponentImmediate(Cordinate cordinate){
-        try{
+    public void removeComponentImmediate(Cordinate cordinate) {
+        try {
             shipBoard.removeComponent(cordinate);
             server.removeComponent(idGame, nickname, cordinate, false);
         } catch (Exception e) {
@@ -899,13 +901,13 @@ public class ClientController {
         }
     }
 
-    public void removeComponents(List<Cordinate> cordinatesToRemove){
+    public void removeComponents(List<Cordinate> cordinatesToRemove) {
         for (Cordinate cordinate : cordinatesToRemove) {
             removeComponentImmediate(cordinate);
         }
     }
 
-    public void removeComponentFromModel(String nickname, Cordinate cord){
+    public void removeComponentFromModel(String nickname, Cordinate cord) {
         synchronized (flyboardLock) {
             Logger.debug("removed component of " + nickname + " from cordinate " + cord);
             ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
@@ -913,7 +915,7 @@ public class ClientController {
         }
     }
 
-    public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cord){
+    public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cord) {
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
         meteor.setCordinateHit(cord);
@@ -925,6 +927,7 @@ public class ClientController {
     public void cannonHit(CannonType type, Direction direction, int number) {
         cannon = new CannonPenalty(direction, type);
         cannon.setNumber(number);
+        setCardState(CardState.CANNON_HIT);
 
         Optional<Cordinate> optCordinateHit = cannon.findHit(shipBoard, number);
         if (optCordinateHit.isEmpty()) {
@@ -965,18 +968,18 @@ public class ClientController {
         }
     }
 
-    public void leaveFlightFromModel(String nickname){
-        synchronized (flyboardLock){
+    public void leaveFlightFromModel(String nickname) {
+        synchronized (flyboardLock) {
             Player player = flyBoard.getPlayerByUsername(nickname);
             flyBoard.getScoreBoard().remove(player);
 
-            for (int i = 0; i < flyBoard.getCircuit().size(); i++){
+            for (int i = 0; i < flyBoard.getCircuit().size(); i++) {
                 Optional<Player> optionalPlayer = flyBoard.getCircuit().get(i);
 
                 if (optionalPlayer.isEmpty())
                     continue;
 
-                if (optionalPlayer.get().getNickname().equals(nickname)){
+                if (optionalPlayer.get().getNickname().equals(nickname)) {
                     flyBoard.getCircuit().set(i, Optional.empty());
                     return;
                 }
@@ -984,21 +987,20 @@ public class ClientController {
         }
     }
 
-    public void addCrew(Map<Cordinate, List<GuestType>> addedCrew){
-        for (Player pl : flyBoard.getScoreBoard()){
+    public void addCrew(Map<Cordinate, List<GuestType>> addedCrew) {
+        for (Player pl : flyBoard.getScoreBoard()) {
             pl.getShipBoard().addGuestToShip();
         }
 
-        try{
+        try {
             server.addCrew(idGame, nickname, addedCrew);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
     }
 
-    public void addCrewToModel(String nickname, Cordinate cordinate, GuestType guestType){
-        synchronized (flyboardLock){
+    public void addCrewToModel(String nickname, Cordinate cordinate, GuestType guestType) {
+        synchronized (flyboardLock) {
             ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
 
             int idComp = ship.getOptComponentByCord(cordinate).get().getId();

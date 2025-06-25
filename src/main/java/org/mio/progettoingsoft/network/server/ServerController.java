@@ -364,7 +364,7 @@ public class ServerController {
         if (!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))) {
             throw new NotYourTurnException();
         }
-        SldAdvCard card = flyBoard.getSldAdvCardByID(11);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(23);
         // 9 10 11 29 30 31
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();

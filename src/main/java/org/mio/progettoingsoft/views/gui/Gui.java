@@ -18,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -28,7 +27,6 @@ import javafx.util.Pair;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
-import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
@@ -40,7 +38,6 @@ import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
 import org.mio.progettoingsoft.model.Hourglass;
 
-import javax.swing.text.SimpleAttributeSet;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -182,7 +179,7 @@ public class Gui extends Application implements View {
     private Label waitingForLeaderLabel;
     private ImageView cardImageView;
     private Label creditsLabel;
-    private String oldMeteorMessage;
+    private String oldHitMessage;
     private Stage modalDiceRollStage;
 
     public Gui() {
@@ -1504,7 +1501,10 @@ public class Gui extends Application implements View {
             case SHIELD_SELECTION -> shieldChoiceView();
             case ASK_ONE_DOUBLE_DRILL -> oneDrillChoiceView();
             case METEOR_HIT -> {
-                oldMeteorMessage = "The meteor hit " + controller.getMeteor().getDirection() + " at number " + controller.getMeteor().getNumber() + "\nCheck out your shipboard!";
+                oldHitMessage = "The meteor hit " + controller.getMeteor().getDirection() + " at number " + controller.getMeteor().getNumber() + "\nCheck out your shipboard!";
+            }
+            case CANNON_HIT -> {
+                oldHitMessage = "The cannon hit " + controller.getCannon().getDirection() + " at number " + controller.getCannon().getNumber() + "\nCheck out your shipboard!";
             }
             case ERROR_CHOICE -> {
                 modalErrorLabelMessage = controller.getErrMessage();
@@ -2030,19 +2030,19 @@ public class Gui extends Application implements View {
         modalDiceRollStage.initModality(Modality.APPLICATION_MODAL);
         modalDiceRollStage.setOnCloseRequest(Event::consume);
         VBox box = new VBox(10);
-        if (oldMeteorMessage != null) {
-            Label oldMeteorLabel = new Label(oldMeteorMessage);
+        if (oldHitMessage != null) {
+            Label oldMeteorLabel = new Label(oldHitMessage);
             Button checkShipBtn = new Button("Check shipboard");
             checkShipBtn.setOnAction(evt -> {
                 modalShipboardView(controller.getNickname());
             });
             box.getChildren().addFirst(checkShipBtn);
             box.getChildren().addFirst(oldMeteorLabel);
-            oldMeteorMessage = null;
+            oldHitMessage = null;
         }
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(20));
-        Label meteorLabel = new Label("A meteor is arriving...");
+        Label meteorLabel = new Label("Trouble are arriving...");
         Label actionLabel = new Label();
         box.getChildren().addAll(meteorLabel, actionLabel);
         if (isLeader) {
