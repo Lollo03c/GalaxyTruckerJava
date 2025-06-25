@@ -43,4 +43,14 @@ public enum Connector {
 
         return false;
     }
+
+    public Boolean isConnected(Connector other){
+        if ((this.equals(Connector.TRIPLE) && !other.equals(Connector.FLAT)) || (!this.equals(Connector.FLAT) && other.equals(Connector.TRIPLE)))
+            return true;
+
+        if (this.equals(other) && !this.equals(Connector.FLAT))
+            return true;
+
+        return false;
+    }
 }
