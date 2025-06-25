@@ -396,8 +396,6 @@ public abstract class ShipBoard {
      *   <li>It is not facing {@link Direction#BACK}</li>
      *   <li>There is at least one component placed below it</li>
      * </ul>
-     * If the engine is correctly facing down and there are no components below it until
-     * the bottom edge of the grid, it is considered correct.
      * </p>
      *
      * @return a list of {@link Cordinate} objects representing the positions of incorrect engines.
@@ -405,6 +403,7 @@ public abstract class ShipBoard {
     public List<Cordinate> getIncorrectEngines() {
         List<Cordinate> incorrect = new ArrayList<>();
 
+        // Itereo sui components
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()){
             Cordinate cord = cordinateIterator.next();
@@ -414,14 +413,14 @@ public abstract class ShipBoard {
             if (optComponent.isEmpty() || optComponent.get().getEnginePower(true) == 0)
                 continue;
 
+            // if engine is not pointing back is incorrect
             if (!optComponent.get().getDirection().equals(Direction.BACK)) {
                 incorrect.add(cord);
                 continue;
             }
 
-            int row = cord.getRow();
-
             try {
+<<<<<<< Updated upstream
                 while (true) {
                     row ++;
                     Cordinate nextCord = new Cordinate(row, cord.getColumn());
@@ -432,6 +431,11 @@ public abstract class ShipBoard {
                         break;
                     }
                 }
+=======
+                // if engine has a component below is incorrect
+                if (getOptComponentByCord(new Cordinate(cord.getRow() + 1, cord.getColumn())).isPresent())
+                    incorrect.add(cord);
+>>>>>>> Stashed changes
             } catch (InvalidCordinate e) {
                 // Se esce dalla griglia senza trovare nulla, il cannone è corretto
             }
@@ -451,8 +455,9 @@ public abstract class ShipBoard {
      */
     public List<Cordinate> getIncorrectDrills() {
         List<Cordinate> incorrect = new ArrayList<>();
-        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
 
+        // Itero sui components
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()) {
             Cordinate cord = cordinateIterator.next();
 
@@ -461,10 +466,11 @@ public abstract class ShipBoard {
                 continue;
 
             Direction dir = optComp.get().getDirection();
-            int row = cord.getRow();
-            int col = cord.getColumn();
+            int row = cord.getRow() + dir.offsetRow();
+            int col = cord.getColumn() + dir.offsetCol();
 
             try {
+<<<<<<< Updated upstream
                 while (true) {
                     row += dir.offsetRow();
                     col += dir.offsetCol();
@@ -476,6 +482,10 @@ public abstract class ShipBoard {
                         break;
                     }
                 }
+=======
+                if (getOptComponentByCord(new Cordinate(row, col)).isPresent())
+                    incorrect.add(cord);
+>>>>>>> Stashed changes
             } catch (InvalidCordinate e) {
                 // Se esce dalla griglia senza trovare nulla, il cannone è corretto
             }

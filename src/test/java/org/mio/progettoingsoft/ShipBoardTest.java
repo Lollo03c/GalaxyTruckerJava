@@ -269,35 +269,64 @@ class ShipBoardTest {
     }
 
     @Test
-    void should_find_incorrect_engines(){
-        validationTestShipBoard.addComponentToPosition(71, new Cordinate(1, 3), 0);
-        validationTestShipBoard.addComponentToPosition(72, new Cordinate(2, 5), 3); // upside
-        validationTestShipBoard.addComponentToPosition(73, new Cordinate(2, 0), 3);
-
-        validationTestShipBoard.addComponentToPosition(65, new Cordinate(4, 2), 0);
+    void should_find_rotated_engines(){
+        validationTestShipBoard.addComponentToPosition(73, new Cordinate(2, 0), 3); // upside down
+        validationTestShipBoard.addComponentToPosition(72, new Cordinate(2, 5), 3); // upside down
+        validationTestShipBoard.addComponentToPosition(77, new Cordinate(4, 0), 1); // incorrect
+        validationTestShipBoard.addComponentToPosition(76, new Cordinate(2, 1), 0); // correct
         validationTestShipBoard.addComponentToPosition(74, new Cordinate(3, 2), 0);
 
-        validationTestShipBoard.addComponentToPosition(75, new Cordinate(4, 1), 0); // correct
+        assertEquals(3, validationTestShipBoard.getIncorrectEngines().size());
+    }
 
-        assertEquals(4, validationTestShipBoard.getIncorrectEngines().size());
+    @Test
+    void should_find_engines_with_components_behind(){
+        validationTestShipBoard.addComponentToPosition(73, new Cordinate(0, 2), 0); // correct
+        validationTestShipBoard.addComponentToPosition(71, new Cordinate(1, 3), 0);
+        validationTestShipBoard.addComponentToPosition(75, new Cordinate(1, 5), 0); // correct
+        validationTestShipBoard.addComponentToPosition(76, new Cordinate(2, 1), 0); // correct
+
+        validationTestShipBoard.addComponentToPosition(65, new Cordinate(4, 2), 0); // depot
+        validationTestShipBoard.addComponentToPosition(74, new Cordinate(3, 2), 0);
+        validationTestShipBoard.addComponentToPosition(77, new Cordinate(4, 1), 0); // correct
+
+        assertEquals(2, validationTestShipBoard.getIncorrectEngines().size());
+    }
+
+    @Test
+    void should_find_incorrect_engines(){
+        validationTestShipBoard.addComponentToPosition(73, new Cordinate(0, 2), 0);
+        validationTestShipBoard.addComponentToPosition(72, new Cordinate(1, 1), 1);
+        validationTestShipBoard.addComponentToPosition(71, new Cordinate(1, 3), 0);
+        validationTestShipBoard.addComponentToPosition(65, new Cordinate(1, 2), 0); // depot
+        validationTestShipBoard.addComponentToPosition(74, new Cordinate(1, 5), 0); // correct
+        validationTestShipBoard.addComponentToPosition(67, new Cordinate(3, 5), 0); // depot
+        validationTestShipBoard.addComponentToPosition(75, new Cordinate(2, 1), 0); // correct
+        validationTestShipBoard.addComponentToPosition(76, new Cordinate(3, 2), 0);
+        validationTestShipBoard.addComponentToPosition(66, new Cordinate(4, 2), 0); // depot
+        validationTestShipBoard.addComponentToPosition(78, new Cordinate(4, 4), 1);
+
+        assertEquals(5, validationTestShipBoard.getIncorrectEngines().size());
     }
 
     @Test
     void should_find_incorrect_drills(){
         // Around central housing
         validationTestShipBoard.addComponentToPosition(101, new Cordinate(3, 3), 0);
-        validationTestShipBoard.addComponentToPosition(102, new Cordinate(2, 4), 1);
-        validationTestShipBoard.addComponentToPosition(103, new Cordinate(1, 3), 2);
-        validationTestShipBoard.addComponentToPosition(104, new Cordinate(2, 2), 3);
+        validationTestShipBoard.addComponentToPosition(102, new Cordinate(2, 4), 0);
+        validationTestShipBoard.addComponentToPosition(103, new Cordinate(1, 3), 0);
+        validationTestShipBoard.addComponentToPosition(104, new Cordinate(2, 2), 3); // correct
 
         // Around ship
-        validationTestShipBoard.addComponentToPosition(105, new Cordinate(4, 4), 0);
-        validationTestShipBoard.addComponentToPosition(129, new Cordinate(2, 0), 3);
+        validationTestShipBoard.addComponentToPosition(105, new Cordinate(4, 4), 0); // correct
+        validationTestShipBoard.addComponentToPosition(129, new Cordinate(2, 0), 3); // correct
         validationTestShipBoard.addComponentToPosition(127, new Cordinate(0, 3), 0); // correct
 
         validationTestShipBoard.addComponentToPosition(65, new Cordinate(1, 5), 0); // depot
         validationTestShipBoard.addComponentToPosition(106, new Cordinate(2, 5), 0);
-        assertEquals(6, validationTestShipBoard.getIncorrectDrills().size());
+
+        System.out.println(validationTestShipBoard.getIncorrectDrills());
+        assertEquals(4, validationTestShipBoard.getIncorrectDrills().size());
     }
 
     @Test
