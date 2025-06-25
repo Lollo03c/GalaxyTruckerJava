@@ -406,6 +406,15 @@ public abstract class FlyBoard implements FlyBoardServer {
         }
     }
 
+    /**
+     +     * Method that decrement one credit for every lost component
+     +     */
+    public void penaltyForDiscardedComponents() {
+        for ( Player p : scoreBoard){
+            p.addCredits(-p.getShipBoard().getExposedConnectors());
+        }
+    }
+
 
 
 
@@ -541,6 +550,8 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
     public int drawCard(){
+        if(deck.isEmpty())
+            return 999;
         int cardId = deck.getFirst();
         deck.removeFirst();
         return cardId;

@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.advCards.CombatLine;
 import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.ShipBoardEasy;
@@ -216,12 +215,15 @@ public abstract class ShipBoard {
         return adjacent;
     }
 
-    /// add the [Component] with given id, to the given rotation, after rotates it
-    ///
-    /// @param componentId the id of the [Component] to insert
-    /// @param cordinate   the position where to insert id
-    /// @param angle       the angle to rotate
-    /// @throws IncorrectShipBoardException if the cordinate is invalid
+    /**
+     * Add the [Component] with given id, to the given rotation, after rotates it
+     *
+     * @param componentId the id of the [Component] to insert
+     * @param cordinate the position where to insert id
+     * @param angle the angle to rotate
+     * @throws IncorrectShipBoardException if the cordinate is invalid
+     *
+     */
     public void addComponentToPosition(int componentId, Cordinate cordinate, int angle) throws IncorrectShipBoardException {
         if (bannedCoordinates.contains(cordinate))
             throw new IncorrectShipBoardException("Cannot insert in this cordinate");
@@ -549,6 +551,19 @@ public abstract class ShipBoard {
         return multiple;
     }
 
+    /**
+     * Returns a list of coordinates of all ship components that are considered invalid.
+     * <p>
+     * This includes:
+     * <ul>
+     *   <li>Components that are not properly connected to the ship</li>
+     *   <li>Engines placed in invalid positions</li>
+     *   <li>Drills placed in invalid positions</li>
+     * </ul>
+     * Before performing the checks, it clears two reserved component slots (positions [0][5] and [0][6]).
+     *
+     * @return a list of distinct coordinates of all invalid components
+     */
     public List<Cordinate> getIncorrectComponents() {
         // delete all booked components
         this.shipComponents[0][5] = Optional.empty();
@@ -560,6 +575,17 @@ public abstract class ShipBoard {
         return new ArrayList<>(incorrectComponents.stream().distinct().toList());
     }
 
+    /**
+     * Checks whether the current ship configuration is valid.
+     * <p>
+     * A ship is considered valid if:
+     * <ul>
+     *   <li>It has no invalid components (disconnected, misoriented, or misplaced parts)</li>
+     *   <li>All components form a single connected structure (no multiple isolated pieces)</li>
+     * </ul>
+     *
+     * @return {@code true} if the ship is valid, {@code false} otherwise
+     */
     public boolean isShipValid() {
         if (!getIncorrectComponents().isEmpty())
             return false;
@@ -570,6 +596,12 @@ public abstract class ShipBoard {
         return true;
     }
 
+    /**
+     * Updates all housing components on the ship by setting their allowed guests.
+     * <p>
+     * For each housing component, it examines adjacent components and adds
+     * their alien colors as allowed guests, based on proximity.
+     */
     public void addGuestToShip() {
         //set the allowedGuest to all the housing, based on the neaby AlienHousing
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
@@ -694,8 +726,12 @@ public abstract class ShipBoard {
         return activatedEnginePower;
     }
 
-    // theese three methods compare a shipboard to another based on the numeber of crew members, the firepower and the
-    // engine power, they're useful for the combat zone adv card
+    /**
+     * Compares this ship's crew size with another ship's crew size.
+     *
+     * @param other the other ShipBoard to compare with
+     * @return 1 if this ship has more guests, -1 if fewer, 0 if equal
+     */
     public int compareCrew(ShipBoard other) {
         if (this.getQuantityGuests() > other.getQuantityGuests())
             return 1;
@@ -704,6 +740,12 @@ public abstract class ShipBoard {
         return 0;
     }
 
+    /**
+     * Compares this ship's firepower with another ship's firepower.
+     *
+     * @param other the other ShipBoard to compare with
+     * @return 1 if this ship has more firepower, -1 if fewer, 0 if equal
+     */
     public int compareActivatedFirePower(ShipBoard other) {
         if (this.getActivatedFirePower() > other.getActivatedFirePower())
             return 1;
@@ -712,6 +754,12 @@ public abstract class ShipBoard {
         return 0;
     }
 
+    /**
+     * Compares this ship's engine power with another ship's engine power.
+     *
+     * @param other the other ShipBoard to compare with
+     * @return 1 if this ship has more engine power, -1 if fewer, 0 if equal
+     */
     public int compareActivatedEnginePower(ShipBoard other) {
         if (this.getActivatedEnginePower() > other.getActivatedEnginePower())
             return 1;
@@ -719,14 +767,6 @@ public abstract class ShipBoard {
             return -1;
         return 0;
     }
-
-//    public String toString() {
-//        String out = "";
-//        for(Component c : getCompStream().toList()){
-//            out += c.toString() + "\n";
-//        }
-//        return out;
-//    }
 
 
     public void keepPart(int row, int col) {
@@ -849,7 +889,16 @@ public abstract class ShipBoard {
         return result;
     }
 
-    public List<Cordinate> possibleDrills(Direction direction, int number) {
+
+    /**
+     * Returns a list of drill coordinates in the specified direction
+     * that are aligned or near the given row or column number.
+     *
+     * @param direction the direction to consider (FRONT, BACK, LEFT, RIGHT)
+     * @param number the reference row or column number
+     * @return list of coordinates of drills matching the criteria
+     */
+    public List<Cordinate> possibleDrills(Direction direction, int number){
         List<Cordinate> result = new ArrayList<>();
         List<Cordinate> drills = getDrills(direction);
 
@@ -879,7 +928,12 @@ public abstract class ShipBoard {
         return result;
     }
 
-    public int getNumberHumans() {
+    /**
+     * Counts the total number of human guests present across all ship components.
+     *
+     * @return the total count of human guests
+     */
+    public int getNumberHumans(){
         long sum = 0;
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         while (cordinateIterator.hasNext()) {
@@ -895,7 +949,14 @@ public abstract class ShipBoard {
         return (int) sum;
     }
 
-    public List<Cordinate> getAvailableHousing(GuestType type) {
+    /**
+     * Returns a list of coordinates of housing components that can accommodate
+     * a guest of the specified type.
+     *
+     * @param type the guest type to check for availability
+     * @return list of coordinates of available housing components
+     */
+    public List<Cordinate> getAvailableHousing(GuestType type){
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
         List<Cordinate> availableCord = new ArrayList<>();
 

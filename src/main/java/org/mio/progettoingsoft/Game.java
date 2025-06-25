@@ -5,20 +5,24 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
-import org.mio.progettoingsoft.network.client.Client;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a full game session, managing both server-side and client-side responsibilities.
+ * <p>
+ * This class implements both {@link GameServer} and {@link GameClient}, acting as the core
+ * container for the game state, players, event handling, and controller coordination.
+ * <p>
+ * On the server side, it handles player management, game setup, and lifecycle control.
+ * On the client side, it provides read-only access to game metadata such as mode and number of players.
+ * <p>
+ */
 public class Game implements GameServer, GameClient {
     private FlyBoard flyboard;
     private int idGame;
@@ -30,7 +34,6 @@ public class Game implements GameServer, GameClient {
     private final Object lock = new Object();
 
     private final boolean testing;
-
 
     private Map<String, VirtualClient> clients = new HashMap<>();
 
@@ -47,13 +50,21 @@ public class Game implements GameServer, GameClient {
         this.testing = testing;
     }
 
+    /**
+     * Initializes the game with the specified mode and number of players.
+     * <p>
+     * This method also resets the creation flag in the GameManager singleton
+     * and notifies all threads waiting for the game to be created.
+     *
+     * @param mode the selected game mode
+     * @param numPlayers the expected number of players
+     */
     @Override
     public void setupGame(GameMode mode, int numPlayers){
 
         synchronized (GameManager.getInstance().getLockCreatingGame()) {
             GameManager.getInstance().getCreatingGame().set(false);
             GameManager.getInstance().getLockCreatingGame().notifyAll();
-
 
             this.mode = mode;
             this.numPlayers = numPlayers;
@@ -95,7 +106,10 @@ public class Game implements GameServer, GameClient {
     }
 
     /**
-     * once the game is full of the players starts the game on a different Thread
+     * Starts the game in a new thread once all players have joined.
+     * <p>
+     * Initializes the FlyBoard, registers the event listeners,
+     * distributes initial game data to clients, and starts the hourglass timer.
      */
     @Override
     public void startGame(){
@@ -122,40 +136,33 @@ public class Game implements GameServer, GameClient {
             }
         }
 
-        flyboard.startHourglass(idGame);
-        for(VirtualClient client : getClients().values()){
-            try {
-                client.startedHourglass(idGame);
-            }catch (Exception e){
-                throw new RuntimeException(e);
-            }
-        }
+//        flyboard.startHourglass(idGame);
+//        for(VirtualClient client : getClients().values()){
+//            try {
+//                client.startedHourglass(idGame);
+//            }catch (Exception e){
+//                throw new RuntimeException(e);
+//            }
+//        }
         Logger.info("Game " + idGame + " started");
     }
 
-//    @Override
-//    public void addReceivedMessage(Message message){
-//        receivedMessages.add(message);
-//    }
     @Override
     public FlyBoard getFlyboard(){
         return flyboard;
     }
-//
-//    private void handleMessagesFromServer(){
-//        while (true){
-//            Message message = receivedMessages.poll();
-//
-//            gameController.handleMessage(message);
-//
-//        }
-//    }
 
     @Override
     public GameController getController(){
         return gameController;
     }
 
+    /**
+     * Creates and initializes the FlyBoard for the current game session.
+     *
+     * @param mode the selected game mode
+     * @param nicknames the set of player nicknames to include
+     */
     public void createFlyboard(GameMode mode, Set<String> nicknames) {
         flyboard = FlyBoard.createFlyBoard(mode, nicknames);
     }

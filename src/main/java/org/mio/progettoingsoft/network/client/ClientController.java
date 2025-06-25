@@ -4,8 +4,6 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
-import org.mio.progettoingsoft.advCards.sealed.SldAbandonedStation;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
@@ -569,7 +567,7 @@ public class ClientController {
 
     public void discardComponent() {
         Component comp = flyBoard.getComponentById(inHandComponent);
-        comp.reinitilizeRotations();
+        comp.reinitializeRotations();
 
         try {
             server.discardComponent(idGame, inHandComponent);
