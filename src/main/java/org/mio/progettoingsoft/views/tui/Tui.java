@@ -1270,7 +1270,6 @@ public class Tui implements View {
                             controller.advanceMeteor(false, false);
                             return;
                         }
-
                     }
 
                     while (choice.equals("")) {

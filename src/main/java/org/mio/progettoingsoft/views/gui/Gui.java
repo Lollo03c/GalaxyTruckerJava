@@ -178,6 +178,8 @@ public class Gui extends Application implements View {
     private Label waitingForLeaderLabel;
     private ImageView cardImageView;
     private Label creditsLabel;
+    private String oldMeteorMessage;
+    private Stage modalDiceRollStage;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -1063,6 +1065,8 @@ public class Gui extends Application implements View {
                     controller.setState(GameState.VALIDATION);
                 });
             }
+            Label messageLabel = new Label(message);
+            modalShipContainer.getChildren().addFirst(messageLabel);
         } else if (standAloneBlocks.size() > 1) {
             modalShipboardView(controller.getNickname());
             message = "It seems your shipboard is made of more stand-alone blocks\nClick on the one you want to keep";
@@ -1087,11 +1091,12 @@ public class Gui extends Application implements View {
                     });
                 }
             }
-        }else{
+            Label messageLabel = new Label(message);
+            modalShipContainer.getChildren().addFirst(messageLabel);
+        } else {
             controller.endValidation();
         }
-        Label messageLabel = new Label(message);
-        modalShipContainer.getChildren().addFirst(messageLabel);
+
     }
 
     /**
@@ -1374,12 +1379,17 @@ public class Gui extends Application implements View {
             case DICE_ROLL -> diceRollView(true);
             case WAITING_ROLL -> diceRollView(false);
             case SHIELD_SELECTION -> shieldChoiceView();
+            case ASK_ONE_DOUBLE_DRILL -> oneDrillChoiceView();
+            case METEOR_HIT -> {
+                oldMeteorMessage = "The meteor hit " + controller.getMeteor().getDirection() + " at number " + controller.getMeteor().getNumber() + "\nCheck out your shipboard!";
+            }
             case ERROR_CHOICE -> {
                 modalErrorLabelMessage = controller.getErrMessage();
                 controller.resetErrMessage();
             }
             case IDLE, FINALIZED -> {
             }
+            case ASK_LEAVE -> controller.leaveFlight(false);
             default -> genericErrorView(cardState);
         }
     }
@@ -1720,9 +1730,11 @@ public class Gui extends Application implements View {
                     switch (controller.getPlayedCard()) {
                         case SldMeteorSwarm meteorSwarm -> {
                             controller.advanceMeteor(false, true);
+                            modalShipStage.close();
                         }
                         case SldPirates pirates -> {
                             controller.advanceCannon(false, true);
+                            modalShipStage.close();
                         }
                         default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
                     }
@@ -1737,15 +1749,78 @@ public class Gui extends Application implements View {
                 switch (controller.getPlayedCard()) {
                     case SldMeteorSwarm meteorSwarm -> {
                         controller.advanceMeteor(true, false);
+                        modalShipStage.close();
                     }
                     case SldPirates pirates -> {
                         controller.advanceCannon(true, false);
+                        modalShipStage.close();
                     }
                     default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
                 }
             });
             btnBox.getChildren().addAll(noBtn);
             modalShipContainer.getChildren().addAll(btnBox);
+            modalShipCordToStackPane.get(cord).setStyle("-fx-border-color: red; -fx-border-width: 3");
+        }
+    }
+
+    private void oneDrillChoiceView() {
+        modalShipboardView(controller.getNickname());
+        synchronized (controller.getShipboardLock()) {
+            ShipBoard shipBoard = controller.getShipBoard();
+            Direction direction = null;
+            Cordinate cord = null;
+            String alertMessage = "";
+
+            Meteor meteor = controller.getMeteor();
+            direction = meteor.getDirection();
+            cord = meteor.getCordinateHit();
+            alertMessage = "Big meteor coming from " + direction + "!\nThe component could be destroyed!";
+            List<Cordinate> possibleDrills = shipBoard.possibleDrills(meteor.getDirection(), meteor.getNumber());
+            Button noBtn = new Button();
+            HBox btnBox = new HBox(10);
+            btnBox.setAlignment(Pos.CENTER);
+            if (possibleDrills.isEmpty()) {
+                noBtn.setText("Go ahead");
+                noBtn.setOnAction(evt -> {
+                    controller.advanceMeteor(true, false);
+                    modalShipStage.close();
+                });
+            } else {
+                boolean meteorDestroyed = false;
+                for (int i = 0; i < possibleDrills.size() && !meteorDestroyed; i++) {
+                    int idComp = shipBoard.getOptComponentByCord(possibleDrills.get(i)).get().getId();
+                    if (controller.getFlyBoard().getComponentById(idComp).getFirePower(false) > 0) {
+                        meteorDestroyed = true;
+                    }
+                }
+                if (meteorDestroyed) {
+                    noBtn.setText("Go ahead");
+                    noBtn.setOnAction(evt -> {
+                        controller.advanceMeteor(false, false);
+                        modalShipStage.close();
+                    });
+                    alertMessage = "Big meteor coming from " + direction + "!\nThe drill will destroy it";
+                } else if (shipBoard.getQuantBatteries() > 0) {
+                    Label activateLabel = new Label("Do you want to activate a double drill?");
+                    Button yesBtn = new Button("Yes");
+                    yesBtn.setOnAction(evt -> {
+                        controller.advanceMeteor(false, true);
+                        modalShipStage.close();
+                    });
+                    modalShipContainer.getChildren().add(activateLabel);
+                    btnBox.getChildren().addAll(yesBtn);
+                }else{
+                    noBtn.setText("Go ahead");
+                    noBtn.setOnAction(evt -> {
+                        controller.advanceMeteor(true, false);
+                        modalShipStage.close();
+                    });
+                }
+            }
+            btnBox.getChildren().addAll(noBtn);
+            modalShipContainer.getChildren().addAll(btnBox);
+            modalShipContainer.getChildren().addFirst(new Label(alertMessage));
             modalShipCordToStackPane.get(cord).setStyle("-fx-border-color: red; -fx-border-width: 3");
         }
     }
@@ -1818,9 +1893,29 @@ public class Gui extends Application implements View {
     }
 
     private void diceRollView(boolean isLeader) {
-        Stage modal = new Stage();
-        modal.initModality(Modality.APPLICATION_MODAL);
+        if (modalShipStage != null) {
+            if (modalShipStage.isShowing()) {
+                modalShipStage.close();
+            }
+        }
+        if (modalDiceRollStage != null) {
+            if (modalDiceRollStage.isShowing()) {
+                modalDiceRollStage.close();
+            }
+        }
+        modalDiceRollStage = new Stage();
+        modalDiceRollStage.initModality(Modality.APPLICATION_MODAL);
         VBox box = new VBox(10);
+        if (oldMeteorMessage != null) {
+            Label oldMeteorLabel = new Label(oldMeteorMessage);
+            Button checkShipBtn = new Button("Check shipboard");
+            checkShipBtn.setOnAction(evt -> {
+                modalShipboardView(controller.getNickname());
+            });
+            box.getChildren().addFirst(checkShipBtn);
+            box.getChildren().addFirst(oldMeteorLabel);
+            oldMeteorMessage = null;
+        }
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(20));
         Label meteorLabel = new Label("A meteor is arriving...");
@@ -1833,15 +1928,15 @@ public class Gui extends Application implements View {
                 Random random = new Random();
                 int first = random.nextInt(6) + 1;
                 int second = random.nextInt(6) + 1;
-                modal.close();
+                modalDiceRollStage.close();
                 controller.setRollResult(first, second);
             });
             box.getChildren().addAll(rollBtn);
         } else {
             actionLabel.setText("Wait for the leader to roll the dice");
         }
-        modal.setScene(new Scene(box));
-        modal.show();
+        modalDiceRollStage.setScene(new Scene(box));
+        modalDiceRollStage.show();
     }
 
     /**

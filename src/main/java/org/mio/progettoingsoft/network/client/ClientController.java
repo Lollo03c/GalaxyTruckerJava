@@ -912,6 +912,7 @@ public class ClientController {
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
         meteor.setCordinateHit(cord);
+        setCardState(CardState.METEOR_HIT);
 
         Logger.info(type + " " + direction + " " + number);
     }

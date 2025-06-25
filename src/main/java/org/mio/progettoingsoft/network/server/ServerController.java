@@ -374,7 +374,7 @@ public class ServerController {
         if (!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))) {
             throw new NotYourTurnException();
         }
-        SldAdvCard card = flyBoard.getSldAdvCardByID(12);
+        SldAdvCard card = flyBoard.getSldAdvCardByID(29);
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
         while(game.getFlyboard().getScoreBoard().size() == 1 && (card.getId() == 16 || card.getId() == 36)){

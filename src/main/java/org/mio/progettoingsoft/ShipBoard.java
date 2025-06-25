@@ -9,6 +9,7 @@ import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.RemoveEnergyEvent;
 import org.mio.progettoingsoft.model.events.RemoveGoodEvent;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -427,6 +428,7 @@ public abstract class ShipBoard {
 
                     if (getOptComponentByCord(nextCord).isPresent()){
                         incorrect.add(cord);
+                        Logger.debug("Incorrect engine " + cord + " id " + getOptComponentByCord(cord).get().getId());
                         break;
                     }
                 }
@@ -470,6 +472,7 @@ public abstract class ShipBoard {
 
                     if (getOptComponentByCord(nextCord).isPresent()) {
                         incorrect.add(cord);
+                        Logger.debug("Incorrect drill " + cord + " id " + getOptComponentByCord(cord).get().getId());
                         break;
                     }
                 }
@@ -507,6 +510,7 @@ public abstract class ShipBoard {
 
                 if (!comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
                     incorrect.add(cord);
+                    Logger.debug("Incorrect connected: " + cord + " id " + getOptComponentByCord(cord).get().getId());
                 }
             }
         }
@@ -567,6 +571,9 @@ public abstract class ShipBoard {
     }
 
     public List<Cordinate> getIncorrectComponents() {
+        // delete all booked components
+        this.shipComponents[0][5] = Optional.empty();
+        this.shipComponents[0][6] = Optional.empty();
         List<Cordinate> incorrectComponents = getIncorrectConnectedComponents();
         incorrectComponents.addAll(getIncorrectEngines());
         incorrectComponents.addAll(getIncorrectDrills());
