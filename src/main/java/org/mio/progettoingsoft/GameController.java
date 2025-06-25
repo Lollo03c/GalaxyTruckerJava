@@ -109,6 +109,10 @@ public class GameController {
                     Event event = (LeavePlayerEvent) evt.getNewValue();
                     game.addEvent(event);
                 }
+                else if("doubleb".equals(evt.getPropertyName())){
+                    Event event = new SetStateEvent(evt.getOldValue().toString(),GameState.REMOVED_FROM_FLYBOARD);
+                    game.addEvent(event);
+                }
             }
         });
 

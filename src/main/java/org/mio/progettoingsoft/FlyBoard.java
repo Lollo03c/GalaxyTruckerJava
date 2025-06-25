@@ -313,6 +313,7 @@ public abstract class FlyBoard implements FlyBoardServer {
                     scoreBoard.set(position2, player);
                 } else {
                     //player2 is doubled and so removed from scoreBoard
+                    support.firePropertyChange("doubled", player.getNickname(), player);
                     leavePlayer(player2.get());
                 }
             }
