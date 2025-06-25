@@ -1509,7 +1509,7 @@ public class Tui implements View {
         Map<Cordinate, List<GuestType>> addedCrew = new HashMap<>();
         ShipBoard shipBoard = controller.getShipBoard();
 
-
+        Set<GuestType> alreadyInserted = new HashSet<>();
         while (true) {
             shipBoard.drawShipboard();
 
@@ -1577,6 +1577,15 @@ public class Tui implements View {
 
             secondChoice -= 1;
             Cordinate chosenCord = availableCord.get(secondChoice);
+
+            if (guestSelected.equals(GuestType.BROWN) || guestSelected.equals(GuestType.PURPLE)){
+                if (alreadyInserted.contains(guestSelected)){
+                    System.out.println(RED + "It is possible to insert only a Alien for kind");
+                    continue;
+                }
+            }
+
+            alreadyInserted.add(guestSelected);
 
             if (addedCrew.containsKey(chosenCord)){
                 addedCrew.get(chosenCord).add(guestSelected);
