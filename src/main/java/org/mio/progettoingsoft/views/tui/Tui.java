@@ -1385,15 +1385,20 @@ public class Tui implements View {
                     }
 
                     while (choice.equals("")) {
-                        System.out.print("Activate one double drill (y/n) : ");
-                        choice = scanner.nextLine().trim().toLowerCase();
+                        if (controller.getShipBoard().getQuantBatteries() > 0) {
+                            System.out.print("Activate one double drill (y/n) : ");
+                            choice = scanner.nextLine().trim().toLowerCase();
 
-                        if (!(choice.equals("y") || choice.equals("n"))) {
-                            choice = "";
-                            continue;
+                            if (!(choice.equals("y") || choice.equals("n"))) {
+                                choice = "";
+                                continue;
+                            }
+                            boolean destroyed = choice.equals("y");
+                            controller.advanceMeteor(destroyed, !destroyed);
                         }
-                        boolean destroyed = choice.equals("y");
-                        controller.advanceMeteor(destroyed, !destroyed);
+                        else{
+                            controller.advanceMeteor(true, false);
+                        }
                     }
                 }
 
