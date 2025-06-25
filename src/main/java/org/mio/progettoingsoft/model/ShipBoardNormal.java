@@ -154,8 +154,10 @@ public class ShipBoardNormal extends ShipBoard {
 
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.HUMAN);
+
         shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
+
         shipBoard.getOptComponentByCord(new Cordinate(3, 3)).get().addGuest(GuestType.PURPLE);
         shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(4, 5)).get().addGuest(GuestType.HUMAN);
@@ -206,7 +208,9 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.getOptComponentByCord(new Cordinate(2, 1)).get().addGood(GoodType.RED);
         shipBoard.getOptComponentByCord(new Cordinate(2, 1)).get().addGood(GoodType.YELLOW);
 
-        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.PURPLE);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 3)).get().addGuest(GuestType.HUMAN);
+
         shipBoard.getOptComponentByCord(new Cordinate(2, 4)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(2, 4)).get().addGuest(GuestType.HUMAN);
 
@@ -217,6 +221,9 @@ public class ShipBoardNormal extends ShipBoard {
         shipBoard.getOptComponentByCord(new Cordinate(3, 0)).get().addGuest(GuestType.BROWN);
         shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
         shipBoard.getOptComponentByCord(new Cordinate(3, 2)).get().addGuest(GuestType.HUMAN);
+
+        shipBoard.getOptComponentByCord(new Cordinate(2, 2)).get().addGuest(GuestType.HUMAN);
+        shipBoard.getOptComponentByCord(new Cordinate(2, 2)).get().addGuest(GuestType.HUMAN);
 
         shipBoard.getOptComponentByCord(new Cordinate(4, 2)).get().addGood(GoodType.RED);
 

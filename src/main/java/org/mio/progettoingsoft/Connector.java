@@ -41,9 +41,6 @@ public enum Connector {
         if (this.equals(other))
             return true;
 
-        if (this.equals(Connector.FLAT) && other.equals(Connector.FLAT))
-            return true;
-
         return false;
     }
 }

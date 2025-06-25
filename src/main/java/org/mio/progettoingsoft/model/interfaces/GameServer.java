@@ -31,4 +31,6 @@ public interface GameServer {
     BlockingQueue<Event> getEventsQueue();
     Object getLock();
 
+    boolean isTesting();
+
 }

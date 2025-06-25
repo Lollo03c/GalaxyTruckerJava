@@ -4,8 +4,11 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.advCards.sealed.SldAbandonedShip;
+import org.mio.progettoingsoft.advCards.sealed.SldAbandonedStation;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
@@ -54,6 +57,8 @@ public class ClientController {
 
 
     private ClientController(ConnectionInfo connectionInfo) {
+//        Logger.setMinLevel(Logger.Level.WARNING);
+
         this.setState(GameState.START);
         this.connectionInfo = connectionInfo;
     }
@@ -340,10 +345,6 @@ public class ClientController {
         synchronized (otherShipboard) {
             otherShipboard.addComponentToPosition(idComp, cordinate, rotations);
         }
-    }
-
-    public void updateState() {
-
     }
 
     public void addAvailableDeck(int deckNumber) {
@@ -645,6 +646,10 @@ public class ClientController {
     }
 
     public List<Set<Component>> getStandAloneBlocks() {
+        shipBoard.removedBookedComponent(0);
+        shipBoard.removedBookedComponent(1);
+
+
         return shipBoard.getMultiplePieces();
     }
 
@@ -738,11 +743,11 @@ public class ClientController {
             flyBoard.getPlayerByUsername(nick).addCredits(credits);
             tot = flyBoard.getPlayerByUsername(nick).getCredits();
         }
-        support.firePropertyChange("credits", 0, tot);
+//        support.firePropertyChange("credits", 0, tot);
     }
 
     public void crewLost(int idComp) {
-        synchronized (flyBoard) {
+        synchronized (flyboardLock) {
             Logger.info("lost crew member in " + idComp);
             flyBoard.getComponentById(idComp).removeGuest();
         }
@@ -835,13 +840,13 @@ public class ClientController {
         }
     }
 
-    public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate) {
-        try {
-            server.activateSlaver(idGame, nickname, activatedDrills, wantsToActivate);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void activateSlaver(List<Cordinate> activatedDrills, boolean wantsToActivate) {
+//        try {
+//            server.activateSlaver(idGame, nickname, activatedDrills, wantsToActivate);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void setRollResult(int first, int second) {
         try {
@@ -976,6 +981,28 @@ public class ClientController {
                     return;
                 }
             }
+        }
+    }
+
+    public void addCrew(Map<Cordinate, List<GuestType>> addedCrew){
+        for (Player pl : flyBoard.getScoreBoard()){
+            pl.getShipBoard().addGuestToShip();
+        }
+
+        try{
+            server.addCrew(idGame, nickname, addedCrew);
+        }
+        catch (Exception e) {
+
+        }
+    }
+
+    public void addCrewToModel(String nickname, Cordinate cordinate, GuestType guestType){
+        synchronized (flyboardLock){
+            ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+
+            int idComp = ship.getOptComponentByCord(cordinate).get().getId();
+            flyBoard.getComponentById(idComp).addGuest(guestType);
         }
     }
 }

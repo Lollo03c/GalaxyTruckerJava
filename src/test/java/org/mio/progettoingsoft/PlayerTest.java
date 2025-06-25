@@ -45,7 +45,7 @@ class PlayerTest {
         Player second = flyBoard.getPlayerByUsername("Antonio");
         assertEquals(antonio, second);
 
-        ShipBoard ship = ShipBoardNormal.buildYellow(flyBoard);
+        ShipBoard ship = ShipBoardNormal.buildBlue(flyBoard);
         antonio.setShipBoard(ship);
     }
 

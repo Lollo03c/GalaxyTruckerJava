@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class SldOpenSpace extends SldAdvCard {
-    private List<Player> noPowerPlayers;
+    private final List<Player> noPowerPlayers = new ArrayList<>();
 
     public SldOpenSpace(int id, int level) {
         super(id, level);
@@ -40,15 +40,9 @@ public final class SldOpenSpace extends SldAdvCard {
         this.game = game;
         this.flyBoard = game.getFlyboard();
 
-        noPowerPlayers = flyBoard.getScoreBoard().stream()
-                .filter(player ->
-                        player.getShipBoard().getBaseEnginePower() == 0 &&
-                                (player.getShipBoard().getDoubleEngine().isEmpty() ||
-                                        player.getShipBoard().getQuantBatteries() <= 0)
-                ).toList();
         // allowedPlayers is a new list because the score board will be modified by the applyEffect
         this.allowedPlayers = new ArrayList<>(flyBoard.getScoreBoard());
-        allowedPlayers.removeAll(noPowerPlayers);
+//        allowedPlayers.removeAll(noPowerPlayers);
         this.playerIterator = allowedPlayers.iterator();
     }
 
@@ -77,6 +71,10 @@ public final class SldOpenSpace extends SldAdvCard {
             int base = player.getShipBoard().getBaseEnginePower();
             int power = base + numDoubleEngines * 2;
 
+            if (base == 0){
+                noPowerPlayers.add(player);
+            }
+
             flyBoard.moveDays(actualPlayer, power);
             setNextPlayer();
 
@@ -92,6 +90,9 @@ public final class SldOpenSpace extends SldAdvCard {
             this.actualPlayer = this.playerIterator.next();
             setState(CardState.ENGINE_CHOICE);
         } else {
+            for (Player player : noPowerPlayers){
+                flyBoard.leavePlayer(player);
+            }
             setState(CardState.FINALIZED);
         }
     }

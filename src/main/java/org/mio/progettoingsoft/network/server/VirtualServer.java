@@ -3,11 +3,13 @@ package org.mio.progettoingsoft.network.server;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 
 import java.rmi.Remote;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interfaccia che definisce i metodi del server che devono essere resi accessibili ai client per poter interagire con
@@ -41,7 +43,7 @@ public interface VirtualServer extends Remote {
     void removeGood(int idGame, String nickaname, int compId, GoodType type) throws Exception;
     void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) throws Exception;
     void landOnPlanet(int idGame, String nickname, int choice)throws Exception;
-    void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate) throws Exception;
+//    void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate) throws Exception;
 
     void setRollResult(int idGame, String nickname, int first, int second) throws Exception;
 //    void removeBattery(int idGame, String nickname, int quantity) throws Exception;
@@ -49,4 +51,6 @@ public interface VirtualServer extends Remote {
     void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) throws Exception;
     void removeComponent(int idGame, String nickname, Cordinate cordinate, boolean toAllClient) throws Exception;
     void startHourglass(int idGame) throws Exception;
+
+    void addCrew(int idGame, String nickname, Map<Cordinate, List<GuestType>> addedCrew) throws Exception;
 }

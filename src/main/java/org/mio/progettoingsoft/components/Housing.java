@@ -26,6 +26,16 @@ public class Housing extends Component {
 
     @Override
     public void addGuest(GuestType type) throws IncorrectShipBoardException {
+        if (type.equals(GuestType.BROWN) || type.equals(GuestType.PURPLE)){
+            List<Integer> initialHousing = new ArrayList<>();
+            for (HousingColor housingColor : HousingColor.values()){
+                initialHousing.add(housingColor.getIdByColor());
+            }
+
+            if (initialHousing.contains(getId()))
+                throw new IncorrectShipBoardException("initial housing");
+        }
+
         if (guests.size() >= 2)
             throw new IncorrectShipBoardException("housing already full");
 
@@ -58,6 +68,34 @@ public class Housing extends Component {
     @Override
     public void addAllowedGuest(GuestType type){
         guestAllowed.add(type);
+    }
+
+    @Override
+    public boolean canAddGuest(GuestType type){
+        if (type.equals(GuestType.BROWN) || type.equals(GuestType.PURPLE)){
+            List<Integer> initialHousing = new ArrayList<>();
+            for (HousingColor housingColor : HousingColor.values()){
+                initialHousing.add(housingColor.getIdByColor());
+            }
+
+            if (initialHousing.contains(getId()))
+                return false;
+
+        }
+        if (guests.size() >= 2)
+            return false;
+
+        if (!guestAllowed.contains(type))
+            return false;
+
+        if (guests.isEmpty()){
+            return true;
+        }
+
+        if (guests.contains(GuestType.PURPLE) || guests.contains(GuestType.BROWN) || type.equals(GuestType.BROWN) || type.equals(GuestType.PURPLE))
+            return false;
+
+        return true;
     }
 }
 

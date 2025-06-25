@@ -511,6 +511,8 @@ public abstract class ShipBoard {
                 if (!comp.getConnector(dir).isCompatible(other.getConnector(dir.getOpposite()))){
                     incorrect.add(cord);
                     Logger.debug("Incorrect connected: " + cord + " id " + getOptComponentByCord(cord).get().getId());
+                    break;
+
                 }
             }
         }
@@ -528,6 +530,8 @@ public abstract class ShipBoard {
      * @return a list of sets of components that are not mutually connected.
      */
     public List<Set<Component>> getMultiplePieces() {
+
+
         List<Set<Component>> multiple = new ArrayList<>();
 
         List<Component> allComponents = this.getComponents().stream()
@@ -903,6 +907,39 @@ public abstract class ShipBoard {
         return result;
     }
 
+    public int getNumberHumans(){
+        long sum = 0;
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            if (getOptComponentByCord(cord).isEmpty())
+                continue;
+
+            Component comp = getOptComponentByCord(cord).get();
+            sum += comp.getGuests().stream().filter(guest -> guest.equals(GuestType.HUMAN)).count();
+        }
+
+        return (int) sum;
+    }
+
+    public List<Cordinate> getAvailableHousing(GuestType type){
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        List<Cordinate> availableCord = new ArrayList<>();
+
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            if (getOptComponentByCord(cord).isEmpty())
+                continue;
+
+            Component comp = getOptComponentByCord(cord).get();
+            if (comp.canAddGuest(type))
+                availableCord.add(cord);
+        }
+
+        return availableCord;
+    }
 
 }
 

@@ -136,6 +136,7 @@ public final class SldSlavers extends SldAdvCard {
         shipBoard.removeEnergy(drillsCordinate.size());
 
         double power = player.getShipBoard().getBaseFirePower();
+        Logger.debug(player.getNickname() + " " + power);
         for (Cordinate cord : drillsCordinate)
             power += shipBoard.getOptComponentByCord(cord).get().getFirePower(true);
         if (power < strength){

@@ -4,6 +4,7 @@ import org.controlsfx.validation.ValidationMessage;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.socket.VirtualServerSocket;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
+import java.util.Map;
 
 public class SocketServerHandler implements VirtualServerSocket {
     private final ObjectOutputStream out;
@@ -170,11 +172,11 @@ public class SocketServerHandler implements VirtualServerSocket {
         sendMessage(message);
     }
 
-    @Override
-    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate)throws IOException{
-        Message message = new ActivateSlaversMessage(idGame,nickname,activatedDrills,wantsToActivate);
-        sendMessage(message);
-    }
+//    @Override
+//    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate)throws IOException{
+//        Message message = new ActivateSlaversMessage(idGame,nickname,activatedDrills,wantsToActivate);
+//        sendMessage(message);
+//    }
 
     @Override
     public void setRollResult(int idGame, String nickname, int first, int second) throws IOException{
@@ -209,6 +211,12 @@ public class SocketServerHandler implements VirtualServerSocket {
     @Override
     public void startHourglass(int idGame) throws IOException{
         Message message = new StartHourglassMessage(idGame, " wesh ");
+        sendMessage(message);
+    }
+
+    @Override
+    public void addCrew(int idGame, String nickname, Map<Cordinate, List<GuestType>> addedCrew) throws IOException{
+        Message message = new AddCrewMessage(idGame, nickname, addedCrew);
         sendMessage(message);
     }
 

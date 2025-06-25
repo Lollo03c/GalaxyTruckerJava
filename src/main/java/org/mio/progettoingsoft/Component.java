@@ -301,4 +301,8 @@ public abstract class Component {
         rotate(4 - rotations);
     }
 
+    public boolean canAddGuest(GuestType type){
+        return false;
+    }
+
 }

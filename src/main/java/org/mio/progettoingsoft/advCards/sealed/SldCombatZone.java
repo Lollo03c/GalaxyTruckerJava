@@ -1,22 +1,20 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NotEnoughBatteriesException;
+import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.RemoveComponentEvent;
 import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.utils.Logger;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public final class SldCombatZone extends SldAdvCard {
     private final List<CombatLine> lines;
@@ -26,6 +24,18 @@ public final class SldCombatZone extends SldAdvCard {
     private Iterator<Penalty> penaltyIterator;
     private Iterator<CombatLine> lineIterator;
     private CombatLine actualLine;
+
+    private List<Player> askEngine = new ArrayList<>();
+    private Iterator<Player> askEngineIterator;
+    private Map<Player, Integer> enginePower = new HashMap<>();
+
+    private List<Player> askFire = new ArrayList<>();
+    private Iterator<Player> askFireIterator;
+    private Map<Player, Double> firePower = new HashMap<>();
+
+    private Iterator<CannonPenalty> cannonIterator = getCannonPenalty().iterator();
+    private CannonPenalty actualCannon;
+
 
     public SldCombatZone(int id, int level, List<CombatLine> lines) {
         super(id, level);
@@ -72,10 +82,114 @@ public final class SldCombatZone extends SldAdvCard {
         flyBoard = game.getFlyboard();
 //
         this.allowedPlayers = flyBoard.getScoreBoard();
-        lineIterator = lines.iterator();
+        askEngine = new ArrayList<>(flyBoard.getScoreBoard());
+        askEngineIterator = askEngine.iterator();
 
+        askFire = new ArrayList<>(flyBoard.getScoreBoard());
+        askFireIterator = askFire.iterator();
+
+        if (getId() == 16){
+            Player minCrew = null;
+            for (Player player : flyBoard.getScoreBoard()){
+                if (minCrew == null || player.getShipBoard().getQuantityGuests() < minCrew.getShipBoard().getQuantityGuests() ){
+                    minCrew = player;
+                }
+            }
+            flyBoard.moveDays(minCrew, -3);
+
+            setNextPlayerEngine();
+
+
+        }
+        else if (getId() == 36){
+
+        }
     }
 
+    public void setNextPlayerEngine(){
+        if (askEngineIterator.hasNext()){
+            actualPlayer = askEngineIterator.next();
+            setState(CardState.ENGINE_CHOICE);
+        }
+        else{
+            if (getId() == 16){
+                Player minPlayer = null;
+                int minPower = 0;
+
+                for (Player player : enginePower.keySet()){
+                    int power = 2 * enginePower.get(player) + player.getShipBoard().getBaseEnginePower();
+
+                    if (minPlayer == null || power < minPower) {
+                        minPlayer = player;
+                        minPower = power;
+                    }
+                    Logger.info(player.getNickname() + " " + power);
+                }
+
+                actualPlayer = minPlayer;
+                setState(CardState.CREW_REMOVE_CHOICE);
+
+            }
+        }
+    }
+
+    public void setNextPlayerFire(){
+        if (askFireIterator.hasNext()){
+            actualPlayer = askFireIterator.next();
+            setState(CardState.DRILL_CHOICE);
+        }
+        else{
+            if (getId() == 16){
+                Player minPlayer = null;
+
+                for (Player player : firePower.keySet()){
+
+                    if (minPlayer == null || firePower.get(player) < firePower.get(minPlayer)) {
+                        minPlayer = player;
+                    }
+                    Logger.info(player.getNickname() + " " + firePower.get(player));
+                }
+
+                actualPlayer = minPlayer;
+                cannonIterator = getCannonPenalty().iterator();
+                setNextCannon();
+
+            }
+        }
+    }
+
+    public void setNextCannon(){
+        if (cannonIterator.hasNext()){
+            actualCannon = cannonIterator.next();
+            setState(CardState.DICE_ROLL);
+        }
+        else{
+            setState(CardState.FINALIZED);
+        }
+    }
+
+    public void setNextCannon(String nickname, boolean destroyed, boolean energy){
+
+        Player player = flyBoard.getPlayerByUsername(nickname);
+
+        if (energy)
+            player.getShipBoard().removeEnergy(1);
+
+        if (destroyed) {
+            Optional<Cordinate> optCord = actualCannon.findHit(player.getShipBoard(), actualCannon.getNumber());
+            player.getShipBoard().removeComponent(optCord.get());
+
+            Event event = new RemoveComponentEvent(nickname, optCord.get());
+            game.addEvent(event);
+        }
+
+
+        setNextCannon();
+    }
+
+    public void setEnginePower(Player player, int power){
+        enginePower.put(player, power);
+    }
 
     public void setNextLine(){
         if (lineIterator.hasNext()){
@@ -92,8 +206,9 @@ public final class SldCombatZone extends SldAdvCard {
         for (Cordinate cord : drillsCord){
             power += player.getShipBoard().getOptComponentByCord(cord).get().getFirePower(true);
         }
+        firePower.put(player, power);
+        setNextPlayerFire();
 
-        actualLine.setValue(game, player, power);
     }
 
     public void removeCrew(String nickname, List<Cordinate> cordinates){
@@ -114,7 +229,11 @@ public final class SldCombatZone extends SldAdvCard {
             game.addEvent(event);
         }
 
-        setNextLine();
+        if (getId() == 16){
+            setNextPlayerFire();
+        }
+
+
     }
 
     public void prepareEngines(FlyBoard board, Player player, int numDoubleEngines) {
@@ -321,5 +440,38 @@ public final class SldCombatZone extends SldAdvCard {
             throw new IllegalStateException("Illegal state: " + this.state);
         }
 //        board.setState(GameState.DRAW_CARD);
+    }
+
+    public Map<Player, Double> getFirePower() {
+        return firePower;
+    }
+
+    public Map<Player, Integer> getEnginePower() {
+        return enginePower;
+    }
+
+    @Override
+    public int getCrewLost(){
+        if (getId() == 16){
+            return 2;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public List<CannonPenalty> getCannonPenalty(){
+        if (getId() == 16){
+            return new ArrayList<>(List.of(
+                    new CannonPenalty(Direction.BACK, CannonType.LIGHT),
+                    new CannonPenalty(Direction.BACK, CannonType.HEAVY)
+            ));
+        }
+
+        return Collections.emptyList();
+    }
+
+    public CannonPenalty getActualCannon() {
+        return actualCannon;
     }
 }

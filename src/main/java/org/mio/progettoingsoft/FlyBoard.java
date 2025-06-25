@@ -21,10 +21,12 @@ import org.mio.progettoingsoft.model.Hourglass;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.Event;
+import org.mio.progettoingsoft.model.events.LeavePlayerEvent;
 import org.mio.progettoingsoft.model.events.MovePlayerEvent;
 import org.mio.progettoingsoft.model.interfaces.FlyBoardServer;
 import org.mio.progettoingsoft.utils.Logger;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 
 /**
@@ -53,6 +55,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     protected final List<Player> players;
     private List<Player> validationPlayers;
+    private List<Player> addCrewPlayers;
 
     private Map<Integer, Component> components = loadComponentMap();
     protected Map<Integer, SldAdvCard> sldAdvCards;
@@ -571,6 +574,33 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
     public List<Player> getValidationPlayers(){
+        return validationPlayers;
+    }
+
+    public void leavePlayer(Player player){
+        for (int i = 0; i < circuit.size(); i++){
+            Optional<Player> optPlayer = circuit.get(i);
+
+            if (optPlayer.isEmpty())
+                continue;
+
+            if (optPlayer.get().getNickname().equals(player.getNickname())){
+                circuit.set(i, Optional.empty());
+                scoreBoard.remove(player);
+
+                Event event = new LeavePlayerEvent(player.getNickname());
+                support.firePropertyChange("leavePlayer", null, event);
+
+                return;
+            }
+        }
+    }
+
+    public void setAddCrewPlayers(List<Player> players){
+        this.validationPlayers = new ArrayList<>(players);
+    }
+
+    public List<Player> getAddCrewPlayers(){
         return validationPlayers;
     }
 }

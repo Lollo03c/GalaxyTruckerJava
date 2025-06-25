@@ -2,6 +2,7 @@ package org.mio.progettoingsoft;
 
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.advCards.sealed.SldCombatZone;
 import org.mio.progettoingsoft.model.events.*;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -10,6 +11,7 @@ import org.mio.progettoingsoft.utils.Logger;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -103,6 +105,10 @@ public class GameController {
                     Event event = (RemoveGoodEvent) evt.getNewValue();
                     game.addEvent(event);
                 }
+                else if ("leavePlayer".equals(evt.getPropertyName())){
+                    Event event = (LeavePlayerEvent) evt.getNewValue();
+                    game.addEvent(event);
+                }
             }
         });
 
@@ -167,17 +173,35 @@ public class GameController {
             }
 
             case DICE_ROLL -> {
-                String leaderNickname = game.getFlyboard().getScoreBoard().getFirst().getNickname();
-                Map<String, VirtualClient> clients = game.getClients();
+                switch (card) {
+                    case SldCombatZone combatZone -> {
+                        Map<String, VirtualClient> clients = game.getClients();
 
-                for (String nick : clients.keySet() ){
-                    if (nick.equals(leaderNickname)){
-                        Event event = new SetCardStateEvent(nick, CardState.DICE_ROLL);
-                        game.addEvent(event);
+                        for (String nick : clients.keySet()) {
+                            if (nick.equals(combatZone.getActualPlayer().getNickname())) {
+                                Event event = new SetCardStateEvent(nick, CardState.DICE_ROLL);
+                                game.addEvent(event);
+                            } else {
+                                Event event = new SetCardStateEvent(nick, CardState.WAITING_ROLL);
+                                game.addEvent(event);
+                            }
+                        }
                     }
-                    else{
-                        Event event = new SetCardStateEvent(nick, CardState.WAITING_ROLL);
-                        game.addEvent(event);
+
+                    default -> {
+
+                        String leaderNickname = game.getFlyboard().getScoreBoard().getFirst().getNickname();
+                        Map<String, VirtualClient> clients = game.getClients();
+
+                        for (String nick : clients.keySet()) {
+                            if (nick.equals(leaderNickname)) {
+                                Event event = new SetCardStateEvent(nick, CardState.DICE_ROLL);
+                                game.addEvent(event);
+                            } else {
+                                Event event = new SetCardStateEvent(nick, CardState.WAITING_ROLL);
+                                game.addEvent(event);
+                            }
+                        }
                     }
                 }
             }
@@ -188,8 +212,17 @@ public class GameController {
             }
 
             case FINALIZED -> {
+
                 Map<String,VirtualClient> clients = game.getClients();
                 FlyBoard flyBoard = game.getFlyboard();
+
+                for (int i = 0; i < flyBoard.getScoreBoard().size(); i++){
+                    Player p = flyBoard.getScoreBoard().get(i);
+
+                    if (p.getShipBoard().getNumberHumans() == 0){
+                        flyBoard.leavePlayer(player);
+                    }
+                }
                 flyBoard.refreshWaitingPlayers();
 
                 List<Player> score = flyBoard.getScoreBoard();
@@ -215,25 +248,25 @@ public class GameController {
 //                }
             }
 
-            case STARDUST_END -> {
-                for(VirtualClient c : game.getClients().values()){
-                    try {
-                        c.setCardState(CardState.STARDUST_END);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-
-            case EPIDEMIC_END -> {
-                for(VirtualClient c : game.getClients().values()){
-                    try {
-                        c.setCardState(CardState.EPIDEMIC_END);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
+//            case STARDUST_END -> {
+//                for(VirtualClient c : game.getClients().values()){
+//                    try {
+//                        c.setCardState(CardState.STARDUST_END);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//
+//            case EPIDEMIC_END -> {
+//                for(VirtualClient c : game.getClients().values()){
+//                    try {
+//                        c.setCardState(CardState.EPIDEMIC_END);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
 
             default -> {
             }

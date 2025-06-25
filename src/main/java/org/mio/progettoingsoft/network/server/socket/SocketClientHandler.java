@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -274,5 +275,10 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         sendMessage(message);
     }
 
+    @Override
+    public void addCrewMember(String nickname, Cordinate cordinate, GuestType type) throws IOException{
+        Message message = new AddCrewMessage(0, nickname, cordinate, type);
+        sendMessage(message);
+    }
 
 }

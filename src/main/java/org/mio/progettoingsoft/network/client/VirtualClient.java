@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -86,4 +87,6 @@ public interface VirtualClient extends Remote {
 
     void startedHourglass(int idGame) throws Exception;
     void leaveFlight(String nickname) throws Exception;
+
+    void addCrewMember(String nickname, Cordinate cordinate, GuestType type) throws Exception;
 }

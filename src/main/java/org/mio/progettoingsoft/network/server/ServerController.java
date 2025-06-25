@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.advCards.CannonPenalty;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.NotYourTurnException;
@@ -53,15 +54,9 @@ public class ServerController {
         GameManager gameManager = GameManager.getInstance();
         GameServer game = gameManager.getWaitingGame();
         game.setupGame(gameInfo.mode(), gameInfo.nPlayers());
-        try {
-            game.getClients().get(nickname).setState(GameState.WAITING_PLAYERS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) {
-        GameManager gameManager = GameManager.getInstance();
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
 
         ShipBoard shipBoard = game.getFlyboard().getPlayerByUsername(nickname).getShipBoard();
@@ -69,14 +64,16 @@ public class ServerController {
 
         Logger.debug(nickname + " added component " + idComp + " " + cordinate + " " + rotations);
 
-        for (Player player : game.getFlyboard().getPlayers()) {
-            if (!player.getNickname().equals(nickname)) {
-                VirtualClient client = game.getClients().get(player.getNickname());
+        if (!game.isTesting()) {
+            for (Player player : game.getFlyboard().getPlayers()) {
+                if (!player.getNickname().equals(nickname)) {
+                    VirtualClient client = game.getClients().get(player.getNickname());
 
-                try {
-                    client.addComponent(nickname, idComp, cordinate, rotations);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    try {
+                        client.addComponent(nickname, idComp, cordinate, rotations);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -271,19 +268,11 @@ public class ServerController {
 
             shipBoard.addGuestToShip();
 
-
             if (flyBoard.getValidationPlayers().isEmpty()){
-                String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
-                for (String n : game.getClients().keySet()){
-                    if (n.equals(nickLeader)){
-                        Event event1 = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
-                        game.addEvent(event1);
-                    }
-                    else{
-                        Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
-                        game.addEvent(event1);
-                    }
-
+                flyBoard.setAddCrewPlayers(flyBoard.getScoreBoard());
+                for (Player p : flyBoard.getScoreBoard()){
+                    Event event = new SetStateEvent(p.getNickname(), GameState.ADD_CREW);
+                    game.addEvent(event);
                 }
             }
         }
@@ -357,12 +346,15 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         List<Integer> availablePlaces = flyBoard.getAvailableStartingPositions();
-        VirtualClient client = game.getClients().get(nickname);
-        try {
-            client.setAvailablePlaces(availablePlaces);
-            client.setState(GameState.CHOOSE_POSITION);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+        if (!game.isTesting()) {
+            VirtualClient client = game.getClients().get(nickname);
+            try {
+                client.setAvailablePlaces(availablePlaces);
+                client.setState(GameState.CHOOSE_POSITION);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
@@ -380,20 +372,20 @@ public class ServerController {
         while(game.getFlyboard().getScoreBoard().size() == 1 && (card.getId() == 16 || card.getId() == 36)){
             int id = flyBoard.drawCard();
             card = flyBoard.getSldAdvCardByID(id);
+
         }
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
 
         card.disegnaCard();
-        for (VirtualClient client : game.getClients().values()) {
-            try {
-                client.setPlayedCard(card.getId());
-                //setto a tutti i client lo stato NEW_CARD, così la mostra a tutti poi lo switch in base al tipo
-                //di carta e al player lo fa il ClientController
-                client.setState(GameState.NEW_CARD);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+        Event first = new SetCardPlayedEvent(null, card.getId());
+        game.addEvent(first);
+
+        for (Player player : flyBoard.getPlayers()) {
+
+            Event second = new SetStateEvent(player.getNickname(), GameState.NEW_CARD);
+            game.addEvent(second);
+
         }
         card.init(game);
 
@@ -446,6 +438,12 @@ public class ServerController {
                         throw new RuntimeException(ex);
                     }
                 }
+            }
+
+            case SldCombatZone combatZone -> {
+                combatZone.getEnginePower().put(player, number);
+
+                combatZone.setNextPlayerEngine();
             }
 
             default -> {
@@ -688,43 +686,29 @@ public class ServerController {
         }
     }
 
-    public void activateSlaver(int idGame, String nickname, List<Cordinate> activatedDrills, boolean wantsToActivate) {
-        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-        SldAdvCard card = game.getFlyboard().getPlayedCard();
-        Logger.debug("player: " + nickname + " ha attivato " + activatedDrills + " doppicannoni");
-        Player player = game.getFlyboard().getPlayerByUsername(nickname);
-        switch (card) {
-            case SldSlavers sldSlavers -> {
-//                sldSlavers.applyEffect(player, wantsToActivate, activatedDrills);
-            }
-            default -> Logger.error("effetto carta non consentito");
-        }
-    }
 
 
-    private void stealGoods(GameServer game, Player player, int numberStolenGoods) {
-        Logger.debug(player.getNickname() + "steal goods");
-        Map<Integer, List<GoodType>> stolenGoods = player.getShipBoard().stoleGood(numberStolenGoods);
 
-        for (Integer idComp : stolenGoods.keySet()) {
-            for (GoodType type : stolenGoods.get(idComp)) {
-                for (VirtualClient client : game.getClients().values()) {
-                    try {
-                        client.removeGood(idComp, type);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
-    }
+//    private void stealGoods(GameServer game, Player player, int numberStolenGoods) {
+//        Logger.debug(player.getNickname() + "steal goods");
+//        Map<Integer, List<GoodType>> stolenGoods = player.getShipBoard().stoleGood(numberStolenGoods);
+//
+//        for (Integer idComp : stolenGoods.keySet()) {
+//            for (GoodType type : stolenGoods.get(idComp)) {
+//                for (VirtualClient client : game.getClients().values()) {
+//                    try {
+//                        client.removeGood(idComp, type);
+//                    } catch (Exception e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public void setRollResult(int idGame, String nickname, int first, int second) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
-
-        if (!nickname.equals(game.getFlyboard().getScoreBoard().getFirst().getNickname()))
-            throw new IncorrectFlyBoardException("Not the leader");
 
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
@@ -754,6 +738,18 @@ public class ServerController {
                     Event event = new CannonHitEvent(nick, type, direction, first + second);
                     game.addEvent(event);
                 }
+            }
+
+            case SldCombatZone combatZone -> {
+                CannonPenalty cannon = combatZone.getActualCannon();
+                cannon.setNumber(first + second);
+                Direction direction = cannon.getDirection();
+                CannonType type = cannon.getCannonType();
+
+                Player player = combatZone.getActualPlayer();
+
+                Event event = new CannonHitEvent(nickname, type, direction, first + second);
+                game.addEvent(event);
             }
 
             default -> Logger.error("No effect for setRollResult");
@@ -800,6 +796,10 @@ public class ServerController {
         switch (card){
             case SldPirates pirates ->{
                 pirates.setNextCannon(nickname, destroyed, energy);
+            }
+
+            case SldCombatZone combatZone -> {
+                combatZone.setNextCannon(nickname, destroyed, energy);
             }
 
             default -> Logger.error("Effect not taken");
@@ -861,7 +861,44 @@ public class ServerController {
                 throw new RuntimeException(e);
             }
         }
+    }
 
+    public void addCrew(int idGame, String nickname, Map<Cordinate, List<GuestType>> addedCrew){
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        FlyBoard flyBoard = game.getFlyboard();
+
+        ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+        for (Cordinate cord : addedCrew.keySet()){
+            for (GuestType type : addedCrew.get(cord)) {
+                int idComp = ship.getOptComponentByCord(cord).get().getId();
+                Component comp = flyBoard.getComponentById(idComp);
+
+                comp.addGuest(type);
+
+                Event event = new AddCrewEvent(nickname, cord, type);
+                game.addEvent(event);
+            }
+        }
+
+
+
+        flyBoard.getAddCrewPlayers().remove(flyBoard.getPlayerByUsername(nickname));
+
+        if (flyBoard.getAddCrewPlayers().isEmpty()){
+            String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
+
+            for (String n : game.getClients().keySet()){
+                if (n.equals(nickLeader)){
+                    Event event1 = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
+                    game.addEvent(event1);
+                }
+                else{
+                    Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
+                    game.addEvent(event1);
+                }
+
+            }
+        }
     }
 }
 

@@ -5,6 +5,7 @@ import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -20,6 +21,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
@@ -226,12 +228,12 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         });
     }
 
-    @Override
-    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate){
-        executors.submit(() ->{
-           controller.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
-        });
-    }
+//    @Override
+//    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate){
+//        executors.submit(() ->{
+//           controller.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
+//        });
+//    }
 
     @Override
     public void setRollResult(int idGame, String nickname, int first, int second) throws RemoteException{
@@ -278,6 +280,13 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     public void startHourglass(int idGame) throws RemoteException{
         executors.submit(() -> {
             controller.startHourglass(idGame);
+        });
+    }
+
+    @Override
+    public void addCrew(int idGame, String nickname, Map<Cordinate, List<GuestType>> addedCrew) throws RemoteException{
+        executors.submit(() -> {
+            controller.addCrew(idGame, nickname, addedCrew);
         });
     }
 }

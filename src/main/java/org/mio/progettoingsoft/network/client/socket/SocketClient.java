@@ -214,6 +214,12 @@ public class SocketClient implements Client {
                         });
                     }
 
+                    case AddCrewMessage crewMessage -> {
+                        executor.submit(() -> {
+                            controller.addCrewToModel(crewMessage.getNickname(), crewMessage.getCord(), crewMessage.getType());
+                        });
+                    }
+
                     default -> {
                         Logger.error("Messaggio non gestito"  + message);
                     }

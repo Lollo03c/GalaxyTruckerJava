@@ -127,9 +127,9 @@ public class ServerMessageHandler implements Runnable {
                         serverController.landOnPlanet(landOnPlanetMessage.getGameId(), landOnPlanetMessage.getNickname(), landOnPlanetMessage.getChoice());
                     }
 
-                    case ActivateSlaversMessage activateSlaversMessage -> {
-                        serverController.activateSlaver(activateSlaversMessage.getGameId(), activateSlaversMessage.getNickname(), activateSlaversMessage.getActivatedDrills(),activateSlaversMessage.getWantsToActivate());
-                    }
+//                    case ActivateSlaversMessage activateSlaversMessage -> {
+//                        serverController.activateSlaver(activateSlaversMessage.getGameId(), activateSlaversMessage.getNickname(), activateSlaversMessage.getActivatedDrills(),activateSlaversMessage.getWantsToActivate());
+//                    }
 
                     case RollDiceMessage rollDiceMessage -> {
                         serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getFirst(), rollDiceMessage.getSecond());
@@ -148,6 +148,10 @@ public class ServerMessageHandler implements Runnable {
                     }
                     case StartHourglassMessage startHourglassMessage -> {
                         serverController.startHourglass(startHourglassMessage.getGameId());
+                    }
+
+                    case AddCrewMessage addCrewMessage -> {
+                        serverController.addCrew(addCrewMessage.getGameId(), message.getNickname(), addCrewMessage.getCrewAdded());
                     }
 
                     default -> {
