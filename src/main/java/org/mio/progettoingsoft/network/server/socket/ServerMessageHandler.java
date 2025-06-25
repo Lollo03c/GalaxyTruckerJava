@@ -150,6 +150,10 @@ public class ServerMessageHandler implements Runnable {
                         serverController.startHourglass(startHourglassMessage.getGameId());
                     }
 
+                    case AddCrewMessage addCrewMessage -> {
+                        serverController.addCrew(addCrewMessage.getGameId(), message.getNickname(), addCrewMessage.getCrewAdded());
+                    }
+
                     default -> {
                         Logger.error(message +  "Messaggio non gestito lato server");
                     }

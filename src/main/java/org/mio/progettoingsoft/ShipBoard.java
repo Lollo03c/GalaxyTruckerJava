@@ -915,6 +915,23 @@ public abstract class ShipBoard {
         return (int) sum;
     }
 
+    public List<Cordinate> getAvailableHousing(GuestType type){
+        Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
+        List<Cordinate> availableCord = new ArrayList<>();
+
+        while (cordinateIterator.hasNext()){
+            Cordinate cord = cordinateIterator.next();
+
+            if (getOptComponentByCord(cord).isEmpty())
+                continue;
+
+            Component comp = getOptComponentByCord(cord).get();
+            if (comp.canAddGuest(type))
+                availableCord.add(cord);
+        }
+
+        return availableCord;
+    }
 
 }
 

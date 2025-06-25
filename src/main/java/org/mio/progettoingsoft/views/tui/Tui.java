@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
@@ -100,9 +101,6 @@ public class Tui implements View {
                 System.out.println(RED + "You can't take this deck." + RESET);
                 controller.setState(GameState.BUILDING_SHIP);
             }
-            case END_BUILDING -> endBuildingMenu();
-            case CHOOSE_POSITION -> printChoosePosition();
-            case VALIDATION -> printValidationMenu();
 
 
             case WRONG_POSITION -> {
@@ -147,6 +145,17 @@ public class Tui implements View {
 //                controller.applyStardust(card);
 //            }
 
+
+
+
+            case END_BUILDING -> endBuildingMenu();
+            case CHOOSE_POSITION -> {
+                System.out.print("Choose position: ");
+                printChoosePosition();
+                System.out.println("Waiting for other players" + RESET);
+            }
+            case VALIDATION -> printValidationMenu();
+
             case DRAW_CARD -> {
                 printWaitingTheLeader();
             }
@@ -156,6 +165,10 @@ public class Tui implements View {
             case NEW_CARD -> printNewCard();
 
             case CARD_EFFECT -> cardEffect();
+
+            case IDLE -> {
+
+            }
         }
     }
 
@@ -1485,5 +1498,91 @@ public class Tui implements View {
     private void printDeck() {
         for (int cardId : controller.getFlyBoard().getLittleDecks().get(controller.getInHandDeck()))
             controller.getFlyBoard().getSldAdvCardByID(cardId).disegnaCard();
+    }
+
+    private void addCrewMenu(){
+
+        Map<Cordinate, List<GuestType>> addedCrew = new HashMap<>();
+        ShipBoard shipBoard = controller.getShipBoard();
+
+
+        while (true) {
+            shipBoard.drawShipboard();
+
+            int choice;
+            System.out.println("1. Human");
+            System.out.println("2. Purple Alien");
+            System.out.println("3. Brown Alien");
+            System.out.print("Select the crew member to add (0 to exit) : ");
+
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+
+                if (choice < 0 || choice > 3) {
+                    choice = -1;
+                    continue;
+                }
+            } catch (NumberFormatException e) {
+                choice = -1;
+                System.out.println(RED + "Choice not valid. Try Again.");
+                continue;
+            }
+
+
+            GuestType guestSelected = null;
+            if (choice == 0) {
+                break;
+
+            } else if (choice == 1) {
+                guestSelected = GuestType.HUMAN;
+            } else if (choice == 2) {
+                guestSelected = GuestType.PURPLE;
+            } else if (choice == 3) {
+                guestSelected = GuestType.BROWN;
+            }
+
+            List<Cordinate> availableCord = shipBoard.getAvailableHousing(guestSelected);
+            if (availableCord.isEmpty()) {
+                System.out.println("No available housing to guest this crew mamber.");
+                continue;
+            }
+
+            for (int i = 0; i < availableCord.size(); i++) {
+                System.out.println((i + 1) + ". " + availableCord.get(i));
+            }
+            System.out.print("Select where to add a " + guestSelected + " (0 to exit) : ");
+
+            int secondChoice = -1;
+            while (secondChoice == -1) {
+                try {
+                    secondChoice = Integer.parseInt(scanner.nextLine());
+
+                    if (secondChoice < 0 || secondChoice > availableCord.size() + 1) {
+                        secondChoice = -1;
+                        continue;
+                    }
+                } catch (NumberFormatException e) {
+                    secondChoice = -1;
+                    System.out.println(RED + "Invalid Selection. Try Again.");
+                }
+            }
+
+            if (secondChoice == 0){
+                continue;
+            }
+
+            secondChoice -= 1;
+            Cordinate chosenCord = availableCord.get(secondChoice);
+
+            if (addedCrew.containsKey(chosenCord)){
+                addedCrew.get(chosenCord).add(guestSelected);
+            }
+            else{
+                addedCrew.put(chosenCord, new ArrayList<>());
+                addedCrew.get(chosenCord).add(guestSelected);
+            }
+        }
+
+        controller.addCrew(addedCrew);
     }
 }

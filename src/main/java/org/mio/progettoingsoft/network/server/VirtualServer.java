@@ -3,11 +3,13 @@ package org.mio.progettoingsoft.network.server;
 import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 
 import java.rmi.Remote;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interfaccia che definisce i metodi del server che devono essere resi accessibili ai client per poter interagire con
@@ -49,4 +51,6 @@ public interface VirtualServer extends Remote {
     void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) throws Exception;
     void removeComponent(int idGame, String nickname, Cordinate cordinate, boolean toAllClient) throws Exception;
     void startHourglass(int idGame) throws Exception;
+
+    void addCrew(int idGame, String nickname, Map<Cordinate, List<GuestType>> addedCrew) throws Exception;
 }

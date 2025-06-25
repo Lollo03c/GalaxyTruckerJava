@@ -79,6 +79,13 @@ class SldSlaversTest {
         )));
         assertTrue(antonio.getShipBoard().getOptComponentByCord(new Cordinate(2, 3)).get().getGuests().isEmpty());
 
+        controller.removeCrew(gameId, "andrea", new ArrayList<>(List.of(
+                new Cordinate(2, 3),
+                new Cordinate(2, 3),
+                new Cordinate(2, 2),
+                new Cordinate(2, 2)
+        )));
+
         controller.removeCrew(gameId, "lollo", new ArrayList<>(List.of(
                 new Cordinate(2, 3),
                 new Cordinate(2, 3),

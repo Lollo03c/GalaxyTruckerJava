@@ -55,6 +55,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     protected final List<Player> players;
     private List<Player> validationPlayers;
+    private List<Player> addCrewPlayers;
 
     private Map<Integer, Component> components = loadComponentMap();
     protected Map<Integer, SldAdvCard> sldAdvCards;
@@ -593,5 +594,13 @@ public abstract class FlyBoard implements FlyBoardServer {
                 return;
             }
         }
+    }
+
+    public void setAddCrewPlayers(List<Player> players){
+        this.validationPlayers = new ArrayList<>(players);
+    }
+
+    public List<Player> getAddCrewPlayers(){
+        return validationPlayers;
     }
 }

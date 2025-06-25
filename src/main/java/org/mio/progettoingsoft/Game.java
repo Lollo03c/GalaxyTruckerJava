@@ -174,4 +174,9 @@ public class Game implements GameServer, GameClient {
     public Object getLock(){
         return lock;
     }
+
+    @Override
+    public boolean isTesting() {
+        return testing;
+    }
 }

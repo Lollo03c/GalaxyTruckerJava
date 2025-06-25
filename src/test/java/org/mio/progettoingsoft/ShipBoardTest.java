@@ -9,11 +9,10 @@ import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.model.ShipBoardEasy;
 import org.mio.progettoingsoft.model.ShipBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.server.ServerController;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -355,6 +354,63 @@ class ShipBoardTest {
                 }
             }
         }
+    }
+
+    @Test
+    void should_add_human(){
+        HashSet<String> nicks = new HashSet<>(Set.of("antonio", "andrea"));
+        int gameId = 1;
+
+        GameServer game = new Game(gameId, true);
+        ServerController controller = ServerController.getInstance();
+
+        GameManager.getInstance().getOngoingGames().put(gameId, game);
+        game.setupGame(GameMode.NORMAL, 3);
+        game.createFlyboard(GameMode.NORMAL, nicks);
+
+        game.startGame();
+        flyBoard = game.getFlyboard();
+
+        controller.addComponent(gameId, "antonio", 40, new Cordinate(2, 2), 0);
+        controller.addComponent(gameId, "antonio", 41, new Cordinate(1, 3), 0);
+        controller.addComponent(gameId, "antonio", 138, new Cordinate(2, 1), 0);
+
+        controller.addComponent(gameId, "andrea", 43, new Cordinate(1, 3), 0);
+
+        flyBoard.getPlayerByUsername("antonio").getShipBoard().drawShipboard();
+        flyBoard.getPlayerByUsername("andrea").getShipBoard().drawShipboard();
+
+        controller.endBuild(gameId, "antonio");
+        controller.endBuild(gameId, "andrea");
+
+        controller.choosePlace(gameId, "antonio", 6);
+        controller.choosePlace(gameId, "andrea", 3);
+
+        controller.endValidation(gameId, "antonio");
+        controller.endValidation(gameId, "andrea");
+
+        controller.addCrew(gameId, "antonio", new HashMap<Cordinate, List<GuestType>>(Map.of(
+            new Cordinate(2, 3), new ArrayList<>(List.of(GuestType.HUMAN, GuestType.HUMAN)),
+
+
+            new Cordinate(2, 2), new ArrayList<>(List.of(GuestType.BROWN))
+        )));
+
+
+        controller.addCrew(gameId, "andrea", new HashMap<Cordinate, List<GuestType>>(Map.of(
+                new Cordinate(2, 3), new ArrayList<>(List.of(GuestType.HUMAN, GuestType.HUMAN)),
+
+
+                new Cordinate(1, 3), new ArrayList<>(List.of(GuestType.HUMAN))
+        )));
+
+        flyBoard.getPlayerByUsername("antonio").getShipBoard().drawShipboard();
+        flyBoard.getPlayerByUsername("andrea").getShipBoard().drawShipboard();
+
+        flyBoard.drawCircuit();
+
+
+
 
 
     }

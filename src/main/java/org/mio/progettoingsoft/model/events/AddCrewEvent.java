@@ -1,0 +1,29 @@
+package org.mio.progettoingsoft.model.events;
+
+import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.components.GuestType;
+import org.mio.progettoingsoft.network.client.VirtualClient;
+
+import java.util.Map;
+
+public final class AddCrewEvent extends Event{
+    private final Cordinate cord;
+    private final GuestType type;
+
+    public AddCrewEvent(String nickname, Cordinate cord, GuestType type) {
+        super(nickname);
+        this.cord = cord;
+        this.type = type;
+    }
+
+    @Override
+    public void send(Map<String, VirtualClient> clients) {
+        for (VirtualClient client : clients.values()){
+            try{
+                client.addCrewMember(nickname, cord,  type);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+}
