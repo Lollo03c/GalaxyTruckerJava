@@ -3,13 +3,11 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public abstract class Component {
     private final int id;
@@ -31,7 +29,6 @@ public abstract class Component {
         this.column = -1;
     }
 
-
     public int getRow() {
         return row;
     }
@@ -44,25 +41,16 @@ public abstract class Component {
     public void setColumn(int column){
         this.column = column;
     }
-
     public Cordinate getCordinate(){
         return new Cordinate(row,column);
     }
-
     public ComponentType getType(){
         return type;
     }
+    public Integer getEnergyQuantity(){
+        return 0;
+    }
 
-//    public Boolean isExposedSide(Direction direction){
-//        Connector comp = switch (direction) {
-//            case Direction.BACK -> bottomConnector;
-//            case Direction.FRONT -> topConnector;
-//            case Direction.RIGHT -> rightConnector;
-//            case Direction.LEFT -> leftConnector;
-//        };
-//
-//        return !comp.equals(Connector.FLAT);
-//    }
 
     /**
      * rotates the component, changes its {@link Connector} and the direction base of the component type
@@ -73,8 +61,10 @@ public abstract class Component {
             this.rotateClockwise();
     }
 
-    // the two "rotate" methods move the components in the selected order (clockwise or no)
-    // then it should change the "pointing direction" of the component
+    /**
+     * Rotates the component 90 degrees clockwise by shifting its connectors.
+     * Updates the pointing direction accordingly and increments the rotation count.
+     */
     protected void rotateClockwise(){
         Connector tmp = this.topConnector;
         this.topConnector = this.leftConnector;
@@ -83,18 +73,6 @@ public abstract class Component {
         this.rightConnector = tmp;
 
         rotations++;
-    }
-
-//    protected void rotateCounterClockwise(){
-//        Connector tmp = this.topConnector;
-//        this.topConnector = this.rightConnector;
-//        this.rightConnector = this.bottomConnector;
-//        this.bottomConnector = this.leftConnector;
-//        this.leftConnector = tmp;
-//    }
-
-    public Integer getEnergyQuantity(){
-        return 0;
     }
 
     /**
@@ -160,16 +138,6 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not a housing");
     }
 
-
-//    /**
-//     *
-//     * @param type the {@link GuestType} to add
-//     * @return true if the given guestType can be added to the housing, false otherwise
-//     * @throws IncorrectShipBoardException if the component is not a {@link Housing}
-//     */
-//    public boolean canAddGuest(GuestType type) throws IncorrectShipBoardException{
-//        throw new IncorrectShipBoardException("not a housing");
-//    }
     /**
      *
      * @return the {@link GuestType} of the {@link org.mio.progettoingsoft.components.AlienHousing}
@@ -275,7 +243,6 @@ public abstract class Component {
         throw new IncorrectShipBoardException("not a depot");
     }
 
-
     /**
      *
      * @return the id of the component, it refers to the id given to the JSON file
@@ -284,6 +251,12 @@ public abstract class Component {
         return id;
     }
 
+    /**
+     * Returns a string representation of the component, including its type,
+     * connectors (top, bottom, right, left), and position (row and column).
+     *
+     * @return a formatted string describing the component's state
+     */
     public String toString(){
         return this.type +
                 " Top: " + topConnector.toString() +
@@ -293,8 +266,12 @@ public abstract class Component {
                 " Row: " + row + " Column: " + column;
     }
 
-    public void reinitilizeRotations(){
-
+    /**
+     * Resets the component's rotation to its original orientation.
+     * Applies the minimal number of clockwise rotations needed to return to the initial state.
+     * Ensures the rotation count stays within the [0, 3] range.
+     */
+    public void reinitializeRotations(){
         Logger.debug("initial rotations " + rotations);
         rotations = rotations % 4;
 
