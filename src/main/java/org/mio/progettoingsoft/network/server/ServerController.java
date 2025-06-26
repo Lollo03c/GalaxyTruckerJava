@@ -324,17 +324,6 @@ public class ServerController {
                     Event eve = new SetStateEvent(player.getNickname(), GameState.VALIDATION);
                     game.addEvent(eve);
                 }
-//                String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
-//                for (String n : game.getClients().keySet()){
-//                    if (n.equals(nickLeader)){
-//                        Event event1 = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
-//                        game.addEvent(event1);
-//                    }
-//                    else{
-//                        Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
-//                        game.addEvent(event1);
-//                    }
-//                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

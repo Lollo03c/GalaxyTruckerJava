@@ -7,6 +7,7 @@ import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
 
 import java.io.File;
@@ -43,8 +44,8 @@ public class FlyBoardNormal extends FlyBoard  {
             case 2  -> i = 3;
             case 1  -> i = 6;
             default -> {
-                i=0;
-                System.out.println("Error in positionToIndex : incorrect index");
+                i=-1;
+                Logger.warning("Error in positionToIndex : incorrect index");
             }
         }
         return i;

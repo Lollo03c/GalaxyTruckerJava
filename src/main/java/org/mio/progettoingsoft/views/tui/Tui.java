@@ -114,7 +114,8 @@ public class Tui implements View {
             }
 
             case WRONG_POSITION -> {
-                System.out.println(RED + "Current position is already occupied" + RESET);
+                clearConsole();
+                System.out.println(RED + "Current position is already occupied." + RESET);
                 controller.setState(GameState.CHOOSE_POSITION);
             }
 
@@ -162,7 +163,6 @@ public class Tui implements View {
             case END_BUILDING -> {
                 if(!controller.getPendingHourglass() && controller.getHourglassCounter() < 3 && continueAsking)
                     controller.setState(GameState.YOU_CAN_ROTATE_HOURGLASS);
-                endBuildingMenu();
             }
 
             case CHOOSE_POSITION -> printChoosePosition();
@@ -197,6 +197,8 @@ private void endgame() {
     Logger.debug(controller.getNickname() + " has ended game.");
     List<Player> players = controller.getFlyBoard().getPlayers();
     List<Player> playersSorted = players.stream().sorted(Comparator.comparing(Player::getCredits).reversed()).toList();
+
+    clearConsole();
     System.out.println(BLUE + "THE GAME HAS ENDED" + RESET);
     System.out.println("These are the final credits for each player: ");
 
@@ -209,13 +211,13 @@ private void endgame() {
     String winner = playersSorted.stream().max(Comparator.comparing(Player::getCredits)).get().getNickname();
 
     if (controller.getNickname().equals(winner)) {
-        System.out.println(GREEN + "YOU WON THE GAME" + RESET);
+        System.out.println(GREEN + "\nYOU WON THE GAME" + RESET);
     } else {
-        System.out.println(RED + "YOU LOST THE GAME" + RESET);
+        System.out.println(RED + "\nYOU LOST THE GAME" + RESET);
         System.out.println("The winner is " + winner);
     }
 
-    System.out.println("Press enter to exit...");
+    System.out.println("\n\nPress enter to exit...");
     String buffer = scanner.nextLine();
     System.exit(0);
 }
@@ -730,35 +732,40 @@ private void endgame() {
      */
     private void printChoosePosition() {
         clearConsole();
-        System.out.println("Choose position: ");
         List<Integer> availablePlaces = controller.getAvailablePlacesOnCircuit();
         String input = "";
         int choice = -1;
-        int k = 0;
         while (!availablePlaces.contains(choice)) {
+            System.out.println("Choose position: ");
             controller.getFlyBoard().drawCircuit();
             System.out.println("In which of these available position do you want to start?");
-            for (Integer i : availablePlaces) {
-                k = FlyBoardNormal.indexToPosition(i);
-                System.out.println(k);
-            }
+            for (Integer i : availablePlaces)
+                System.out.println(FlyBoardNormal.indexToPosition(i));
+
             System.out.print("Make a choice: ");
             input = scanner.nextLine();
             try {
                 choice = Integer.parseInt(input);
-                choice = FlyBoardNormal.positionToIndex(choice);
-                if (!availablePlaces.contains(choice)) {
+                // se la choice è fuori dal possibile range
+                if (choice < 1 || choice > 4) {
                     clearConsole();
                     System.out.println(RED + "Invalid choice!" + RESET);
+                    choice = FlyBoardNormal.positionToIndex(choice);
+                } else {
+                    choice = FlyBoardNormal.positionToIndex(choice);
+                    if (!availablePlaces.contains(choice)) {
+                        clearConsole();
+                        System.out.println(RED + "Invalid choice!" + RESET);
+                    }
                 }
             } catch (Exception e) {
                 clearConsole();
                 System.out.println(RED + "Invalid choice!" + RESET);
             }
         }
-        controller.choosePlace(choice);
 
-        System.out.println(BLUE + "Waiting for other players" + RESET);
+        controller.setState(GameState.WAITING_PLAYERS);
+        controller.choosePlace(choice);
     }
 
     /**
@@ -1571,30 +1578,38 @@ private void endgame() {
     }
 
     private void addCrewMenu(){
+        clearConsole();
 
         Map<Cordinate, List<GuestType>> addedCrew = new HashMap<>();
         ShipBoard shipBoard = controller.getShipBoard();
 
         Set<GuestType> alreadyInserted = new HashSet<>();
+
+        String input = "";
+        int choice = -1;
         while (true) {
+            System.out.println(BLUE + "ADD YOUR CREW!" + RESET);
             shipBoard.drawShipboard();
 
-            int choice;
             System.out.println("1. Human");
             System.out.println("2. Purple Alien");
             System.out.println("3. Brown Alien");
-            System.out.print("Select the crew member to add (0 to exit) : ");
+            System.out.print("Select the crew member to add (0 to exit): ");
+            input = scanner.nextLine();
 
             try {
-                choice = Integer.parseInt(scanner.nextLine());
+                choice = Integer.parseInt(input);
 
                 if (choice < 0 || choice > 3) {
                     choice = -1;
+                    clearConsole();
+                    System.out.println(RED + "Choice not valid. Try Again." + RESET);
                     continue;
                 }
             } catch (NumberFormatException e) {
                 choice = -1;
-                System.out.println(RED + "Choice not valid. Try Again.");
+                clearConsole();
+                System.out.println(RED + "Choice not valid. Try Again." + RESET);
                 continue;
             }
 
@@ -1602,7 +1617,6 @@ private void endgame() {
             GuestType guestSelected = null;
             if (choice == 0) {
                 break;
-
             } else if (choice == 1) {
                 guestSelected = GuestType.HUMAN;
             } else if (choice == 2) {
@@ -1613,31 +1627,39 @@ private void endgame() {
 
             List<Cordinate> availableCord = shipBoard.getAvailableHousing(guestSelected);
             if (availableCord.isEmpty()) {
-                System.out.println("No available housing to guest this crew mamber.");
+                clearConsole();
+                System.out.println(RED + "No available housing to guest this crew member." + RESET);
                 continue;
             }
 
-            for (int i = 0; i < availableCord.size(); i++) {
-                System.out.println((i + 1) + ". " + availableCord.get(i));
-            }
-            System.out.print("Select where to add a " + guestSelected + " (0 to exit) : ");
+            clearConsole();
 
             int secondChoice = -1;
             while (secondChoice == -1) {
+                System.out.println("You are adding a " + guestSelected + ":");
+                shipBoard.drawShipboard();
+                System.out.println("These are the available housing for " + guestSelected + ":");
+                for (int i = 0; i < availableCord.size(); i++)
+                    System.out.println((i + 1) + ". " + availableCord.get(i));
+                System.out.print("Select where to add a " + guestSelected + " (0 to exit): ");
                 try {
                     secondChoice = Integer.parseInt(scanner.nextLine());
 
-                    if (secondChoice < 0 || secondChoice > availableCord.size() + 1) {
+                    if (secondChoice < 0 || secondChoice > availableCord.size()) {
                         secondChoice = -1;
-                        continue;
+                        clearConsole();
+                        System.out.println(RED + "Invalid Selection. Try Again." + RESET);
                     }
                 } catch (NumberFormatException e) {
                     secondChoice = -1;
-                    System.out.println(RED + "Invalid Selection. Try Again.");
+                    clearConsole();
+                    System.out.println(RED + "Invalid Selection. Try Again." + RESET);
                 }
+                clearConsole();
             }
 
             if (secondChoice == 0){
+                clearConsole();
                 continue;
             }
 
@@ -1646,7 +1668,8 @@ private void endgame() {
 
             if (guestSelected.equals(GuestType.BROWN) || guestSelected.equals(GuestType.PURPLE)){
                 if (alreadyInserted.contains(guestSelected)){
-                    System.out.println(RED + "It is possible to insert only a Alien for kind");
+                    clearConsole();
+                    System.out.println(RED + "It is possible to insert only a alien for kind." + RESET);
                     continue;
                 }
             }
@@ -1663,6 +1686,7 @@ private void endgame() {
             }
         }
 
+        controller.setState(GameState.WAITING_PLAYERS);
         controller.addCrew(addedCrew);
     }
 }

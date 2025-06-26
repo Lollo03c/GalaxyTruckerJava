@@ -54,9 +54,9 @@ public final class SldOpenSpace extends SldAdvCard {
     // else, it sets the card state to ENGINE_CHOICE to accept other calls with next players
     public void applyEffect(Player player, int numDoubleEngines) {
         if (!flyBoard.getScoreBoard().contains(player)) {
-            setNextPlayer();
-            return;
-            //throw new IncorrectFlyBoardException("player not found");
+//            setNextPlayer();
+//            return;
+            throw new IncorrectFlyBoardException("player not found");
         }
 
 
