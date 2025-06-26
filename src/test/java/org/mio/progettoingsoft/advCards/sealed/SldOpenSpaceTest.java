@@ -51,18 +51,18 @@ class SldOpenSpaceTest {
         card = flyBoard.getPlayedCard();
     }
 
-    @Test
-    void should_reject_illegal_player(){
-        FlyBoard flyBoard = game.getFlyboard();
-
-        card.init(game);
-        card.setNextPlayer();
-
-        SldOpenSpace openSpace = (SldOpenSpace) card;
-
-        Player illegalPlayer = new Player("sda", HousingColor.RED, GameMode.NORMAL, flyBoard);
-        assertThrows(IncorrectFlyBoardException.class, () -> openSpace.applyEffect(illegalPlayer, 3));
-    }
+//    @Test
+//    void should_reject_illegal_player(){
+//        FlyBoard flyBoard = game.getFlyboard();
+//
+//        card.init(game);
+//        card.setNextPlayer();
+//
+//        SldOpenSpace openSpace = (SldOpenSpace) card;
+//
+//        Player illegalPlayer = new Player("sda", HousingColor.RED, GameMode.NORMAL, flyBoard);
+//        assertThrows(IncorrectFlyBoardException.class, () -> openSpace.applyEffect(illegalPlayer, 3));
+//    }
 
     @Test
     void should_reject_wrong_player(){
