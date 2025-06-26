@@ -415,8 +415,8 @@ class ShipBoardTest {
         controller.choosePlace(gameId, "antonio", 6);
         controller.choosePlace(gameId, "andrea", 3);
 
-        controller.endValidation(gameId, "antonio");
-        controller.endValidation(gameId, "andrea");
+        controller.endValidation(gameId, "antonio", false);
+        controller.endValidation(gameId, "andrea", false);
 
         controller.addCrew(gameId, "antonio", new HashMap<Cordinate, List<GuestType>>(Map.of(
             new Cordinate(2, 3), new ArrayList<>(List.of(GuestType.HUMAN, GuestType.HUMAN)),

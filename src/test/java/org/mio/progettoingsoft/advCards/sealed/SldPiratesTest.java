@@ -42,7 +42,7 @@ class SldPiratesTest {
         controller.choosePlace(gameId, "andrea", 3);
         flyBoard.getPlayerByUsername("andrea").getShipBoard().removeComponent(new Cordinate(0, 2));
         flyBoard.getPlayerByUsername("andrea").getShipBoard().removeComponent(new Cordinate(3, 6));
-        flyBoard.getPlayerByUsername("andrea").getShipBoard().drawShipboard();
+//        flyBoard.getPlayerByUsername("andrea").getShipBoard().drawShipboard();
 //        controller.drawCard(gameId, "antonio");
         int a = 0;
 
@@ -54,6 +54,10 @@ class SldPiratesTest {
     @Test
     void shuold_do_one_iteration(){
         SldPirates pirates = (SldPirates) card;
+
+        flyBoard.getPlayerByUsername("antonio").getShipBoard().drawShipboard();
+        flyBoard.getPlayerByUsername("andrea").getShipBoard().drawShipboard();
+
         card.init(game);
         card.setNextPlayer();
 

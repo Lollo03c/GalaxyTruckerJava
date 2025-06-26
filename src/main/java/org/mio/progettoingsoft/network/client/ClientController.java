@@ -109,6 +109,9 @@ public class ClientController {
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
+    private boolean usedBattery;
+    private Cordinate cordinate;
+
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
@@ -205,6 +208,10 @@ public class ClientController {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public boolean isUsedBattery() {
+        return usedBattery;
     }
 
     public FlyBoard getFlyBoard() {
@@ -664,9 +671,9 @@ public class ClientController {
     }
 
 
-    public void endValidation() {
+    public void endValidation(boolean usedBattey) {
         try {
-            server.endValidation(idGame, nickname);
+            server.endValidation(idGame, nickname, usedBattey);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -849,7 +856,8 @@ public class ClientController {
 
     public void setRollResult(int first, int second) {
         try {
-            server.setRollResult(idGame, nickname, first, second);
+            //todo e' da cambiare
+            server.setRollResult(idGame, nickname, 3, 3);
         } catch (Exception e) {
         }
     }
@@ -922,23 +930,39 @@ public class ClientController {
     }
 
     public void cannonHit(CannonType type, Direction direction, int number) {
+        System.out.println(direction + " " + number);
+        shipBoard.drawShipboard();
+
+
+
         cannon = new CannonPenalty(direction, type);
         cannon.setNumber(number);
         setCardState(CardState.CANNON_HIT);
 
         Optional<Cordinate> optCordinateHit = cannon.findHit(shipBoard, number);
+
         if (optCordinateHit.isEmpty()) {
             advanceCannon(false, false);
             return;
         }
 
         Cordinate cordinateHit = optCordinateHit.get();
+        this.cordinate = cordinateHit;
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         cannon.setCordinateHit(cordinateHit);
 
         if (type.equals(CannonType.HEAVY)) {
-            advanceCannon(true, false);
+            removeComponentImmediate(cordinateHit);
+
+
+            boolean valid = shipBoard.isShipValid();
+            if (valid) {
+                advanceCannon(false, false);
+            }else{
+                removeComponentImmediate(cordinateHit);
+                setState(GameState.VALIDATION);
+            }
         } else {
             setCardState(CardState.SHIELD_SELECTION);
         }
@@ -1003,5 +1027,9 @@ public class ClientController {
             int idComp = ship.getOptComponentByCord(cordinate).get().getId();
             flyBoard.getComponentById(idComp).addGuest(guestType);
         }
+    }
+
+    public Cordinate getCordinate() {
+        return cordinate;
     }
 }

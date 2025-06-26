@@ -303,15 +303,16 @@ public class ShipBoardNormal extends ShipBoard {
     }
 
     public static void main(String[] args) {
-        FlyBoard flyBoard = new FlyBoardNormal(Set.of("anto", "ste"));
+        FlyBoard flyBoard = new FlyBoardNormal(Set.of("anto", "ste", "lollo"));
+
         ShipBoard ship = buildBlue(flyBoard);
-
-
-        ShipBoard other = buildYellow(flyBoard);
+        ShipBoard first = buildYellow(flyBoard);
+        ShipBoard second = buildRed(flyBoard);
 
 
         ship.drawShipboard();
-        other.drawShipboard();
+        first.drawShipboard();
+        second.drawShipboard();
 
     }
 }

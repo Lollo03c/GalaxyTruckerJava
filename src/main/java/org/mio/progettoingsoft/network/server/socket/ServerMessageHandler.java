@@ -89,7 +89,7 @@ public class ServerMessageHandler implements Runnable {
                     }
 
                     case EndValidationMessage endValidationMessage -> {
-                        serverController.endValidation(endValidationMessage.getGameId(), endValidationMessage.getNickname());
+                        serverController.endValidation(endValidationMessage.getGameId(), endValidationMessage.getNickname(), endValidationMessage.isUsedBattery());
                     }
 
                     case DoubleEngineMessage doubleEngineMessage -> {
