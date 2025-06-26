@@ -3,7 +3,7 @@ package org.mio.progettoingsoft.model.enums;
 import java.io.Serializable;
 
 /**
-* record representing all the information about a game
+ * Record representing all the information about a game
  *
  * @Param gameId : int
  * @Param mode : {@link GameMode}

@@ -1,10 +1,9 @@
 package org.mio.progettoingsoft.model.interfaces;
 
-import org.mio.progettoingsoft.AdventureCard;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.model.enums.GameMode;
-
-import java.util.List;
-
+/**
+ * Marker interface for FlyBoard functionalities exposed to the server-side logic.
+ * This interface is intended to define a contract for methods that the server
+ * (or other server-side components) would interact with on a FlyBoard instance.
+ */
 public interface FlyBoardServer {
 }

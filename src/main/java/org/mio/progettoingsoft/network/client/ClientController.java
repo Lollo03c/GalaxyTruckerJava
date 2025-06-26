@@ -22,7 +22,6 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
