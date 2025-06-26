@@ -1183,6 +1183,12 @@ public class Gui extends Application implements View {
         });
         confirmButton.setOnAction(event -> {
             modalShipStage.close();
+            for (Cordinate cord : addedCrew.keySet()){
+                for (GuestType type : addedCrew.get(cord)){
+                    int id = controller.getShipBoard().getOptComponentByCord(cord).get().getId();
+                    controller.getFlyBoard().getComponentById(id).addGuest(type);
+                }
+            }
             controller.addCrew(addedCrew);
         });
         resetButton.setOnAction(evt -> {

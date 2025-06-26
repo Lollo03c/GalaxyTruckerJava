@@ -904,6 +904,7 @@ public class ServerController {
     }
 
     public void addCrew(int idGame, String nickname, Map<Cordinate, List<GuestType>> addedCrew) {
+        System.out.println(nickname + " " + addedCrew);
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
@@ -924,9 +925,6 @@ public class ServerController {
                     valid = false;
 
                 flatInserted.add(type);
-
-                Event event = new AddCrewEvent(nickname, cord, type);
-                game.addEvent(event);
             }
         }
 

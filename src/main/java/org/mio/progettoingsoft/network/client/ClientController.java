@@ -1026,9 +1026,11 @@ public class ClientController {
         }
     }
 
-    public void addCrewToModel(String nickname, Cordinate cordinate, GuestType guestType) {
+    public void addCrewToModel(String nick, Cordinate cordinate, GuestType guestType) {
         synchronized (flyboardLock) {
-            ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+
+            ShipBoard ship = flyBoard.getPlayerByUsername(nick).getShipBoard();
+            ship.addGuestToShip();
 
             int idComp = ship.getOptComponentByCord(cordinate).get().getId();
             flyBoard.getComponentById(idComp).addGuest(guestType);
