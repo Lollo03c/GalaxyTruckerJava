@@ -15,11 +15,11 @@ public enum AdvCardType {
 
     private String value;
 
-    public String getValue(){
-        return value;
-    }
-
     AdvCardType(String str){
         value = str;
+    }
+
+    public String getValue(){
+        return value;
     }
 }

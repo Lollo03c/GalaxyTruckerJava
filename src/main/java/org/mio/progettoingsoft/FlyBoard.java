@@ -42,7 +42,6 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     private final GameMode mode;
 
-    protected List<AdventureCard> selectionDeckPrivate;
     protected List<List<Integer>> littleDecks;
     private List<Integer> availableDecks = new ArrayList<>();
 
