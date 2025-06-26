@@ -248,9 +248,11 @@ public class Gui extends Application implements View {
         shipViewBorderPane = new BorderPane();
 
         this.stage.show();
-        screenHeight = Screen.getPrimary().getBounds().getHeight() * Screen.getPrimary().getOutputScaleY();
-        screenWidth = Screen.getPrimary().getBounds().getWidth() * Screen.getPrimary().getOutputScaleX();
-        tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
+        String os = System.getProperty("os.name").toLowerCase();
+        double correctionFactor = os.contains("mac") ? 0.9 : 1.0;
+        screenHeight = Screen.getPrimary().getVisualBounds().getHeight() * Screen.getPrimary().getOutputScaleY();
+        screenWidth = Screen.getPrimary().getVisualBounds().getWidth() * Screen.getPrimary().getOutputScaleX();
+        tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20) * correctionFactor;
         creditsLabel = new Label();
         this.updateGui(GameState.START);
         Thread thread = new Thread(() -> {
@@ -492,7 +494,7 @@ public class Gui extends Application implements View {
             root.getChildren().clear();
 
             // used for rendering the tiles (semi) dynamically with different screen dimensions
-            tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
+            //tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
 
             /* ----------------------- TOP BOX ----------------------- */
             shipTopBox = new HBox();
@@ -764,7 +766,7 @@ public class Gui extends Application implements View {
             Image inHandImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             inHandImageView.setImage(inHandImage);
             inHandImageView.setRotate(0);
-            tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
+            //tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
 
             shipViewBorderPane.setDisable(false);
             shipTilesDeckBox.setDisable(false);
