@@ -10,7 +10,6 @@ import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.model.FlyBoardNormal;
-import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
@@ -21,7 +20,6 @@ import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
 
 import static org.mio.progettoingsoft.views.tui.CircuitCell.GREEN;
 
@@ -149,16 +147,6 @@ public class Tui implements View {
                 System.out.println("Invalid ship choice");
                 controller.setState(GameState.CHOICE_BUILT);
             }
-
-//            case STARDUST -> {
-//                // la riga successiva è da eliminare e passargli la carta pescata
-//                SldStardust card = new SldStardust(1, 1);
-//                System.out.println("STARDUST was drown");
-//                controller.applyStardust(card);
-//            }
-
-
-
 
             case END_BUILDING -> {
                 if(!controller.getPendingHourglass() && controller.getHourglassCounter() < 3 && continueAsking)
