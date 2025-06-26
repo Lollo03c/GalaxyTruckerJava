@@ -873,13 +873,8 @@ public class ServerController {
                         clients.get(nick).removeComponent(nickname, cord);
                     }
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    handleGameCrash(e, nickname, idGame);
                 }
-<<<<<<< Updated upstream
-=======
-            } catch (Exception e) {
-                handleGameCrash(e, nickname, idGame);
->>>>>>> Stashed changes
             }
         }else{
             Event event = new RemoveComponentEvent(nickname, cord);

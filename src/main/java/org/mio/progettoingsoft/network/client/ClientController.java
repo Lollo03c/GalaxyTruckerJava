@@ -1028,12 +1028,10 @@ public class ClientController {
         }
     }
 
-<<<<<<< Updated upstream
     public Cordinate getCordinate() {
         return cordinate;
-=======
+    }
     public void notifyCrash(String nickname) {
         setState(GameState.GAME_CRASH);
->>>>>>> Stashed changes
     }
 }
