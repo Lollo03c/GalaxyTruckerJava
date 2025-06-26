@@ -230,6 +230,16 @@ public class Gui extends Application implements View {
      */
     @Override
     public void run() {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        if (os.contains("mac")) {
+            System.setProperty("java.library.path", "lib/javafx/macos");
+        } else if (os.contains("win")) {
+            System.setProperty("java.library.path", "lib/javafx/windows");
+        } else if (os.contains("nux")) {
+            System.setProperty("java.library.path", "lib/javafx/linux");
+        }
+        Logger.info("GUI: " + System.getProperty("os.name") + " " + System.getProperty("java.library.path"));
         Application.launch(Gui.class);
     }
 
@@ -240,6 +250,9 @@ public class Gui extends Application implements View {
      */
     @Override
     public void start(Stage stage) {
+
+        String os = System.getProperty("os.name").toLowerCase();
+
         this.stage = stage;
         this.root = new StackPane();
         this.stage.setTitle("Galaxy Trucker");
@@ -248,7 +261,6 @@ public class Gui extends Application implements View {
         shipViewBorderPane = new BorderPane();
 
         this.stage.show();
-        String os = System.getProperty("os.name").toLowerCase();
         double correctionFactor = os.contains("mac") ? 0.9 : 1.0;
         screenHeight = Screen.getPrimary().getVisualBounds().getHeight() * Screen.getPrimary().getOutputScaleY();
         screenWidth = Screen.getPrimary().getVisualBounds().getWidth() * Screen.getPrimary().getOutputScaleX();
@@ -1012,10 +1024,10 @@ public class Gui extends Application implements View {
                 )) {
                     StackPane sp = new StackPane();
                     ImageView imgView = new ImageView();
-                    sp.setMaxHeight(tilesSideLength*0.9);
-                    sp.setMaxWidth(tilesSideLength*0.9);
-                    sp.setMinHeight(tilesSideLength*0.9);
-                    sp.setMinWidth(tilesSideLength*0.9);
+                    sp.setMaxHeight(tilesSideLength * 0.9);
+                    sp.setMaxWidth(tilesSideLength * 0.9);
+                    sp.setMinHeight(tilesSideLength * 0.9);
+                    sp.setMinWidth(tilesSideLength * 0.9);
                     imgView.fitWidthProperty().bind(sp.widthProperty().multiply(0.9));
                     imgView.fitHeightProperty().bind(sp.heightProperty().multiply(0.9));
                     imgView.setPreserveRatio(true);
@@ -1514,7 +1526,8 @@ public class Gui extends Application implements View {
                 }
                 modalMessageStage("Stardust has been played!\nYou had " + exposed + " exposed connectors, so you lost " + exposed + " days", null);
             }
-            case EPIDEMIC_END -> modalMessageStage("Epidemic has been played!\nLook at your ship and check your crew!", null);
+            case EPIDEMIC_END ->
+                    modalMessageStage("Epidemic has been played!\nLook at your ship and check your crew!", null);
             case PLANET_CHOICE -> planetChoiceView();
             case DICE_ROLL -> diceRollView(true);
             case WAITING_ROLL -> diceRollView(false);
@@ -2154,8 +2167,8 @@ public class Gui extends Application implements View {
      * @param message: the shown message
      */
     private void modalMessageStage(String message, Button btn) {
-        if(modalMessageStage != null){
-            if(modalMessageStage.isShowing()){
+        if (modalMessageStage != null) {
+            if (modalMessageStage.isShowing()) {
                 modalMessageStage.close();
             }
         }
@@ -2169,7 +2182,7 @@ public class Gui extends Application implements View {
         box.setPadding(new Insets(20));
         Label infoLabel = new Label(message);
         box.getChildren().addAll(infoLabel);
-        if(btn != null){
+        if (btn != null) {
             box.getChildren().add(btn);
         }
         modalMessageStage.setScene(new Scene(box, 300, 150));
