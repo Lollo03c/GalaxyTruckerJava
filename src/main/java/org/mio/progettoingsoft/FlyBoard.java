@@ -313,8 +313,8 @@ public abstract class FlyBoard implements FlyBoardServer {
                     scoreBoard.set(position2, player);
                 } else {
                     //player2 is doubled and so removed from scoreBoard
-                    support.firePropertyChange("doubled", player2.get().getNickname(), player);
                     leavePlayer(player2.get());
+                    support.firePropertyChange("doubled", player2.get().getNickname(), player);
                 }
             }
         }
@@ -341,6 +341,8 @@ public abstract class FlyBoard implements FlyBoardServer {
                     scoreBoard.set(position2, player);
                 } else {
                     //player viene doppiato da player2 e quindi player viene eliminato
+                    leavePlayer(player2.get());
+                    support.firePropertyChange("doubled", player2.get().getNickname(), player);
                 }
             }
         }
