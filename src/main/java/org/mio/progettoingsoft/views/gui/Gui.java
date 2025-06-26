@@ -1925,21 +1925,9 @@ public class Gui extends Application implements View {
                 noBtn.setText("Go ahead");
             }
             noBtn.setOnAction(evt -> {
-                switch (controller.getPlayedCard()) {
-                    case SldMeteorSwarm meteorSwarm -> {
-                        controller.advanceMeteor(true, false);
-                        modalShipStage.close();
-                    }
-                    case SldPirates pirates -> {
-                        controller.advanceCannon(true, false);
-                        modalShipStage.close();
-                    }
-                    case SldCombatZone combatZone -> {
-                        controller.advanceCannon(true, false);
-                        modalShipStage.close();
-                    }
-                    default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
-                }
+                controller.getShipBoard().removeComponent(controller.getCordinate());
+                controller.setState(GameState.VALIDATION);
+                modalShipStage.close();
             });
             btnBox.getChildren().addAll(noBtn);
             modalShipContainer.getChildren().addAll(btnBox);

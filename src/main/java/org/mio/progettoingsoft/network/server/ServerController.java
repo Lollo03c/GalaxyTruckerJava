@@ -282,6 +282,10 @@ public class ServerController {
                         advanceCannon(idGame, nickname, false, usedBattery);
                     }
 
+                    case SldCombatZone combatZone -> {
+                        advanceCannon(idGame, nickname, false, usedBattery);
+                    }
+
                     default -> {
 
                     }
@@ -372,7 +376,7 @@ public class ServerController {
         SldAdvCard card = flyBoard.getSldAdvCardByID(29);
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        int id = 23;
+        int id = 16;
 
         //int id = 999;
         //if id is 999 the deck is empty

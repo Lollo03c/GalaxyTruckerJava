@@ -54,7 +54,7 @@ public class ClientController {
     }
 
     private ClientController(ConnectionInfo connectionInfo) {
-        Logger.setMinLevel(Logger.Level.WARNING);
+        Logger.setMinLevel(Logger.Level.DEBUG);
 
         this.setState(GameState.START);
         this.connectionInfo = connectionInfo;
@@ -955,12 +955,10 @@ public class ClientController {
         if (type.equals(CannonType.HEAVY)) {
             removeComponentImmediate(cordinateHit);
 
-
             boolean valid = shipBoard.isShipValid();
             if (valid) {
                 advanceCannon(false, false);
             }else{
-                removeComponentImmediate(cordinateHit);
                 setState(GameState.VALIDATION);
             }
         } else {
