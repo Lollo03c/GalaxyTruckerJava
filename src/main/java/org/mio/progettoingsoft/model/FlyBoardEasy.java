@@ -201,6 +201,7 @@ public class FlyBoardEasy extends FlyBoard {
      * @deprecated This method currently returns null and should be reviewed for its intended behavior in Easy mode.
      */
     @Override
+    @Deprecated
     public ShipBoard getBuiltShip(HousingColor color){
         return null;
     }

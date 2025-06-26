@@ -557,7 +557,7 @@ public class ServerController {
      *
      * @param idGame The ID of the game to end.
      */
-    private void setEndGame(int idGame){
+    public void setEndGame(int idGame){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         flyBoard.assignCreditsForPositions();
