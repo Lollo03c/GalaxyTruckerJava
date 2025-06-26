@@ -244,7 +244,7 @@ public class ServerController {
 
     }
 
-    public void endValidation(int idGame, String nickname) {
+    public void endValidation(int idGame, String nickname, boolean usedBattery) {
         Logger.info(nickname + " ended ship building, has removed incorrect components and now needs to validate his ship.");
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -259,7 +259,7 @@ public class ServerController {
             game.addEvent(event1);
             game.addEvent(event2);
         } else {
-            if (flyBoard.getPlayedCard() == null) {
+            if (! flyBoard.isPlayedFirstCard()) {
                 synchronized (game.getLock()) {
                     Logger.info("Ship " + nickname + " is valid.");
                     Player player = flyBoard.getPlayerByUsername(nickname);
@@ -368,10 +368,12 @@ public class ServerController {
         if (!flyBoard.getScoreBoard().getFirst().equals(flyBoard.getPlayerByUsername(nickname))) {
             throw new NotYourTurnException();
         }
+        flyBoard.setPlayedFirstCard(true);
         SldAdvCard card = flyBoard.getSldAdvCardByID(29);
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        int id = flyBoard.drawCard();
+        int id = 23;
+
         //int id = 999;
         //if id is 999 the deck is empty
 //        id = ;

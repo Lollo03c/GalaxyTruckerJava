@@ -65,7 +65,7 @@ public abstract class FlyBoard implements FlyBoardServer {
     private List<Player> waitingPlayers;
     private Map<GoodType, Integer> priceGoods = new EnumMap<>(GoodType.class);
 
-
+    private boolean playedFirstCard = false;
 
     private final List<Integer> availableConstructedShips;
 
@@ -554,6 +554,8 @@ public abstract class FlyBoard implements FlyBoardServer {
     }
 
     public int drawCard(){
+        this.playedFirstCard = true;
+
         if(deck.isEmpty())
             return 999;
         int cardId = deck.getFirst();
@@ -617,5 +619,13 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     public List<Player> getAddCrewPlayers(){
         return validationPlayers;
+    }
+
+    public boolean isPlayedFirstCard() {
+        return playedFirstCard;
+    }
+
+    public void setPlayedFirstCard(boolean playedFirstCard) {
+        this.playedFirstCard = playedFirstCard;
     }
 }

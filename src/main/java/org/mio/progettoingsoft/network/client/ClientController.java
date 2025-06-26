@@ -110,6 +110,7 @@ public class ClientController {
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private boolean usedBattery;
+    private Cordinate cordinate;
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
@@ -855,7 +856,8 @@ public class ClientController {
 
     public void setRollResult(int first, int second) {
         try {
-            server.setRollResult(idGame, nickname, first, second);
+            //todo e' da cambiare
+            server.setRollResult(idGame, nickname, 3, 3);
         } catch (Exception e) {
         }
     }
@@ -931,17 +933,21 @@ public class ClientController {
         System.out.println(direction + " " + number);
         shipBoard.drawShipboard();
 
+
+
         cannon = new CannonPenalty(direction, type);
         cannon.setNumber(number);
         setCardState(CardState.CANNON_HIT);
 
         Optional<Cordinate> optCordinateHit = cannon.findHit(shipBoard, number);
+
         if (optCordinateHit.isEmpty()) {
             advanceCannon(false, false);
             return;
         }
 
         Cordinate cordinateHit = optCordinateHit.get();
+        this.cordinate = cordinateHit;
         Component componentHit = shipBoard.getOptComponentByCord(cordinateHit).get();
 
         cannon.setCordinateHit(cordinateHit);
@@ -954,6 +960,7 @@ public class ClientController {
             if (valid) {
                 advanceCannon(false, false);
             }else{
+                removeComponentImmediate(cordinateHit);
                 setState(GameState.VALIDATION);
             }
         } else {
@@ -1020,5 +1027,9 @@ public class ClientController {
             int idComp = ship.getOptComponentByCord(cordinate).get().getId();
             flyBoard.getComponentById(idComp).addGuest(guestType);
         }
+    }
+
+    public Cordinate getCordinate() {
+        return cordinate;
     }
 }

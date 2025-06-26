@@ -1394,26 +1394,33 @@ private void endgame() {
         }
 
         boolean destroyedComp = !choice.equals("y");
-        System.out.println("Waiting other player to make a decision.");
 
+        if (!destroyedComp) {
+            switch (card) {
+                case SldMeteorSwarm meteorSwarm -> {
+                    Meteor meteor = controller.getMeteor();
+                    controller.advanceMeteor(destroyedComp, !destroyedComp);
+                }
 
-        switch (card) {
-            case SldMeteorSwarm meteorSwarm -> {
-                Meteor meteor = controller.getMeteor();
-                controller.advanceMeteor(destroyedComp, !destroyedComp);
+                case SldPirates pirates -> {
+                    CannonPenalty cannon = controller.getCannon();
+                    controller.advanceCannon(destroyedComp, !destroyedComp);
+                }
+
+                case SldCombatZone combatZone -> {
+                    controller.advanceCannon(destroyedComp, !destroyedComp);
+                }
+
+                default -> Logger.error("caso non previsto");
             }
-
-            case SldPirates pirates -> {
-                CannonPenalty cannon = controller.getCannon();
-                controller.advanceCannon(destroyedComp, !destroyedComp);
-            }
-
-            case SldCombatZone combatZone -> {
-                controller.advanceCannon(destroyedComp, !destroyedComp);
-            }
-
-            default -> Logger.error("caso non previsto");
         }
+        else{
+            controller.getShipBoard().removeComponent(controller.getCordinate());
+
+            controller.setState(GameState.VALIDATION);
+        }
+
+        System.out.println("Waiting other player to make a decision.");
 
 
     }
