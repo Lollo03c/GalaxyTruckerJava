@@ -80,7 +80,8 @@ public class Gui extends Application implements View {
     private double screenWidth;
     // height given to the tiles in the shipboard grid
     private double tilesSideLength;
-    private Insets shipPadding = new Insets(28, 33, 28, 33);
+    private Insets shipPadding = new Insets(22, 27, 22, 27);
+    private Insets modalShipPadding = new Insets(17, 22, 17, 22);
     // maps used to identifie stackPane e imageView in a specific grid cell
     private final Map<Cordinate, StackPane> cordToStackPanes = new HashMap<>();
     private final Map<Cordinate, ImageView> cordToImageViews = new HashMap<>();
@@ -247,9 +248,9 @@ public class Gui extends Application implements View {
         shipViewBorderPane = new BorderPane();
 
         this.stage.show();
-        screenHeight = Screen.getPrimary().getBounds().getHeight();
-        screenWidth = Screen.getPrimary().getBounds().getWidth();
-        tilesSideLength = Math.min(screenHeight / 9, screenWidth / 16);
+        screenHeight = Screen.getPrimary().getBounds().getHeight() * Screen.getPrimary().getOutputScaleY();
+        screenWidth = Screen.getPrimary().getBounds().getWidth() * Screen.getPrimary().getOutputScaleX();
+        tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
         creditsLabel = new Label();
         this.updateGui(GameState.START);
         Thread thread = new Thread(() -> {
@@ -491,7 +492,7 @@ public class Gui extends Application implements View {
             root.getChildren().clear();
 
             // used for rendering the tiles (semi) dynamically with different screen dimensions
-            tilesSideLength = Math.min(screenHeight / 9, screenWidth / 16);
+            tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
 
             /* ----------------------- TOP BOX ----------------------- */
             shipTopBox = new HBox();
@@ -594,7 +595,11 @@ public class Gui extends Application implements View {
                     Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
                     butt.setTextAlignment(TextAlignment.CENTER);
                     butt.setWrapText(true);
-                    butt.setOnAction(event -> modalShipboardView(player.getNickname()));
+                    butt.setOnAction(event -> {
+                        modalShipboardView(player.getNickname());
+                        modalShipStage.setScene(new Scene(modalShipContainer));
+                        modalShipStage.show();
+                    });
                     viewOtherPlayersBox.getChildren().add(butt);
                 }
             }
@@ -759,6 +764,7 @@ public class Gui extends Application implements View {
             Image inHandImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             inHandImageView.setImage(inHandImage);
             inHandImageView.setRotate(0);
+            tilesSideLength = Math.min(screenHeight / 14, screenWidth / 20);
 
             shipViewBorderPane.setDisable(false);
             shipTilesDeckBox.setDisable(false);
@@ -971,16 +977,14 @@ public class Gui extends Application implements View {
         modalShipStage.initModality(Modality.APPLICATION_MODAL);
         modalShipStage.setTitle(nickname + "'s shipboard");
         modalShipContainer = new VBox(15);
-        modalShipStage.setScene(new Scene(modalShipContainer));
-        modalShipStage.setOnCloseRequest(evt -> {});
-        modalShipStage.show();
-        double stageHeight = modalShipStage.getHeight(), stageWidth = modalShipStage.getWidth();
+        modalShipStage.setOnCloseRequest(evt -> {
+        });
         modalShipContainer.setAlignment(Pos.CENTER);
         VBox.setVgrow(modalShipContainer, Priority.ALWAYS);
-        modalShipContainer.setPadding(new Insets(10, 0, 10, 0));
+        modalShipContainer.setPadding(new Insets(10, 40, 10, 40));
         GridPane otherPlayerShipGrid = new GridPane();
         otherPlayerShipGrid.setAlignment(Pos.CENTER);
-        otherPlayerShipGrid.setPadding(shipPadding);
+        otherPlayerShipGrid.setPadding(modalShipPadding);
         String tmpResourcePath = IMG_PATH + CARDBOARDS_REL_PATH + "cardboard-1b" + IMG_JPG_EXTENSION;
         Image shipboardImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
         otherPlayerShipGrid.setBackground(
@@ -994,7 +998,6 @@ public class Gui extends Application implements View {
                         )
                 )
         );
-        tilesSideLength = Math.min(stageHeight / 9, stageWidth / 16);
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 7; j++) {
                 if (!(
@@ -1007,10 +1010,10 @@ public class Gui extends Application implements View {
                 )) {
                     StackPane sp = new StackPane();
                     ImageView imgView = new ImageView();
-                    sp.setMaxHeight(tilesSideLength);
-                    sp.setMaxWidth(tilesSideLength);
-                    sp.setMinHeight(tilesSideLength);
-                    sp.setMinWidth(tilesSideLength);
+                    sp.setMaxHeight(tilesSideLength*0.9);
+                    sp.setMaxWidth(tilesSideLength*0.9);
+                    sp.setMinHeight(tilesSideLength*0.9);
+                    sp.setMinWidth(tilesSideLength*0.9);
                     imgView.fitWidthProperty().bind(sp.widthProperty().multiply(0.9));
                     imgView.fitHeightProperty().bind(sp.heightProperty().multiply(0.9));
                     imgView.setPreserveRatio(true);
@@ -1022,7 +1025,7 @@ public class Gui extends Application implements View {
                 }
             }
         }
-        setGridConstraints(otherPlayerShipGrid, tilesSideLength);
+        setGridConstraints(otherPlayerShipGrid, tilesSideLength * 0.9);
         modalShipContainer.getChildren().add(otherPlayerShipGrid);
         Optional<Integer>[][] idMatrix;
         Optional<Integer>[][] rotationsMatrix;
@@ -1069,6 +1072,8 @@ public class Gui extends Application implements View {
             }
             Label messageLabel = new Label(message);
             modalShipContainer.getChildren().addFirst(messageLabel);
+            modalShipStage.setScene(new Scene(modalShipContainer));
+            modalShipStage.show();
         } else if (standAloneBlocks.size() > 1) {
             modalShipboardView(controller.getNickname());
             message = "It seems your shipboard is made of more stand-alone blocks\nClick on the one you want to keep";
@@ -1095,13 +1100,15 @@ public class Gui extends Application implements View {
             }
             Label messageLabel = new Label(message);
             modalShipContainer.getChildren().addFirst(messageLabel);
+            modalShipStage.setScene(new Scene(modalShipContainer));
+            modalShipStage.show();
         } else {
             controller.endValidation();
         }
 
     }
 
-    private void addCrewView(){
+    private void addCrewView() {
         modalShipboardView(controller.getNickname());
         Map<Cordinate, List<GuestType>> addedCrew = new HashMap<>();
         Label topLabel = new Label("Click on the housing you want to populate!");
@@ -1163,54 +1170,57 @@ public class Gui extends Application implements View {
             modalShipStage.close();
             controller.addCrew(addedCrew);
         });
-        resetButton.setOnAction(evt ->{
+        resetButton.setOnAction(evt -> {
             modalShipStage.close();
             controller.setState(GameState.ADD_CREW);
         });
         modalShipStage.setOnCloseRequest(event -> {
-            controller.addCrew(Collections.emptyMap());
+            event.consume();
         });
         btnBox.getChildren().addAll(addHumanButton, addPurpleAlienButton, addBrownAlienButton, crewBackButton);
         confBtnBox.getChildren().addAll(resetButton, confirmButton);
         modalShipContainer.getChildren().addAll(btnBox, confBtnBox);
 
         synchronized (controller.getShipboardLock()) {
-        for(Cordinate cord : modalShipCordToStackPane.keySet()){
-            if(controller.getShipBoard().getOptComponentByCord(cord).isPresent() && controller.getShipBoard().getOptComponentByCord(cord).get().getType().equals(ComponentType.HOUSING)){
-                Component c = controller.getShipBoard().getOptComponentByCord(cord).get();
-                StackPane sp = modalShipCordToStackPane.get(cord);
-                sp.setOnMouseClicked(event -> {
-                    if(readyToInsert){
-                        addedCrew.computeIfAbsent(cord, k -> new ArrayList<>());
-                        if(!(addedCrew.get(cord).size() > 1 ||
-                                addedCrew.get(cord).contains(GuestType.BROWN) ||
-                                addedCrew.get(cord).contains(GuestType.PURPLE)
-                        )){
-                            if(guestTypeToInsert == GuestType.HUMAN){
-                                addedCrew.get(cord).add(GuestType.HUMAN);
-                                insertHousingObjects(sp, addedCrew.get(cord));
-                            }else{
-                                if(c.canAddGuest(guestTypeToInsert)){
-                                    addedCrew.get(cord).add(guestTypeToInsert);
+            for (Cordinate cord : modalShipCordToStackPane.keySet()) {
+                if (controller.getShipBoard().getOptComponentByCord(cord).isPresent() && controller.getShipBoard().getOptComponentByCord(cord).get().getType().equals(ComponentType.HOUSING)) {
+                    Component c = controller.getShipBoard().getOptComponentByCord(cord).get();
+                    StackPane sp = modalShipCordToStackPane.get(cord);
+                    sp.setOnMouseClicked(event -> {
+                        if (readyToInsert) {
+                            addedCrew.computeIfAbsent(cord, k -> new ArrayList<>());
+                            if (!(addedCrew.get(cord).size() > 1 ||
+                                    addedCrew.get(cord).contains(GuestType.BROWN) ||
+                                    addedCrew.get(cord).contains(GuestType.PURPLE)
+                            )) {
+                                if (guestTypeToInsert == GuestType.HUMAN) {
+                                    addedCrew.get(cord).add(GuestType.HUMAN);
                                     insertHousingObjects(sp, addedCrew.get(cord));
-                                }else{
-                                    errLabel.setVisible(true);
+                                } else {
+                                    if (c.canAddGuest(guestTypeToInsert)) {
+                                        addedCrew.get(cord).add(guestTypeToInsert);
+                                        insertHousingObjects(sp, addedCrew.get(cord));
+                                    } else {
+                                        errLabel.setVisible(true);
+                                    }
                                 }
+                            } else {
+                                errLabel.setVisible(true);
                             }
-                        }else{
-                            errLabel.setVisible(true);
+                            crewBackButton.setDisable(true);
+                            addHumanButton.setDisable(false);
+                            addPurpleAlienButton.setDisable(false);
+                            addBrownAlienButton.setDisable(false);
+                            readyToInsert = false;
+                            guestTypeToInsert = null;
+                            topLabel.setVisible(false);
                         }
-                        crewBackButton.setDisable(true);
-                        addHumanButton.setDisable(false);
-                        addPurpleAlienButton.setDisable(false);
-                        addBrownAlienButton.setDisable(false);
-                        readyToInsert = false;
-                        guestTypeToInsert = null;
-                        topLabel.setVisible(false);
-                    }
-                });
+                    });
+                }
             }
-        }}
+        }
+        modalShipStage.setScene(new Scene(modalShipContainer));
+        modalShipStage.show();
     }
 
     /**
@@ -1296,7 +1306,11 @@ public class Gui extends Application implements View {
                     Button butt = new Button("Show " + player.getNickname() + "'s shipboard");
                     butt.setTextAlignment(TextAlignment.CENTER);
                     butt.setWrapText(true);
-                    butt.setOnAction(event -> modalShipboardView(player.getNickname()));
+                    butt.setOnAction(event -> {
+                        modalShipboardView(player.getNickname());
+                        modalShipStage.setScene(new Scene(modalShipContainer));
+                        modalShipStage.show();
+                    });
                     topBox.getChildren().add(butt);
                 }
             }
@@ -1306,7 +1320,11 @@ public class Gui extends Application implements View {
             HBox bottomBox = new HBox(50);
             bottomBox.setAlignment(Pos.CENTER);
             Button showShipBtn = new Button("Show your shipboard");
-            showShipBtn.setOnAction(evt -> modalShipboardView(controller.getNickname()));
+            showShipBtn.setOnAction(evt -> {
+                modalShipboardView(controller.getNickname());
+                modalShipStage.setScene(new Scene(modalShipContainer));
+                modalShipStage.show();
+            });
             bottomBox.getChildren().addAll(showShipBtn);
             adventureBorderPane.setBottom(bottomBox);
 
@@ -1523,6 +1541,7 @@ public class Gui extends Application implements View {
     private void engineChoiceView() {
         // renders the shipboard modal view (also the method load the map to access the stack panes in the grid)
         modalShipboardView(controller.getNickname());
+
         modalHintTopLabel = new Label();
         ShipBoard ship = controller.getShipBoard();
         // map to store which engines the user want to activate
@@ -1587,6 +1606,9 @@ public class Gui extends Application implements View {
             modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
             modalErrorLabelMessage = null;
         }
+        modalShipStage.setOnCloseRequest(Event::consume);
+        modalShipStage.setScene(new Scene(modalShipContainer));
+        modalShipStage.show();
     }
 
     /**
@@ -1595,6 +1617,7 @@ public class Gui extends Application implements View {
      */
     private void drillChoiceView() {
         modalShipboardView(controller.getNickname());
+
         modalHintTopLabel = new Label();
         ShipBoard ship = controller.getShipBoard();
         Map<Cordinate, Boolean> cordToActive = new HashMap<>();
@@ -1654,6 +1677,9 @@ public class Gui extends Application implements View {
             modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
             modalErrorLabelMessage = null;
         }
+        modalShipStage.setScene(new Scene(modalShipContainer));
+        modalShipStage.show();
+        modalShipStage.setOnCloseRequest(Event::consume);
     }
 
     /**
@@ -1665,6 +1691,7 @@ public class Gui extends Application implements View {
             SldAdvCard card = controller.getPlayedCard();
             int toRemove = card.getCrewLost();
             modalShipboardView(controller.getNickname());
+
             modalHintTopLabel = new Label();
             ShipBoard ship = controller.getShipBoard();
             Map<Cordinate, Integer> cordToRemoving = new HashMap<>();
@@ -1728,9 +1755,12 @@ public class Gui extends Application implements View {
                 modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
                 modalErrorLabelMessage = null;
             }
+            modalShipStage.setScene(new Scene(modalShipContainer));
+            modalShipStage.show();
         } else {
             controller.skipEffect();
         }
+        modalShipStage.setOnCloseRequest(Event::consume);
     }
 
     /**
@@ -1744,6 +1774,7 @@ public class Gui extends Application implements View {
         depotAction = "MOVE";
         goodToBePlaced = null;
         modalShipboardView(controller.getNickname());
+
         modalHintTopLabel = new Label();
         ShipBoard ship = controller.getShipBoard();
         modalHintTopLabel.setText("Click on the good you want to place or on the depot you want to modify");
@@ -1801,10 +1832,7 @@ public class Gui extends Application implements View {
             modalShipStage.close();
         });
         btnBox.getChildren().addAll(placeGoodBtn, backBtn, finishBtn);
-        modalShipStage.setOnCloseRequest(event -> {
-            goodToBePlaced = null;
-            controller.skipEffect();
-        });
+        modalShipStage.setOnCloseRequest(Event::consume);
 
         modalShipContainer.getChildren().remove(modalHintTopLabel);
         modalShipContainer.getChildren().addFirst(modalHintTopLabel);
@@ -1813,10 +1841,13 @@ public class Gui extends Application implements View {
             modalShipContainer.getChildren().addFirst(new Label(modalErrorLabelMessage));
             modalErrorLabelMessage = null;
         }
+        modalShipStage.setScene(new Scene(modalShipContainer));
+        modalShipStage.show();
     }
 
     private void shieldChoiceView() {
         modalShipboardView(controller.getNickname());
+
         synchronized (controller.getShipboardLock()) {
             ShipBoard shipBoard = controller.getShipBoard();
             Direction direction = null;
@@ -1885,10 +1916,14 @@ public class Gui extends Application implements View {
             modalShipContainer.getChildren().addAll(btnBox);
             modalShipCordToStackPane.get(cord).setStyle("-fx-border-color: red; -fx-border-width: 3");
         }
+        modalShipStage.setScene(new Scene(modalShipContainer));
+        modalShipStage.show();
+        modalShipStage.setOnCloseRequest(Event::consume);
     }
 
     private void oneDrillChoiceView() {
         modalShipboardView(controller.getNickname());
+
         synchronized (controller.getShipboardLock()) {
             ShipBoard shipBoard = controller.getShipBoard();
             Direction direction = null;
@@ -1933,7 +1968,7 @@ public class Gui extends Application implements View {
                     });
                     modalShipContainer.getChildren().add(activateLabel);
                     btnBox.getChildren().addAll(yesBtn);
-                }else{
+                } else {
                     noBtn.setText("Go ahead");
                     noBtn.setOnAction(evt -> {
                         controller.advanceMeteor(true, false);
@@ -1946,6 +1981,9 @@ public class Gui extends Application implements View {
             modalShipContainer.getChildren().addFirst(new Label(alertMessage));
             modalShipCordToStackPane.get(cord).setStyle("-fx-border-color: red; -fx-border-width: 3");
         }
+        modalShipStage.setScene(new Scene(modalShipContainer));
+        modalShipStage.show();
+        modalShipStage.setOnCloseRequest(Event::consume);
     }
 
     /**
@@ -2013,6 +2051,7 @@ public class Gui extends Application implements View {
         box.getChildren().addAll(imgView, btnBox, noPlanetBtn);
         modal.setScene(new Scene(box));
         modal.show();
+        modalShipStage.setOnCloseRequest(Event::consume);
     }
 
     private void diceRollView(boolean isLeader) {
@@ -2035,6 +2074,8 @@ public class Gui extends Application implements View {
             Button checkShipBtn = new Button("Check shipboard");
             checkShipBtn.setOnAction(evt -> {
                 modalShipboardView(controller.getNickname());
+                modalShipStage.setScene(new Scene(modalShipContainer));
+                modalShipStage.show();
             });
             box.getChildren().addFirst(checkShipBtn);
             box.getChildren().addFirst(oldMeteorLabel);
@@ -2096,6 +2137,7 @@ public class Gui extends Application implements View {
         center.getChildren().addAll(acceptLabel, btnBox);
         acceptStage.setScene(new Scene(center));
         acceptStage.show();
+        modalShipStage.setOnCloseRequest(Event::consume);
     }
 
     /**
@@ -2398,8 +2440,8 @@ public class Gui extends Application implements View {
         }
     }
 
-    private void insertHousingObjects(StackPane sp, List<GuestType> guests){
-        if(guests != null && !guests.isEmpty()){
+    private void insertHousingObjects(StackPane sp, List<GuestType> guests) {
+        if (guests != null && !guests.isEmpty()) {
             sp.getChildren().retainAll(sp.getChildren().getFirst());
             HBox box = new HBox(tilesSideLength / 12);
             box.setAlignment(Pos.CENTER);
