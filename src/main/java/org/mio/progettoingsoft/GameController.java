@@ -1,8 +1,6 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
-import org.mio.progettoingsoft.advCards.sealed.SldCombatZone;
+import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.model.events.*;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
@@ -216,7 +214,7 @@ public class GameController {
                         }
                     }
 
-                    default -> {
+                    case SldMeteorSwarm meteorSwarm -> {
 
                         String leaderNickname = game.getFlyboard().getScoreBoard().getFirst().getNickname();
                         Map<String, VirtualClient> clients = game.getClients();
@@ -231,6 +229,23 @@ public class GameController {
                             }
                         }
                     }
+
+                    case SldPirates pirates -> {
+                        String firstPlayer = pirates.getPenaltyPlayers().getFirst().getNickname();
+                        Map<String, VirtualClient> clients = game.getClients();
+
+                        for (String nick : clients.keySet()) {
+                            if (nick.equals(firstPlayer)) {
+                                Event event = new SetCardStateEvent(nick, CardState.DICE_ROLL);
+                                game.addEvent(event);
+                            }else{
+                                Event event = new SetCardStateEvent(nick, CardState.WAITING_ROLL);
+                                game.addEvent(event);
+                            }
+                        }
+                    }
+
+                    default -> Logger.error("Not espected card!");
                 }
             }
 

@@ -180,8 +180,8 @@ public class Gui extends Application implements View {
     private Label waitingForLeaderLabel;
     private ImageView cardImageView;
     private Label creditsLabel;
-    private String oldHitMessage;
     private Stage modalDiceRollStage;
+    private Stage modalMessageStage;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -1512,19 +1512,31 @@ public class Gui extends Application implements View {
                 synchronized (controller.getShipboardLock()) {
                     exposed = controller.getShipBoard().getExposedConnectors();
                 }
-                modalMessageStage("Stardust has been played!\nYou had " + exposed + " exposed connectors, so you lost " + exposed + " days");
+                modalMessageStage("Stardust has been played!\nYou had " + exposed + " exposed connectors, so you lost " + exposed + " days", null);
             }
-            case EPIDEMIC_END -> modalMessageStage("Epidemic has been played!\nLook at your ship and check your crew!");
+            case EPIDEMIC_END -> modalMessageStage("Epidemic has been played!\nLook at your ship and check your crew!", null);
             case PLANET_CHOICE -> planetChoiceView();
             case DICE_ROLL -> diceRollView(true);
             case WAITING_ROLL -> diceRollView(false);
             case SHIELD_SELECTION -> shieldChoiceView();
             case ASK_ONE_DOUBLE_DRILL -> oneDrillChoiceView();
             case METEOR_HIT -> {
-                oldHitMessage = "The meteor hit " + controller.getMeteor().getDirection() + " at number " + controller.getMeteor().getNumber() + "\nCheck out your shipboard!";
+                Button btn = new Button("Check shipboard");
+                btn.setOnAction(e -> {
+                    modalShipboardView(controller.getNickname());
+                    modalShipStage.setScene(new Scene(modalShipContainer));
+                    modalShipStage.show();
+                });
+                modalMessageStage("The meteor hit " + controller.getMeteor().getDirection() + " at number " + controller.getMeteor().getNumber() + "\nCheck out your shipboard!", btn);
             }
             case CANNON_HIT -> {
-                oldHitMessage = "The cannon hit " + controller.getCannon().getDirection() + " at number " + controller.getCannon().getNumber() + "\nCheck out your shipboard!";
+                Button btn = new Button("Check shipboard");
+                btn.setOnAction(e -> {
+                    modalShipboardView(controller.getNickname());
+                    modalShipStage.setScene(new Scene(modalShipContainer));
+                    modalShipStage.show();
+                });
+                modalMessageStage("The cannon hit " + controller.getCannon().getDirection() + " at number " + controller.getCannon().getNumber() + "\nCheck out your shipboard!", btn);
             }
             case ERROR_CHOICE -> {
                 modalErrorLabelMessage = controller.getErrMessage();
@@ -1871,6 +1883,13 @@ public class Gui extends Application implements View {
                     alertMessage = "Light cannon coming from " + direction + "!\nThe component could be destroyed!";
                 }
 
+                case SldCombatZone combatZone -> {
+                    CannonPenalty cannon = controller.getCannon();
+                    direction = cannon.getDirection();
+                    cord = cannon.getCordinateHit();
+                    alertMessage = "Light cannon coming from " + direction + "!\nThe component could be destroyed!";
+                }
+
                 default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
             }
 
@@ -1892,6 +1911,10 @@ public class Gui extends Application implements View {
                             controller.advanceCannon(false, true);
                             modalShipStage.close();
                         }
+                        case SldCombatZone combatZone -> {
+                            controller.advanceCannon(false, true);
+                            modalShipStage.close();
+                        }
                         default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
                     }
                 });
@@ -1908,6 +1931,10 @@ public class Gui extends Application implements View {
                         modalShipStage.close();
                     }
                     case SldPirates pirates -> {
+                        controller.advanceCannon(true, false);
+                        modalShipStage.close();
+                    }
+                    case SldCombatZone combatZone -> {
                         controller.advanceCannon(true, false);
                         modalShipStage.close();
                     }
@@ -2068,21 +2095,12 @@ public class Gui extends Application implements View {
             }
         }
         modalDiceRollStage = new Stage();
-        modalDiceRollStage.initModality(Modality.APPLICATION_MODAL);
+        modalDiceRollStage.initOwner(stage);
+        modalDiceRollStage.initModality(Modality.WINDOW_MODAL);
+        modalDiceRollStage.setY(stage.getY() + 300);
+        modalDiceRollStage.setX(stage.getX() + stage.getWidth() / 2 - 150);
         modalDiceRollStage.setOnCloseRequest(Event::consume);
         VBox box = new VBox(10);
-        if (oldHitMessage != null) {
-            Label oldMeteorLabel = new Label(oldHitMessage);
-            Button checkShipBtn = new Button("Check shipboard");
-            checkShipBtn.setOnAction(evt -> {
-                modalShipboardView(controller.getNickname());
-                modalShipStage.setScene(new Scene(modalShipContainer));
-                modalShipStage.show();
-            });
-            box.getChildren().addFirst(checkShipBtn);
-            box.getChildren().addFirst(oldMeteorLabel);
-            oldHitMessage = null;
-        }
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(20));
         Label meteorLabel = new Label("Trouble are arriving...");
@@ -2102,7 +2120,7 @@ public class Gui extends Application implements View {
         } else {
             actionLabel.setText("Wait for the leader to roll the dice");
         }
-        modalDiceRollStage.setScene(new Scene(box));
+        modalDiceRollStage.setScene(new Scene(box, 300, 175));
         modalDiceRollStage.show();
     }
 
@@ -2147,16 +2165,27 @@ public class Gui extends Application implements View {
      *
      * @param message: the shown message
      */
-    private void modalMessageStage(String message) {
-        Stage modal = new Stage();
-        modal.initModality(Modality.APPLICATION_MODAL);
+    private void modalMessageStage(String message, Button btn) {
+        if(modalMessageStage != null){
+            if(modalMessageStage.isShowing()){
+                modalMessageStage.close();
+            }
+        }
+        modalMessageStage = new Stage();
+        modalMessageStage.initOwner(stage);
+        modalMessageStage.initModality(Modality.WINDOW_MODAL);
+        modalMessageStage.setY(stage.getY() + 100);
+        modalMessageStage.setX(stage.getX() + stage.getWidth() / 2 - 150);
         VBox box = new VBox(10);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(20));
         Label infoLabel = new Label(message);
         box.getChildren().addAll(infoLabel);
-        modal.setScene(new Scene(box));
-        modal.show();
+        if(btn != null){
+            box.getChildren().add(btn);
+        }
+        modalMessageStage.setScene(new Scene(box, 300, 150));
+        modalMessageStage.show();
     }
 
     /*

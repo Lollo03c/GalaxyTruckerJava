@@ -88,10 +88,10 @@ public final class SldCombatZone extends SldAdvCard {
         askFire = new ArrayList<>(flyBoard.getScoreBoard());
         askFireIterator = askFire.iterator();
 
-        if (getId() == 16){
+        if (getId() == 16) {
             Player minCrew = null;
-            for (Player player : flyBoard.getScoreBoard()){
-                if (minCrew == null || player.getShipBoard().getQuantityGuests() < minCrew.getShipBoard().getQuantityGuests() ){
+            for (Player player : flyBoard.getScoreBoard()) {
+                if (minCrew == null || player.getShipBoard().getQuantityGuests() < minCrew.getShipBoard().getQuantityGuests()) {
                     minCrew = player;
                 }
             }
@@ -100,23 +100,21 @@ public final class SldCombatZone extends SldAdvCard {
             setNextPlayerEngine();
 
 
-        }
-        else if (getId() == 36){
+        } else if (getId() == 36) {
             setNextPlayerFire();
         }
     }
 
-    public void setNextPlayerEngine(){
-        if (askEngineIterator.hasNext()){
+    public void setNextPlayerEngine() {
+        if (askEngineIterator.hasNext()) {
             actualPlayer = askEngineIterator.next();
             setState(CardState.ENGINE_CHOICE);
-        }
-        else{
+        } else {
 
             Player minPlayer = null;
             int minPower = 0;
 
-            for (Player player : enginePower.keySet()){
+            for (Player player : enginePower.keySet()) {
                 int power = 2 * enginePower.get(player) + player.getShipBoard().getBaseEnginePower();
 
                 if (minPlayer == null || power < minPower) {
@@ -126,17 +124,16 @@ public final class SldCombatZone extends SldAdvCard {
                 Logger.info(player.getNickname() + " " + power);
             }
 
-            if (getId() == 16){
+            if (getId() == 16) {
                 actualPlayer = minPlayer;
 
                 setState(CardState.CREW_REMOVE_CHOICE);
-            }
-            else if (getId() == 36){
+            } else if (getId() == 36) {
                 minPlayer.getShipBoard().stoleGood(3);
 
                 Player minCrew = null;
-                for (Player player : flyBoard.getScoreBoard()){
-                    if (minCrew == null || player.getShipBoard().getQuantityGuests() < minCrew.getShipBoard().getQuantityGuests() ){
+                for (Player player : flyBoard.getScoreBoard()) {
+                    if (minCrew == null || player.getShipBoard().getQuantityGuests() < minCrew.getShipBoard().getQuantityGuests()) {
                         minCrew = player;
                     }
                 }
@@ -146,15 +143,14 @@ public final class SldCombatZone extends SldAdvCard {
         }
     }
 
-    public void setNextPlayerFire(){
-        if (askFireIterator.hasNext()){
+    public void setNextPlayerFire() {
+        if (askFireIterator.hasNext()) {
             actualPlayer = askFireIterator.next();
             setState(CardState.DRILL_CHOICE);
-        }
-        else{
+        } else {
             Player minPlayer = null;
 
-            for (Player player : firePower.keySet()){
+            for (Player player : firePower.keySet()) {
 
                 if (minPlayer == null || firePower.get(player) < firePower.get(minPlayer)) {
                     minPlayer = player;
@@ -162,29 +158,27 @@ public final class SldCombatZone extends SldAdvCard {
                 Logger.info(player.getNickname() + " " + firePower.get(player));
             }
 
-            if (getId() == 16){
+            if (getId() == 16) {
                 actualPlayer = minPlayer;
                 cannonIterator = getCannonPenalty().iterator();
                 setNextCannon();
-            }
-            else if (getId() == 36){
+            } else if (getId() == 36) {
                 flyBoard.moveDays(minPlayer, -4);
                 setNextPlayerEngine();
             }
         }
     }
 
-    public void setNextCannon(){
-        if (cannonIterator.hasNext()){
+    public void setNextCannon() {
+        if (cannonIterator.hasNext()) {
             actualCannon = cannonIterator.next();
             setState(CardState.DICE_ROLL);
-        }
-        else{
+        } else {
             setState(CardState.FINALIZED);
         }
     }
 
-    public void setNextCannon(String nickname, boolean destroyed, boolean energy){
+    public void setNextCannon(String nickname, boolean destroyed, boolean energy) {
 
         Player player = flyBoard.getPlayerByUsername(nickname);
 
@@ -203,23 +197,22 @@ public final class SldCombatZone extends SldAdvCard {
         setNextCannon();
     }
 
-    public void setEnginePower(Player player, int power){
+    public void setEnginePower(Player player, int power) {
         enginePower.put(player, power);
     }
 
-    public void setNextLine(){
-        if (lineIterator.hasNext()){
+    public void setNextLine() {
+        if (lineIterator.hasNext()) {
             actualLine = lineIterator.next();
             actualLine.applyEffect(game, this);
-        }
-        else{
+        } else {
             setState(CardState.FINALIZED);
         }
     }
 
-    public void setDrills(Player player, List<Cordinate> drillsCord){
+    public void setDrills(Player player, List<Cordinate> drillsCord) {
         double power = player.getShipBoard().getBaseFirePower();
-        for (Cordinate cord : drillsCord){
+        for (Cordinate cord : drillsCord) {
             power += player.getShipBoard().getOptComponentByCord(cord).get().getFirePower(true);
         }
         firePower.put(player, power);
@@ -227,25 +220,25 @@ public final class SldCombatZone extends SldAdvCard {
 
     }
 
-    public void removeCrew(String nickname, List<Cordinate> cordinates){
-        if (! nickname.equals(actualPlayer.getNickname())){
+    public void removeCrew(String nickname, List<Cordinate> cordinates) {
+        if (!nickname.equals(actualPlayer.getNickname())) {
             throw new IncorrectFlyBoardException("");
         }
 
-        for (Cordinate cord : cordinates){
+        for (Cordinate cord : cordinates) {
             int idComp = actualPlayer.getShipBoard().getOptComponentByCord(cord).get().getId();
             flyBoard.getComponentById(idComp).removeGuest();
 
         }
 
-        for (Cordinate cord : cordinates){
+        for (Cordinate cord : cordinates) {
             int idComp = actualPlayer.getShipBoard().getOptComponentByCord(cord).get().getId();
 
             Event event = new RemoveGuestEvent(nickname, idComp);
             game.addEvent(event);
         }
 
-        if (getId() == 16){
+        if (getId() == 16) {
             setNextPlayerFire();
         }
 
@@ -385,13 +378,13 @@ public final class SldCombatZone extends SldAdvCard {
 //        // still to be implemented, activating shields and applying the cannon
 //
 //
-////        if (player.getShipBoard().getMultiplePieces().size() > 1) {
-////            this.state = CardState.PART_CHOICE;
-////        } else {
-////            this.nextCannon(board);
-////        }
-//    }
 
+    /// /        if (player.getShipBoard().getMultiplePieces().size() > 1) {
+    /// /            this.state = CardState.PART_CHOICE;
+    /// /        } else {
+    /// /            this.nextCannon(board);
+    /// /        }
+//    }
     public void applyCannon(FlyBoard board, Player player) {
         if (this.state != CardState.APPLY_HEAVY_CANNON) {
             throw new IllegalStateException("Illegal state: " + this.state);
@@ -459,8 +452,8 @@ public final class SldCombatZone extends SldAdvCard {
     }
 
     @Override
-    public int getCrewLost(){
-        if (getId() == 16){
+    public int getCrewLost() {
+        if (getId() == 16) {
             return 2;
         }
 
@@ -468,10 +461,17 @@ public final class SldCombatZone extends SldAdvCard {
     }
 
     @Override
-    public List<CannonPenalty> getCannonPenalty(){
-        if (getId() == 16){
+    public List<CannonPenalty> getCannonPenalty() {
+        if (getId() == 16) {
             return new ArrayList<>(List.of(
                     new CannonPenalty(Direction.BACK, CannonType.LIGHT),
+                    new CannonPenalty(Direction.BACK, CannonType.HEAVY)
+            ));
+        } else if (getId() == 36) {
+            return new ArrayList<>(List.of(
+                    new CannonPenalty(Direction.FRONT, CannonType.LIGHT),
+                    new CannonPenalty(Direction.RIGHT, CannonType.LIGHT),
+                    new CannonPenalty(Direction.LEFT, CannonType.LIGHT),
                     new CannonPenalty(Direction.BACK, CannonType.HEAVY)
             ));
         }

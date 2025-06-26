@@ -358,7 +358,8 @@ public class ServerController {
         SldAdvCard card = flyBoard.getSldAdvCardByID(29);
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
-        int id = flyBoard.drawCard();
+        //int id = flyBoard.drawCard();
+        int id = 16;
         //int id = 999;
         //if id is 999 the deck is empty
 //        id = ;
