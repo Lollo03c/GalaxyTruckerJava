@@ -102,7 +102,7 @@ public final class SldCombatZone extends SldAdvCard {
 
         }
         else if (getId() == 36){
-
+            setNextPlayerFire();
         }
     }
 
@@ -112,23 +112,36 @@ public final class SldCombatZone extends SldAdvCard {
             setState(CardState.ENGINE_CHOICE);
         }
         else{
-            if (getId() == 16){
-                Player minPlayer = null;
-                int minPower = 0;
 
-                for (Player player : enginePower.keySet()){
-                    int power = 2 * enginePower.get(player) + player.getShipBoard().getBaseEnginePower();
+            Player minPlayer = null;
+            int minPower = 0;
 
-                    if (minPlayer == null || power < minPower) {
-                        minPlayer = player;
-                        minPower = power;
-                    }
-                    Logger.info(player.getNickname() + " " + power);
+            for (Player player : enginePower.keySet()){
+                int power = 2 * enginePower.get(player) + player.getShipBoard().getBaseEnginePower();
+
+                if (minPlayer == null || power < minPower) {
+                    minPlayer = player;
+                    minPower = power;
                 }
+                Logger.info(player.getNickname() + " " + power);
+            }
 
+            if (getId() == 16){
                 actualPlayer = minPlayer;
-                setState(CardState.CREW_REMOVE_CHOICE);
 
+                setState(CardState.CREW_REMOVE_CHOICE);
+            }
+            else if (getId() == 36){
+                minPlayer.getShipBoard().stoleGood(3);
+
+                Player minCrew = null;
+                for (Player player : flyBoard.getScoreBoard()){
+                    if (minCrew == null || player.getShipBoard().getQuantityGuests() < minCrew.getShipBoard().getQuantityGuests() ){
+                        minCrew = player;
+                    }
+                }
+                actualPlayer = minPlayer;
+                setNextCannon();
             }
         }
     }
@@ -139,21 +152,24 @@ public final class SldCombatZone extends SldAdvCard {
             setState(CardState.DRILL_CHOICE);
         }
         else{
-            if (getId() == 16){
-                Player minPlayer = null;
+            Player minPlayer = null;
 
-                for (Player player : firePower.keySet()){
+            for (Player player : firePower.keySet()){
 
-                    if (minPlayer == null || firePower.get(player) < firePower.get(minPlayer)) {
-                        minPlayer = player;
-                    }
-                    Logger.info(player.getNickname() + " " + firePower.get(player));
+                if (minPlayer == null || firePower.get(player) < firePower.get(minPlayer)) {
+                    minPlayer = player;
                 }
+                Logger.info(player.getNickname() + " " + firePower.get(player));
+            }
 
+            if (getId() == 16){
                 actualPlayer = minPlayer;
                 cannonIterator = getCannonPenalty().iterator();
                 setNextCannon();
-
+            }
+            else if (getId() == 36){
+                flyBoard.moveDays(minPlayer, -4);
+                setNextPlayerEngine();
             }
         }
     }
@@ -294,87 +310,87 @@ public final class SldCombatZone extends SldAdvCard {
         }
     }
 
-    public void applyEffect(FlyBoard board) {
-        if (this.state != CardState.APPLYING) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        Criterion criterion = lines.get(actualLineIndex).getCriterion();
-        Player toApplyPenalty;
-        switch (criterion) {
-            case CREW -> toApplyPenalty = allowedPlayers.stream()
-                    .min((p1, p2) -> p1.getShipBoard().compareCrew(p2.getShipBoard()))
-                    .get();
-            case ENGINE_POWER -> toApplyPenalty = allowedPlayers.stream()
-                    .min((p1, p2) -> p1.getShipBoard().compareActivatedEnginePower(p2.getShipBoard()))
-                    .get();
-            case FIRE_POWER -> toApplyPenalty = allowedPlayers.stream()
-                    .min((p1, p2) -> p1.getShipBoard().compareActivatedFirePower(p2.getShipBoard()))
-                    .get();
-            default -> toApplyPenalty = null;
-        }
-        if (lines.get(actualLineIndex).getPenalties().size() == 1) {
-            tempPenalty = lines.get(actualLineIndex).getPenalties().getFirst();
-            if (tempPenalty.getType() == PenaltyType.CREW) {
-                actualPlayer = toApplyPenalty;
-                this.state = CardState.CREW_REMOVE_CHOICE;
-            } else {
-                tempPenalty.apply(board, toApplyPenalty);
-                nextLine(board);
-            }
-        } else {
-            penaltyIterator = lines.get(actualLineIndex).getPenalties().iterator();
-            tempPenalty = penaltyIterator.next();
-            actualPlayer = toApplyPenalty;
-            if (tempPenalty.getType() == PenaltyType.LIGHT_CANNON) {
-                this.state = CardState.APPLY_LIGHT_CANNON;
-            } else {
-                this.state = CardState.APPLY_HEAVY_CANNON;
-            }
-        }
-    }
-
-    public void applyRemoveCrew(FlyBoard board, Player player, List<Integer[]> housingToRemoveCrew) {
-        if (this.state != CardState.CREW_REMOVE_CHOICE) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (housingToRemoveCrew == null) {
-            throw new BadParameterException("List is null");
-        }
-        if (housingToRemoveCrew.isEmpty()) {
-            throw new BadParameterException("List is empty");
-        }
-        if (housingToRemoveCrew.size() != tempPenalty.getAmount()) {
-            throw new BadParameterException("List has wrong size");
-        }
-        if (player.equals(actualPlayer)) {
-            tempPenalty.apply(board, player, housingToRemoveCrew);
-            nextLine(board);
-        } else {
-            throw new BadPlayerException("The player " + player.getNickname() + " cannot play " + this.getCardName() + " at the moment");
-        }
-    }
-
-    public void applyCannon(FlyBoard board, Player player, List<Integer[]> shieldsToActivate) {
-        if (this.state != CardState.APPLY_LIGHT_CANNON) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-        if (shieldsToActivate == null) {
-            throw new BadParameterException("List is null");
-        }
-        if (shieldsToActivate.isEmpty()) {
-            throw new BadParameterException("List is empty");
-        }
-
-
-        // still to be implemented, activating shields and applying the cannon
-
-
-//        if (player.getShipBoard().getMultiplePieces().size() > 1) {
-//            this.state = CardState.PART_CHOICE;
-//        } else {
-//            this.nextCannon(board);
+//    public void applyEffect(FlyBoard board) {
+//        if (this.state != CardState.APPLYING) {
+//            throw new IllegalStateException("Illegal state: " + this.state);
 //        }
-    }
+//        Criterion criterion = lines.get(actualLineIndex).getCriterion();
+//        Player toApplyPenalty;
+//        switch (criterion) {
+//            case CREW -> toApplyPenalty = allowedPlayers.stream()
+//                    .min((p1, p2) -> p1.getShipBoard().compareCrew(p2.getShipBoard()))
+//                    .get();
+//            case ENGINE_POWER -> toApplyPenalty = allowedPlayers.stream()
+//                    .min((p1, p2) -> p1.getShipBoard().compareActivatedEnginePower(p2.getShipBoard()))
+//                    .get();
+//            case FIRE_POWER -> toApplyPenalty = allowedPlayers.stream()
+//                    .min((p1, p2) -> p1.getShipBoard().compareActivatedFirePower(p2.getShipBoard()))
+//                    .get();
+//            default -> toApplyPenalty = null;
+//        }
+//        if (lines.get(actualLineIndex).getPenalties().size() == 1) {
+//            tempPenalty = lines.get(actualLineIndex).getPenalties().getFirst();
+//            if (tempPenalty.getType() == PenaltyType.CREW) {
+//                actualPlayer = toApplyPenalty;
+//                this.state = CardState.CREW_REMOVE_CHOICE;
+//            } else {
+//                tempPenalty.apply(board, toApplyPenalty);
+//                nextLine(board);
+//            }
+//        } else {
+//            penaltyIterator = lines.get(actualLineIndex).getPenalties().iterator();
+//            tempPenalty = penaltyIterator.next();
+//            actualPlayer = toApplyPenalty;
+//            if (tempPenalty.getType() == PenaltyType.LIGHT_CANNON) {
+//                this.state = CardState.APPLY_LIGHT_CANNON;
+//            } else {
+//                this.state = CardState.APPLY_HEAVY_CANNON;
+//            }
+//        }
+//    }
+
+//    public void applyRemoveCrew(FlyBoard board, Player player, List<Integer[]> housingToRemoveCrew) {
+//        if (this.state != CardState.CREW_REMOVE_CHOICE) {
+//            throw new IllegalStateException("Illegal state: " + this.state);
+//        }
+//        if (housingToRemoveCrew == null) {
+//            throw new BadParameterException("List is null");
+//        }
+//        if (housingToRemoveCrew.isEmpty()) {
+//            throw new BadParameterException("List is empty");
+//        }
+//        if (housingToRemoveCrew.size() != tempPenalty.getAmount()) {
+//            throw new BadParameterException("List has wrong size");
+//        }
+//        if (player.equals(actualPlayer)) {
+//            tempPenalty.apply(board, player, housingToRemoveCrew);
+//            nextLine(board);
+//        } else {
+//            throw new BadPlayerException("The player " + player.getNickname() + " cannot play " + this.getCardName() + " at the moment");
+//        }
+//    }
+//
+//    public void applyCannon(FlyBoard board, Player player, List<Integer[]> shieldsToActivate) {
+//        if (this.state != CardState.APPLY_LIGHT_CANNON) {
+//            throw new IllegalStateException("Illegal state: " + this.state);
+//        }
+//        if (shieldsToActivate == null) {
+//            throw new BadParameterException("List is null");
+//        }
+//        if (shieldsToActivate.isEmpty()) {
+//            throw new BadParameterException("List is empty");
+//        }
+//
+//
+//        // still to be implemented, activating shields and applying the cannon
+//
+//
+////        if (player.getShipBoard().getMultiplePieces().size() > 1) {
+////            this.state = CardState.PART_CHOICE;
+////        } else {
+////            this.nextCannon(board);
+////        }
+//    }
 
     public void applyCannon(FlyBoard board, Player player) {
         if (this.state != CardState.APPLY_HEAVY_CANNON) {
@@ -401,46 +417,38 @@ public final class SldCombatZone extends SldAdvCard {
                 this.state = CardState.APPLY_HEAVY_CANNON;
             }
         } else {
-            nextLine(board);
+//            nextLine(board);
         }
     }
 
-    private void nextLine(FlyBoard board) {
-        List<Player> noPowerPlayers = board.getScoreBoard().stream()
-                .filter(player ->
-                        player.getShipBoard().getBaseEnginePower() == 0 &&
-                                (player.getShipBoard().getDoubleEngine().isEmpty() ||
-                                        player.getShipBoard().getQuantBatteries() <= 0)
-                ).toList();
-        if (!noPowerPlayers.isEmpty()) {
-            // here the method should call a procedure or throw an exception to remove the players with no power
-            throw new RuntimeException("There's at least a player with no power, not implemented yet");
-        }
-        List<Player> noCrewPlayers = new ArrayList<Player>();
-        for (Player p : board.getScoreBoard()) {
-            if (p.getShipBoard().getQuantityGuests() == 0) {
-                noCrewPlayers.add(p);
-            }
-        }
-        if (!noCrewPlayers.isEmpty()) {
-            // here the method should call a procedure or throw an exception to remove the players with no power
-            throw new RuntimeException("There's at least a player with no crew, not implemented yet");
-        }
-        if (actualLineIndex < lines.size() - 1) {
-            actualLineIndex++;
-            this.state = CardState.APPLYING;
-        } else {
-            this.state = CardState.FINALIZED;
-        }
-    }
-
-    @Override
-    public void finish(FlyBoard board) {
-        if (this.state != CardState.FINALIZED) {
-            throw new IllegalStateException("Illegal state: " + this.state);
-        }
-//        board.setState(GameState.DRAW_CARD);
-    }
+//    private void nextLine(FlyBoard board) {
+//        List<Player> noPowerPlayers = board.getScoreBoard().stream()
+//                .filter(player ->
+//                        player.getShipBoard().getBaseEnginePower() == 0 &&
+//                                (player.getShipBoard().getDoubleEngine().isEmpty() ||
+//                                        player.getShipBoard().getQuantBatteries() <= 0)
+//                ).toList();
+//        if (!noPowerPlayers.isEmpty()) {
+//            // here the method should call a procedure or throw an exception to remove the players with no power
+//            throw new RuntimeException("There's at least a player with no power, not implemented yet");
+//        }
+//        List<Player> noCrewPlayers = new ArrayList<Player>();
+//        for (Player p : board.getScoreBoard()) {
+//            if (p.getShipBoard().getQuantityGuests() == 0) {
+//                noCrewPlayers.add(p);
+//            }
+//        }
+//        if (!noCrewPlayers.isEmpty()) {
+//            // here the method should call a procedure or throw an exception to remove the players with no power
+//            throw new RuntimeException("There's at least a player with no crew, not implemented yet");
+//        }
+//        if (actualLineIndex < lines.size() - 1) {
+//            actualLineIndex++;
+//            this.state = CardState.APPLYING;
+//        } else {
+//            this.state = CardState.FINALIZED;
+//        }
+//    }
 
     public Map<Player, Double> getFirePower() {
         return firePower;

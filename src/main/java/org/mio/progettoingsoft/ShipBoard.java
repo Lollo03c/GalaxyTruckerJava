@@ -271,6 +271,13 @@ public abstract class ShipBoard {
 
     }
 
+    /**
+     *
+     * @return the number of discarded components
+     */
+    public int getDiscaredComponents() {
+        return discaredComponents;
+    }
 
     /**
      * remove the given quantity of energy from {@link EnergyDepot} if possible, throws {@link IncorrectShipBoardException} otherwise

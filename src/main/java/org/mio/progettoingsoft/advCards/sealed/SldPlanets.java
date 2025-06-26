@@ -28,11 +28,6 @@ public final class SldPlanets extends SldAdvCard {
     }
 
 
-    @Override
-    public boolean allPlayersPlacedGoods() {
-        return finishedGoodsPlacement.size() == landedPlayers.size();
-    }
-
     private final Map<Planet, Player> landedPlayers;
     private int passedPlayers;
 

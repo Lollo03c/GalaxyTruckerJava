@@ -11,15 +11,36 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Represents the sealed advanced card "Meteor Swarm", which simulates a sequence of meteors
+ * threatening the players' ships.
+ * <p>
+ * Players must react to each incoming meteor by choosing to use energy to defend or let the meteor hit.
+ * Each meteor affects multiple players, and the card processes them sequentially.
+ */
 public final class SldMeteorSwarm extends SldAdvCard{
     private final List<Meteor> meteors;
     private Iterator<Meteor> meteorIterator;
     private Meteor actualMeteor;
 
+    /**
+     * Constructs a new Meteor Swarm card.
+     *
+     * @param id the unique identifier of the card
+     * @param level the difficulty level of the card
+     * @param meteors the list of meteors included in this event
+     */
     public SldMeteorSwarm(int id, int level, List<Meteor> meteors) {
         super(id, level);
         this.meteors = meteors;
     }
+
+    /**
+     * Deserializes a {@code SldMeteorSwarm} card from a JSON node.
+     *
+     * @param node the JSON node containing the card's data
+     * @return a new {@code SldMeteorSwarm} instance
+     */
 
     public static SldMeteorSwarm loadMeteorSwarm(JsonNode node){
         int id = node.path("id").asInt();
@@ -33,10 +54,22 @@ public final class SldMeteorSwarm extends SldAdvCard{
         return new SldMeteorSwarm(id, level, meteors);
     }
 
+    /**
+     * Returns the display name of the card.
+     *
+     * @return the string "Meteor Swarm"
+     */
     @Override
     public String getCardName() {
         return "Meteor Swarm";
     }
+
+    /**
+     * Initializes the card and sets up player and meteor iteration.
+     * The first meteor will be processed once {@link #setNextMeteor()} is called.
+     *
+     * @param game the current game instance
+     */
 
     @Override
     public void init(GameServer game) {
@@ -50,12 +83,17 @@ public final class SldMeteorSwarm extends SldAdvCard{
         meteorIterator = meteors.iterator();
     }
 
+
     @Override
     public List<Meteor> getMeteors() {
         return meteors;
     }
 
-
+    /**
+     * Advances to the next meteor in the sequence.
+     * Sets the card state to {@code DICE_ROLL} if there is another meteor,
+     * or {@code FINALIZED} if all meteors have been processed.
+     */
     public synchronized void setNextMeteor(){
         if (meteorIterator.hasNext()){
             actualMeteor = meteorIterator.next();
@@ -70,6 +108,17 @@ public final class SldMeteorSwarm extends SldAdvCard{
         return actualMeteor;
     }
 
+    /**
+     * Resolves a player's interaction with the current meteor.
+     * <p>
+     * The player can choose whether to destroy the meteor and whether to consume energy to do so.
+     * If all affected players have responded, the card progresses to the next meteor.
+     *
+     * @param nick the nickname of the responding player
+     * @param destroyed true if the player destroyed the meteor
+     * @param energy true if energy was consumed to block the meteor
+     * @throws IncorrectFlyBoardException if the player has already responded or is invalid
+     */
     public synchronized void setNextMeteor(String nick, boolean destroyed,  boolean energy){
         List<String> nicknames = flyBoard.getPlayers().stream().map(p -> p.getNickname()).toList();
         if (!nicknames.contains(nick)){

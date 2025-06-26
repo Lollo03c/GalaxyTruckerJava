@@ -38,12 +38,23 @@ public class Game implements GameServer, GameClient {
     private Map<String, VirtualClient> clients = new HashMap<>();
 
 
+    /**
+            * Constructs a new Game with the specified game ID.
+            *
+            * @param idGame the unique identifier of the game
+     */
     public Game(int idGame) {
         this.idGame = idGame;
         gameController = new GameController(this, eventsQueue);
         testing = false;
     }
 
+    /**
+     * Constructs a new Game with the specified game ID and testing mode.
+     *
+     * @param idGame the unique identifier of the game
+     * @param testing true if the game is in testing mode; false otherwise
+     */
     public Game(int idGame, boolean testing){
         this.idGame = idGame;
         gameController = new GameController(this, eventsQueue, testing);
@@ -91,15 +102,32 @@ public class Game implements GameServer, GameClient {
         return clients;
     }
 
+    /**
+     * Adds a player to the game.
+     *
+     * @param nickname the player's nickname
+     * @param client the VirtualClient representing the player
+     */
     @Override
     public void addPlayer(String nickname, VirtualClient client){
         clients.put(nickname, client);
     }
 
+    /**
+     * Determines if game settings should be requested (usually at initialization).
+     *
+     * @return true if no players have joined yet; false otherwise
+     */
+    @Override
     public boolean isFull(){
         return numPlayers == clients.size();
     }
 
+    /**
+     * Determines if game settings should be requested (usually at initialization).
+     *
+     * @return true if no players have joined yet; false otherwise
+     */
     @Override
     public boolean askSetting() {
         return clients.isEmpty();
@@ -167,11 +195,19 @@ public class Game implements GameServer, GameClient {
         flyboard = FlyBoard.createFlyBoard(mode, nicknames);
     }
 
+    /**
+     * add en event to precess
+     * @param event the event to add
+     */
     @Override
     public void addEvent(Event event){
         eventsQueue.add(event);
     }
 
+    /**
+     *
+     * @return the {@link BlockingQueue} of {@link Event} to process
+     */
     @Override
     public BlockingQueue<Event> getEventsQueue(){
         return eventsQueue;

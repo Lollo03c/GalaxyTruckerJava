@@ -12,11 +12,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Abstract base class for all sealed advanced cards used in the game.
+ * <p>
+ * This class defines shared behaviors and interfaces for cards that introduce advanced interactions
+ * such as player choices, penalties, effects, and state transitions. Subclasses must implement
+ * specific behavior, especially for card initialization and name retrieval.
+ * <p>
+ * All sealed cards are required to extend this class and are governed by a predefined set of states.
+ */
 public final class SldEpidemic extends SldAdvCard {
     public SldEpidemic(int id, int level) {
         super(id, level);
     }
 
+    /**
+     * Returns the display name of the card.
+     *
+     * @return the card name
+     */
     public String getCardName(){
         return "Epidemic";
     }
@@ -28,7 +42,12 @@ public final class SldEpidemic extends SldAdvCard {
         return new SldEpidemic(id, level);
     }
 
-    // all players have to play the card, so all of them are added to the list
+    /**
+     * Initializes the card, setting its internal game context and determining eligible players.
+     * and removes the member from the {@link ShipBoard}
+     * @param game the current game instance
+     */
+    @Override
     public void init(GameServer game){
         this.game = game;
         this.flyBoard = game.getFlyboard();
@@ -67,6 +86,10 @@ public final class SldEpidemic extends SldAdvCard {
         setState(CardState.EPIDEMIC_END);
     }
 
+    /**
+     * Finalizes the card by setting its state to {@code FINALIZED}.
+     */
+    @Override
     public void setNextPlayer(){
         setState(CardState.FINALIZED);
     }

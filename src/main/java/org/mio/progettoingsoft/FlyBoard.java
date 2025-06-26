@@ -415,7 +415,7 @@ public abstract class FlyBoard implements FlyBoardServer {
      +     */
     public void penaltyForDiscardedComponents() {
         for ( Player p : scoreBoard){
-            p.addCredits(-p.getShipBoard().getExposedConnectors());
+            p.addCredits(-(p.getShipBoard().getDiscaredComponents()));
         }
     }
 

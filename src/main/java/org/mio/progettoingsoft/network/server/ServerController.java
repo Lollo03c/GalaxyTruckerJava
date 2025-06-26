@@ -259,12 +259,13 @@ public class ServerController {
             game.addEvent(event1);
             game.addEvent(event2);
         } else {
-            Logger.info("Ship " + nickname + " is valid.");
-            Player player = flyBoard.getPlayerByUsername(nickname);
-            flyBoard.getValidationPlayers().remove(player);
+            synchronized (game.getLock()) {
+                Logger.info("Ship " + nickname + " is valid.");
+                Player player = flyBoard.getPlayerByUsername(nickname);
+                flyBoard.getValidationPlayers().remove(player);
 
-            shipBoard.addGuestToShip();
-
+                shipBoard.addGuestToShip();
+            }
 
             if (flyBoard.getValidationPlayers().isEmpty()) {
                 flyBoard.setAddCrewPlayers(flyBoard.getScoreBoard());
@@ -273,6 +274,7 @@ public class ServerController {
                     game.addEvent(event);
                 }
             }
+
         }
     }
 
@@ -368,7 +370,7 @@ public class ServerController {
 
 //        SldAdvCard card = flyBoard.drawSldAdvCard();
 //        int id = flyBoard.drawCard();
-        int id = 5;
+        int id = 999;
         //if id is 999 the deck is empty
 //        id = ;
         if(id == 999){

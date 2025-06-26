@@ -20,6 +20,11 @@ public class GameController {
     private final GameServer game;
     private final BlockingQueue<Event> eventsQueue;
 
+    /**
+     *
+     * @param game The game itself
+     * @param eventsQueue : The queue of {@link Event} to process to alter the model
+     */
     public GameController(GameServer game, BlockingQueue<Event> eventsQueue) {
         this.game = game;
         this.eventsQueue = eventsQueue;
@@ -30,6 +35,12 @@ public class GameController {
 
     }
 
+    /**
+     * used only for testing
+     * @param game
+     * @param eventsQueue
+     * @param testing
+     */
     public GameController(GameServer game, BlockingQueue<Event> eventsQueue, boolean testing) {
         this.game = game;
         this.eventsQueue = eventsQueue;
@@ -60,6 +71,9 @@ public class GameController {
 
     }
 
+    /**
+     * The thread responsible of sending the messages to the clients
+     */
     private void clientComunication(){
         while (true) {
 
@@ -81,6 +95,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Create the {@link Event} based on the listener of the {@link Flyboard}
+     */
     public void registerListener(){
         Logger.debug("Chiamato registerListener");
 
@@ -138,6 +155,10 @@ public class GameController {
     }
 
 
+    /**
+     * Based on the state of the card sends info to the clients
+     * @param card the {@link SldAdvCard} played
+     */
     public void update(SldAdvCard card){
         Player player = card.getActualPlayer();
         if (player == null){

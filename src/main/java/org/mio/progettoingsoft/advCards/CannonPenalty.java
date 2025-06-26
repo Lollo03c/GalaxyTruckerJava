@@ -33,11 +33,6 @@ public class CannonPenalty extends Penalty {
         return null;
     }
 
-    @Override
-    public void apply(String json, Player player) throws Exception{
-
-    }
-
     public Optional<Cordinate> findHit(ShipBoard shipBoard, int value){
         Optional<Cordinate> cordinate = Optional.empty();
         List<Cordinate> validCords = new ArrayList<>();

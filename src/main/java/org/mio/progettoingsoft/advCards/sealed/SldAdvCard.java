@@ -35,26 +35,11 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
     // this method must be called right after drawing the card, it sets the game state CARD_EFFECT
     public abstract void init(GameServer game);
 
-    // this method must be called right after applying the effect of the card on ALL the available players, it sets the game state DRAW_CARD
-    public void finish(FlyBoard board) {
-
-    }
 
     public void applyEffect() {
         throw new RuntimeException("problem with the apply effect method");
     }
 
-    public boolean getReadyToProceed() {
-        throw new RuntimeException("problem with the getReadyToProceed method");
-    }
-
-    public void setReadyToProceed(boolean readyToProceed) {
-        throw new RuntimeException("problem with the setReadyToProceed method");
-    }
-
-    public void notifyGoodsPlacementFinished(Player player) {
-        throw new RuntimeException("this card doesn't need to notifyGoodsPlacementFinished");
-    }
 
     public CardState getState() {
         return state;
@@ -160,10 +145,6 @@ public abstract sealed class SldAdvCard permits SldAbandonedShip, SldEpidemic, S
 
     public void setNextPlayer() {
         Logger.debug("set next player - carta non implementata");
-    }
-
-    public boolean allPlayersPlacedGoods() {
-        throw new RuntimeException("this card doesn't need to implement this method");
     }
 
     public int comparePower(FlyBoard board, Player player) {

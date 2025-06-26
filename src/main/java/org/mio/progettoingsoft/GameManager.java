@@ -49,13 +49,7 @@ public class GameManager{
         return instance;
     }
 
-    public synchronized List<String> getNicknames(){
-        return nicknames;
-    }
 
-    public synchronized Map<Integer, VirtualClient> getClientsToAccept(){
-        return clientsToAccept;
-    }
 
     public GameManager(){
         ongoingGames = new HashMap<>();
@@ -131,6 +125,11 @@ public class GameManager{
         return nextIdGame.getAndIncrement();
     }
 
+    /**
+     * add a client to the server
+     * @param idClient id of the client
+     * @param nickname
+     */
     public void addPlayerToGame(int idClient, String nickname) {
         if (!clientsToAccept.containsKey(idClient)) {
             return;

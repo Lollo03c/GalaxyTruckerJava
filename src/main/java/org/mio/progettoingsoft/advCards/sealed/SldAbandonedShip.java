@@ -12,6 +12,14 @@ import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import java.util.List;
 
+/**
+ * Represents the sealed advanced card "Abandoned Ship", a special event card
+ * that affects players by potentially costing crew members in exchange for credits and movement penalties.
+ * <p>
+ * This card may be played by players who have enough crew, allowing them to remove guests (crew),
+ * lose a number of days, and gain credits. It tracks whether the effect has been applied
+ * to prevent repeated application.
+ */
 public final class SldAbandonedShip extends SldAdvCard {
     private final int daysLost;
     private final int credits;
@@ -19,9 +27,24 @@ public final class SldAbandonedShip extends SldAdvCard {
 
     private boolean effectTaken = false;
 
+    /**
+     * Returns the name of this card.
+     *
+     * @return the string "Abandoned Ship"
+     */
     public String getCardName() {
         return "Abandoned Ship";
     }
+
+    /**
+     * Constructs a new Abandoned Ship card with the specified parameters.
+     *
+     * @param id the unique card ID
+     * @param level the card's difficulty level
+     * @param daysLost the number of days lost when the effect is applied
+     * @param credits the amount of credits gained when the effect is applied
+     * @param crewLost the number of crew members required to activate the card
+     */
 
     public SldAbandonedShip(int id, int level, int daysLost, int credits, int crewLost) {
         super(id, level);
@@ -53,7 +76,13 @@ public final class SldAbandonedShip extends SldAdvCard {
         return new SldAbandonedShip(id, level, daysLost, credits, crewLost);
     }
 
-    // it initializes the list of players that can play the card (crew > crewLost) and set the card state CREW_REMOVE_CHOICE
+    /**
+     * Initializes the card with game context, filtering which players may interact with it.
+     * <p>
+     * Only players with enough crew are considered eligible to activate the card.
+     *
+     * @param game the game instance
+     */
     public void init(GameServer game) {
         FlyBoard board = game.getFlyboard();
 
@@ -68,9 +97,18 @@ public final class SldAbandonedShip extends SldAdvCard {
         effectTaken = false;
     }
 
-    // must be called after the init with the right player
-    // if the player wants to apply the effect, it removes the crew, moves the player and adds credits, after that this method must not be called
-    // else, it does nothing, and it's ready for another call with the next player
+    /**
+     * Applies the card's effect to the current player, if they choose to activate it.
+     * <p>
+     * The player will lose crew, gain credits, and lose days. Events are generated
+     * for each removed crew component. This method can only be called once per player.
+     *
+     * @param nickname the nickname of the player attempting activation
+     * @param wantsToActivate true if the player agrees to apply the effect
+     * @param housingCordinatesList the coordinates of the crew components to be removed
+     * @throws IncorrectFlyBoardException if activation conditions are not met
+     * @throws BadPlayerException if an unauthorized player attempts to apply the effect
+     */
     public void applyEffect(String nickname, boolean wantsToActivate, List<Cordinate> housingCordinatesList) {
         if (! nickname.equals(actualPlayer.getNickname())) {
             throw new IncorrectFlyBoardException("Not " + nickname + " turn to play");
@@ -127,6 +165,9 @@ public final class SldAbandonedShip extends SldAdvCard {
     }
 
 
+    /**
+     * Advances to the next player, if any, or finalizes the card state if the effect has been applied.
+     */
     @Override
     public void setNextPlayer() {
         if (playerIterator.hasNext() && !effectTaken) {

@@ -80,10 +80,6 @@ public final class SldPirates extends SldAdvCard{
         return cannons;
     }
 
-    @Override
-    public void finish(FlyBoard board) {
-
-    }
 
     @Override
     public void setNextPlayer(){
