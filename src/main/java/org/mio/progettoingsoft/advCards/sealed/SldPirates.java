@@ -120,9 +120,11 @@ public final class SldPirates extends SldAdvCard{
             game.addEvent(event);
         }
 
-        actualCannon.getPlayerstoHit().remove(player);
-        if (actualCannon.getPlayerstoHit().isEmpty())
-            setNextCannon();
+        synchronized (flyBoard) {
+            actualCannon.getPlayerstoHit().remove(player);
+            if (actualCannon.getPlayerstoHit().isEmpty())
+                setNextCannon();
+        }
     }
 
     public void loadPower(Player player, List<Cordinate> doubleDrills){

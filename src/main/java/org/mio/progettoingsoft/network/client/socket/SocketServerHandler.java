@@ -106,8 +106,8 @@ public class SocketServerHandler implements VirtualServerSocket {
     }
 
     @Override
-    public void endValidation(int idGame, String nickname) throws Exception{
-        Message message = new EndValidationMessage(idGame, nickname);
+    public void endValidation(int idGame, String nickname, boolean usedBattery) throws Exception{
+        Message message = new EndValidationMessage(idGame, nickname, usedBattery);
         sendMessage(message);
     }
 

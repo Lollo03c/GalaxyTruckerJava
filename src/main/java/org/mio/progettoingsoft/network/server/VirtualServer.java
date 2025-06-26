@@ -28,7 +28,7 @@ public interface VirtualServer extends Remote {
 
     void endBuild(int idGame, String nickname) throws Exception;
     void choosePlace(int idGame, String nickname, int place) throws Exception;
-    void endValidation(int idGame, String nickname) throws Exception;
+    void endValidation(int idGame, String nickname, boolean usedBattery) throws Exception;
 //    void applyStardust(int idGame, String nickname, SldStardust card) throws Exception;
 
     void activateDoubleEngine(int idGame, String nickname, int number) throws Exception;

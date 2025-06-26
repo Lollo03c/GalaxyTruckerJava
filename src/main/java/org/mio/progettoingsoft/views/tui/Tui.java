@@ -821,7 +821,8 @@ private void endgame() {
             System.out.println(GREEN + "Components removed!" + RESET);
         }
 
-        controller.endValidation();
+        controller.endValidation(controller.isUsedBattery());
+
         System.out.println(BLUE + "End of validation phase." + RESET);
     }
 

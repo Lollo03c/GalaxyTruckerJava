@@ -145,9 +145,9 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     }
 
     @Override
-    public void endValidation(int idGame, String nickname) throws RemoteException {
+    public void endValidation(int idGame, String nickname, boolean usedBattery) throws RemoteException {
         executors.submit(() -> {
-            controller.endValidation(idGame, nickname);
+            controller.endValidation(idGame, nickname, usedBattery);
         });
     }
 

@@ -2,18 +2,12 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Game;
-import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.server.ServerController;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,12 +55,75 @@ class SldCombatZoneTest {
 //        controller.drawCard(gameId, "antonio");
         int a = 0;
 
-        controller.drawCardTest(gameId, "antonio", cardId);
-        card = flyBoard.getPlayedCard();
+
     }
 
     @Test
-    void should_init(){
-        card.init(game);
+    void should_play_first_card(){
+        controller.drawCardTest(gameId, "antonio", 16);
+        card = flyBoard.getPlayedCard();
+
+        if (card.getId() == 16) {
+//            flyBoard.drawCircuit();
+
+            ShipBoard anto = flyBoard.getPlayerByUsername("antonio").getShipBoard();
+            ShipBoard andrea = flyBoard.getPlayerByUsername("andrea").getShipBoard();
+            ShipBoard lollo = flyBoard.getPlayerByUsername("lollo").getShipBoard();
+
+            card.init(game);
+            System.out.println(anto.getBaseEnginePower());
+            System.out.println(andrea.getBaseEnginePower());
+            System.out.println(lollo.getBaseEnginePower());
+
+            controller.activateDoubleEngine(gameId, "antonio", 0);
+            controller.activateDoubleEngine(gameId, "andrea", 0);
+            controller.activateDoubleEngine(gameId, "lollo", 0);
+
+            controller.removeCrew(gameId, "antonio", new ArrayList<>(List.of(
+                    new Cordinate(2, 3),
+                    new Cordinate(2, 3)
+            )));
+
+            controller.activateDoubleDrills(gameId, "antonio", Collections.emptyList());
+            controller.activateDoubleDrills(gameId, "andrea", Collections.emptyList());
+            controller.activateDoubleDrills(gameId, "lollo", Collections.emptyList());
+
+            controller.setRollResult(gameId, "andrea", 1, 1);
+            controller.advanceCannon(gameId, "andrea", false, false);
+
+//            flyBoard.drawCircuit();
+        }
+    }
+
+    @Test
+    public void should_play_second_card() {
+        controller.drawCardTest(gameId, "antonio", 36);
+        card = flyBoard.getPlayedCard();
+
+        if (card.getId() == 36) {
+            ShipBoard anto = flyBoard.getPlayerByUsername("antonio").getShipBoard();
+            ShipBoard andrea = flyBoard.getPlayerByUsername("andrea").getShipBoard();
+            ShipBoard lollo = flyBoard.getPlayerByUsername("lollo").getShipBoard();
+
+            flyBoard.drawCircuit();
+            card.init(game);
+            controller.activateDoubleDrills(gameId, "antonio", Collections.emptyList());
+            controller.activateDoubleDrills(gameId, "andrea", Collections.emptyList());
+            controller.activateDoubleDrills(gameId, "lollo", Collections.emptyList());
+
+            flyBoard.drawCircuit();
+
+            System.out.println(anto.getBaseEnginePower());
+            System.out.println(andrea.getBaseEnginePower());
+            System.out.println(lollo.getBaseEnginePower());
+
+            controller.activateDoubleEngine(gameId, "antonio", 0);
+            controller.activateDoubleEngine(gameId, "lollo", 0);
+            controller.activateDoubleEngine(gameId, "andrea", 0);
+
+            anto.drawShipboard();
+
+//            controller.
+        }
     }
 }

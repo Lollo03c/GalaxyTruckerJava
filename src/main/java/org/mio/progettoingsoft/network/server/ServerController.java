@@ -259,19 +259,32 @@ public class ServerController {
             game.addEvent(event1);
             game.addEvent(event2);
         } else {
-            synchronized (game.getLock()) {
-                Logger.info("Ship " + nickname + " is valid.");
-                Player player = flyBoard.getPlayerByUsername(nickname);
-                flyBoard.getValidationPlayers().remove(player);
+            if (flyBoard.getPlayedCard() == null) {
+                synchronized (game.getLock()) {
+                    Logger.info("Ship " + nickname + " is valid.");
+                    Player player = flyBoard.getPlayerByUsername(nickname);
+                    flyBoard.getValidationPlayers().remove(player);
 
-                shipBoard.addGuestToShip();
+                    shipBoard.addGuestToShip();
+                }
+
+                if (flyBoard.getValidationPlayers().isEmpty()) {
+                    flyBoard.setAddCrewPlayers(flyBoard.getScoreBoard());
+                    for (Player p : flyBoard.getScoreBoard()) {
+                        Event event = new SetStateEvent(p.getNickname(), GameState.ADD_CREW);
+                        game.addEvent(event);
+                    }
+                }
             }
+            else{
+                switch (flyBoard.getPlayedCard()){
+                    case SldPirates pirates -> {
+                        advanceCannon(idGame, nickname, false, usedBattery);
+                    }
 
-            if (flyBoard.getValidationPlayers().isEmpty()) {
-                flyBoard.setAddCrewPlayers(flyBoard.getScoreBoard());
-                for (Player p : flyBoard.getScoreBoard()) {
-                    Event event = new SetStateEvent(p.getNickname(), GameState.ADD_CREW);
-                    game.addEvent(event);
+                    default -> {
+
+                    }
                 }
             }
 
@@ -846,14 +859,20 @@ public class ServerController {
         shipBoard.removeComponent(cord);
 
         Map<String, VirtualClient> clients = game.getClients();
-        for (String nick : clients.keySet()) {
-            try {
-                if (!nick.equals(nickname)) {
-                    clients.get(nick).removeComponent(nickname, cord);
+
+        if (flyBoard.getPlayedCard() == null) {
+            for (String nick : clients.keySet()) {
+                try {
+                    if (!nick.equals(nickname)) {
+                        clients.get(nick).removeComponent(nickname, cord);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
+        }else{
+            Event event = new RemoveComponentEvent(nickname, cord);
+            game.addEvent(event);
         }
     }
 

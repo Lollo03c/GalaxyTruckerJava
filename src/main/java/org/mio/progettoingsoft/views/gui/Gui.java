@@ -1105,7 +1105,7 @@ public class Gui extends Application implements View {
             modalShipStage.setScene(new Scene(modalShipContainer));
             modalShipStage.show();
         } else {
-            controller.endValidation();
+            controller.endValidation(false);
         }
 
     }
