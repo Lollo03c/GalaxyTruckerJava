@@ -230,16 +230,6 @@ public class Gui extends Application implements View {
      */
     @Override
     public void run() {
-        String os = System.getProperty("os.name").toLowerCase();
-
-        if (os.contains("mac")) {
-            System.setProperty("java.library.path", "lib/javafx/macos");
-        } else if (os.contains("win")) {
-            System.setProperty("java.library.path", "lib/javafx/windows");
-        } else if (os.contains("nux")) {
-            System.setProperty("java.library.path", "lib/javafx/linux");
-        }
-        Logger.info("GUI: " + System.getProperty("os.name") + " " + System.getProperty("java.library.path"));
         Application.launch(Gui.class);
     }
 
