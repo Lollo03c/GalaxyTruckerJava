@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.model.events;
 
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public final class GenericErrorEvent extends Event{
         try {
             clients.get(nickname).genericChoiceError(message);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ServerController.getInstance().handleGameCrash(e, nickname, 0);
         }
     }
 }

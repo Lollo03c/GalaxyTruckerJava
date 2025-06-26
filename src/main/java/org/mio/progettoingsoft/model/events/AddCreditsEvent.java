@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.model.events;
 
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ public final class AddCreditsEvent extends Event{
             try {
                 client.addCredits(nickname, addedCredits);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                ServerController.getInstance().handleGameCrash(e, nickname, 0);
             }
         }
     }

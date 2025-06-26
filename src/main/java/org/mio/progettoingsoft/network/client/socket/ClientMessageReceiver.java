@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network.client.socket;
 
+import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.network.messages.Message;
 
 import java.io.IOException;
@@ -27,10 +28,8 @@ public class ClientMessageReceiver implements Runnable{
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+            ClientController.getInstance().notifyCrash("");
+        } catch (ClassNotFoundException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

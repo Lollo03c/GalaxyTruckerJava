@@ -1,8 +1,6 @@
 package org.mio.progettoingsoft.network.client.socket;
 
-import org.controlsfx.validation.ValidationMessage;
 import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.model.enums.GameInfo;

@@ -5,7 +5,7 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.Map;
 
-public abstract sealed class Event permits AddCreditsEvent, AddCrewEvent, AddGoodEvent, AddPendingGoodEvent, AddPlayerCircuit, AskLeaveEvent, CannonHitEvent, GenericErrorEvent, LandOnPlanetEvent, LeavePlayerEvent, MetoriteEvent, MovePlayerEvent, RemoveComponentEvent, RemoveEnergyEvent, RemoveGoodEvent, RemoveGuestEvent, RemovePendingGoodEvent, SetCardPlayedEvent, SetCardStateEvent, SetPlayedCard, SetStateEvent {
+public abstract sealed class Event permits AddCreditsEvent, AddCrewEvent, AddGoodEvent, AddPendingGoodEvent, AddPlayerCircuit, AskLeaveEvent, CannonHitEvent, GenericErrorEvent, LandOnPlanetEvent, LeavePlayerEvent, MetoriteEvent, MovePlayerEvent, RemoveComponentEvent, RemoveEnergyEvent, RemoveGoodEvent, RemoveGuestEvent, RemovePendingGoodEvent, SetCardPlayedEvent, SetCardStateEvent, SetPlayedCard, SetStateEvent, CrashEvent {
     protected final String nickname;
 
     public Event(String nickname) {

@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft.model.events;
 
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public final class LeavePlayerEvent extends Event{
             try{
                 client.leaveFlight(nickname);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                ServerController.getInstance().handleGameCrash(e, nickname, 0);
             }
         }
     }

@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public final class MetoriteEvent extends Event{
         try{
             clients.get(nickname).meteorHit(type, direction, value, cordinate);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ServerController.getInstance().handleGameCrash(e, nickname, 0);
         }
     }
 }

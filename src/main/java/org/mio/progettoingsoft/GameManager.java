@@ -120,8 +120,6 @@ public class GameManager{
         while (ongoingGames.containsKey(nextIdGame.get())){
             nextIdGame.set(nextIdGame.get() + 1);
         }
-
-
         return nextIdGame.getAndIncrement();
     }
 
@@ -213,5 +211,9 @@ public class GameManager{
 
     public Object getLockCreatingGame(){
         return lockCreatingGame;
+    }
+
+    public void removeOnGoingGame(int idGame){
+        ongoingGames.remove(idGame);
     }
 }

@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.model.events;
 
 import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public final class SetPlayedCard extends Event{
                 client.setPlayedCard(idCard);
                 client.setState(GameState.NEW_CARD);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                ServerController.getInstance().handleGameCrash(e, nickname, 0);
             }
 
         }

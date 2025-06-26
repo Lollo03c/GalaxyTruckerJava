@@ -69,7 +69,7 @@ public class ServerController {
                     try {
                         client.addComponent(nickname, idComp, cordinate, rotations);
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        handleGameCrash(e, nickname, idGame);
                     }
                 }
             }
@@ -86,7 +86,7 @@ public class ServerController {
             client.setInHandComponent(flyBoard.getCoveredComponents().removeLast());
             client.setState(GameState.COMPONENT_MENU);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            handleGameCrash(e, nickname, idGame);
         }
     }
 
@@ -95,11 +95,11 @@ public class ServerController {
         FlyBoard flyBoard = game.getFlyboard();
         flyBoard.addUncoveredComponent(idComponent);
 
-        for (VirtualClient client : game.getClients().values()) {
+        for (String nickname : game.getClients().keySet()) {
             try {
-                client.addUncoveredComponent(idComponent);
+                game.getClients().get(nickname).addUncoveredComponent(idComponent);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                handleGameCrash(e, nickname, idGame);
             }
         }
     }
@@ -135,7 +135,7 @@ public class ServerController {
                 try {
                     client.removeUncovered(idComponent);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    handleGameCrash(e, nickname, idGame);
                 }
             }
 
@@ -143,13 +143,13 @@ public class ServerController {
                 game.getClients().get(nickname).setInHandComponent(idComponent);
                 game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                handleGameCrash(e, nickname, idGame);
             }
         } else {
             try {
                 game.getClients().get(nickname).setState(GameState.UNABLE_UNCOVERED_COMPONENT);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                handleGameCrash(e, nickname, idGame);
             }
         }
     }
@@ -169,7 +169,7 @@ public class ServerController {
                         client.removeDeck(deckNumber);
                         Logger.debug("removed deck " + deckNumber + " from client " + client);
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        handleGameCrash(e, nickname, idGame);
                     }
                 }
 
@@ -178,13 +178,13 @@ public class ServerController {
                     game.getClients().get(nickname).setState(GameState.VIEW_DECK);
                     Logger.debug("Set deck " + deckNumber + " to " + nickname);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    handleGameCrash(e, nickname, idGame);
                 }
             } else {
                 try {
                     game.getClients().get(nickname).setState(GameState.UNABLE_DECK);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    handleGameCrash(e, nickname, idGame);
                 }
             }
         }
@@ -203,14 +203,14 @@ public class ServerController {
                 try {
                     client.addAvailableDeck(deckNumber);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    handleGameCrash(e, nickname, idGame);
                 }
             }
 
             try {
                 game.getClients().get(nickname).setState(GameState.BUILDING_SHIP);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                handleGameCrash(e, nickname, idGame);
             }
         }
     }
@@ -229,7 +229,7 @@ public class ServerController {
                 try {
                     client.setBuiltShip(nickname);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    handleGameCrash(e, nickname, idGame);
                 }
             }
 
@@ -304,7 +304,7 @@ public class ServerController {
             client.setAvailablePlaces(availablePlaces);
             client.setState(GameState.CHOOSE_POSITION);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            handleGameCrash(e, nickname, idGame);
         }
     }
 
@@ -343,7 +343,7 @@ public class ServerController {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            handleGameCrash(e, nickname, idGame);
         }
 
     }
@@ -359,7 +359,7 @@ public class ServerController {
                 client.setAvailablePlaces(availablePlaces);
                 client.setState(GameState.CHOOSE_POSITION);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                handleGameCrash(e, nickname, idGame);
             }
         }
 
@@ -468,7 +468,7 @@ public class ServerController {
                     try {
                         client.genericChoiceError(e.getMessage());
                     } catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                        handleGameCrash(ex, nickname, idGame);
                     }
                 }
             }
@@ -530,7 +530,7 @@ public class ServerController {
 //            try {
 //                client.advancePlayer(nickname, 4);
 //            } catch (Exception e) {
-//                throw new RuntimeException(e);
+//                handleGameCrash(e, nickname, idGame);
 //            }
 //        }
     }
@@ -628,7 +628,7 @@ public class ServerController {
             try {
                 game.getClients().get(nickname).genericChoiceError("Cannot add e good in depop with id " + idComp);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                handleGameCrash(ex, nickname, idGame);
             }
         }
 
@@ -665,7 +665,7 @@ public class ServerController {
                 try {
                     client.setPlayerOnPlanet(nickname, choice);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    handleGameCrash(e, nickname, idGame);
                 }
             }
         }
@@ -673,7 +673,7 @@ public class ServerController {
 //            try {
 //                c.setState(GameState.GOODS_PLACEMENT);
 //            } catch (Exception e) {
-//                throw new RuntimeException(e);
+//                handleGameCrash(e, nickname, idGame);
 //            }
 //        }
         Logger.debug("numero giocatori passati " + passedPlayers);
@@ -733,7 +733,7 @@ public class ServerController {
 //                    try {
 //                        client.removeGood(idComp, type);
 //                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
+//                        handleGameCrash(e, nickname, idGame);
 //                    }
 //                }
 //            }
@@ -805,7 +805,7 @@ public class ServerController {
 //            try {
 //                client.removeBattery(removedId);
 //            } catch (Exception e) {
-//                throw new RuntimeException(e);
+//                handleGameCrash(e, nickname, idGame);
 //            }
 //        }
 //    }
@@ -844,11 +844,11 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard fly = game.getFlyboard();
         fly.startHourglass(idGame);
-        for(VirtualClient client : game.getClients().values()){
+        for(String nickname : game.getClients().keySet()){
             try {
-                client.startedHourglass(idGame);
+                game.getClients().get(nickname).startedHourglass(idGame);
             }catch (Exception e){
-                throw new RuntimeException(e);
+                handleGameCrash(e, nickname, idGame);
             }
         }
     }
@@ -875,6 +875,11 @@ public class ServerController {
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
+<<<<<<< Updated upstream
+=======
+            } catch (Exception e) {
+                handleGameCrash(e, nickname, idGame);
+>>>>>>> Stashed changes
             }
         }else{
             Event event = new RemoveComponentEvent(nickname, cord);
@@ -898,7 +903,7 @@ public class ServerController {
             try {
                 clients.get(nick).removeComponent(nickname, cord);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                handleGameCrash(e, nickname, idGame);
             }
         }
     }
@@ -973,6 +978,22 @@ public class ServerController {
 
             }
         }
+    }
+
+    public void handleGameCrash(Exception e, String nickname, int idGame) {
+        Logger.error("Client " + nickname + "in game #" + idGame + " crashed with exception " + e);
+
+        // send crash message to all players of the game
+        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        if (game == null) {
+            Logger.warning("Game #" + idGame + " already deleted.");
+            return;
+        }
+        Event crashEvent = new CrashEvent(nickname);
+        game.addEvent(crashEvent);
+
+        // delete all game info
+        GameManager.getInstance().removeOnGoingGame(idGame);
     }
 }
 

@@ -5,27 +5,21 @@ import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.Map;
 
-public final class MovePlayerEvent extends Event {
-    private final int steps;
+public final class CrashEvent extends Event {
 
-    public MovePlayerEvent(String nickname, int steps) {
+    public CrashEvent(String nickname) {
         super(nickname);
-        this.steps = steps;
-    }
-
-    public int getSteps() {
-        return steps;
     }
 
     @Override
     public void send(Map<String, VirtualClient> clients) {
-        for (VirtualClient client : clients.values()){
+        for (String clientNickname : clients.keySet()) {
             try{
-                client.advancePlayer(nickname, steps);
+                if (!clientNickname.equals(nickname))
+                    clients.get(clientNickname).notifyCrash(nickname);
             } catch (Exception e) {
                 ServerController.getInstance().handleGameCrash(e, nickname, 0);
             }
-
         }
     }
 }

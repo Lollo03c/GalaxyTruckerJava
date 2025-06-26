@@ -1,5 +1,6 @@
 package org.mio.progettoingsoft.network.server.socket;
 
+import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.Logger;
@@ -23,6 +24,14 @@ public class ServerMessageHandler implements Runnable {
         while (true){
             try {
                 Message message = receivedMessages.take();
+
+                if (message.getGameId() != -1 && !GameManager.getInstance().getOngoingGames().containsKey(message.getGameId())) {
+                    Logger.error("Game not found.");
+                    executors.submit(() -> {
+                        serverController.handleGameCrash(new Exception("Game crashed"), message.getNickname(), message.getGameId());
+                    });
+                    return;
+                }
 
                 switch (message){
                     case NicknameMessage nicknameMessage -> {
@@ -155,7 +164,7 @@ public class ServerMessageHandler implements Runnable {
                     }
 
                     default -> {
-                        Logger.error(message +  "Messaggio non gestito lato server");
+                        Logger.error("Message not recognized on server: " + message);
                     }
 
 

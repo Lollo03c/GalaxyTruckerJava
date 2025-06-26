@@ -220,8 +220,14 @@ public class SocketClient implements Client {
                         });
                     }
 
+                    case CrashMessage crashMessage -> {
+                        executor.submit(() -> {
+                           controller.notifyCrash(crashMessage.getNickname());
+                        });
+                    }
+
                     default -> {
-                        Logger.error("Messaggio non gestito"  + message);
+                        Logger.error("Message not reconized:"  + message);
                     }
                 }
             } catch (InterruptedException e) {

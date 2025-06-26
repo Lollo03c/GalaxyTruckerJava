@@ -291,5 +291,10 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
         });
     }
 
-
+    @Override
+    public void notifyCrash(String nickname) throws RemoteException{
+        executors.submit(() -> {
+            controller.notifyCrash(nickname);
+        });
+    }
 }

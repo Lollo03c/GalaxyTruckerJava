@@ -89,4 +89,6 @@ public interface VirtualClient extends Remote {
     void leaveFlight(String nickname) throws Exception;
 
     void addCrewMember(String nickname, Cordinate cordinate, GuestType type) throws Exception;
+
+    void notifyCrash(String nickname) throws Exception;
 }

@@ -2,6 +2,7 @@ package org.mio.progettoingsoft.model.events;
 
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public final class AddPendingGoodEvent extends Event {
             clients.get(nickname).addGoodPendingList(nickname, type);
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            ServerController.getInstance().handleGameCrash(e, nickname, 0);
         }
     }
 }

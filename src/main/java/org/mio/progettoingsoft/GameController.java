@@ -4,6 +4,7 @@ import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.model.events.*;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.beans.PropertyChangeEvent;
@@ -30,7 +31,6 @@ public class GameController {
         Thread thread = new Thread(() -> clientComunication());
         thread.setDaemon(true);
         thread.start();
-
     }
 
     /**
@@ -70,14 +70,11 @@ public class GameController {
     }
 
     /**
-     * The thread responsible of sending the messages to the clients
+     * The thread responsible for sending the messages to the clients
      */
     private void clientComunication(){
         while (true) {
-
             try {
-
-
                 Event event = eventsQueue.take();
 
                 event.send(game.getClients());
@@ -89,7 +86,6 @@ public class GameController {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
 
@@ -136,17 +132,17 @@ public class GameController {
     }
 
     public void finishHourglass(int activation) {
-        List<VirtualClient> clients =game.getClients().values().stream().toList();
         if(!game.getFlyboard().isReadyToAdventure()) {
-            for (VirtualClient client : clients) {
+            for (String clientNickname : game.getClients().keySet()) {
                 try {
+                    VirtualClient client = game.getClients().get(clientNickname);
                     if (activation == 3) {
                         client.setState(GameState.FINISH_LAST_HOURGLASS);
                     } else {
                         client.setState(GameState.FINISH_HOURGLASS);
                     }
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    ServerController.getInstance().handleGameCrash(e, clientNickname, game.getIdGame());
                 }
             }
         }

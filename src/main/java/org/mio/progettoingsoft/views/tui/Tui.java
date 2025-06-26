@@ -177,6 +177,8 @@ public class Tui implements View {
             case ADD_CREW -> addCrewMenu();
 
             case REMOVED_FROM_FLYBOARD -> System.out.println("You have been removed from ScoreBoard now you are just a spectator till the end of the flight, please wait");
+
+            case GAME_CRASH -> endgameCrash();
         }
     }
 
@@ -1684,5 +1686,14 @@ private void endgame() {
 
         controller.setState(GameState.WAITING_PLAYERS);
         controller.addCrew(addedCrew);
+    }
+
+    private void endgameCrash() {
+        clearConsole();
+        System.out.println(RED + "THE GAME HAS ENDED DUE TO A CLIENT CRASH!" + RESET);
+
+        System.out.println("Press enter to exit...");
+        String buffer = scanner.nextLine();
+        System.exit(0);
     }
 }

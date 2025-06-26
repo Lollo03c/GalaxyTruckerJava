@@ -12,8 +12,10 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.enums.MeteorType;
+import org.mio.progettoingsoft.model.events.CrashEvent;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.messages.*;
+import org.mio.progettoingsoft.utils.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -51,14 +53,12 @@ public class SocketClientHandler implements VirtualClient, Runnable {
                 try {
                     receivedMessages.add((Message) in.readObject());
                 } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("Client crashed - " + e.getMessage());
+                    Logger.error("Client crashed - " + e.getMessage());
                     break;
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | ClassNotFoundException e) {
+            Logger.error("Client crashed - " + e.getMessage());
         }
     }
 
@@ -281,4 +281,9 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         sendMessage(message);
     }
 
+    @Override
+    public void notifyCrash(String nickname) throws IOException {
+        Message message = new CrashMessage(0, nickname);
+        sendMessage(message);
+    }
 }
