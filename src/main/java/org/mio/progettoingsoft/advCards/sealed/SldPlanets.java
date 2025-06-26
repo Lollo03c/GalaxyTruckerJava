@@ -1,7 +1,6 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.Player;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
@@ -13,6 +12,13 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.*;
 
+/**
+ * Represents a "Planets" adventure card in the game.
+ * This card allows players to land on specific planets, potentially incurring
+ * penalties or gaining benefits. It manages the landing process, tracks landed players,
+ * and applies effects based on planet interactions.
+ * It extends {@link SldAdvCard} and provides specific logic for planet exploration.
+ */
 public final class SldPlanets extends SldAdvCard {
     private final int daysLost;
     private final List<Planet> planets;
@@ -21,16 +27,17 @@ public final class SldPlanets extends SldAdvCard {
 
     private Iterator<Planet> planetIterator;
     Planet actualPlanet;
-
-
-    public Map<Planet, Player> getLandedPlayers() {
-        return landedPlayers;
-    }
-
-
     private final Map<Planet, Player> landedPlayers;
     private int passedPlayers;
 
+    /**
+     * Constructs a new {@code SldPlanets} adventure card.
+     *
+     * @param id The unique identifier for this planets card.
+     * @param level The level of the planets, potentially influencing their effects.
+     * @param daysLost The number of days lost as a penalty for landing on a planet.
+     * @param planets A list of {@link Planet} objects available on this card.
+     */
     public SldPlanets(int id, int level, int daysLost, List<Planet> planets) {
         super(id, level);
         this.daysLost = daysLost;
@@ -39,6 +46,62 @@ public final class SldPlanets extends SldAdvCard {
         this.passedPlayers = 0;
     }
 
+    /**
+     * Retrieves a map of planets to the players who have landed on them.
+     *
+     * @return A {@link Map} where keys are {@link Planet} objects and values are the {@link Player} objects who landed on them.
+     */
+    public Map<Planet, Player> getLandedPlayers() {
+        return landedPlayers;
+    }
+
+    /**
+     * Overrides the base method to return the list of planets associated with this card.
+     *
+     * @return A list of {@link Planet} objects available on this card.
+     */
+    @Override
+    public List<Planet> getPlanets(){
+        return planets;
+    }
+
+    /**
+     * Overrides the base method to return the number of days lost associated with this card.
+     *
+     * @return The number of days lost.
+     */
+    @Override
+    public int getDaysLost(){return daysLost;}
+
+    /**
+     * Overrides the base method to return the name of this card.
+     *
+     * @return The string "Planets".
+     */
+    @Override
+    public String getCardName() {
+        return "Planets";
+    }
+
+    /**
+     * Overrides the base method to return the count of players who have passed their turn
+     * or made a decision (landed or skipped landing) on this card.
+     *
+     * @return The number of players who have passed.
+     */
+    @Override
+    public int getPassedPlayers(){
+        return passedPlayers;
+    }
+
+    /**
+     * Static factory method to load an {@code SldPlanets} object from a JSON node.
+     * It parses the node to extract ID, level, days lost, and a list of planets,
+     * then constructs a new {@code SldPlanets} instance.
+     *
+     * @param node The {@link JsonNode} containing the Planets card data.
+     * @return A new {@code SldPlanets} instance populated with data from the JSON node.
+     */
     public static SldPlanets loadPlanets(JsonNode node){
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
@@ -52,19 +115,13 @@ public final class SldPlanets extends SldAdvCard {
         return new SldPlanets(id, level, daysLost, planets);
     }
 
-    @Override
-    public List<Planet> getPlanets(){
-        return planets;
-    }
-
-    @Override
-    public int getDaysLost(){return daysLost;}
-
-    @Override
-    public String getCardName() {
-        return "Planets";
-    }
-
+    /**
+     * Initializes the Planets card's state and context within the game.
+     * Resets the {@code passedPlayers} count, sets up game and fly board references,
+     * and initializes iterators for players and planets.
+     *
+     * @param game The {@link GameServer} instance managing the current game.
+     */
     @Override
     public void init(GameServer game) {
         passedPlayers = 0;
@@ -76,6 +133,16 @@ public final class SldPlanets extends SldAdvCard {
         this.planetIterator = planets.iterator();
     }
 
+    /**
+     * Handles a player's decision to land on a planet or skip landing.
+     * This method is called when a player makes a choice regarding landing.
+     *
+     * @param player The {@link Player} making the landing decision.
+     * @param planetIndex The index of the planet the player wishes to land on. Use -1 if the player does not want to land.
+     * @throws IllegalStateException if the card is not in the {@code PLANET_CHOICE} state.
+     * @throws BadPlayerException if the provided player is not the current active player.
+     * @throws BadParameterException if the planet index is out of bounds or the chosen planet is already taken.
+     */
     @Override
     // if the planetIndex parameter is -1, the player doesn't want to land
     public void land(Player player, int planetIndex) {
@@ -120,11 +187,11 @@ public final class SldPlanets extends SldAdvCard {
         }
     }
 
-    @Override
-    public int getPassedPlayers(){
-        return passedPlayers;
-    }
-
+    /**
+     * Applies the effect of the Planets card.
+     * For each player who successfully landed on a planet, they incur a penalty of {@code daysLost}.
+     * After applying the effects, it proceeds to process the next planet.
+     */
     public void applyEffect() {
         Logger.debug("applyEffect() called with landedPlayers: " + landedPlayers);
         for (Player player : landedPlayers.values()){
@@ -134,16 +201,13 @@ public final class SldPlanets extends SldAdvCard {
         setNextPlanet();
     }
 
-//    private void nextPlayer(FlyBoard board) {
-//        if (playerIterator.hasNext()) {
-//            actualPlayer = playerIterator.next();
-//            this.state = CardState.PLANET_CHOICE;
-//        } else {
-//            applyEffect(board);
-//        }
-//    }
-
-
+    /**
+     * Sets the next player to make a landing choice.
+     * If there are more players in the {@code allowedPlayers} list, the card state
+     * transitions to {@code PLANET_CHOICE} for the next player.
+     * The logic for finalizing the card or moving to {@code applyEffect} after all players have chosen
+     * is expected to be handled by the calling context or external game loop based on {@code passedPlayers} count.
+     */
     @Override
     public void setNextPlayer() {
         if (playerIterator.hasNext() ) {
@@ -155,6 +219,12 @@ public final class SldPlanets extends SldAdvCard {
         }
     }
 
+    /**
+     * Iterates through the planets on the card, processing each one.
+     * If a planet has a player landed on it, that player becomes the {@code actualPlayer},
+     * and a {@link LandOnPlanetEvent} is added to the game events.
+     * Once all planets have been iterated, the card state transitions to {@code FINALIZED}.
+     */
     public void setNextPlanet(){
         if (planetIterator.hasNext()){
             actualPlanet = planetIterator.next();

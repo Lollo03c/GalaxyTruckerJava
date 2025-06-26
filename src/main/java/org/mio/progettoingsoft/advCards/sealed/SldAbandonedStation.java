@@ -1,20 +1,14 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Game;
 import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.GameState;
 
 import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.SetCardStateEvent;
-import org.mio.progettoingsoft.model.events.SetStateEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +41,15 @@ public final class SldAbandonedStation extends SldAdvCard {
         this.goods = goods;
     }
 
+    /**
+     * Loads an {@code SldAbandonedStation} object from a JSON node.
+     * This static method parses the provided {@link JsonNode} to extract the necessary
+     * attributes (id, level, daysLost, crewNeeded, and a list of goods) and
+     * constructs a new {@code SldAbandonedStation} instance.
+     *
+     * @param node The {@link JsonNode} containing the data for the abandoned station.
+     * @return A new {@code SldAbandonedStation} instance populated with data from the JSON node.
+     */
     public static SldAbandonedStation loadAbandonedStation(JsonNode node) {
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
@@ -59,22 +62,41 @@ public final class SldAbandonedStation extends SldAdvCard {
         }
 
         return new SldAbandonedStation(id, level,  daysLost,crewNeeded, goods);
-
     }
 
+    /**
+     * Retrieves the list of goods found at this abandoned station.
+     *
+     * @return A list of {@link GoodType} representing the goods.
+     */
     @Override
     public List<GoodType> getGoods(){
         return goods;
     }
 
+    /**
+     * Retrieves the number of days lost due to interacting with this abandoned station.
+     *
+     * @return The number of days lost.
+     */
     @Override
     public int getDaysLost() {return daysLost;}
 
+    /**
+     * Retrieves the number of crew members needed to interact with this abandoned station.
+     *
+     * @return The number of crew members required.
+     */
     @Override
     public int getCrewNeeded(){
         return crewNeeded;
     }
 
+    /**
+     * Retrieves the name of this card.
+     *
+     * @return The string "Abandoned Station".
+     */
     @Override
     public String getCardName() {
         return "Abandoned Station";

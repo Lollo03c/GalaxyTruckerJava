@@ -1,7 +1,6 @@
 package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mio.progettoingsoft.FlyBoard;
 import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
@@ -36,12 +35,31 @@ public final class SldMeteorSwarm extends SldAdvCard{
     }
 
     /**
+     * Returns the display name of the card.
+     *
+     * @return the string "Meteor Swarm"
+     */
+    @Override
+    public String getCardName() {
+        return "Meteor Swarm";
+    }
+
+    /**
+     * Retrieves the list of meteors associated with this card.
+     *
+     * @return A list of {@link Meteor} objects representing the meteors.
+     */
+    @Override
+    public List<Meteor> getMeteors() {
+        return meteors;
+    }
+
+    /**
      * Deserializes a {@code SldMeteorSwarm} card from a JSON node.
      *
      * @param node the JSON node containing the card's data
      * @return a new {@code SldMeteorSwarm} instance
      */
-
     public static SldMeteorSwarm loadMeteorSwarm(JsonNode node){
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
@@ -55,22 +73,11 @@ public final class SldMeteorSwarm extends SldAdvCard{
     }
 
     /**
-     * Returns the display name of the card.
-     *
-     * @return the string "Meteor Swarm"
-     */
-    @Override
-    public String getCardName() {
-        return "Meteor Swarm";
-    }
-
-    /**
      * Initializes the card and sets up player and meteor iteration.
      * The first meteor will be processed once {@link #setNextMeteor()} is called.
      *
      * @param game the current game instance
      */
-
     @Override
     public void init(GameServer game) {
         this.game  = game;
@@ -81,12 +88,6 @@ public final class SldMeteorSwarm extends SldAdvCard{
         actualPlayer = playerIterator.next();
 
         meteorIterator = meteors.iterator();
-    }
-
-
-    @Override
-    public List<Meteor> getMeteors() {
-        return meteors;
     }
 
     /**
