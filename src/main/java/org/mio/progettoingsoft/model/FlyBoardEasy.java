@@ -198,7 +198,6 @@ public class FlyBoardEasy extends FlyBoard {
      *
      * @param color The {@link HousingColor} of the player's ship.
      * @return The {@link ShipBoard} instance associated with the given color, or {@code null} if not found or supported.
-     * @deprecated This method currently returns null and should be reviewed for its intended behavior in Easy mode.
      */
     @Override
     public ShipBoard getBuiltShip(HousingColor color){

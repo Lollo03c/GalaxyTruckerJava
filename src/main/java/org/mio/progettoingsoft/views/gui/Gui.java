@@ -744,7 +744,10 @@ public class Gui extends Application implements View {
 
             /* Button to put back in hand the component (after trying to place or book) */
             backButton = new Button("Put back in hand");
-            backButton.setOnAction(event -> controller.setState(GameState.COMPONENT_MENU));
+            backButton.setOnAction(event -> {
+                controller.resetTmpRotation();
+                controller.setState(GameState.COMPONENT_MENU);
+            });
             backButton.setVisible(false);
             backButton.setWrapText(true);
             backButton.setTextAlignment(TextAlignment.CENTER);
@@ -822,6 +825,7 @@ public class Gui extends Application implements View {
         backButton.setVisible(false);
         hintLabel.setVisible(false);
         loadShipBtn.setDisable(false);
+        controller.resetTmpRotation();
         Optional<Integer>[][] idMatrix;
         Optional<Integer>[][] rotationsMatrix;
         List<Optional<Integer>> bookedComponents;
@@ -1125,6 +1129,9 @@ public class Gui extends Application implements View {
 
     private void addCrewView() {
         modalShipboardView(controller.getNickname());
+        synchronized (controller.getFlyboardLock()) {
+            controller.getShipBoard().addGuestToShip();
+        }
         Map<Cordinate, List<GuestType>> addedCrew = new HashMap<>();
         Label topLabel = new Label("Click on the housing you want to populate!");
         Label errLabel = new Label("Cannot place crew in the selected housing");
@@ -1183,15 +1190,22 @@ public class Gui extends Application implements View {
         });
         confirmButton.setOnAction(event -> {
             modalShipStage.close();
+            synchronized (controller.getShipboardLock()) {
+                for (Cordinate c : addedCrew.keySet()) {
+                    if (controller.getShipBoard().getOptComponentByCord(c).isPresent()) {
+                        for (GuestType g : addedCrew.get(c)) {
+                            controller.getShipBoard().getOptComponentByCord(c).get().addGuest(g);
+                        }
+                    }
+                }
+            }
             controller.addCrew(addedCrew);
         });
         resetButton.setOnAction(evt -> {
             modalShipStage.close();
             controller.setState(GameState.ADD_CREW);
         });
-        modalShipStage.setOnCloseRequest(event -> {
-            event.consume();
-        });
+        modalShipStage.setOnCloseRequest(Event::consume);
         btnBox.getChildren().addAll(addHumanButton, addPurpleAlienButton, addBrownAlienButton, crewBackButton);
         confBtnBox.getChildren().addAll(resetButton, confirmButton);
         modalShipContainer.getChildren().addAll(btnBox, confBtnBox);
@@ -1458,7 +1472,7 @@ public class Gui extends Application implements View {
             cardStateManager.setDaemon(true);
             cardStateManager.start();
 
-        } else if(!removed) {
+        } else if (!removed) {
             waitingForLeaderLabel.setVisible(!isLeader);
             drawCardButton.setVisible(isLeader);
             leaveFlightBtn.setDisable(false);
@@ -1470,7 +1484,7 @@ public class Gui extends Application implements View {
                     modalDiceRollStage.close();
                 }
             }
-        }else{
+        } else {
             waitingForLeaderLabel.setVisible(!isLeader);
             leaveFlightBtn.setVisible(false);
         }
@@ -1488,7 +1502,7 @@ public class Gui extends Application implements View {
 
     }
 
-    private void endGameView(){
+    private void endGameView() {
         root.getChildren().clear();
         List<Player> playersSorted;
         synchronized (controller.getFlyboardLock()) {
@@ -1497,11 +1511,11 @@ public class Gui extends Application implements View {
         }
         VBox scoreBoardBox = new VBox(10);
         scoreBoardBox.setAlignment(Pos.CENTER);
-        for(int i = 0; i < playersSorted.size(); i++){
-            Label playerLabel = new Label("Position " + (i+1) + ": " + playersSorted.get(i).getNickname() + " with " + playersSorted.get(i).getCredits() + " credits.");
-            if(i == 0){
+        for (int i = 0; i < playersSorted.size(); i++) {
+            Label playerLabel = new Label("Position " + (i + 1) + ": " + playersSorted.get(i).getNickname() + " with " + playersSorted.get(i).getCredits() + " credits.");
+            if (i == 0) {
                 playerLabel.setStyle("-fx-text-fill: green; -fx-font-size: 24px;");
-            }else{
+            } else {
                 playerLabel.setStyle("-fx-font-size: 16px;");
             }
             scoreBoardBox.getChildren().add(playerLabel);
@@ -1800,7 +1814,11 @@ public class Gui extends Application implements View {
                         cordsToRemove.add(cord);
                     }
                 }
-                controller.removeCrew(cordsToRemove);
+                if (cordsToRemove.size() < toRemove) {
+                    evt.consume();
+                } else {
+                    controller.removeCrew(cordsToRemove);
+                }
             });
             Button resetBtn = new Button("Reset");
             resetBtn.setOnAction(evt -> {

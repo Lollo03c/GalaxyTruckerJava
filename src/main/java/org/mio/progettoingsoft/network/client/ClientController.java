@@ -564,6 +564,7 @@ public class ClientController {
 
     public void bookComponent(int posToRemove) {
         int idComp = shipBoard.getBookedComponents().get(posToRemove).get();
+        resetTmpRotation();
 
         shipBoard.swapBookComponent(inHandComponent, posToRemove);
         inHandComponent = idComp;
@@ -573,6 +574,7 @@ public class ClientController {
     public void discardComponent() {
         Component comp = flyBoard.getComponentById(inHandComponent);
         comp.reinitializeRotations();
+        resetTmpRotation();
 
         try {
             server.discardComponent(idGame, inHandComponent);
@@ -1019,10 +1021,12 @@ public class ClientController {
             pl.getShipBoard().addGuestToShip();
         }
 
+
+
         try {
             server.addCrew(idGame, nickname, addedCrew);
         } catch (Exception e) {
-
+            throw new RuntimeException(e);
         }
     }
 

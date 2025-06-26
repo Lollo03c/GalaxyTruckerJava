@@ -1331,21 +1331,25 @@ public class Tui implements View {
         SldAdvCard card = controller.getPlayedCard();
         ShipBoard shipBoard = controller.getShipBoard();
         Direction direction = null;
+        Cordinate cord = null;
 
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
                 Meteor meteor = controller.getMeteor();
                 direction = meteor.getDirection();
+                cord = meteor.getCordinateHit();
             }
 
             case SldPirates pirates -> {
                 CannonPenalty cannon = controller.getCannon();
                 direction = cannon.getDirection();
+                cord = cannon.getCordinateHit();
             }
 
             case SldCombatZone combatZone -> {
                 CannonPenalty cannon = controller.getCannon();
                 direction = cannon.getDirection();
+                cord = cannon.getCordinateHit();
             }
 
             default -> Logger.error("caso non previsto");
@@ -1356,18 +1360,18 @@ public class Tui implements View {
         switch (card) {
             case SldMeteorSwarm meteorSwarm -> {
                 Meteor meteor = controller.getMeteor();
-                System.out.println("Expoxed connector on " + meteor.getCordinateHit());
+                System.out.println("Expoxed connector on " + cord);
 
             }
 
             case SldPirates sldPirates -> {
                 CannonPenalty cannon = controller.getCannon();
-                System.out.println("Light cannot hit component in " + cannon.getCordinateHit());
+                System.out.println("Light cannot hit component in " + cord);
             }
 
             case SldCombatZone combatZone -> {
                 CannonPenalty cannon = controller.getCannon();
-                System.out.println("Light cannot hit component in " + cannon.getCordinateHit());
+                System.out.println("Light cannot hit component in " + cord);
             }
 
 
@@ -1410,7 +1414,7 @@ public class Tui implements View {
                 default -> Logger.error("caso non previsto");
             }
         } else {
-            controller.getShipBoard().removeComponent(controller.getCordinate());
+            controller.getShipBoard().removeComponent(cord);
 
             controller.setState(GameState.VALIDATION);
         }
