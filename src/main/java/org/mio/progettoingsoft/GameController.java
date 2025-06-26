@@ -10,19 +10,25 @@ import org.mio.progettoingsoft.utils.Logger;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * The {@code GameController} is responsible for coordinating the game logic,
+ * processing events, updating the game model ({@link FlyBoard}), and communicating
+ * state changes and events back to the connected clients.
+ * It acts as the central hub for game flow and interactions.
+ */
 public class GameController {
     private final GameServer game;
     private final BlockingQueue<Event> eventsQueue;
 
     /**
+     * Constructs a new {@code GameController} in normal operating mode.
+     * Starts a daemon thread responsible for sending messages to clients from the event queue.
      *
-     * @param game The game itself
-     * @param eventsQueue : The queue of {@link Event} to process to alter the model
+     * @param game The {@link GameServer} instance that this controller manages.
+     * @param eventsQueue The {@link BlockingQueue} of {@link Event} objects to process and send.
      */
     public GameController(GameServer game, BlockingQueue<Event> eventsQueue) {
         this.game = game;
@@ -34,10 +40,11 @@ public class GameController {
     }
 
     /**
-     * used only for testing
-     * @param game
-     * @param eventsQueue
-     * @param testing
+     * Constructs a new {@code GameController} with an option for testing mode.
+     *
+     * @param game The {@link GameServer} instance that this controller manages.
+     * @param eventsQueue The {@link BlockingQueue} of {@link Event} objects to process.
+     * @param testing A boolean indicating if the controller is in testing mode.
      */
     public GameController(GameServer game, BlockingQueue<Event> eventsQueue, boolean testing) {
         this.game = game;
@@ -70,7 +77,10 @@ public class GameController {
     }
 
     /**
-     * The thread responsible for sending the messages to the clients
+     * The main loop for the client communication thread.
+     * It continuously takes {@link Event} objects from the {@code eventsQueue}
+     * and sends them to the appropriate clients. After sending, it notifies
+     * any waiting threads if the queue becomes empty.
      */
     private void clientComunication(){
         while (true) {
@@ -90,7 +100,10 @@ public class GameController {
     }
 
     /**
-     * Create the {@link Event} based on the listener of the {@link Flyboard}
+     * Registers a {@link PropertyChangeListener} with the game's {@link FlyBoard}.
+     * This listener captures events fired by the FlyBoard (e.g., player movement,
+     * battery removal, credit changes, good removal, player leaving) and converts
+     * them into generic {@link Event} objects to be added to the {@code eventsQueue}.
      */
     public void registerListener(){
         Logger.debug("Chiamato registerListener");
@@ -131,6 +144,14 @@ public class GameController {
 
     }
 
+    /**
+     * Handles the completion of an hourglass turn.
+     * It sends a {@code FINISH_HOURGLASS} or {@code FINISH_LAST_HOURGLASS} state update
+     * to all clients, depending on the {@code activation} parameter (e.g., 3 for the last hourglass).
+     * If an error occurs during communication, it delegates to {@link ServerController#handleGameCrash}.
+     *
+     * @param activation An integer indicating the activation count of hourglasses, used to determine if it's the last one.
+     */
     public void finishHourglass(int activation) {
         if(!game.getFlyboard().isReadyToAdventure()) {
             for (String clientNickname : game.getClients().keySet()) {
@@ -150,8 +171,11 @@ public class GameController {
 
 
     /**
-     * Based on the state of the card sends info to the clients
-     * @param card the {@link SldAdvCard} played
+     * Updates client states based on the current state of a played {@link SldAdvCard}.
+     * This method is a central dispatcher for guiding clients through the card effects.
+     * It sends specific {@link SetCardStateEvent} or {@link SetStateEvent} to relevant players.
+     *
+     * @param card The {@link SldAdvCard} whose state has changed.
      */
     public void update(SldAdvCard card){
         Player player = card.getActualPlayer();
@@ -241,7 +265,7 @@ public class GameController {
                         }
                     }
 
-                    default -> Logger.error("Not espected card!");
+                    default -> Logger.error("Not expected card!");
                 }
             }
 

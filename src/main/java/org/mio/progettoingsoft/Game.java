@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  * On the server side, it handles player management, game setup, and lifecycle control.
  * On the client side, it provides read-only access to game metadata such as mode and number of players.
  * <p>
+ * This class is designed to be thread-safe for operations involving shared resources like the event queue.
  */
 public class Game implements GameServer, GameClient {
     private FlyBoard flyboard;
@@ -39,9 +40,10 @@ public class Game implements GameServer, GameClient {
 
 
     /**
-            * Constructs a new Game with the specified game ID.
-            *
-            * @param idGame the unique identifier of the game
+     * Constructs a new Game with the specified game ID.
+     * Initializes the {@link GameController} for the game. Defaults to non-testing mode.
+     *
+     * @param idGame The unique identifier of the game.
      */
     public Game(int idGame) {
         this.idGame = idGame;
@@ -82,21 +84,42 @@ public class Game implements GameServer, GameClient {
         }
     }
 
+    /**
+     * Returns the unique identifier of this game instance.
+     *
+     * @return The game ID.
+     */
     @Override
     public int getIdGame(){
         return idGame;
     }
 
+    /**
+     * Returns the total number of players expected for this game.
+     *
+     * @return The number of players.
+     */
     @Override
     public int getNumPlayers(){
         return numPlayers;
     }
 
+    /**
+     * Returns the game mode (difficulty) of this game.
+     *
+     * @return The {@link GameMode}.
+     */
     @Override
     public GameMode getGameMode(){
         return  mode;
     }
 
+    /**
+     * Returns a map of clients currently connected to this game, keyed by their nicknames.
+     * The returned map is synchronized.
+     *
+     * @return A {@link Map} where keys are player nicknames (String) and values are {@link VirtualClient} instances.
+     */
     @Override
     public Map<String, VirtualClient> getClients(){
         return clients;
@@ -175,11 +198,21 @@ public class Game implements GameServer, GameClient {
         Logger.info("Game " + idGame + " started");
     }
 
+    /**
+     * Returns the {@link FlyBoard} instance associated with this game.
+     *
+     * @return The {@link FlyBoard} object.
+     */
     @Override
     public FlyBoard getFlyboard(){
         return flyboard;
     }
 
+    /**
+     * Returns the {@link GameController} instance managing this game's logic.
+     *
+     * @return The {@link GameController} object.
+     */
     @Override
     public GameController getController(){
         return gameController;
@@ -213,11 +246,22 @@ public class Game implements GameServer, GameClient {
         return eventsQueue;
     }
 
+    /**
+     * Returns the general lock object for this game instance.
+     * This lock can be used for synchronizing access to various game-related data or operations.
+     *
+     * @return The {@link Object} serving as a lock.
+     */
     @Override
     public Object getLock(){
         return lock;
     }
 
+    /**
+     * Indicates whether this game instance is running in testing mode.
+     *
+     * @return {@code true} if the game is in testing mode; {@code false} otherwise.
+     */
     @Override
     public boolean isTesting() {
         return testing;

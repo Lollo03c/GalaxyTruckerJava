@@ -2,13 +2,11 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.exceptions.BadParameterException;
 import org.mio.progettoingsoft.exceptions.BadPlayerException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
-import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import java.util.List;
 
@@ -28,6 +26,22 @@ public final class SldAbandonedShip extends SldAdvCard {
     private boolean effectTaken = false;
 
     /**
+     * Constructs a new Abandoned Ship card with the specified parameters.
+     *
+     * @param id the unique card ID
+     * @param level the card's difficulty level
+     * @param daysLost the number of days lost when the effect is applied
+     * @param credits the amount of credits gained when the effect is applied
+     * @param crewLost the number of crew members required to activate the card
+     */
+    public SldAbandonedShip(int id, int level, int daysLost, int credits, int crewLost) {
+        super(id, level);
+        this.daysLost = daysLost;
+        this.credits = credits;
+        this.crewLost = crewLost;
+    }
+
+    /**
      * Returns the name of this card.
      *
      * @return the string "Abandoned Ship"
@@ -37,35 +51,42 @@ public final class SldAbandonedShip extends SldAdvCard {
     }
 
     /**
-     * Constructs a new Abandoned Ship card with the specified parameters.
+     * Retrieves the number of crew members lost due to this event.
      *
-     * @param id the unique card ID
-     * @param level the card's difficulty level
-     * @param daysLost the number of days lost when the effect is applied
-     * @param credits the amount of credits gained when the effect is applied
-     * @param crewLost the number of crew members required to activate the card
+     * @return The number of crew members lost.
      */
-
-    public SldAbandonedShip(int id, int level, int daysLost, int credits, int crewLost) {
-        super(id, level);
-        this.daysLost = daysLost;
-        this.credits = credits;
-        this.crewLost = crewLost;
-    }
-
     @Override
     public int getCrewLost() {
         return crewLost;
     }
 
+    /**
+     * Retrieves the number of days lost due to this event.
+     *
+     * @return The number of days lost.
+     */
     @Override
     public int getDaysLost() {
         return daysLost;
     }
 
+    /**
+     * Retrieves the number of credits gained or lost due to this event.
+     *
+     * @return The number of credits.
+     */
     @Override
     public int getCredits() {return credits;}
 
+    /**
+     * Loads an {@code SldAbandonedShip} object from a JSON node.
+     * This static method parses the provided {@link JsonNode} to extract the necessary
+     * attributes (id, level, daysLost, credits, and crewLost) and
+     * constructs a new {@code SldAbandonedShip} instance.
+     *
+     * @param node The {@link JsonNode} containing the data for the abandoned ship.
+     * @return A new {@code SldAbandonedShip} instance populated with data from the JSON node.
+     */
     public static SldAbandonedShip loadAbandonedShip(JsonNode node){
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
@@ -114,7 +135,6 @@ public final class SldAbandonedShip extends SldAdvCard {
             throw new IncorrectFlyBoardException("Not " + nickname + " turn to play");
         }
 
-
         this.state = CardState.APPLYING;
         Player player = flyBoard.getPlayerByUsername(nickname);
 
@@ -143,7 +163,6 @@ public final class SldAbandonedShip extends SldAdvCard {
                         Event event = new RemoveGuestEvent(null, idComp);
                         game.addEvent(event);
                     }
-
 
                     while (! game.getEventsQueue().isEmpty()) {
                         try {
@@ -177,5 +196,4 @@ public final class SldAbandonedShip extends SldAdvCard {
             setState(CardState.FINALIZED);
         }
     }
-
 }

@@ -14,6 +14,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * An abstract representation of a player's spaceship board in the Galaxy Trucker game.
+ * This class provides the core logic for managing ship components, their placement,
+ * rotation, connections, and interactions. It serves as a base for concrete
+ * implementations specific to different game modes (e.g., Easy, Normal).
+ */
 public abstract class ShipBoard {
     private final Optional<Component>[][] shipComponents;
     private final Optional<Integer>[][] rotationMatrix;
@@ -38,12 +44,12 @@ public abstract class ShipBoard {
     private final FlyBoard flyBoard;
 
     /**
-     * static method used to create an istance of ShipBoard based on the {@link GameMode}
+     * Static factory method used to create an instance of {@link ShipBoard} based on the specified {@link GameMode}.
      *
-     * @param mode     the {@link GameMode} of the game
-     * @param color    the {@link Housing} of the shipboard
-     * @param flyBoard of {@link FlyBoard} used to get the {@link Component} and {@link AdventureCard} lists
-     * @return
+     * @param mode The {@link GameMode} of the game (e.g., EASY, NORMAL).
+     * @param color The {@link HousingColor} of the player's starting cabin.
+     * @param flyBoard The {@link FlyBoard} instance, used to retrieve component definitions and interact with game events.
+     * @return A concrete {@link ShipBoard} instance (e.g., {@link ShipBoardEasy}, {@link ShipBoardNormal}).
      */
     public static ShipBoard createShipBoard(GameMode mode, HousingColor color, FlyBoard flyBoard) {
         ShipBoard shipBoard = null;
@@ -56,13 +62,30 @@ public abstract class ShipBoard {
         return shipBoard;
     }
 
+    /**
+     * Placeholder method for drawing the shipboard, intended for GUI implementations.
+     * Concrete subclasses or external rendering classes would implement this.
+     */
     public void drawShipboard() {
+        // Implementation for drawing would go here in a concrete UI context.
     }
 
+    /**
+     * Returns the {@link HousingColor} associated with this shipboard.
+     *
+     * @return The {@link HousingColor} of the ship.
+     */
     public HousingColor getHousingColor() {
         return housingColor;
     }
 
+    /**
+     * Protected constructor for initializing the common properties of a {@code ShipBoard}.
+     * Sets up the grid dimensions, initializes matrices, and places the starting cabin.
+     *
+     * @param color The {@link HousingColor} of the player's cabin.
+     * @param flyBoard The {@link FlyBoard} instance this ship belongs to.
+     */
     protected ShipBoard(HousingColor color, FlyBoard flyBoard) {
         this.flyBoard = flyBoard;
         housingColor = color;
@@ -97,15 +120,24 @@ public abstract class ShipBoard {
         } catch (IncorrectShipBoardException e) {
 
         }
-
-
     }
 
     /**
-     * @return the list of banneed {@link Cordinate} based on the {@link GameMode} of the game
+     * Returns a list of {@link Cordinate} objects that are banned for component placement
+     * on this shipboard. This method must be implemented by concrete subclasses
+     * to define mode-specific banned areas.
+     *
+     * @return A {@link List} of banned {@link Cordinate}s.
      */
     protected abstract List<Cordinate> getBannedCoordinates();
 
+    /**
+     * Attempts to add a component to one of the two "booked" slots.
+     * A booked component is a component a player has selected but not yet placed on the ship grid.
+     *
+     * @param bookedComponent The ID of the component to be booked.
+     * @throws IncorrectShipBoardException If both booked slots are already occupied.
+     */
     public void addBookedComponent(Integer bookedComponent) throws IncorrectShipBoardException {
         long counted = bookedComponents.stream()
                 .filter(Optional::isPresent).count();
@@ -120,6 +152,13 @@ public abstract class ShipBoard {
             throw new IncorrectShipBoardException("");
     }
 
+    /**
+     * Swaps an existing booked component with a new one at a specified position.
+     * This is useful for players deciding to replace a previously booked component.
+     *
+     * @param bookedComponent The ID of the new component to place in the booked slot.
+     * @param position The index of the booked slot to swap (0 or 1).
+     */
     public void swapBookComponent(int bookedComponent, int position) {
         shipComponents[0][5 + position] = Optional.of(flyBoard.getComponentById(bookedComponent));
         bookedComponents.set(position, Optional.of(bookedComponent));
@@ -127,37 +166,70 @@ public abstract class ShipBoard {
 
 
     /**
-     * @return the list of the id of the booked Component
+     * Returns a list of {@link Optional} integers, representing the IDs of the booked components.
+     * An {@link Optional#empty()} indicates an empty booked slot.
+     *
+     * @return A {@link List} of {@link Optional<Integer>} for the booked components.
      */
     public List<Optional<Integer>> getBookedComponents() {
         return bookedComponents;
     }
 
+    /**
+     * Removes a component from a specified booked slot, making that slot empty.
+     *
+     * @param position The index of the booked slot to clear (0 or 1).
+     */
     public void removedBookedComponent(int position) {
         shipComponents[0][5 + position] = Optional.empty();
         bookedComponents.set(position, Optional.empty());
     }
 
-    // activated firepower: tmp property to store the firepower after activating double drills.
-    // How to use: askDoubleDrill, set activFP = base + activated, do whatever you need, then set activated = base
+    /**
+     * Returns the currently activated firepower of the ship. This value can be
+     * temporarily increased by activating {@link DoubleDrill} components.
+     *
+     * @return The activated firepower.
+     */
     public double getActivatedFirePower() {
         return activatedFirePower;
     }
 
+    /**
+     * Sets the activated firepower of the ship. This is typically used to
+     * update the firepower value after a {@link DoubleDrill} has been activated or deactivated.
+     *
+     * @param activatedFirePower The new value for activated firepower.
+     */
     public void setActivatedFirePower(double activatedFirePower) {
         this.activatedFirePower = activatedFirePower;
     }
 
+    /**
+     * Returns the column offset used for internal grid calculations or visual rendering.
+     *
+     * @return The column offset.
+     */
     public int getOffsetCol() {
         return offsetCol;
     }
 
+    /**
+     * Returns the row offset used for internal grid calculations or visual rendering.
+     *
+     * @return The row offset.
+     */
     public int getOffsetRow() {
         return offsetRow;
     }
 
     /**
-     * @return the total engine power when all {@link DoubleEngine} are not activated
+     * Calculates and returns the base engine power of the ship. This is the sum of
+     * engine power from all installed engine components, without considering
+     * the activation of {@link DoubleEngine}s. Brown aliens (Cosmic Tourists)
+     * add +2 engine power if any engine is present.
+     *
+     * @return The total base engine power.
      */
     public int getBaseEnginePower() {
         int enginePower = getCompStream().mapToInt(comp -> comp.getEnginePower(false)).sum();
@@ -168,11 +240,15 @@ public abstract class ShipBoard {
         }
 
         return enginePower;
-
     }
 
     /**
-     * @return the total fire power when all {@link DoubleDrill} are not activated
+     * Calculates and returns the base firepower of the ship. This is the sum of
+     * firepower from all installed drill components, without considering
+     * the activation of {@link DoubleDrill}s. Purple aliens (Cosmic Pirates)
+     * add +2 firepower if any drill is present.
+     *
+     * @return The total base firepower.
      */
     public double getBaseFirePower() {
         double firePower = getCompStream().mapToDouble(comp -> comp.getFirePower(false)).sum();
@@ -185,8 +261,10 @@ public abstract class ShipBoard {
     }
 
     /**
-     * @param type the {@link GoodType} to search for
-     * @return the number of goods of the given {@link GoodType} contained in the shipboard
+     * Returns the number of goods of a specific type currently stored in the ship's cargo holds.
+     *
+     * @param type The {@link GoodType} to search for.
+     * @return The total quantity of the specified good type.
      */
     public int getStoredQuantity(GoodType type) {
         return (int) getCompStream().flatMap(comp -> comp.getStoredGoods().stream())
@@ -272,15 +350,16 @@ public abstract class ShipBoard {
     }
 
     /**
+     * Returns the total number of components that have been discarded from the shipboard.
      *
-     * @return the number of discarded components
+     * @return The count of discarded components.
      */
     public int getDiscaredComponents() {
         return discaredComponents;
     }
 
     /**
-     * remove the given quantity of energy from {@link EnergyDepot} if possible, throws {@link IncorrectShipBoardException} otherwise
+     * Remove the given quantity of energy from {@link EnergyDepot} if possible, throws {@link IncorrectShipBoardException} otherwise
      *
      * @param quantiy the quanity to remove
      * @return the list of id {@link Component} from which the energy have been taken
@@ -311,7 +390,6 @@ public abstract class ShipBoard {
 
             Event event = new RemoveEnergyEvent(null, id);
             flyBoard.getSupport().firePropertyChange("removeBattery", null, event);
-
         }
 
         return idComps;
@@ -319,26 +397,41 @@ public abstract class ShipBoard {
 
 
     /**
-     * @return the iterator which enable to iterator over all the components in the shipboard
+     * Returns an iterator that allows sequential access to all {@link Component} objects
+     * currently placed on the shipboard.
+     *
+     * @return An {@link Iterator} of {@link Component}s.
      */
     private Iterator<Component> getCompIterator() {
         return Stream.of(shipComponents).flatMap(Stream::of).filter(Optional::isPresent).map(Optional::get).iterator();
     }
 
     /**
-     * @return the stream of the components in the shipboard
+     * Returns a stream of all {@link Component} objects currently placed on the shipboard.
+     * This is a convenient way to perform stream operations (filter, map, collect) on components.
+     *
+     * @return A {@link Stream} of {@link Component}s.
      */
     private Stream<Component> getCompStream() {
         return Stream.of(shipComponents).flatMap(Stream::of).filter(Optional::isPresent).map(Optional::get);
     }
 
-
+    /**
+     * Returns the 2D array representing the ship's grid, containing {@link Optional} of {@link Component}s.
+     * This method exposes the internal structure, which should be used carefully to avoid direct modification.
+     *
+     * @return The 2D array of {@link Optional<Component>}.
+     */
     public Optional<Component>[][] getComponentsMatrix() {
         return shipComponents;
     }
 
     /**
-     * @return a NEW matrix of optionals: empty if the position doesn't contain a component, the id of the component if present
+     * Returns a new 2D matrix representing the ship's grid, where each cell contains
+     * the ID of the component if present, or {@link Optional#empty()} if the position is empty.
+     * This is useful for communicating component layout to clients without sending full component objects.
+     *
+     * @return A new 2D array of {@link Optional<Integer>} representing component IDs.
      */
     public Optional<Integer>[][] getComponentIdsMatrix() {
         Optional<Integer>[][] matrix = new Optional[rows][columns];
@@ -356,9 +449,12 @@ public abstract class ShipBoard {
 
 
     /**
-     * used only for the GUI rendering
+     * Returns a new 2D matrix representing the rotation of components on the shipboard.
+     * Each cell contains the rotation angle (in degrees) if a component is present,
+     * or {@link Optional#empty()} if the position is empty. This is primarily used
+     * for GUI rendering to correctly display component orientation.
      *
-     * @return a NEW matrix of optional: empty if the position doesn't contain a component, the rotation of the component (related to the image) if present
+     * @return A new 2D array of {@link Optional<Integer>} representing component rotations.
      */
     public Optional<Integer>[][] getComponentRotationsMatrix() {
         Optional<Integer>[][] matrix = new Optional[rows][columns];
@@ -376,7 +472,10 @@ public abstract class ShipBoard {
 
 
     /**
-     * @return the total number of energy left
+     * Returns the total number of energy units (batteries) currently stored across
+     * all {@link EnergyDepot} components on the ship.
+     *
+     * @return The total quantity of batteries.
      */
     public int getQuantBatteries() {
         return getCompStream().mapToInt(Component::getEnergyQuantity).sum();
@@ -637,7 +736,11 @@ public abstract class ShipBoard {
     }
 
     /**
-     * @return the number of exposed connectors of the shipboard
+     * Calculates and returns the total number of exposed connectors on the perimeter of the ship.
+     * An exposed connector is a connector (not FLAT) of a component that is not connected
+     * to another component.
+     *
+     * @return The total count of exposed connectors.
      */
     public int getExposedConnectors() {
         int numExposedConnectors = 0;
@@ -662,7 +765,10 @@ public abstract class ShipBoard {
     }
 
     /**
-     * @return the number of guests hosted in the shipBoard
+     * Returns the total number of guests (aliens) currently hosted across all
+     * {@link Housing} components on the ship.
+     *
+     * @return The total quantity of guests.
      */
     public int getQuantityGuests() {
         return getCompStream().
@@ -671,7 +777,13 @@ public abstract class ShipBoard {
     }
 
     /**
-     * @param quantity int : quantity of goods / batteries to stole
+     * Simulates stealing a given quantity of goods and/or batteries from the ship.
+     * It prioritizes stealing goods from highest value to lowest value, then moves
+     * to batteries if the quantity still needs to be met.
+     *
+     * @param quantity The total quantity of goods/batteries to steal.
+     * @return A {@link Map} where keys are component IDs and values are lists of {@link GoodType}
+     * that were stolen from that component.
      */
     public Map<Integer, List<GoodType>> stoleGood(int quantity) {
         Map<Integer, List<GoodType>> result = new HashMap<>();
@@ -723,12 +835,21 @@ public abstract class ShipBoard {
         return result;
     }
 
-    // activated engine power: tmp property to store the engine power after activating double engines.
-    // How to use: askDoubleEngine, set activEP = base + activated, do whatever you need, then set activated = base
+    /**
+     * Sets the currently activated engine power of the ship. This value is temporary
+     * and used during specific adventure card effects where {@link DoubleEngine}s might be activated.
+     *
+     * @param activatedEnginePower The new value for activated engine power.
+     */
     public void setActivatedEnginePower(int activatedEnginePower) {
         this.activatedEnginePower = activatedEnginePower;
     }
 
+    /**
+     * Returns the currently activated engine power of the ship.
+     *
+     * @return The activated engine power.
+     */
     public int getActivatedEnginePower() {
         return activatedEnginePower;
     }
@@ -805,7 +926,10 @@ public abstract class ShipBoard {
     }
 
     /**
-     * @return the {@link List} of {@link Optional} of {@link Component} of the components in the {@link ShipBoard}
+     * Returns a flat list of all {@link Optional} {@link Component} objects
+     * currently on the {@link ShipBoard}, including empty slots represented by {@link Optional#empty()}.
+     *
+     * @return A {@link List} of {@link Optional<Component>}.
      */
     public List<Optional<Component>> getComponents() {
         return Stream.of(shipComponents)
@@ -837,7 +961,10 @@ public abstract class ShipBoard {
     }
 
     /**
-     * @return a {@link List} of {@link Cordinate} for the valid spots of {@link DoubleDrill}
+     * Returns a list of {@link Cordinate} objects for all {@link DoubleDrill} components
+     * currently placed on the shipboard.
+     *
+     * @return A {@link List} of {@link Cordinate}s where Double Drills are located.
      */
     public List<Cordinate> getDoubleDrills() {
         List<Cordinate> drillCords = new ArrayList<>();
@@ -856,10 +983,11 @@ public abstract class ShipBoard {
     }
 
     /**
-     * check whether exists a {@link Shield} which can cover the given {@link Direction}
+     * Checks whether there exists a {@link Shield} component on the ship that can cover
+     * the specified {@link Direction}.
      *
-     * @param direction : the {@link Direction} to search
-     * @return whether a {@link Shield} exists
+     * @param direction The {@link Direction} (e.g., FRONT, LEFT) to check for shield coverage.
+     * @return {@code true} if a shield exists that covers the given direction, {@code false} otherwise.
      */
     public boolean coveredByShield(Direction direction) {
         Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
@@ -877,7 +1005,12 @@ public abstract class ShipBoard {
     }
 
     /**
-     * @return a {@link List} of {@link Cordinate} for the valid spots of {@link DoubleDrill}
+     * Returns a {@link List} of {@link Cordinate} objects for all {@link Drill} components
+     * (including {@link DoubleDrill}s) on the ship that are facing the given {@link Direction}.
+     * This is useful for identifying drills that can be used to mitigate threats from a specific direction.
+     *
+     * @param direction The {@link Direction} a drill must be facing to be included in the result.
+     * @return A {@link List} of {@link Cordinate}s where drills facing the specified direction are located.
      */
     public List<Cordinate> getDrills(Direction direction) {
         List<Cordinate> result = new ArrayList<>();
@@ -980,7 +1113,4 @@ public abstract class ShipBoard {
 
         return availableCord;
     }
-
 }
-
-

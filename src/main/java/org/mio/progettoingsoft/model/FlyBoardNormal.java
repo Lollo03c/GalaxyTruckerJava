@@ -3,24 +3,38 @@ package org.mio.progettoingsoft.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.*;
 import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Represents the normal mode game board (FlyBoard) in the game.
+ * This class extends {@link FlyBoard} and implements specific logic
+ * for the normal game mode, including the management of an hourglass,
+ * circuit creation, and loading of sealed adventure cards.
+ */
 public class FlyBoardNormal extends FlyBoard  {
+    private Hourglass hourglass;
+
+    /**
+     * Constructs a new FlyBoardNormal instance for a normal game mode.
+     * @param nicknames A {@link Set} of player nicknames participating in the game.
+     */
     public FlyBoardNormal(Set<String> nicknames){
         super(GameMode.NORMAL, nicknames);
     }
-    private Hourglass hourglass;
 
-
+    /**
+     * Converts an internal circuit index to a player position on the visual circuit.
+     * This mapping is specific to the normal game mode's visual representation.
+     * @param index The internal index in the circuit list.
+     * @return The corresponding visual position, or 0 if the index is incorrect.
+     */
     public static int indexToPosition(int index) {
         int i;
         switch(index){
@@ -36,6 +50,12 @@ public class FlyBoardNormal extends FlyBoard  {
         return i;
     }
 
+    /**
+     * Converts a player's position on the visual circuit to an internal circuit index.
+     * This mapping is specific to the normal game mode's visual representation.
+     * @param position The visual position on the circuit.
+     * @return The corresponding internal index, or -1 if the position is incorrect.
+     */
     public static int positionToIndex(int position){
         int i;
         switch(position){
@@ -51,19 +71,29 @@ public class FlyBoardNormal extends FlyBoard  {
         return i;
     }
 
-
+    /**
+     * Draws the game circuit using the {@link VisualFlyboardNormal} for the normal game mode.
+     */
     @Override
     public void drawCircuit(){
         VisualFlyboardNormal visual = new VisualFlyboardNormal(this);
         visual.drawCircuit();
     }
 
+    /**
+     * Draws the scoreboard using the {@link VisualFlyboardNormal} for the normal game mode.
+     */
     @Override
     public void drawScoreboard(){
         VisualFlyboardNormal visual = new VisualFlyboardNormal(this);
         visual.drawScoreboard();
     }
 
+    /**
+     * Creates and initializes the game circuit with 24 empty positions.
+     * @return A {@link List} of {@link Optional} Players representing the circuit,
+     * with each position initially empty.
+     */
     @Override
     protected List<Optional<Player>> createCircuite(){
         List<Optional<Player>> newCircuit = new ArrayList<>();
@@ -74,6 +104,11 @@ public class FlyBoardNormal extends FlyBoard  {
         return newCircuit;
     }
 
+    /**
+     * Starts or restarts the hourglass timer for the current game.
+     * If it's the first use, a new {@link Hourglass} instance is created.
+     * @param idGame The ID of the ongoing game to which this hourglass belongs.
+     */
     @Override
     public void startHourglass(int idGame) {
         if (firstUseHourglass){
@@ -86,6 +121,10 @@ public class FlyBoardNormal extends FlyBoard  {
         }
     }
 
+    /**
+     * Builds the "little decks" of adventure cards, distributing level 1 and level 2
+     * cards into three separate decks. This is specific to the normal game mode's card distribution.
+     */
     protected void buildLittleDecks(){
         List<Integer> copyDeck = new ArrayList<>(deck);
 
@@ -128,6 +167,12 @@ public class FlyBoardNormal extends FlyBoard  {
         hiddenDeck.add(levelTwoCards.get(8));
     }
 
+    /**
+     * Sets the "little decks" for the game. This method creates a deep copy
+     * of the provided decks to ensure immutability.
+     * @param decks A {@link List} of {@link List} of Integers, where each inner list
+     * represents a little deck of card IDs.
+     */
     @Override
     public void setLittleDecks(List<List<Integer>> decks){
         this.littleDecks = new ArrayList<>();
@@ -136,6 +181,10 @@ public class FlyBoardNormal extends FlyBoard  {
         }
     }
 
+    /**
+     * Returns a deep copy of the "little decks" currently in use.
+     * @return A {@link List} of {@link List} of Integers, representing the little decks.
+     */
     @Override
     public List<List<Integer>> getLittleDecks(){
         List<List<Integer>> decks = new ArrayList<>();
@@ -162,6 +211,13 @@ public class FlyBoardNormal extends FlyBoard  {
         Collections.shuffle(deck);
     }
 
+    /**
+     * Loads sealed adventure cards from a JSON resource file ("advCards.json").
+     * It parses the JSON and creates appropriate {@link SldAdvCard} objects
+     * based on their "type" field.
+     * @return A {@link Map} where the key is the card ID and the value is the
+     * corresponding {@link SldAdvCard} object.
+     */
     @Override
     protected Map<Integer, SldAdvCard> loadSldAdvCard() {
         List<SldAdvCard> loadedCards = new ArrayList<>();
@@ -236,6 +292,14 @@ public class FlyBoardNormal extends FlyBoard  {
     public void createDeckForAdventure(){
 
     }
+
+    /**
+     * Retrieves a {@link ShipBoardNormal} instance built according to the specified
+     * {@link HousingColor}. This method is synchronized to ensure thread-safe ship creation.
+     * @param color The {@link HousingColor} of the ship to build (RED, YELLOW, GREEN, or BLUE).
+     * @return The built {@link ShipBoardNormal} instance, or {@code null} if the color is not recognized.
+     */
+
 
     public ShipBoard getBuiltShip(HousingColor color){
         synchronized (this) {

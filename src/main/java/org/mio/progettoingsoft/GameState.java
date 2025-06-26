@@ -2,6 +2,12 @@ package org.mio.progettoingsoft;
 
 import java.io.Serializable;
 
+/**
+ * Enumerates the various states that the game can be in.
+ * These states control the flow of the game, from setup to gameplay,
+ * and define specific actions or UI presentations.
+ * The states are designed to manage the complexity of a turn-based game loop.
+ */
 public enum GameState implements Serializable {
     WAITING, START, NICKNAME, GAME_MODE, WAITING_PLAYERS, IDLE,
 

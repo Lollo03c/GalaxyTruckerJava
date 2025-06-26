@@ -7,15 +7,11 @@ import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.Planet;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.exceptions.BadParameterException;
-import org.mio.progettoingsoft.views.tui.VisualCard;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class AdventureCard {
-    protected Player playerState;
 
     private final int level;
     private final int id;
@@ -38,11 +34,6 @@ public abstract class AdventureCard {
     public int getLevel(){
         return level;
     }
-
-    /*public void drawCard(){
-        VisualCard visual = new VisualCard(this);
-        visual.drawCard();
-    }*/
 
     public int getId(){ return id; }
     public AdvCardType getType(){return type;}
@@ -90,18 +81,8 @@ public abstract class AdventureCard {
     public List<CombatLine> getLines() throws BadParameterException {
         throw new BadParameterException("La carta selezionata non contiene linee di combattimento: " + this.getType());
     }
+
     public void start(){}
 
-    public /*abstract*/ void applyEffect(String json) throws Exception{
-
-    }
-
-//    public void chooseNextPlayerState(){
-//        if (iterator.hasNext()){
-//            playerState = iterator.next();
-//        }
-//        else{
-//            flyBoard.drawAdventureCard();
-//        }
-//    }
+    public void applyEffect(String json) throws Exception{}
 }

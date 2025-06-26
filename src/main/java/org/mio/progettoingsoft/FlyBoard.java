@@ -38,11 +38,8 @@ import java.util.*;
  */
 
 public abstract class FlyBoard implements FlyBoardServer {
-    private String messageToSend;
-
     private final GameMode mode;
 
-    protected List<AdventureCard> selectionDeckPrivate;
     protected List<List<Integer>> littleDecks;
     protected List<Integer> hiddenDeck;
     private List<Integer> availableDecks = new ArrayList<>();

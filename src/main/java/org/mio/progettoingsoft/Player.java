@@ -1,19 +1,16 @@
 package org.mio.progettoingsoft;
 
-import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.HousingColor;
-import org.mio.progettoingsoft.exceptions.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.AddCreditsEvent;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.util.List;
-
+/**
+ * Represents a player in the game, managing their personal information,
+ * game currency (credits), ship board, and game status.
+ */
 public class Player {
-
     private final String nickname;
     private int credits;
     private HousingColor color;
@@ -24,7 +21,7 @@ public class Player {
     private boolean retired = false;
 
     /**
-     * create a new instance of {@link Player}, it is called by the constructor of {@link FlyBoard}
+     * Create a new instance of {@link Player}, it is called by the constructor of {@link FlyBoard}
      * @param nickname : {@link String} chosen by input from the player
      * @param color : {@link HousingColor} : the color assainged by the {@link FlyBoard}
      * @param mode {@link GameMode} the difficulty of the game the {@link Player} has been added
@@ -32,49 +29,78 @@ public class Player {
      */
     public Player(String nickname, HousingColor color, GameMode mode, FlyBoard flyboard) {
         this.flyBoard = flyboard;
-
         this.nickname = nickname;
         credits = 0;
         this.color = color;
-
         shipBoard = ShipBoard.createShipBoard(mode, color, flyboard);
-
         inHand = null;
         this.isRunning = false;
-
-//        view = new View(this);
     }
 
+    /**
+     * Sets the retirement status of the player.
+     *
+     * @param retired A boolean indicating whether the player is retired (true) or not (false).
+     */
     public void setRetired(boolean retired) {
         this.retired = retired;
     }
 
+    /**
+     * Returns the retirement status of the player.
+     *
+     * @return {@code true} if the player is retired, {@code false} otherwise.
+     */
     public boolean getRetired() {
         return this.retired;
     }
 
-
-    /** GETTER */
+    /**
+     * Returns the nickname of the player.
+     *
+     * @return The player's nickname as a {@code String}.
+     */
     public String getNickname() {
         return nickname;
     }
 
+    /**
+     * Returns the {@link ShipBoard} associated with this player.
+     * The ShipBoard represents the player's spaceship and its components.
+     *
+     * @return The player's {@link ShipBoard}.
+     */
     public ShipBoard getShipBoard() {
         return shipBoard;
     }
 
+    /**
+     * Returns the current number of credits the player possesses.
+     *
+     * @return The player's credits as an {@code Integer}.
+     */
     public Integer getCredits() {
         return credits;
     }
 
+    /**
+     * Returns the {@link HousingColor} associated with this player.
+     * This color might represent their starting housing or team color.
+     *
+     * @return The player's {@link HousingColor}.
+     */
     public HousingColor getColor() {
         return this.color;
     }
 
+    /**
+     * Sets the {@link HousingColor} for this player.
+     *
+     * @param color The {@link HousingColor} to set for the player.
+     */
     public void setHousingColor(HousingColor color){
         this.color = color;
     }
-
 
     /**
      * add the amount of credits passed as parameter

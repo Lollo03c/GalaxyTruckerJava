@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.mio.progettoingsoft.*;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.events.RemoveGuestEvent;
-import org.mio.progettoingsoft.model.events.SetStateEvent;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 
 import java.util.HashSet;
@@ -22,6 +21,12 @@ import java.util.Set;
  * All sealed cards are required to extend this class and are governed by a predefined set of states.
  */
 public final class SldEpidemic extends SldAdvCard {
+    /**
+     * Constructs a new {@code SldEpidemic} adventure card.
+     *
+     * @param id The unique identifier for this epidemic card.
+     * @param level The level of the epidemic, potentially indicating its severity or impact.
+     */
     public SldEpidemic(int id, int level) {
         super(id, level);
     }
@@ -35,6 +40,14 @@ public final class SldEpidemic extends SldAdvCard {
         return "Epidemic";
     }
 
+    /**
+     * Loads an {@code SldEpidemic} object from a JSON node.
+     * This static method parses the provided {@link JsonNode} to extract the necessary
+     * attributes (id and level) and constructs a new {@code SldEpidemic} instance.
+     *
+     * @param node The {@link JsonNode} containing the data for the epidemic card.
+     * @return A new {@code SldEpidemic} instance populated with data from the JSON node.
+     */
     public static SldEpidemic loadEpidemic(JsonNode node) {
         int id = node.path("id").asInt();
         int level = node.path("level").asInt();
@@ -93,5 +106,4 @@ public final class SldEpidemic extends SldAdvCard {
     public void setNextPlayer(){
         setState(CardState.FINALIZED);
     }
-
 }
