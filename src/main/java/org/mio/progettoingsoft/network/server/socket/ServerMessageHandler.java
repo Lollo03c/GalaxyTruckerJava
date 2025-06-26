@@ -9,16 +9,35 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Handles incoming messages received by the server. This class acts as a consumer
+ * of a {@link BlockingQueue} of {@link Message} objects, processing each message
+ * by delegating its handling to the {@link ServerController}.
+ * It uses an {@link ExecutorService} to process messages asynchronously,
+ * allowing the server to handle multiple client requests concurrently.
+ */
 public class ServerMessageHandler implements Runnable {
     private final BlockingQueue<Message> receivedMessages;
     private final ServerController serverController;
     private ExecutorService executors = Executors.newFixedThreadPool(4);
 
+    /**
+     * Constructs a new {@code ServerMessageHandler}.
+     * @param serverController The {@link ServerController} instance to which message processing will be delegated.
+     * @param receivedMessages The {@link BlockingQueue} from which messages will be consumed.
+     */
     public ServerMessageHandler(ServerController serverController, BlockingQueue<Message> receivedMessages){
         this.serverController = serverController;
         this.receivedMessages = receivedMessages;
     }
 
+    /**
+     * The main execution loop for the message handler.
+     * This method continuously takes messages from the {@code receivedMessages} queue
+     * and submits them to the {@code executors} for asynchronous processing by the {@link ServerController}.
+     * If the thread is interrupted while waiting for a message, it logs the interruption
+     * and attempts to gracefully shut down the executor service.
+     */
     @Override
     public void run(){
         while (true){
@@ -55,7 +74,6 @@ public class ServerMessageHandler implements Runnable {
                                 } else {
                                     serverController.removeComponent(componentMessage.getGameId(), message.getNickname(), componentMessage.getCordinate());
                                 }
-
                             }
 
                             case DISCARD -> {
@@ -77,15 +95,12 @@ public class ServerMessageHandler implements Runnable {
                             case BOOK -> serverController.bookDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
                             case UNBOOK -> serverController.freeDeck(deckMessage.getGameId(), deckMessage.getNickname(), deckMessage.getDeckNumber());
                         }
-
                     }
 
                     case BuildShipMessage buildShipMessage -> {
                         serverController.takeBuild(buildShipMessage.getGameId(), buildShipMessage.getNickname());
                     }
-//                    case StardustMessage stardustMessage -> {
-//                        serverController.applyStardust(stardustMessage.getGameId(), stardustMessage.getCard());
-//                    }
+
                     case EndBuildMessage endBuildMessage -> {
                         serverController.endBuild(endBuildMessage.getGameId(), endBuildMessage.getNickname());
                     }
@@ -136,17 +151,9 @@ public class ServerMessageHandler implements Runnable {
                         serverController.landOnPlanet(landOnPlanetMessage.getGameId(), landOnPlanetMessage.getNickname(), landOnPlanetMessage.getChoice());
                     }
 
-//                    case ActivateSlaversMessage activateSlaversMessage -> {
-//                        serverController.activateSlaver(activateSlaversMessage.getGameId(), activateSlaversMessage.getNickname(), activateSlaversMessage.getActivatedDrills(),activateSlaversMessage.getWantsToActivate());
-//                    }
-
                     case RollDiceMessage rollDiceMessage -> {
                         serverController.setRollResult(rollDiceMessage.getGameId(), rollDiceMessage.getNickname(), rollDiceMessage.getFirst(), rollDiceMessage.getSecond());
                     }
-
-//                    case BatteryMessage batteryMessage -> {
-//                        serverController.removeBattery(batteryMessage.getGameId(), batteryMessage.getNickname(), batteryMessage.getQuantity());
-//                    }
 
                     case AdvanceMeteorMessage advanceMeteorMessage -> {
                         serverController.advanceMeteor(advanceMeteorMessage.getGameId(), advanceMeteorMessage.getNickname(), advanceMeteorMessage.isDestroyed(), advanceMeteorMessage.isEnergy());
@@ -166,8 +173,6 @@ public class ServerMessageHandler implements Runnable {
                     default -> {
                         Logger.error("Message not recognized on server: " + message);
                     }
-
-
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

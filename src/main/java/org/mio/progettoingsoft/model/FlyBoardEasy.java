@@ -200,6 +200,7 @@ public class FlyBoardEasy extends FlyBoard {
      * @return The {@link ShipBoard} instance associated with the given color, or {@code null} if not found or supported.
      */
     @Override
+    @Deprecated
     public ShipBoard getBuiltShip(HousingColor color){
         return null;
     }

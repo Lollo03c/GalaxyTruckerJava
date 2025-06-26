@@ -89,9 +89,9 @@ public final class SldOpenSpace extends SldAdvCard {
      */
     public void applyEffect(Player player, int numDoubleEngines) {
         if (!flyBoard.getScoreBoard().contains(player)) {
-//            setNextPlayer();
-//            return;
-            throw new IncorrectFlyBoardException("player not found");
+            setNextPlayer();
+            return;
+//            throw new IncorrectFlyBoardException("player not found");
         }
 
         if (player.equals(actualPlayer)) {

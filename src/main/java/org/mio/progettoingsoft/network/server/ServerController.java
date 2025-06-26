@@ -23,12 +23,24 @@ import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.*;
 
+/**
+ * The {@code ServerController} acts as the central point for handling all game-related
+ * requests received from clients. It is a Singleton to ensure a single point of control
+ * for managing game instances and client interactions on the server side.
+ * It delegates specific game logic operations to the {@link GameManager} and
+ * individual {@link GameServer} instances.
+ */
 public class ServerController {
     /**
      * SINGLETON IMPLEMENTATION
      */
     private static ServerController instance;
 
+    /**
+     * Returns the singleton instance of the {@code ServerController}.
+     * If the instance does not exist, it creates one.
+     * @return The single instance of {@code ServerController}.
+     */
     public static ServerController getInstance() {
         if (instance == null) {
             instance = new ServerController();
@@ -36,22 +48,51 @@ public class ServerController {
         return instance;
     }
 
+    /**
+     * Adds a new client's {@link VirtualClient} proxy to the {@link GameManager} for
+     * initial acceptance and potential game assignment.
+     * @param client The {@link VirtualClient} object representing the connected client.
+     * @return A temporary ID assigned to the client.
+     */
     public int addClientToAccept(VirtualClient client) {
         GameManager gameManager = GameManager.getInstance();
         return gameManager.addClientToAccept(client);
     }
 
+    /**
+     * Handles the nickname submitted by a client. It delegates to the {@link GameManager}
+     * to associate the nickname with the client's temporary ID and potentially add them to a game.
+     * @param idClient The temporary ID assigned to the client during connection.
+     * @param nickname The nickname chosen by the client.
+     */
     public void handleNickname(int idClient, String nickname) {
         GameManager gameManager = GameManager.getInstance();
         gameManager.addPlayerToGame(idClient, nickname);
     }
 
+    /**
+     * Handles the game setup information provided by a client (typically the host).
+     * It retrieves the waiting game from the {@link GameManager} and configures it
+     * with the specified game mode and number of players.
+     * @param gameInfo The {@link GameInfo} containing the game mode and number of players.
+     * @param nickname The nickname of the player providing the game information.
+     */
     public void handleGameInfo(GameInfo gameInfo, String nickname) {
         GameManager gameManager = GameManager.getInstance();
         GameServer game = gameManager.getWaitingGame();
         game.setupGame(gameInfo.mode(), gameInfo.nPlayers());
     }
 
+    /**
+     * Handles a request from a client to add a component to their ship board.
+     * It updates the player's {@link ShipBoard} with the new component.
+     * It broadcasts this update to all other clients in the same game, so their views can be synchronized.
+     * @param idGame The ID of the game to which the component is being added.
+     * @param nickname The nickname of the player adding the component.
+     * @param idComp The ID of the component being added.
+     * @param cordinate The {@link Cordinate} on the ship board where the component is placed.
+     * @param rotations The number of rotations applied to the component.
+     */
     public void addComponent(int idGame, String nickname, int idComp, Cordinate cordinate, int rotations) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
 
@@ -75,6 +116,13 @@ public class ServerController {
         }
     }
 
+    /**
+     * Handles a request from a client to get a covered component from the FlyBoard.
+     * It removes a component from the covered components stack on the {@link FlyBoard}
+     * and sends it to the requesting client, then updates the client's state.
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player requesting the component.
+     */
     public void getCoveredComponent(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -89,6 +137,13 @@ public class ServerController {
         }
     }
 
+    /**
+     * Handles a request from a client to discard a component.
+     * The discarded component is added back to the uncovered components pool on the {@link FlyBoard}.
+     * This update is then broadcast to all clients in the game to synchronize their views.
+     * @param idGame The ID of the game.
+     * @param idComponent The ID of the component to discard.
+     */
     public void discardComponent(int idGame, int idComponent) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -103,26 +158,17 @@ public class ServerController {
         }
     }
 
-//    public void applyStardust(int idGame, SldStardust card) {
-//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-//        FlyBoard flyboard = game.getFlyboard();
-//        card.applyEffect(flyboard);
-//        /*List<Player> reversedScoreboard = flyboard.getScoreBoard().reversed();
-//        for (Player p : reversedScoreboard){
-//            int exposedConnectors = p.getShipBoard().getExposedConnectors();
-//            flyboard.moveDays(p, -exposedConnectors);
-//        }*/
-//
-//        //SldAdvCard nextCard = flyboard.drawSldAdvCard();
-//        //String type = nextCard.getCardName().toUpperCase();
-//        //GameState next = GameState.stringToGameState(type);
-//
-//        //TODO settare il Gamestate allo stato della carta pescata
-//        //a chi devo settarlo il nuovo stato? A tutti o basta settarlo a uno solo ?
-//        //game.getClients().get(nickname).setState(GameState.COMPONENT_MENU);
-//
-//    }
-
+    /**
+     * Handles a request from a client to draw an uncovered component.
+     * If the component exists in the uncovered components pool, it is removed,
+     * broadcasted as removed to all other clients, and then set in the requesting
+     * client's hand, and their state is updated. If the component is not found,
+     * the client's state is set to {@link GameState#UNABLE_UNCOVERED_COMPONENT}.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player requesting to draw the component.
+     * @param idComponent The ID of the component to draw.
+     */
     public void drawUncovered(int idGame, String nickname, Integer idComponent) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -153,6 +199,19 @@ public class ServerController {
         }
     }
 
+    /**
+     * Handles a request from a client to book a specific deck of cards.
+     * It attempts to remove the requested deck from the list of available decks.
+     * If successful, it broadcasts the removal to all clients, sets the deck in the
+     * requesting client's hand, and updates their state. If the deck is not available,
+     * the client's state is set to {@link GameState#UNABLE_DECK}.
+     * Synchronization on {@code flyBoard.getAvailableDecks()} ensures thread safety
+     * when modifying the list of available decks.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player attempting to book the deck.
+     * @param deckNumber The number of the deck to book.
+     */
     public void bookDeck(int idGame, String nickname, Integer deckNumber) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -189,6 +248,16 @@ public class ServerController {
         }
     }
 
+    /**
+     * Frees a previously booked deck, making it available again.
+     * The deck is added back to the pool of available decks on the {@link FlyBoard}.
+     * This update is then broadcast to all clients in the game to synchronize their views.
+     * The requesting client's state is updated to {@link GameState#BUILDING_SHIP}.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player freeing the deck.
+     * @param deckNumber The number of the deck to free.
+     */
     public void freeDeck(int idGame, String nickname, Integer deckNumber) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -214,6 +283,16 @@ public class ServerController {
         }
     }
 
+    /**
+     * Handles a player's request to "take build," meaning they claim a constructed ship.
+     * The player is associated with a constructed ship on the {@link FlyBoard}.
+     * This action is then broadcast to all clients to update their game state.
+     * If the ship cannot be taken due to game rules (e.g., no available ship),
+     * the player's state is updated to reflect an invalid choice.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player taking the build.
+     */
     public void takeBuild(int idGame, String nickname) {
 
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
@@ -243,6 +322,18 @@ public class ServerController {
 
     }
 
+    /**
+     * Handles the completion of the ship building phase and initiates validation.
+     * After a player indicates they've finished building, their ship's validity is checked.
+     * If the ship is invalid, the player's state is updated to prompt re-validation.
+     * If valid, guests are added to the ship. If all players have validated their ships
+     * (and no adventure card has been played yet), the game proceeds to the "add crew" phase.
+     * If an adventure card was played, the logic branches based on the card type.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player who ended validation.
+     * @param usedBattery A boolean indicating whether the player used a battery during validation (relevant for some card effects).
+     */
     public void endValidation(int idGame, String nickname, boolean usedBattery) {
         Logger.info(nickname + " ended ship building, has removed incorrect components and now needs to validate his ship.");
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
@@ -296,6 +387,14 @@ public class ServerController {
         }
     }
 
+    /**
+     * Retrieves the available starting positions for a player in a specific game and sends them to the client.
+     * Sets the client's state to {@code CHOOSE_POSITION}.
+     * If an error occurs, the game crash is handled.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player.
+     */
     public void getStartingPosition(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -309,6 +408,16 @@ public class ServerController {
         }
     }
 
+    /**
+     * Allows a player to choose a starting position on the game board.
+     * Adds the player to the circuit and broadcasts an {@code AddPlayerCircuit} event.
+     * If the chosen place is invalid, the client is informed and their state is set to {@code WRONG_POSITION}.
+     * If the board is ready for the adventure, all players' states are set to {@code VALIDATION}.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player.
+     * @param place The chosen starting position.
+     */
     public void choosePlace(int idGame, String nickname, int place) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -349,6 +458,15 @@ public class ServerController {
 
     }
 
+    /**
+     * Handles the end of the building phase for a player in a game.
+     * If the game is not in testing mode, it sends the available starting positions to the client
+     * and sets their state to {@code CHOOSE_POSITION}.
+     * If an error occurs, the game crash is handled.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player.
+     */
     public void endBuild(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -366,6 +484,19 @@ public class ServerController {
 
     }
 
+    /**
+     * Allows the leader player to draw a SldAdvCard from the deck.
+     * If the current player is not the leader, a {@code NotYourTurnException} is thrown.
+     * If the drawn card is a special card (ID 16 or 36) and there's only one player,
+     * it repeatedly draws until a different card is found or the deck is empty.
+     * If the deck is empty, the game ends.
+     * The drawn card is then set as the played card, and relevant events are broadcast to all players.
+     * The card's effect is initialized and applied, potentially setting the next meteor or player.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player drawing the card.
+     * @throws NotYourTurnException If the player attempting to draw is not the leader.
+     */
     public void drawCard(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -419,7 +550,14 @@ public class ServerController {
 
     }
 
-    public void setEndGame(int idGame) {
+    /**
+     * Ends the game, calculates final scores, and notifies all clients of the game's end.
+     * This includes assigning credits for positions, beautiful ships, and remaining goods,
+     * as well as applying penalties for discarded components.
+     *
+     * @param idGame The ID of the game to end.
+     */
+    public void setEndGame(int idGame){
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         flyBoard.assignCreditsForPositions();
@@ -433,6 +571,16 @@ public class ServerController {
         }
     }
 
+    /**
+     * Allows the leader player to draw a specific SldAdvCard by its ID for testing purposes.
+     * If the current player is not the leader, a {@code NotYourTurnException} is thrown.
+     * The drawn card is then set as the played card.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player drawing the card.
+     * @param idCard The ID of the card to draw.
+     * @throws NotYourTurnException If the player attempting to draw is not the leader.
+     */
     public void drawCardTest(int idGame, String nickname, int idCard) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -444,10 +592,20 @@ public class ServerController {
         SldAdvCard card = flyBoard.getSldAdvCardByID(idCard);
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
-
-
     }
 
+    /**
+     * Activates the double engine effect for a player based on the currently played SldAdvCard.
+     * This method handles the specific logic for "SldOpenSpace" and "SldCombatZone" cards.
+     * For "SldOpenSpace", it attempts to apply the card's effect. If an exception occurs during application,
+     * a generic error message is sent to the client.
+     * For "SldCombatZone", it records the player's engine power and sets the next player for engine activation.
+     * Logs an error if the played card is not valid for this effect.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player activating the double engine.
+     * @param number The value associated with the double engine activation (e.g., engine power).
+     */
     public void activateDoubleEngine(int idGame, String nickname, int number) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -483,6 +641,18 @@ public class ServerController {
         }
     }
 
+    /**
+     * Manages a player's decision to leave or stay in the current flight phase of a game.
+     * If the player chooses to leave, they are removed from the scoreboard, a {@code LeavePlayerEvent} is broadcast,
+     * and if no players remain, the game ends.
+     * Regardless of their choice to leave or stay, the player is removed from the list of waiting players.
+     * If all waiting players have made their choice, the game transitions to the card drawing phase,
+     * with the leader being notified that they can draw a card, and other players being notified to expect a card draw.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player.
+     * @param leave A boolean indicating whether the player chooses to leave ({@code true}) or stay ({@code false}).
+     */
     public void leaveFlight(int idGame, String nickname, boolean leave) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         Logger.info(nickname + " is leaving " + leave);
@@ -531,6 +701,15 @@ public class ServerController {
         }
     }
 
+    /**
+     * Skips the effect of the currently played SldAdvCard for a specific player if it's their turn and the card matches.
+     * The method handles different card types by invoking their respective "skip effect" or "set next player/planet" logic.
+     * If the card is not implemented for skipping effects, an error is logged.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player attempting to skip the effect.
+     * @param idCard The ID of the card whose effect is to be skipped.
+     */
     public void skipEffect(int idGame, String nickname, int idCard) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -567,6 +746,14 @@ public class ServerController {
         }
     }
 
+    /**
+     * Applies the effect of the currently played SldAdvCard for a specific player.
+     * This method handles the application of effects for "SldAbandonedStation" and "SldSlavers" cards.
+     * If the card's effect is not applicable through this method, an error is logged.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player for whom the effect is being applied.
+     */
     public void applyEffect(int idGame, String nickname) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
@@ -582,6 +769,15 @@ public class ServerController {
         }
     }
 
+    /**
+     * Removes crew members from the game board based on the effect of the currently played SldAdvCard.
+     * This method handles crew removal for "SldAbandonedShip," "SldSlavers," and "SldCombatZone" cards.
+     * If the card's effect does not involve crew removal, an error is logged.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player whose crew members are being removed.
+     * @param cordToRemove A list of coordinates indicating the positions of the crew members to remove.
+     */
     public void removeCrew(int idGame, String nickname, List<Cordinate> cordToRemove) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -605,6 +801,18 @@ public class ServerController {
         }
     }
 
+    /**
+     * Adds a good of a specific type to a component on the game board.
+     * This method also broadcasts events to update all clients about the added good,
+     * removes the good from pending status for the player, and changes the player's card state.
+     * If the good cannot be added to the specified component due to an {@code IncorrectShipBoardException},
+     * an error message is sent to the client, and game crash handling is initiated if further errors occur.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player adding the good.
+     * @param idComp The ID of the component to which the good is being added.
+     * @param type The type of good to add.
+     */
     public void addGood(int idGame, String nickname, int idComp, GoodType type) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         try {
@@ -627,10 +835,18 @@ public class ServerController {
                 handleGameCrash(ex, nickname, idGame);
             }
         }
-
-
     }
 
+    /**
+     * Removes a good of a specific type from a component on the game board.
+     * This method broadcasts events to update all clients about the removed good,
+     * adds the good back to pending status for the player, and changes the player's card state.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player removing the good.
+     * @param idComp The ID of the component from which the good is being removed.
+     * @param type The type of good to remove.
+     */
     public void removeGood(int idGame, String nickname, int idComp, GoodType type) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         game.getFlyboard().getComponentById(idComp).removeGood(type);
@@ -643,9 +859,18 @@ public class ServerController {
 
         Event changeState = new SetCardStateEvent(nickname, CardState.GOODS_PLACEMENT);
         game.addEvent(changeState);
-
     }
 
+    /**
+     * Handles a player's action of landing on a planet during a "SldPlanets" card effect.
+     * Logs the player's choice and updates all clients about the player's new position.
+     * If all players have landed or all planets have been landed on, the card's effect is applied.
+     * Otherwise, the card's effect moves to the next player.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player landing on a planet.
+     * @param choice The chosen planet number to land on, or -1 if no planet is chosen.
+     */
     public void landOnPlanet(int idGame, String nickname, int choice) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         Player player = game.getFlyboard().getPlayerByUsername(nickname);
@@ -684,6 +909,16 @@ public class ServerController {
 
     }
 
+    /**
+     * Activates the double drills effect for a player based on the currently played SldAdvCard.
+     * This method handles the specific logic for "SldSmugglers," "SldPirates," "SldSlavers," and "SldCombatZone" cards,
+     * applying their respective effects related to drill coordinates.
+     * Logs an error if the played card is not valid for this effect.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player activating the double drills.
+     * @param drillCordinates A list of coordinates representing the drill positions.
+     */
     public void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -736,6 +971,18 @@ public class ServerController {
 //        }
 //    }
 
+    /**
+     * Sets the result of a dice roll and applies its effect based on the currently played SldAdvCard.
+     * This method handles the logic for "SldMeteorSwarm," "SldPirates," and "SldCombatZone" cards.
+     * For "SldMeteorSwarm," it calculates the hit value, applies it to players, and determines the next meteor.
+     * For "SldPirates" and "SldCombatZone," it calculates cannon hit events and broadcasts them to relevant players.
+     * Logs an error if no effect is defined for the given card for a roll result.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player who rolled the dice.
+     * @param first The result of the first die.
+     * @param second The result of the second die.
+     */
     public void setRollResult(int idGame, String nickname, int first, int second) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
@@ -806,6 +1053,16 @@ public class ServerController {
 //        }
 //    }
 
+    /**
+     * Advances the state of a meteor effect on the game board, typically in response to a player's action (e.g., repairing damage).
+     * This method is specifically designed to work with {@code SldMeteorSwarm} cards.
+     * Logs an error if the played card is not a {@code SldMeteorSwarm}.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player interacting with the meteor.
+     * @param destroyed A boolean indicating if a component was destroyed.
+     * @param energy A boolean indicating if energy was used.
+     */
     public void advanceMeteor(int idGame, String nickname, boolean destroyed, boolean energy) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
@@ -819,6 +1076,16 @@ public class ServerController {
         }
     }
 
+    /**
+     * Advances the state of a cannon effect on the game board, typically in response to a player's action (e.g., repairing damage).
+     * This method is specifically designed to work with {@code SldPirates} and {@code SldCombatZone} cards.
+     * Logs an error if the played card is not a {@code SldPirates} or {@code SldCombatZone}.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player interacting with the cannon.
+     * @param destroyed A boolean indicating if a component was destroyed.
+     * @param energy A boolean indicating if energy was used.
+     */
     public void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         SldAdvCard card = game.getFlyboard().getPlayedCard();
@@ -836,6 +1103,13 @@ public class ServerController {
         }
     }
 
+    /**
+     * Starts the hourglass timer for a game and notifies all clients that the hourglass has started.
+     * This typically indicates a timed phase of the game has begun.
+     * If a client crashes during notification, the game crash is handled.
+     *
+     * @param idGame The ID of the game.
+     */
     public void startHourglass(int idGame) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard fly = game.getFlyboard();
@@ -849,6 +1123,18 @@ public class ServerController {
         }
     }
 
+    /**
+     * Removes a component from a player's ship board in a game.
+     * If no card is currently played, the removal is directly broadcast to all other clients.
+     * If a card is played, a {@code RemoveComponentEvent} is added to the game's event queue.
+     * Throws an {@code IncorrectFlyBoardException} if the provided nickname does not correspond to a player in the game.
+     * If a client crashes during component removal notification, the game crash is handled.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player whose component is being removed.
+     * @param cord The coordinates of the component to remove.
+     * @throws IncorrectFlyBoardException if the nickname does not belong to a player in the game.
+     */
     public void removeComponent(int idGame, String nickname, Cordinate cord) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -880,6 +1166,16 @@ public class ServerController {
         }
     }
 
+    /**
+     * Removes a component from a player's ship board in a game and broadcasts this removal to all clients.
+     * Throws an {@code IncorrectFlyBoardException} if the provided nickname does not correspond to a player in the game.
+     * If a client crashes during component removal notification, the game crash is handled.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player whose component is being removed.
+     * @param cord The coordinates of the component to remove.
+     * @throws IncorrectFlyBoardException if the nickname does not belong to a player in the game.
+     */
     public void removeComponentToAll(int idGame, String nickname, Cordinate cord) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
@@ -903,7 +1199,21 @@ public class ServerController {
         }
     }
 
+    /**
+     * Adds crew members to a player's ship board in a game.
+     * It validates if the crew can be added to the specified components and if the total number of certain guest types is valid.
+     * If the addition is valid, the crew is added to the components and {@code AddCrewEvent}s are broadcast.
+     * If invalid, the player's state is reset to {@code ADD_CREW} to allow them to re-attempt.
+     * After processing, the player is removed from the list of players needing to add crew.
+     * If all players have added their crew, the game transitions to the card drawing phase,
+     * with the leader allowed to draw a card and others waiting for a card draw.
+     *
+     * @param idGame The ID of the game.
+     * @param nickname The nickname of the player adding crew.
+     * @param addedCrew A map where keys are coordinates and values are lists of {@code GuestType} to add at those coordinates.
+     */
     public void addCrew(int idGame, String nickname, Map<Cordinate, List<GuestType>> addedCrew) {
+        System.out.println(nickname + " " + addedCrew);
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
 
@@ -924,9 +1234,6 @@ public class ServerController {
                     valid = false;
 
                 flatInserted.add(type);
-
-                Event event = new AddCrewEvent(nickname, cord, type);
-                game.addEvent(event);
             }
         }
 
@@ -974,6 +1281,16 @@ public class ServerController {
         }
     }
 
+    /**
+     * Handles a game crash scenario.
+     * Logs the crash details, broadcasts a {@code CrashEvent} to all players in the affected game,
+     * and then removes the ongoing game from the game manager.
+     * If the game has already been removed, a warning is logged.
+     *
+     * @param e The exception that caused the crash.
+     * @param nickname The nickname of the client involved in the crash.
+     * @param idGame The ID of the game where the crash occurred.
+     */
     public void handleGameCrash(Exception e, String nickname, int idGame) {
         Logger.error("Client " + nickname + "in game #" + idGame + " crashed with exception " + e);
 
@@ -990,4 +1307,3 @@ public class ServerController {
         GameManager.getInstance().removeOnGoingGame(idGame);
     }
 }
-

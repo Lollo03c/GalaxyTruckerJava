@@ -6,7 +6,6 @@ import org.mio.progettoingsoft.GameState;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
-import org.mio.progettoingsoft.components.Housing;
 import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
@@ -17,7 +16,6 @@ import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.VirtualServer;
 import org.mio.progettoingsoft.network.server.rmi.VirtualServerRmi;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
-import org.mio.progettoingsoft.utils.Logger;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -35,6 +33,11 @@ public class RmiClient extends UnicastRemoteObject implements VirtualClient, Cli
     private final ClientController controller;
     private final ConnectionInfo connectionInfo;
 
+    /**
+     * Implements the RMI client functionalities, extending {@link UnicastRemoteObject}
+     * and implementing {@link VirtualClient} and {@link Client}. This class handles
+     * the connection to the RMI server and processes callbacks from the server.
+     */
     public RmiClient(ConnectionInfo connectionInfo) throws RemoteException {
         super();
         this.controller = ClientController.getInstance();

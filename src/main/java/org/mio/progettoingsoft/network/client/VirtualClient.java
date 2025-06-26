@@ -24,19 +24,8 @@ import java.util.Map;
  * to send updates or requests to the client during the game.
  * </p>
  *
- * <p>Each implementation of this interface should handle the logic required to update
- * the client UI or internal state accordingly.</p>
- *
  * <p>This interface abstracts the communication channel (RMI or Socket) and allows the
  * server to interact with clients in a uniform way.</p>
- *
- * <p>
- * Typical implementations of this interface are:
- * <ul>
- *  <li>{@code ClientRmi} – for clients connected via Java RMI</li>
- *  <li>{@code ClientSocket} – for clients connected via TCP Sockets</li>
- * </ul>
- * </p>
  */
 public interface VirtualClient extends Remote {
 

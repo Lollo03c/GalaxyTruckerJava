@@ -5,10 +5,12 @@ import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.IPValidator;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
+/**
+ * The main class for launching the server application of Galaxy Truckers.
+ * This class initializes and starts the server, handling the IP address configuration.
+ */
 public class ServerMain {
     public static void main(String[] args) throws RemoteException {
         System.out.println("[Galaxy Truckers | Server]\nServer starting...");
