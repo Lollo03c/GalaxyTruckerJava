@@ -17,6 +17,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Implements the Socket client functionalities, acting as a {@link Client}
+ * to connect to the game server via TCP sockets. It manages the socket connection,
+ * sends messages to the server, and receives updates from it.
+ */
 public class SocketClient implements Client {
     private Socket socket;
     private ObjectOutputStream out;
@@ -24,12 +29,15 @@ public class SocketClient implements Client {
     private SocketServerHandler serverHandler;
     private final ClientController controller;
     private final ConnectionInfo connectionInfo;
-
     private final BlockingQueue<Message> receivedMessages = new LinkedBlockingQueue<>();
-
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public SocketClient(ConnectionInfo connectionInfo) throws RemoteException {
+    /**
+     * Constructs a new {@code SocketClient}.
+     * Initializes the {@link ClientController} and stores the connection information.
+     * @param connectionInfo The {@link ConnectionInfo} object containing the server's network details.
+     */
+    public SocketClient(ConnectionInfo connectionInfo) {
         controller = ClientController.getInstance();
         this.connectionInfo = connectionInfo;
     }
@@ -63,9 +71,8 @@ public class SocketClient implements Client {
     }
 
     /**
-     * method executed by a different thread to handle messages
+     * Method executed by a different thread to handle messages
      */
-
     private void handleMessage() {
         while (true) {
             try {

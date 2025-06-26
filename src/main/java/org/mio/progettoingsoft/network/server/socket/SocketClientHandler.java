@@ -4,7 +4,6 @@ import org.mio.progettoingsoft.Cordinate;
 import org.mio.progettoingsoft.Direction;
 import org.mio.progettoingsoft.GameManager;
 import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.advCards.Meteor;
 import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
@@ -12,7 +11,6 @@ import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.enums.MeteorType;
-import org.mio.progettoingsoft.model.events.CrashEvent;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.utils.Logger;
@@ -25,6 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * Handles communication with a single client connected via a Socket.
+ * This class acts as both a {@link VirtualClient} (allowing the server to send messages to the client)
+ * and a {@link Runnable} (for continuous message reception from the client).
+ */
 public class SocketClientHandler implements VirtualClient, Runnable {
     private final Socket clientSocket;
     private final BlockingQueue<Message> receivedMessages;
@@ -32,6 +35,13 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
+    /**
+     * Constructs a new SocketClientHandler.
+     * Initializes the socket, message queue, and sets up input/output streams for object communication.
+     * @param socket The client's {@link Socket} connection.
+     * @param receivedMessages The {@link BlockingQueue} where incoming messages from this client will be put.
+     * @throws IOException If an I/O error occurs when creating the input/output streams.
+     */
     public SocketClientHandler(Socket socket, BlockingQueue<Message> receivedMessages) throws IOException {
         this.clientSocket = socket;
         this.receivedMessages = receivedMessages;
@@ -39,6 +49,11 @@ public class SocketClientHandler implements VirtualClient, Runnable {
         in = new ObjectInputStream(clientSocket.getInputStream());
     }
 
+    /**
+     * The main execution loop for handling messages from a client.
+     * If an {@link IOException} or {@link ClassNotFoundException} occurs during message reading,
+     * it logs a "Client crashed" error and breaks the loop, effectively terminating the handler for this client.
+     */
     @Override
     public void run(){
         try{
@@ -71,7 +86,6 @@ public class SocketClientHandler implements VirtualClient, Runnable {
     /**
      * Metodi derivati da VirtualClient, ovvero i metodi che vengono chiamati dal server
      */
-
     @Override
     public void ping(String msg) throws IOException {
 

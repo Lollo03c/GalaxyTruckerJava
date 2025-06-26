@@ -13,6 +13,13 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * {@code SocketServerHandler} acts as the client's proxy for communicating with the server
+ * via Sockets. It implements the {@link VirtualServerSocket} interface, allowing the client
+ * to invoke "server-side" methods (which are actually sent as messages over the socket)
+ * and providing a concrete way for the client's {@link org.mio.progettoingsoft.network.client.ClientController}
+ * to interact with the game logic on the server.
+ */
 public class SocketServerHandler implements VirtualServerSocket {
     private final ObjectOutputStream out;
     private final ObjectInputStream in;

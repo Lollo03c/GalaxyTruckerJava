@@ -1,10 +1,8 @@
 package org.mio.progettoingsoft.network.server;
 
 import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
-import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 
 import java.rmi.Remote;
@@ -12,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Interfaccia che definisce i metodi del server che devono essere resi accessibili ai client per poter interagire con
- * la logica del server (controller).
+ * Interface defining the server methods that must be made accessible to clients
+ * to allow interaction with the server's game logic (controller).
+ * All methods throw {@link Exception} to handle potential communication or logic issues.
  */
 public interface VirtualServer extends Remote {
     void handleNickname(int tempIdClient, String nickname) throws Exception;
@@ -29,7 +28,6 @@ public interface VirtualServer extends Remote {
     void endBuild(int idGame, String nickname) throws Exception;
     void choosePlace(int idGame, String nickname, int place) throws Exception;
     void endValidation(int idGame, String nickname, boolean usedBattery) throws Exception;
-//    void applyStardust(int idGame, String nickname, SldStardust card) throws Exception;
 
     void activateDoubleEngine(int idGame, String nickname, int number) throws Exception;
 
@@ -43,10 +41,8 @@ public interface VirtualServer extends Remote {
     void removeGood(int idGame, String nickaname, int compId, GoodType type) throws Exception;
     void activateDoubleDrills(int idGame, String nickname, List<Cordinate> drillCordinates) throws Exception;
     void landOnPlanet(int idGame, String nickname, int choice)throws Exception;
-//    void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate) throws Exception;
 
     void setRollResult(int idGame, String nickname, int first, int second) throws Exception;
-//    void removeBattery(int idGame, String nickname, int quantity) throws Exception;
     void advanceMeteor(int idGame, String nickname, boolean destroyed, boolean energy) throws Exception;
     void advanceCannon(int idGame, String nickname, boolean destroyed, boolean energy) throws Exception;
     void removeComponent(int idGame, String nickname, Cordinate cordinate, boolean toAllClient) throws Exception;

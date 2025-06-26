@@ -25,6 +25,10 @@ import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents the client-side controller in the game, managing interactions between the client and the server.
+ * This class follows the Singleton design pattern to ensure only one instance exists.
+ */
 public class ClientController {
     private static ClientController instance;
     private Client client;
@@ -36,23 +40,47 @@ public class ClientController {
     private boolean finishedBuilding = false;
     private Boolean finishedLastHourglass = false;
 
+    /**
+     * Returns whether the client has finished the building phase.
+     *
+     * @return true if the building phase is finished, false otherwise.
+     */
     public boolean getFinishedBuilding() {
         return finishedBuilding;
     }
 
+    /**
+     * Returns the current value of the hourglass counter.
+     *
+     * @return The current hourglass counter value.
+     */
     public int getHourglassCounter() {
         return hourglassCounter;
     }
 
+    /**
+     * Sets the pending hourglass status.
+     *
+     * @param pendingHourglass true if an hourglass is pending, false otherwise.
+     */
     public void setPendingHourglass(boolean pendingHourglass) {
         this.pendingHourglass = pendingHourglass;
     }
 
+    /**
+     * Increments the hourglass counter and fires a property change event.
+     */
     public void incrementHourglassCounter() {
         hourglassCounter++;
         support.firePropertyChange("hourglassCounter", null, hourglassCounter);
     }
 
+    /**
+     * Private constructor for the ClientController, initializing the logger,
+     * setting the initial game state to START, and storing connection information.
+     *
+     * @param connectionInfo The connection details for the client.
+     */
     private ClientController(ConnectionInfo connectionInfo) {
         Logger.setMinLevel(Logger.Level.DEBUG);
 
@@ -60,10 +88,21 @@ public class ClientController {
         this.connectionInfo = connectionInfo;
     }
 
+    /**
+     * Returns whether there is a pending hourglass action.
+     *
+     * @return true if an hourglass action is pending; false otherwise
+     */
     public boolean getPendingHourglass() {
         return pendingHourglass;
     }
 
+    /**
+     * Creates the singleton instance of the ClientController with the given connection information.
+     *
+     * @param connectionInfo the connection details used to initialize the controller
+     * @throws RuntimeException if the instance has already been created
+     */
     public static void create(ConnectionInfo connectionInfo) {
         if (instance == null) {
             instance = new ClientController(connectionInfo);
@@ -72,6 +111,12 @@ public class ClientController {
         }
     }
 
+    /**
+     * Returns the singleton instance of the ClientController.
+     *
+     * @return the ClientController instance
+     * @throws RuntimeException if the instance has not been created yet
+     */
     public static synchronized ClientController getInstance() {
         if (instance == null)
             throw new RuntimeException("Client controller not created");
@@ -112,26 +157,51 @@ public class ClientController {
     private boolean usedBattery;
     private Cordinate cordinate;
 
+    /**
+     * Adds a PropertyChangeListener to be notified of property updates.
+     *
+     * @param listener the listener to register
+     */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
+    /**
+     * Sets whether the last hourglass action has been completed.
+     *
+     * @param finishedLastHourglass true if the last hourglass is finished; false otherwise
+     */
     public void setFinishedLastHourglass(boolean finishedLastHourglass) {
         synchronized (hourglassLock) {
             this.finishedLastHourglass = finishedLastHourglass;
         }
     }
 
+    /**
+     * Returns whether the last hourglass action has been completed.
+     *
+     * @return true if the last hourglass is finished; false otherwise
+     */
     public Boolean getFinishedLastHourglass() {
         synchronized (hourglassLock) {
             return this.finishedLastHourglass;
         }
     }
 
+    /**
+     * Sets the current game ID.
+     *
+     * @param gameId the game ID to assign
+     */
     public void setGameId(int gameId) {
         this.idGame = gameId;
     }
 
+    /**
+     * Updates the game state and fires a property change event if needed.
+     *
+     * @param state the new game state
+     */
     public void setState(GameState state) {
         GameState oldState;
         if (state.equals(GameState.FINISH_HOURGLASS))
@@ -157,12 +227,23 @@ public class ClientController {
         Logger.debug("GameState: " + oldState + " -> " + state);
     }
 
+    /**
+     * Returns the current game state.
+     *
+     * @return the current GameState
+     */
     public GameState getState() {
         synchronized (stateLock) {
             return gameState;
         }
     }
 
+    /**
+     * Updates the card state and sets the game state to CARD_EFFECT.
+     * Also fires property change events if needed.
+     *
+     * @param state the new card state
+     */
     public void setCardState(CardState state) {
         CardState oldState;
         synchronized (cardStateLock) {
@@ -182,76 +263,154 @@ public class ClientController {
         }
     }
 
+    /**
+     * Returns the current card state.
+     *
+     * @return the current CardState
+     */
     public CardState getCardState() {
         synchronized (cardStateLock) {
             return cardState;
         }
     }
 
+    /**
+     * Returns the nickname of the player.
+     *
+     * @return the player's nickname
+     */
     public String getNickname() {
         return nickname;
     }
 
+    /**
+     * Returns a list of available places on the circuit.
+     *
+     * @return a copy of the available places
+     */
     public List<Integer> getAvailablePlacesOnCircuit() {
         synchronized (listLock) {
             return new ArrayList<>(availablePlacesOnCircuit);
         }
     }
 
+    /**
+     * Returns the lock object used for synchronizing game state changes.
+     *
+     * @return the state lock object
+     */
     public Object getStateLock() {
         return stateLock;
     }
 
+    /**
+     * Sets the temporary client ID.
+     *
+     * @param idClient the client ID to set
+     */
     public void setIdClient(int idClient) {
         this.tempIdClient = idClient;
     }
 
+    /**
+     * Sets the player's nickname.
+     *
+     * @param nickname the nickname to assign
+     */
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
+    /**
+     * Returns whether the battery has been used.
+     *
+     * @return true if battery was used; false otherwise
+     */
     public boolean isUsedBattery() {
         return usedBattery;
     }
 
+    /**
+     * Returns the FlyBoard associated with the current game.
+     *
+     * @return the FlyBoard
+     */
     public FlyBoard getFlyBoard() {
         synchronized (flyboardLock) {
             return flyBoard;
         }
     }
 
+    /**
+     * Returns a snapshot of the current game information.
+     *
+     * @return a GameInfo object with current game details
+     */
     public GameInfo getGameInfo() {
         synchronized (flyboardLock) {
             return new GameInfo(idGame, flyBoard.getMode(), flyBoard.getNumPlayers());
         }
     }
 
+    /**
+     * Returns the lock object used for FlyBoard synchronization.
+     *
+     * @return the FlyBoard lock object
+     */
     public Object getFlyboardLock() {
         return flyboardLock;
     }
 
+    /**
+     * Returns the lock object used for ShipBoard synchronization.
+     *
+     * @return the ShipBoard lock object
+     */
     public Object getShipboardLock() {
         return shipboardLock;
     }
 
+    /**
+     * Returns the ID of the currently held component.
+     *
+     * @return the ID of the component in hand
+     */
     public int getInHandComponent() {
         return inHandComponent;
     }
 
+    /**
+     * Returns the Component object currently held in hand.
+     *
+     * @return the in-hand Component
+     */
     public Component getInHandComponentObject() {
         return flyBoard.getComponentById(inHandComponent);
     }
 
+    /**
+     * Returns the player's ShipBoard.
+     *
+     * @return the ShipBoard
+     */
     public ShipBoard getShipBoard() {
         synchronized (shipboardLock) {
             return shipBoard;
         }
     }
 
+    /**
+     * Returns the player's ShipBoard.
+     *
+     * @return the ShipBoard
+     */
     public Meteor getMeteor() {
         return meteor;
     }
 
+    /**
+     * Increases the temporary rotation value, cycling from 0 to 3.
+     */
     public void increaseTmpRotation() {
         if (tmpRotation < 3) {
             tmpRotation++;
@@ -260,41 +419,82 @@ public class ClientController {
         }
     }
 
+    /**
+     * Resets the temporary rotation value to 0.
+     */
     public void resetTmpRotation() {
         tmpRotation = 0;
 
     }
 
+    /**
+     * Returns the current temporary rotation value.
+     *
+     * @return the temporary rotation (0–3)
+     */
     public int getTmpRotation() {
         return tmpRotation;
     }
 
+    /**
+     * Sets the ID of the component currently held in hand.
+     *
+     * @param idComp the component ID
+     */
     public void setInHandComponent(int idComp) {
         this.inHandComponent = idComp;
     }
 
+    /**
+     * Returns the ID of the current game.
+     *
+     * @return the game ID
+     */
     public int getIdGame() {
         return idGame;
     }
 
+    /**
+     * Sets the index of the deck currently held in hand.
+     *
+     * @param deckNumber the deck index
+     */
     public void setInHandDeck(int deckNumber) {
         inHandDeck = deckNumber;
     }
 
+    /**
+     * Returns the index of the deck currently held in hand.
+     *
+     * @return the in-hand deck index
+     */
     public int getInHandDeck() {
         return inHandDeck;
     }
 
+    /**
+     * Returns the circuit of players on the FlyBoard.
+     *
+     * @return a list of optional players in the circuit
+     */
     public List<Optional<Player>> getCircuit() {
         synchronized (flyboardLock) {
             return flyBoard.getCircuit();
         }
     }
 
+    /**
+     * Returns the current error message related to a choice.
+     *
+     * @return the error message, or null if none
+     */
     public String getErrMessage() {
         return choiceErrorMessage;
     }
 
+    /**
+     * Clears the current error message.
+     */
     public void resetErrMessage() {
         choiceErrorMessage = null;
     }
@@ -303,6 +503,14 @@ public class ClientController {
      * methods called by the server to update the game state (and the model)
      */
 
+    /**
+     * Initializes the FlyBoard with the specified game mode, players, and decks.
+     * Sets up player colors and associates the ShipBoard with the current player.
+     *
+     * @param mode    the selected game mode
+     * @param players a map of player nicknames to their HousingColor
+     * @param decks   the list of decks used in the game
+     */
     public void setFlyBoard(GameMode mode, Map<String, HousingColor> players, List<List<Integer>> decks) {
         synchronized (flyboardLock) {
             flyBoard = FlyBoard.createFlyBoard(mode, players.keySet());
@@ -317,6 +525,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Sets the selected advanced card by ID and prepares its goods for insertion.
+     *
+     * @param idCard the ID of the selected card
+     */
     public void setCard(int idCard) {
         synchronized (cardLock) {
             synchronized (flyboardLock) {
@@ -327,24 +540,47 @@ public class ClientController {
         }
     }
 
+    /**
+     * Returns the advanced card currently being played.
+     *
+     * @return the selected SldAdvCard
+     */
     public SldAdvCard getPlayedCard() {
         synchronized (cardLock) {
             return card;
         }
     }
 
+    /**
+     * Adds a component to the uncovered components list.
+     *
+     * @param idComp the ID of the uncovered component
+     */
     public void addUncoveredComponent(int idComp) {
         synchronized (flyBoard.getUncoveredComponents()) {
             flyBoard.getUncoveredComponents().add(idComp);
         }
     }
 
+    /**
+     * Removes a component from the uncovered components list.
+     *
+     * @param idComp the ID of the component to remove
+     */
     public void removeUncovered(Integer idComp) {
         synchronized (flyBoard.getUncoveredComponents()) {
             flyBoard.getUncoveredComponents().remove(idComp);
         }
     }
 
+    /**
+     * Adds a component to another player's ShipBoard at a specified position and rotation.
+     *
+     * @param nickname  the target player's nickname
+     * @param idComp    the ID of the component
+     * @param cordinate the coordinate on the ShipBoard
+     * @param rotations the number of clockwise rotations
+     */
     public void addOtherPlayersComponent(String nickname, int idComp, Cordinate cordinate, int rotations) {
         ShipBoard otherShipboard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
 
@@ -353,30 +589,57 @@ public class ClientController {
         }
     }
 
+    /**
+     * Adds a deck number to the list of available decks.
+     *
+     * @param deckNumber the number of the deck to add
+     */
     public void addAvailableDeck(int deckNumber) {
         synchronized (flyBoard.getAvailableDecks()) {
             flyBoard.getAvailableDecks().add(deckNumber);
         }
     }
 
+    /**
+     * Removes a deck number from the list of available decks.
+     *
+     * @param deckNumber the number of the deck to remove
+     */
     public void removeDeck(Integer deckNumber) {
         synchronized (flyBoard.getAvailableDecks()) {
             flyBoard.getAvailableDecks().remove(deckNumber);
         }
     }
 
+    /**
+     * Sets the list of currently available positions on the circuit.
+     *
+     * @param availablePlaces the list of available positions
+     */
     public void setAvailablePlaces(List<Integer> availablePlaces) {
         synchronized (listLock) {
             this.availablePlacesOnCircuit = new ArrayList<>(availablePlaces);
         }
     }
 
+    /**
+     * Adds another player to the circuit at the specified place.
+     *
+     * @param nickname the player's nickname
+     * @param place    the position on the circuit
+     */
     public void addOtherPlayerToCircuit(String nickname, int place) {
         synchronized (flyboardLock) {
             flyBoard.addPlayerToCircuit(nickname, place);
         }
     }
 
+    /**
+     * Moves a player forward on the circuit by a given number of steps and notifies listeners.
+     *
+     * @param nickname the player's nickname
+     * @param steps    the number of steps to move
+     */
     public void advancePlayer(String nickname, int steps) {
         int oldPos, newPos;
         synchronized (flyboardLock) {
@@ -389,6 +652,11 @@ public class ClientController {
         Logger.debug("Moved " + nickname + " from " + oldPos + " to " + newPos);
     }
 
+    /**
+     * Triggers a generic error related to a player's choice, notifying the UI with a temporary state change.
+     *
+     * @param msg the error message to display
+     */
     public void genericChoiceError(String msg) {
         CardState old = getCardState();
         choiceErrorMessage = msg;
@@ -400,6 +668,11 @@ public class ClientController {
      * Methods called by the view to handle the input and communicate with the server
      */
 
+    /**
+     * Connects to the server using either RMI or Socket, sets initial game state, and initializes the client.
+     *
+     * @param isRmi true to use RMI, false to use Socket
+     */
     public void connectToServer(boolean isRmi) {
         setState(GameState.WAITING);
         try {
@@ -419,6 +692,9 @@ public class ClientController {
         }
     }
 
+    /**
+     * Starts the hourglass timer by requesting the server to do so.
+     */
     public void startHourglass() {
         try {
             pendingHourglass = true;
@@ -428,6 +704,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Sends the player's nickname to the server for validation or registration.
+     *
+     * @param nickname the player's chosen nickname
+     */
     public void handleNickname(String nickname) {
         try {
             server.handleNickname(tempIdClient, nickname);
@@ -436,6 +717,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Sends the selected game info to the server to create or join a game.
+     *
+     * @param gameInfo the game configuration to handle
+     */
     public void handleGameInfo(GameInfo gameInfo) {
         try {
             server.handleGameInfo(gameInfo, nickname);
@@ -444,6 +730,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Handles user selection during the ship building phase and updates the game state accordingly.
+     *
+     * @param chosen the user's selected option
+     */
     public void handleBuildingShip(int chosen) {
         if (chosen == 1) {
             try {
@@ -491,7 +782,9 @@ public class ClientController {
         }
     }
 
-    // this method is called only by the players who have already finished the ship building
+    /**
+     * Rotates the hourglass if allowed. Only used by players who have completed their ship building.
+     */
     public void rotateHourglass() {
         try {
             if (pendingHourglass) {
@@ -507,6 +800,11 @@ public class ClientController {
         setState(GameState.END_BUILDING);
     }
 
+    /**
+     * Requests to draw an uncovered component from the server. Fails if the component is not available.
+     *
+     * @param idComp the ID of the uncovered component to draw
+     */
     public void drawUncovered(int idComp) {
         if (!flyBoard.getUncoveredComponents().contains(idComp)) {
             setState(GameState.UNABLE_UNCOVERED_COMPONENT);
@@ -519,6 +817,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Sends the player's landing choice to the server when landing on a planet.
+     *
+     * @param choice the index of the selected planet or landing action
+     */
     public void landOnPlanet(int choice) {
         try {
             server.landOnPlanet(idGame, nickname, choice);
@@ -528,6 +831,13 @@ public class ClientController {
 
     }
 
+    /**
+     * Attempts to place the selected component onto the ShipBoard at the given coordinate and rotation,
+     * and notifies the server. Handles placement errors.
+     *
+     * @param cordinate the position where to place the component
+     * @param rotations the number of clockwise rotations to apply
+     */
     public void addComponent(Cordinate cordinate, int rotations) {
         try {
             shipBoard.addComponentToPosition(inHandComponent, cordinate, rotations);
@@ -545,6 +855,10 @@ public class ClientController {
         }
     }
 
+    /**
+     * Books the current in-hand component onto the player's ShipBoard.
+     * Sets the state to BUILDING_SHIP or SWITCH_BOOKED in case of error.
+     */
     public void bookComponent() {
         try {
             flyBoard.getPlayerByUsername(nickname).getShipBoard().addBookedComponent(inHandComponent);
@@ -554,6 +868,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Chooses a previously booked component from the given position and sets it as the in-hand component.
+     *
+     * @param pos 1-based index of the booked component to use
+     */
     public void choseBookedComponent(int pos) {
         int idComp = shipBoard.getBookedComponents().get(pos - 1).get();
         shipBoard.removedBookedComponent(pos - 1);
@@ -562,6 +881,11 @@ public class ClientController {
         setState(GameState.COMPONENT_MENU);
     }
 
+    /**
+     * Swaps the in-hand component with the one at the specified booked position.
+     *
+     * @param posToRemove the index of the booked component to replace
+     */
     public void bookComponent(int posToRemove) {
         int idComp = shipBoard.getBookedComponents().get(posToRemove).get();
 
@@ -570,6 +894,9 @@ public class ClientController {
         setState(GameState.COMPONENT_MENU);
     }
 
+    /**
+     * Discards the currently in-hand component and notifies the server.
+     */
     public void discardComponent() {
         Component comp = flyBoard.getComponentById(inHandComponent);
         comp.reinitializeRotations();
@@ -582,6 +909,11 @@ public class ClientController {
         setState(GameState.BUILDING_SHIP);
     }
 
+    /**
+     * Retrieves a booked component by index and sets it as the in-hand component.
+     *
+     * @param index index (0 or 1) of the booked component slot
+     */
     public void getBooked(int index) {
         int ret = -1;
         if (index == 0 || index == 1) {
@@ -601,6 +933,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Requests to book the specified deck from the server.
+     *
+     * @param deckNumber the deck number to book
+     */
     public void bookDeck(Integer deckNumber) {
         try {
             server.bookDeck(idGame, nickname, deckNumber);
@@ -609,6 +946,9 @@ public class ClientController {
         }
     }
 
+    /**
+     * Frees the deck previously booked by the player.
+     */
     public void freeDeck() {
         try {
             server.freeDeck(idGame, nickname, inHandDeck);
@@ -617,6 +957,9 @@ public class ClientController {
         }
     }
 
+    /**
+     * Requests the server to assign a default build configuration.
+     */
     public void builtDefault() {
         try {
             server.takeBuild(idGame, nickname);
@@ -625,6 +968,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Assigns a pre-built ShipBoard to the specified player based on their color.
+     *
+     * @param nick the nickname of the player to assign the ship to
+     */
     public void assignBuild(String nick) {
         synchronized (shipboardLock) {
             HousingColor color = flyBoard.getPlayerByUsername(nick).getColor();
@@ -646,10 +994,21 @@ public class ClientController {
         }
     }
 
+    /**
+     * Returns the list of incorrect component coordinates on the player's ShipBoard.
+     *
+     * @return list of invalid component coordinates
+     */
     public List<Cordinate> getIncorrectComponents() {
         return shipBoard.getIncorrectComponents();
     }
 
+    /**
+     * Returns a list of disconnected component blocks (standalone).
+     * Also removes any booked components before calculation.
+     *
+     * @return list of sets of standalone components
+     */
     public List<Set<Component>> getStandAloneBlocks() {
         shipBoard.removedBookedComponent(0);
         shipBoard.removedBookedComponent(1);
@@ -658,6 +1017,11 @@ public class ClientController {
         return shipBoard.getMultiplePieces();
     }
 
+    /**
+     * Removes all standalone component blocks except the one at the given index.
+     *
+     * @param blockToKeep the index of the block to preserve
+     */
     public void removeStandAloneBlocks(int blockToKeep) {
         List<Set<Component>> standAloneBlocks = shipBoard.getMultiplePieces();
 
@@ -670,7 +1034,11 @@ public class ClientController {
         }
     }
 
-
+    /**
+     * Notifies the server that the player has finished validation, indicating battery usage.
+     *
+     * @param usedBattey whether the player used a battery (typo: should be "usedBattery")
+     */
     public void endValidation(boolean usedBattey) {
         try {
             server.endValidation(idGame, nickname, usedBattey);
@@ -679,6 +1047,9 @@ public class ClientController {
         }
     }
 
+    /**
+     * Notifies the server that the player has finished building their ship.
+     */
     public void endBuild() {
         try {
             server.endBuild(idGame, nickname);
@@ -687,6 +1058,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Sends the selected place in the circuit to the server.
+     *
+     * @param place the place index the player chose
+     */
     public void choosePlace(int place) {
         try {
             server.choosePlace(idGame, nickname, place);
@@ -695,6 +1071,9 @@ public class ClientController {
         }
     }
 
+    /**
+     * Requests a new advanced card from the server.
+     */
     public void drawNewAdvCard() {
         try {
             server.drawCard(idGame, nickname);
@@ -703,6 +1082,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Activates a double engine with the specified number.
+     *
+     * @param number the engine index or power value
+     */
     public void activateDoubleEngine(int number) {
         try {
             server.activateDoubleEngine(idGame, nickname, number);
@@ -711,12 +1095,22 @@ public class ClientController {
         }
     }
 
+    /**
+     * Returns a copy of the list of goods the player needs to insert.
+     *
+     * @return list of goods to insert
+     */
     public List<GoodType> getGoodsToInsert() {
         synchronized (listLock) {
             return new ArrayList<>(goodsToInsert);
         }
     }
 
+    /**
+     * Retrieves the list of goods from planets assigned to the current player.
+     *
+     * @return list of goods available from landed planets
+     */
     public List<GoodType> getPlanetGoods() {
         Player player;
         List<GoodType> toInsert = new ArrayList<>();
@@ -734,6 +1128,11 @@ public class ClientController {
         return toInsert;
     }
 
+    /**
+     * Sends a request to leave or stay in the flight phase.
+     *
+     * @param leave true to leave the flight, false to stay
+     */
     public void leaveFlight(boolean leave) {
         try {
             server.leaveFlight(idGame, nickname, leave);
@@ -742,6 +1141,12 @@ public class ClientController {
         }
     }
 
+    /**
+     * Adds credits to the specified player.
+     *
+     * @param nick nickname of the player
+     * @param credits amount of credits to add
+     */
     public void addCredits(String nick, int credits) {
         Logger.info(nick + " added " + credits + "credits");
         int tot;
@@ -752,6 +1157,11 @@ public class ClientController {
         support.firePropertyChange("credits", 0, tot);
     }
 
+    /**
+     * Removes one crew member from the specified component.
+     *
+     * @param idComp ID of the component losing the crew
+     */
     public void crewLost(int idComp) {
         synchronized (flyboardLock) {
             Logger.info("lost crew member in " + idComp);
@@ -759,6 +1169,10 @@ public class ClientController {
         }
     }
 
+
+    /**
+     * Clears the list of pending goods and skips the current card effect.
+     */
     public void skipEffect() {
         goodsToInsert.clear();
         try {
@@ -768,6 +1182,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Requests to remove crew members from specific coordinates.
+     *
+     * @param cordinatesToRemove list of coordinates from which to remove crew
+     */
     public void removeCrew(List<Cordinate> cordinatesToRemove) {
         try {
             server.crewRemove(idGame, nickname, cordinatesToRemove);
@@ -776,6 +1195,12 @@ public class ClientController {
         }
     }
 
+    /**
+     * Sends a request to the server to add a good to a component.
+     *
+     * @param idComp ID of the component
+     * @param type type of the good to add
+     */
     public void addGood(int idComp, GoodType type) {
         try {
             server.addGood(idGame, nickname, idComp, type);
@@ -784,12 +1209,24 @@ public class ClientController {
         }
     }
 
+    /**
+     * Adds a good of a given type to the specified component (client-side only).
+     *
+     * @param idComp ID of the component
+     * @param type type of the good to add
+     */
     public void addGoodToModel(int idComp, GoodType type) {
         synchronized (flyboardLock) {
             flyBoard.getComponentById(idComp).addGood(type);
         }
     }
 
+    /**
+     * Removes a pending good for the current player.
+     *
+     * @param nick player nickname (must match current user)
+     * @param type type of the good to remove
+     */
     public void removePendingGood(String nick, GoodType type) {
         if (nick.equals(nickname)) {
             synchronized (listLock) {
@@ -798,6 +1235,12 @@ public class ClientController {
         }
     }
 
+    /**
+     * Sends a request to the server to remove a good from a component.
+     *
+     * @param idComp ID of the component
+     * @param type type of the good to remove
+     */
     public void removeGood(int idComp, GoodType type) {
         Logger.debug("Ask the server for remove " + type + " from " + idComp);
         try {
@@ -807,6 +1250,12 @@ public class ClientController {
         }
     }
 
+    /**
+     * Removes a good from the model (client-side only).
+     *
+     * @param idComp ID of the component
+     * @param type type of the good to remove
+     */
     public void removeGoodFromModel(int idComp, GoodType type) {
         synchronized (flyboardLock) {
             Logger.debug(type + "removed from " + idComp);
@@ -814,6 +1263,12 @@ public class ClientController {
         }
     }
 
+    /**
+     * Adds a pending good for the current player.
+     *
+     * @param nick player nickname (must match current user)
+     * @param type type of the good to add
+     */
     public void addPendingGood(String nick, GoodType type) {
         if (nick.equals(nickname))
             synchronized (listLock) {
@@ -822,6 +1277,12 @@ public class ClientController {
         Logger.debug("Added to pending " + nick);
     }
 
+    /**
+     * Assigns a player to land on a specified planet.
+     *
+     * @param nickname player nickname
+     * @param choice index of the chosen planet
+     */
     public void setPlayerOnPlanet(String nickname, int choice) {
         List<GoodType> tmpList = null;
         synchronized (cardLock) {
@@ -830,6 +1291,9 @@ public class ClientController {
         }
     }
 
+    /**
+     * Applies the current card's effect.
+     */
     public void applyEffect() {
         try {
             server.applyEffect(idGame, nickname);
@@ -838,6 +1302,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Activates double drills at the specified coordinates.
+     *
+     * @param drillsCordinate list of drill coordinates to activate
+     */
     public void activateDoubleDrills(List<Cordinate> drillsCordinate) {
         try {
             server.activateDoubleDrills(idGame, nickname, drillsCordinate);
@@ -854,6 +1323,12 @@ public class ClientController {
 //        }
 //    }
 
+    /**
+     * Sends the result of the dice roll to the server.
+     *
+     * @param first first dice value
+     * @param second second dice value
+     */
     public void setRollResult(int first, int second) {
         try {
             //todo e' da cambiare
@@ -872,6 +1347,11 @@ public class ClientController {
 //        }
 //    }
 
+    /**
+     * Removes energy units from the battery depots with the given IDs.
+     *
+     * @param batteryDepotId list of component IDs to remove energy from
+     */
     public void removeBatteriesFromModel(List<Integer> batteryDepotId) {
         synchronized (flyboardLock) {
             for (int id : batteryDepotId) {
@@ -881,6 +1361,12 @@ public class ClientController {
         }
     }
 
+    /**
+     * Requests the server to advance the meteor and apply effects.
+     *
+     * @param destroyed true if a component was destroyed
+     * @param energy true if energy was used to stop the meteor
+     */
     public void advanceMeteor(boolean destroyed, boolean energy) {
         try {
             server.advanceMeteor(idGame, nickname, destroyed, energy);
@@ -889,6 +1375,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Requests to remove a component from the ship, with animation.
+     *
+     * @param cordinate coordinate of the component to remove
+     */
     public void removeComponent(Cordinate cordinate) {
         try {
             server.removeComponent(idGame, nickname, cordinate, true);
@@ -897,6 +1388,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Immediately removes a component locally and notifies the server (no animation).
+     *
+     * @param cordinate coordinate of the component to remove
+     */
     public void removeComponentImmediate(Cordinate cordinate) {
         try {
             shipBoard.removeComponent(cordinate);
@@ -906,12 +1402,23 @@ public class ClientController {
         }
     }
 
+    /**
+     * Removes a list of components immediately from the ship.
+     *
+     * @param cordinatesToRemove list of coordinates to remove
+     */
     public void removeComponents(List<Cordinate> cordinatesToRemove) {
         for (Cordinate cordinate : cordinatesToRemove) {
             removeComponentImmediate(cordinate);
         }
     }
 
+    /**
+     * Removes a component from the specified player's ship at the given coordinate (client-side only).
+     *
+     * @param nickname nickname of the player
+     * @param cord coordinate of the component to remove
+     */
     public void removeComponentFromModel(String nickname, Cordinate cord) {
         synchronized (flyboardLock) {
             if (nickname.equals(this.nickname)) {
@@ -923,6 +1430,14 @@ public class ClientController {
         }
     }
 
+    /**
+     * Handles a meteor hit event, storing its data and setting the card state.
+     *
+     * @param type type of the meteor
+     * @param direction direction from which the meteor is coming
+     * @param number roll number of the meteor
+     * @param cord coordinate where the meteor hits
+     */
     public void meteorHit(MeteorType type, Direction direction, int number, Cordinate cord) {
         meteor = new Meteor(direction, type);
         meteor.setNumber(number);
@@ -932,6 +1447,13 @@ public class ClientController {
         Logger.info(type + " " + direction + " " + number);
     }
 
+    /**
+     * Handles a cannon hit event, calculating the target and updating the card/game state.
+     *
+     * @param type type of the cannon (LIGHT or HEAVY)
+     * @param direction direction from which the cannon shot is fired
+     * @param number cannon roll number
+     */
     public void cannonHit(CannonType type, Direction direction, int number) {
         System.out.println(direction + " " + number);
         shipBoard.drawShipboard();
@@ -970,6 +1492,12 @@ public class ClientController {
 
     }
 
+    /**
+     * Sends a request to the server to continue with the cannon phase after a hit.
+     *
+     * @param destroyed true if a component was destroyed
+     * @param energy true if energy was used to shield the shot
+     */
     public void advanceCannon(boolean destroyed, boolean energy) {
         try {
             server.advanceCannon(idGame, nickname, destroyed, energy);
@@ -978,10 +1506,20 @@ public class ClientController {
         }
     }
 
+    /**
+     * Returns the currently active cannon penalty event.
+     *
+     * @return the current CannonPenalty object
+     */
     public CannonPenalty getCannon() {
         return cannon;
     }
 
+    /**
+     * Removes a battery unit from the given battery depot component (client-side only).
+     *
+     * @param idBatteryDepot ID of the battery depot component
+     */
     public void removeBatteryFromModel(int idBatteryDepot) {
         Logger.debug("remove battery from " + idBatteryDepot);
         synchronized (flyBoard) {
@@ -989,6 +1527,11 @@ public class ClientController {
         }
     }
 
+    /**
+     * Removes the specified player from the scoreboard and the circuit (client-side only).
+     *
+     * @param nickname nickname of the player who leaves the flight phase
+     */
     public void leaveFlightFromModel(String nickname) {
         Logger.info(nickname + " leave flight from model");
         int index = -1;
@@ -1014,6 +1557,11 @@ public class ClientController {
         Logger.info("Property fired");
     }
 
+    /**
+     * Adds guests to each player ship locally and sends the crew addition request to the server.
+     *
+     * @param addedCrew map of coordinates to guest types for crew placement
+     */
     public void addCrew(Map<Cordinate, List<GuestType>> addedCrew) {
         for (Player pl : flyBoard.getScoreBoard()) {
             pl.getShipBoard().addGuestToShip();
@@ -1026,6 +1574,13 @@ public class ClientController {
         }
     }
 
+    /**
+     * Adds a crew member to the model at the specified coordinate for the given player.
+     *
+     * @param nick nickname of the player
+     * @param cordinate coordinate of the component where to add the guest
+     * @param guestType type of the guest to add
+     */
     public void addCrewToModel(String nick, Cordinate cordinate, GuestType guestType) {
         synchronized (flyboardLock) {
 
@@ -1037,10 +1592,21 @@ public class ClientController {
         }
     }
 
+    /**
+     * Gets the coordinate of the most recent component hit (by cannon or meteor).
+     *
+     * @return coordinate of the last hit component
+     */
     public Cordinate getCordinate() {
         return cordinate;
     }
 
+
+    /**
+     * Notifies that a crash occurred, setting the game state to GAME_CRASH.
+     *
+     * @param nickname nickname of the player who experienced the crash
+     */
     public void notifyCrash(String nickname) {
         setState(GameState.GAME_CRASH);
     }

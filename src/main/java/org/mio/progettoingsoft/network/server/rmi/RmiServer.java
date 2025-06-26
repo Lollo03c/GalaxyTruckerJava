@@ -2,20 +2,14 @@ package org.mio.progettoingsoft.network.server.rmi;
 
 
 import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.advCards.sealed.SldAdvCard;
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
-import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.Logger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -24,6 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+/**
+ * Implements the RMI server functionalities, extending {@link UnicastRemoteObject}
+ * and implementing {@link VirtualServerRmi}. This class handles RMI client connections
+ * and delegates client requests to the {@link ServerController} using an {@link ExecutorService}
+ * for asynchronous processing.
+ */
 public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
     private final ServerController controller;
     private final ConnectionInfo connectionInfo;
@@ -34,12 +34,26 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
             new SynchronousQueue<>()
     );
 
+    /**
+     * Constructs an {@code RmiServer} instance.
+     * Exports the remote object automatically by calling the superclass constructor.
+     * Initializes the {@link ServerController} and {@link ConnectionInfo}.
+     * @param connectionInfo The {@link ConnectionInfo} containing server IP and RMI port.
+     * @throws RemoteException if the object cannot be exported.
+     */
     public RmiServer(ConnectionInfo connectionInfo) throws RemoteException {
         super(); // automatic export of UnicastRemoteObject
         this.controller = ServerController.getInstance();
         this.connectionInfo = connectionInfo;
     }
 
+    /**
+     * Starts the RMI server.
+     * This method creates an RMI registry on the specified port and binds this
+     * {@code RmiServer} instance to the server name.
+     * Logs server startup information or throws a {@link RuntimeException} if
+     * the registry cannot be created or the object cannot be bound.
+     */
     public void startServer() {
         try {
             Registry registry = LocateRegistry.createRegistry(connectionInfo.getRmiPort());
@@ -151,13 +165,6 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         });
     }
 
-//    @Override
-//    public void applyStardust(int idGame, String nickname, SldStardust card) throws RemoteException {
-//        executors.submit(() -> {
-//            controller.applyStardust(idGame, card);
-//        });
-//    }
-
     @Override
     public void activateDoubleEngine(int idGame, String nickname, int number) throws RemoteException {
         executors.submit(() -> {
@@ -228,26 +235,12 @@ public class RmiServer extends UnicastRemoteObject implements VirtualServerRmi {
         });
     }
 
-//    @Override
-//    public void activateSlaver(int idGame,String nickname,List<Cordinate> activatedDrills,boolean wantsToActivate){
-//        executors.submit(() ->{
-//           controller.activateSlaver(idGame,nickname,activatedDrills,wantsToActivate);
-//        });
-//    }
-
     @Override
     public void setRollResult(int idGame, String nickname, int first, int second) throws RemoteException{
         executors.submit(() -> {
             controller.setRollResult(idGame, nickname, first, second);
         });
     }
-
-//    @Override
-//    public void removeBattery(int idGame, String nickname, int quantity) throws RemoteException{
-//        executors.submit(() -> {
-//            controller.removeBattery(idGame, nickname, quantity);
-//        });
-//    }
 
     @Override
     public void advanceMeteor(int idGame, String nickname, boolean destroyed, boolean energy) throws RemoteException{

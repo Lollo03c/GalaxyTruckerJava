@@ -3,19 +3,14 @@ package org.mio.progettoingsoft;
 import org.mio.progettoingsoft.network.client.ClientApp;
 import org.mio.progettoingsoft.utils.ConnectionInfo;
 import org.mio.progettoingsoft.utils.IPValidator;
-import org.mio.progettoingsoft.utils.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+/**
+ * The main class for launching the client application of Galaxy Truckers.
+ * This class handles initial user interaction for selecting the user interface (GUI or TUI)
+ * and validating the server's IP address.
+ */
 public class ClientMain {
 
     /**
