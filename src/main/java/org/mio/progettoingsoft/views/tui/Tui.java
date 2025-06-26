@@ -81,7 +81,10 @@ public class Tui implements View {
             }
             case WAITING -> System.out.println(BLUE + "Waiting..." + RESET);
             case GAME_MODE -> printGameModeMenu();
-            case WAITING_PLAYERS -> System.out.println(BLUE + "Waiting for other players..." + RESET);
+            case WAITING_PLAYERS -> {
+                clearConsole();
+                System.out.println(BLUE + "Waiting for other players..." + RESET);
+            }
             case GAME_START -> printStartGameInfo();
             case BUILDING_SHIP -> buildingShipMenu();
             case COMPONENT_MENU -> componentMenu();
@@ -109,7 +112,6 @@ public class Tui implements View {
                 System.out.println(RED + "You can't take this deck." + RESET);
                 controller.setState(GameState.BUILDING_SHIP);
             }
-
 
             case WRONG_POSITION -> {
                 System.out.println(RED + "Current position is already occupied" + RESET);
@@ -163,11 +165,8 @@ public class Tui implements View {
                 endBuildingMenu();
             }
 
-            case CHOOSE_POSITION -> {
-                System.out.print("Choose position: ");
-                printChoosePosition();
-                System.out.println("Waiting for other players" + RESET);
-            }
+            case CHOOSE_POSITION -> printChoosePosition();
+
             case VALIDATION -> printValidationMenu();
 
             case DRAW_CARD -> {
@@ -192,18 +191,34 @@ public class Tui implements View {
             case REMOVED_FROM_FLYBOARD -> System.out.println("You have been removed from ScoreBoard now you are just a spectator till the end of the flight, please wait");
         }
     }
-    private void endgame() {
-        int index = 1;
-        Logger.debug("SONO ENTRATO IN ENDGAME");
-        List<Player> players = controller.getFlyBoard().getPlayers();
-        List<Player> playersSorted = players.stream().sorted(Comparator.comparing(Player::getCredits).reversed()).toList();
-        System.out.println("The game has ended : these are the final rankings");
-        for (Player p  : playersSorted  ) {
-            HousingColor color = p.getColor();
-            System.out.println(color.colorToString() + index + " : "+ p.getNickname() + " finished with " + p.getCredits()+ " credits "+ RESET);
-            index++;
-        }
+
+private void endgame() {
+    int index = 1;
+    Logger.debug(controller.getNickname() + " has ended game.");
+    List<Player> players = controller.getFlyBoard().getPlayers();
+    List<Player> playersSorted = players.stream().sorted(Comparator.comparing(Player::getCredits).reversed()).toList();
+    System.out.println(BLUE + "THE GAME HAS ENDED" + RESET);
+    System.out.println("These are the final credits for each player: ");
+
+    for (Player p  : playersSorted) {
+        HousingColor color = p.getColor();
+        System.out.println(color.colorToString() + index + " : "+ p.getNickname() + " finished with " + p.getCredits()+ " credits "+ RESET);
+        index++;
     }
+
+    String winner = playersSorted.stream().max(Comparator.comparing(Player::getCredits)).get().getNickname();
+
+    if (controller.getNickname().equals(winner)) {
+        System.out.println(GREEN + "YOU WON THE GAME" + RESET);
+    } else {
+        System.out.println(RED + "YOU LOST THE GAME" + RESET);
+        System.out.println("The winner is " + winner);
+    }
+
+    System.out.println("Press enter to exit...");
+    String buffer = scanner.nextLine();
+    System.exit(0);
+}
 
     private void printYouCanRotateHourglass() {
         if(controller.getPendingHourglass()) {
@@ -311,6 +326,9 @@ public class Tui implements View {
         System.out.println("Game mode: " + controller.getGameInfo().mode());
         System.out.println("Players:");
         printPlayersName();
+        System.out.println("Press enter to continue...");
+        String buffer = scanner.nextLine();
+        clearConsole();
     }
 
     /**
@@ -1011,14 +1029,8 @@ public class Tui implements View {
 
         GameInfo gameInfo = new GameInfo(-1, choice == 1 ? GameMode.EASY : GameMode.NORMAL, nPlayers);
         controller.handleGameInfo(gameInfo);
-        clearConsole();
+        controller.setState(GameState.WAITING_PLAYERS);
     }
-
-    private void checkEndBuilding() {
-
-    }
-
-
 
     private void chooseBuiltShip() {
         controller.builtDefault();

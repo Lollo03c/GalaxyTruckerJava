@@ -53,7 +53,6 @@ public class ClientController {
         support.firePropertyChange("hourglassCounter", null, hourglassCounter);
     }
 
-
     private ClientController(ConnectionInfo connectionInfo) {
         Logger.setMinLevel(Logger.Level.WARNING);
 
@@ -439,7 +438,6 @@ public class ClientController {
     }
 
     public void handleBuildingShip(int chosen) {
-        System.out.println("choice : " + chosen);
         if (chosen == 1) {
             try {
                 server.getCoveredComponent(idGame, nickname);
@@ -664,6 +662,7 @@ public class ClientController {
             }
         }
     }
+
 
     public void endValidation() {
         try {

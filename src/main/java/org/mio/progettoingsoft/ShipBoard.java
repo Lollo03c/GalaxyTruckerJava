@@ -536,7 +536,7 @@ public abstract class ShipBoard {
                     Component neighbor = entry.getValue();
 
                     if (!visited.contains(neighbor) &&
-                            comp.getConnector(dir).isCompatible(neighbor.getConnector(dir.getOpposite()))) {
+                            comp.getConnector(dir).isConnected(neighbor.getConnector(dir.getOpposite()))) {
 
                         queue.add(neighbor);
                         part.add(neighbor);

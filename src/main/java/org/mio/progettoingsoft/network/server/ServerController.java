@@ -44,7 +44,6 @@ public class ServerController {
 
     public void handleNickname(int idClient, String nickname) {
         GameManager gameManager = GameManager.getInstance();
-
         gameManager.addPlayerToGame(idClient, nickname);
     }
 
