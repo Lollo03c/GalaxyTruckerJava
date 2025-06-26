@@ -259,6 +259,7 @@ public class SocketClientHandler implements VirtualClient, Runnable {
 
     @Override
     public void removeComponent(String nickname, Cordinate cord) throws IOException{
+        Logger.debug("Sto notificando la rimozione di " + cord + " a " + nickname);
         Message message = new ComponentMessage(0, nickname, ComponentMessage.Action.REMOVE, -1, cord, -1);
         sendMessage(message);
     }

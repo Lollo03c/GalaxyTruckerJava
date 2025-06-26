@@ -90,27 +90,42 @@ public class FlyBoardNormal extends FlyBoard  {
         List<Integer> copyDeck = new ArrayList<>(deck);
 
         littleDecks = new ArrayList<>();
+        hiddenDeck = new ArrayList<>();
         for (int i = 0; i < 3; i++)
             littleDecks.add(new ArrayList<>());
 
         int countLevel1 = 0;
         int countLevel2 = 0;
 
-        List<Integer> levelOneCards = copyDeck.stream()
-                .filter(id -> sldAdvCards.get(id).getLevel() == 1)
-                .toList();
+        List<Integer> levelOneCards = new ArrayList<>();
+        int j = 0;
+        for(int i = 0; i < copyDeck.size() && j < 4; i++){
+            if(sldAdvCards.get(copyDeck.get(i)).getLevel() == 1){
+                levelOneCards.add(copyDeck.remove(i));
+                j++;
+            }
+        }
+        System.out.println(levelOneCards.toString());
+
+        List<Integer> levelTwoCards = new ArrayList<>();
+        j = 0;
+        for(int i = 0; i < copyDeck.size() && j < 9; i++){
+            if(sldAdvCards.get(copyDeck.get(i)).getLevel() == 2){
+                levelTwoCards.add(copyDeck.remove(i));
+                j++;
+            }
+        }
+        System.out.println(levelTwoCards.toString());
 
         for (int i = 0; i < 3; i++)
             littleDecks.get(i).add(levelOneCards.get(i));
 
-        List<Integer> levelTwoCards = copyDeck.stream()
-                .filter(id -> sldAdvCards.get(id).getLevel() == 2)
-                .toList();
-
         for (int i = 0; i < 6; i++)
             littleDecks.get(i / 2).add(levelTwoCards.get(i));
 
-
+        hiddenDeck.add(levelOneCards.get(3));
+        hiddenDeck.add(levelTwoCards.get(7));
+        hiddenDeck.add(levelTwoCards.get(8));
     }
 
     @Override
@@ -128,6 +143,23 @@ public class FlyBoardNormal extends FlyBoard  {
             decks.add(new ArrayList<>(deck));
         }
         return decks;
+    }
+
+    @Override
+    public List<Integer> getHiddenDeck(){
+        return new ArrayList<>(hiddenDeck);
+    }
+
+    /**
+     * Builds the actual deck for the adventure: it clears the deck and adds all the cards in little decks, then shuffles
+     */
+    public void buildAdventureDeck(){
+        deck.clear();
+        deck.addAll(hiddenDeck);
+        for(List<Integer> lilDeck : littleDecks){
+            deck.addAll(lilDeck);
+        }
+        Collections.shuffle(deck);
     }
 
     @Override
@@ -199,6 +231,10 @@ public class FlyBoardNormal extends FlyBoard  {
         }
 
         return advCardsMap;
+    }
+
+    public void createDeckForAdventure(){
+
     }
 
     public ShipBoard getBuiltShip(HousingColor color){

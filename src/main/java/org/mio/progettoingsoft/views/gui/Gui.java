@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -43,6 +44,8 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
+
+import static org.mio.progettoingsoft.GameState.DRAW_CARD;
 
 /**
  * GUI class: we decided to use the JavaFX framework
@@ -75,6 +78,7 @@ public class Gui extends Application implements View {
     private boolean willTestBuildDisappear = false;
     //true -> first time in adventure card view
     private boolean firstAdventureStart = true;
+    private boolean removed = false;
     private boolean acceptEffect;
     private double screenHeight;
     private double screenWidth;
@@ -182,6 +186,7 @@ public class Gui extends Application implements View {
     private Label creditsLabel;
     private Stage modalDiceRollStage;
     private Stage modalMessageStage;
+    private Button leaveFlightBtn;
 
     public Gui() {
         controller = ClientController.getInstance();
@@ -201,14 +206,14 @@ public class Gui extends Application implements View {
             case "gameState" -> statesQueue.add((GameState) evt.getNewValue());
             // the circuit changes (only in the right game states): the circuit view is updated
             case "circuit" -> {
-                if (controller.getState() == GameState.DRAW_CARD || controller.getState() == GameState.CARD_EFFECT || controller.getState() == GameState.NEW_CARD || controller.getState() == GameState.YOU_CAN_DRAW_CARD) {
-                    circuitMovesQueue.add(new Pair<>((int) evt.getOldValue(), (int) evt.getNewValue()));
-                }
+                circuitMovesQueue.add(new Pair<>((int) evt.getOldValue(), (int) evt.getNewValue()));
+                Logger.info("Circuit notified " + evt.getNewValue());
             }
             // the card state changes (only in CARD_EFFECT state): enable the user interaction based on the different state
             case "cardState" -> cardStatesQueue.add((CardState) evt.getNewValue());
             // the player's credits changes, it updates the label of credits
             case "credits" -> {
+                Logger.info("Credits fired");
                 Platform.runLater(() -> {
                     if (creditsLabel == null) {
                         Logger.debug("creditsLabel is null");
@@ -302,11 +307,16 @@ public class Gui extends Application implements View {
             case WRONG_POSITION -> choosePositionView(true);
             case VALIDATION -> validationShipView();
             case END_BUILDING -> waitingForAdventureStartView();
-            case DRAW_CARD -> advStartedView(false);
-            case YOU_CAN_DRAW_CARD -> advStartedView(true);
+            case DRAW_CARD -> advStartedView(false, removed);
+            case YOU_CAN_DRAW_CARD -> advStartedView(true, removed);
             case NEW_CARD -> loadNewCard();
+            case REMOVED_FROM_FLYBOARD -> {
+                removed = true;
+                controller.setState(DRAW_CARD);
+            }
             case ADD_CREW -> addCrewView();
             case CARD_EFFECT -> {
+                leaveFlightBtn.setDisable(true);
             }
             case IDLE -> {
             }
@@ -325,6 +335,7 @@ public class Gui extends Application implements View {
                 rotateHourglassBtn.setDisable(true);
                 hourglassTimeline.playFromStart();
             }
+            case ENDGAME -> endGameView();
 
             default -> genericErrorView(state);
         }
@@ -1292,7 +1303,7 @@ public class Gui extends Application implements View {
      * some buttons: top buttons allow the user to look at other player's ship, bottom button allows the user to look at his ship,
      * the right column shows some details about the match and the playing card and allows the user to leave the flight
      */
-    private void advStartedView(boolean isLeader) {
+    private void advStartedView(boolean isLeader, boolean removed) {
         if (firstAdventureStart) {
             root.getChildren().clear();
             adventureBorderPane = new BorderPane();
@@ -1358,10 +1369,11 @@ public class Gui extends Application implements View {
             waitingForLeaderLabel.setAlignment(Pos.CENTER);
             waitingForLeaderLabel.setVisible(!isLeader);
 
-            Button leaveFlightBtn = new Button("Leave the flight");
+            leaveFlightBtn = new Button("Leave the flight");
             leaveFlightBtn.setOnAction(evt -> {
                 leaveFlightConfirm();
             });
+            leaveFlightBtn.setDisable(true);
             int credits = 0;
             synchronized (controller.getFlyboardLock()) {
                 credits = controller.getFlyBoard().getPlayerByUsername(controller.getNickname()).getCredits();
@@ -1446,9 +1458,10 @@ public class Gui extends Application implements View {
             cardStateManager.setDaemon(true);
             cardStateManager.start();
 
-        } else {
+        } else if(!removed) {
             waitingForLeaderLabel.setVisible(!isLeader);
             drawCardButton.setVisible(isLeader);
+            leaveFlightBtn.setDisable(false);
             String tmpResourcePath = IMG_PATH + ADV_CARD_REL_PATH + "back" + IMG_JPG_EXTENSION;
             Image cardBackImage = new Image(getClass().getResource(tmpResourcePath).toExternalForm());
             cardImageView.setImage(cardBackImage);
@@ -1457,6 +1470,9 @@ public class Gui extends Application implements View {
                     modalDiceRollStage.close();
                 }
             }
+        }else{
+            waitingForLeaderLabel.setVisible(!isLeader);
+            leaveFlightBtn.setVisible(false);
         }
     }
 
@@ -1469,6 +1485,33 @@ public class Gui extends Application implements View {
         cardImageView.setImage(cardImage);
         drawCardButton.setVisible(false);
         waitingForLeaderLabel.setVisible(false);
+
+    }
+
+    private void endGameView(){
+        root.getChildren().clear();
+        List<Player> playersSorted;
+        synchronized (controller.getFlyboardLock()) {
+            List<Player> players = controller.getFlyBoard().getPlayers();
+            playersSorted = players.stream().sorted(Comparator.comparing(Player::getCredits).reversed()).toList();
+        }
+        VBox scoreBoardBox = new VBox(10);
+        scoreBoardBox.setAlignment(Pos.CENTER);
+        for(int i = 0; i < playersSorted.size(); i++){
+            Label playerLabel = new Label("Position " + (i+1) + ": " + playersSorted.get(i).getNickname() + " with " + playersSorted.get(i).getCredits() + " credits.");
+            if(i == 0){
+                playerLabel.setStyle("-fx-text-fill: green; -fx-font-size: 24px;");
+            }else{
+                playerLabel.setStyle("-fx-font-size: 16px;");
+            }
+            scoreBoardBox.getChildren().add(playerLabel);
+        }
+        Button okBtn = new Button("OK");
+        okBtn.setOnAction(event -> {
+            System.exit(0);
+        });
+        scoreBoardBox.getChildren().add(okBtn);
+        root.getChildren().add(scoreBoardBox);
 
     }
 
@@ -1868,7 +1911,7 @@ public class Gui extends Application implements View {
         synchronized (controller.getShipboardLock()) {
             ShipBoard shipBoard = controller.getShipBoard();
             Direction direction = null;
-            Cordinate cord = null;
+            final Cordinate cord;
             String alertMessage = "";
 
             switch (controller.getPlayedCard()) {
@@ -1893,7 +1936,10 @@ public class Gui extends Application implements View {
                     alertMessage = "Light cannon coming from " + direction + "!\nThe component could be destroyed!";
                 }
 
-                default -> Logger.error("Error: not expected card: " + controller.getPlayedCard());
+                default -> {
+                    Logger.error("Error: not expected card: " + controller.getPlayedCard());
+                    cord = null;
+                }
             }
 
             modalShipContainer.getChildren().addFirst(new Label(alertMessage));
@@ -1928,7 +1974,7 @@ public class Gui extends Application implements View {
                 noBtn.setText("Go ahead");
             }
             noBtn.setOnAction(evt -> {
-                controller.getShipBoard().removeComponent(controller.getCordinate());
+                controller.removeComponentImmediate(cord);
                 controller.setState(GameState.VALIDATION);
                 modalShipStage.close();
             });

@@ -259,12 +259,11 @@ public class ServerController {
             game.addEvent(event1);
             game.addEvent(event2);
         } else {
-            if (! flyBoard.isPlayedFirstCard()) {
+            if (!flyBoard.isPlayedFirstCard()) {
                 synchronized (game.getLock()) {
                     Logger.info("Ship " + nickname + " is valid.");
                     Player player = flyBoard.getPlayerByUsername(nickname);
                     flyBoard.getValidationPlayers().remove(player);
-
                     shipBoard.addGuestToShip();
                 }
 
@@ -275,15 +274,18 @@ public class ServerController {
                         game.addEvent(event);
                     }
                 }
-            }
-            else{
-                switch (flyBoard.getPlayedCard()){
+            } else {
+                switch (flyBoard.getPlayedCard()) {
                     case SldPirates pirates -> {
                         advanceCannon(idGame, nickname, false, usedBattery);
                     }
 
                     case SldCombatZone combatZone -> {
                         advanceCannon(idGame, nickname, false, usedBattery);
+                    }
+
+                    case SldMeteorSwarm meteorSwarm ->{
+                        advanceMeteor(idGame, nickname, false, usedBattery);
                     }
 
                     default -> {
@@ -373,27 +375,24 @@ public class ServerController {
             throw new NotYourTurnException();
         }
         flyBoard.setPlayedFirstCard(true);
-        SldAdvCard card = flyBoard.getSldAdvCardByID(29);
-
-//        SldAdvCard card = flyBoard.drawSldAdvCard();
-        int id = 16;
-
-        //int id = 999;
-        //if id is 999 the deck is empty
-//        id = ;
-        if(id == 999){
+//        SldAdvCard card = flyBoard.getSldAdvCardByID(29);
+//
+////        SldAdvCard card = flyBoard.drawSldAdvCard();
+//        int id = 16;
+//
+//        //int id = 999;
+//        //if id is 999 the deck is empty
+////        id = ;
+//        if(id == 999){
+//            setEndGame(idGame);
+//            return;
+//        }
+//        card = flyBoard.getSldAdvCardByID(id);
+        int id = flyBoard.drawCard();
+        SldAdvCard card = flyBoard.getSldAdvCardByID(id);
+        if (id == 999) {
             setEndGame(idGame);
             return;
-        }
-        card = flyBoard.getSldAdvCardByID(id);
-        while(game.getFlyboard().getScoreBoard().size() == 1 && (card.getId() == 16 || card.getId() == 36)){
-            id = flyBoard.drawCard();
-            if( id == 999 ) {
-                setEndGame(idGame);
-                return;
-            }
-            card = flyBoard.getSldAdvCardByID(id);
-
         }
         Logger.debug(nickname + " draws card " + card.getCardName());
         flyBoard.setPlayedCard(card);
@@ -421,7 +420,7 @@ public class ServerController {
 
     }
 
-    private void setEndGame(int idGame){
+    public void setEndGame(int idGame) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard flyBoard = game.getFlyboard();
         flyBoard.assignCreditsForPositions();
@@ -487,6 +486,7 @@ public class ServerController {
 
     public void leaveFlight(int idGame, String nickname, boolean leave) {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
+        Logger.info(nickname + " is leaving " + leave);
         synchronized (game.getLock()) {
             FlyBoard flyBoard = game.getFlyboard();
 
@@ -495,10 +495,22 @@ public class ServerController {
             watingPlayers.remove(player);
 
             if (leave) {
+                Logger.info(nickname + " is actually leaving");
                 flyBoard.getScoreBoard().remove(player);
+                for (int i = 0; i < flyBoard.getCircuit().size(); i++) {
+                    Optional<Player> optionalPlayer = flyBoard.getCircuit().get(i);
+
+                    if (optionalPlayer.isEmpty())
+                        continue;
+
+                    if (optionalPlayer.get().getNickname().equals(nickname)) {
+                        flyBoard.getCircuit().set(i, Optional.empty());
+                        return;
+                    }
+                }
                 Event event = new LeavePlayerEvent(nickname);
                 game.addEvent(event);
-                if(flyBoard.getScoreBoard().isEmpty()){
+                if (flyBoard.getScoreBoard().isEmpty()) {
                     setEndGame(idGame);
                 }
             }
@@ -518,21 +530,6 @@ public class ServerController {
                 }
             }
         }
-
-
-//        //TODO: this is only for testing of the circuit update, this must be replaced with the actual functionality
-//        GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
-//        FlyBoard flyBoard = game.getFlyboard();
-//        flyBoard.moveDays(flyBoard.getPlayerByUsername(nickname), 4);
-//
-//        for (String nick : game.getClients().keySet()) {
-//            VirtualClient client = game.getClients().get(nick);
-//            try {
-//                client.advancePlayer(nickname, 4);
-//            } catch (Exception e) {
-//                handleGameCrash(e, nickname, idGame);
-//            }
-//        }
     }
 
     public void skipEffect(int idGame, String nickname, int idCard) {
@@ -844,10 +841,10 @@ public class ServerController {
         GameServer game = GameManager.getInstance().getOngoingGames().get(idGame);
         FlyBoard fly = game.getFlyboard();
         fly.startHourglass(idGame);
-        for(String nickname : game.getClients().keySet()){
+        for (String nickname : game.getClients().keySet()) {
             try {
                 game.getClients().get(nickname).startedHourglass(idGame);
-            }catch (Exception e){
+            } catch (Exception e) {
                 handleGameCrash(e, nickname, idGame);
             }
         }
@@ -866,6 +863,8 @@ public class ServerController {
 
         Map<String, VirtualClient> clients = game.getClients();
 
+        Logger.info("RemoveComponentFromAllExcept " + nickname);
+
         if (flyBoard.getPlayedCard() == null) {
             for (String nick : clients.keySet()) {
                 try {
@@ -876,7 +875,7 @@ public class ServerController {
                     handleGameCrash(e, nickname, idGame);
                 }
             }
-        }else{
+        } else {
             Event event = new RemoveComponentEvent(nickname, cord);
             game.addEvent(event);
         }
@@ -893,6 +892,8 @@ public class ServerController {
         ShipBoard shipBoard = flyBoard.getPlayerByUsername(nickname).getShipBoard();
         shipBoard.removeComponent(cord);
 
+        Logger.info("RemoveComponentFromAll");
+
         Map<String, VirtualClient> clients = game.getClients();
         for (String nick : clients.keySet()) {
             try {
@@ -908,14 +909,14 @@ public class ServerController {
         FlyBoard flyBoard = game.getFlyboard();
 
         Player player = flyBoard.getPlayerByUsername(nickname);
-        if (!flyBoard.getAddCrewPlayers().contains(player)){
+        if (!flyBoard.getAddCrewPlayers().contains(player)) {
             return;
         }
         ShipBoard ship = flyBoard.getPlayerByUsername(nickname).getShipBoard();
         List<GuestType> flatInserted = new ArrayList<>();
 
         boolean valid = true;
-        for (Cordinate cord : addedCrew.keySet()){
+        for (Cordinate cord : addedCrew.keySet()) {
             for (GuestType type : addedCrew.get(cord)) {
                 int idComp = ship.getOptComponentByCord(cord).get().getId();
                 Component comp = flyBoard.getComponentById(idComp);
@@ -947,8 +948,7 @@ public class ServerController {
                     game.addEvent(event);
                 }
             }
-        }
-        else{
+        } else {
             Event event1 = new SetStateEvent(nickname, GameState.IDLE);
             game.addEvent(event1);
 
@@ -960,6 +960,7 @@ public class ServerController {
         flyBoard.getAddCrewPlayers().remove(flyBoard.getPlayerByUsername(nickname));
 
         if (flyBoard.getAddCrewPlayers().isEmpty()) {
+            flyBoard.buildAdventureDeck();
             String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
 
             for (String n : game.getClients().keySet()) {
@@ -970,7 +971,6 @@ public class ServerController {
                     Event event1 = new SetStateEvent(n, GameState.DRAW_CARD);
                     game.addEvent(event1);
                 }
-
             }
         }
     }

@@ -44,6 +44,7 @@ public abstract class FlyBoard implements FlyBoardServer {
 
     protected List<AdventureCard> selectionDeckPrivate;
     protected List<List<Integer>> littleDecks;
+    protected List<Integer> hiddenDeck;
     private List<Integer> availableDecks = new ArrayList<>();
 
     protected final List<Integer> deck;
@@ -129,7 +130,11 @@ public abstract class FlyBoard implements FlyBoardServer {
     protected abstract void buildLittleDecks();
     public abstract void setLittleDecks(List<List<Integer>> decks);
     public abstract List<List<Integer>> getLittleDecks();
-
+    public abstract List<Integer> getHiddenDeck();
+    public abstract void buildAdventureDeck();
+    public List<Integer> getDeck(){
+        return deck;
+    }
     /**
      *
      * @param mode the {@link GameMode} with which start the fame

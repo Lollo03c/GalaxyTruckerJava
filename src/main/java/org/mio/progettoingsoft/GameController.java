@@ -44,7 +44,7 @@ public class GameController {
         this.eventsQueue = eventsQueue;
 
         if (!testing) {
-            Thread thread = new Thread(() -> clientComunication());
+            Thread thread = new Thread(this::clientComunication);
             thread.setDaemon(true);
             thread.start();
         }
@@ -275,51 +275,23 @@ public class GameController {
                     game.addEvent(eve);
                 }
                 if(flyBoard.getScoreBoard().isEmpty()){
-                    flyBoard.assignCreditsForPositions();
-                    flyBoard.assignCreditsForBeautifulShip();
-                    flyBoard.assignCreditsForRemainingGoods();
-                    flyBoard.penaltyForDiscardedComponents();
-
-                    for (String nick : game.getClients().keySet()) {
-                        Event event = new SetStateEvent(nick, GameState.ENDGAME);
-                        game.addEvent(event);
-                    }
+                    ServerController.getInstance().setEndGame(game.getIdGame());
                 }
-
-//                Set<String> nicknames = clients.keySet();
-//                String leader = game.getFlyboard().getScoreBoard().getFirst().getNickname();
-//                for (String n : nicknames) {
-//                    if (n.equals(leader)) {
-//                        Event event = new SetStateEvent(n, GameState.YOU_CAN_DRAW_CARD);
-//                        game.addEvent(event);
-//                    }
-//                    else{
-//                        Event event = new SetStateEvent(n, GameState.DRAW_CARD);
-//                        game.addEvent(event);
-//                    }
-//
-//                }
             }
 
-//            case STARDUST_END -> {
-//                for(VirtualClient c : game.getClients().values()){
-//                    try {
-//                        c.setCardState(CardState.STARDUST_END);
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//            }
-//
-//            case EPIDEMIC_END -> {
-//                for(VirtualClient c : game.getClients().values()){
-//                    try {
-//                        c.setCardState(CardState.EPIDEMIC_END);
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//            }
+            case STARDUST_END -> {
+                for(String n : game.getClients().keySet()){
+                    Event eve = new SetCardStateEvent(n, CardState.STARDUST_END);
+                    game.addEvent(eve);
+                }
+            }
+
+            case EPIDEMIC_END -> {
+                for(String n : game.getClients().keySet()){
+                    Event eve = new SetCardStateEvent(n, CardState.EPIDEMIC_END);
+                    game.addEvent(eve);
+                }
+            }
 
             default -> {
             }

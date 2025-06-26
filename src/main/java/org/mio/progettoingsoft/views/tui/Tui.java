@@ -46,8 +46,8 @@ public class Tui implements View {
         switch (evt.getPropertyName()) {
             case "gameState" -> {
                 if ((GameState) evt.getNewValue() == GameState.YOU_CAN_ROTATE_HOURGLASS) {
-                    if(statesQueue.contains(GameState.YOU_CAN_ROTATE_HOURGLASS)) {
-                       return;
+                    if (statesQueue.contains(GameState.YOU_CAN_ROTATE_HOURGLASS)) {
+                        return;
                     }
                 }
                 statesQueue.add((GameState) evt.getNewValue());
@@ -57,7 +57,7 @@ public class Tui implements View {
 
     @Override
     public void run() {
-        Logger.setMinLevel(Logger.Level.WARNING);
+        Logger.setMinLevel(Logger.Level.INFO);
         this.updateTui(GameState.START);
         try {
             while (true) {
@@ -123,8 +123,8 @@ public class Tui implements View {
 
             case FINISH_HOURGLASS -> {
                 controller.setPendingHourglass(false);
-                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() +RESET);
-                if(controller.getFinishedBuilding()){
+                System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() + RESET);
+                if (controller.getFinishedBuilding()) {
                     controller.setState(GameState.END_BUILDING);
                     //controller.setState(GameState.YOU_CAN_ROTATE_HOURGLASS);
                 }
@@ -132,13 +132,12 @@ public class Tui implements View {
             case FINISH_LAST_HOURGLASS -> {
                 //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
                 //di simile e deve processare l'input mi genera un'eccezione
-                if(!controller.getFinishedBuilding()){
-                    System.out.println(GREEN + "Last Hourglass is terminated : the time to build your shipBoard is over!"+ RESET);
-                    if(controller.getFlyBoard().getMode().equals(GameMode.NORMAL)){
+                if (!controller.getFinishedBuilding()) {
+                    System.out.println(GREEN + "Last Hourglass is terminated : the time to build your shipBoard is over!" + RESET);
+                    if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL)) {
                         controller.handleBuildingShip(6);
                     }
-                }
-                else{
+                } else {
                     controller.setState(GameState.END_BUILDING);
                 }
             }
@@ -149,7 +148,7 @@ public class Tui implements View {
             }
 
             case END_BUILDING -> {
-                if(!controller.getPendingHourglass() && controller.getHourglassCounter() < 3 && continueAsking)
+                if (!controller.getPendingHourglass() && controller.getHourglassCounter() < 3 && continueAsking)
                     controller.setState(GameState.YOU_CAN_ROTATE_HOURGLASS);
             }
 
@@ -176,44 +175,48 @@ public class Tui implements View {
 
             case ADD_CREW -> addCrewMenu();
 
-            case REMOVED_FROM_FLYBOARD -> System.out.println("You have been removed from ScoreBoard now you are just a spectator till the end of the flight, please wait");
+            case REMOVED_FROM_FLYBOARD ->
+                    System.out.println("You have been removed from ScoreBoard now you are just a spectator till the end of the flight, please wait");
 
             case GAME_CRASH -> endgameCrash();
         }
     }
 
-private void endgame() {
-    int index = 1;
-    Logger.debug(controller.getNickname() + " has ended game.");
-    List<Player> players = controller.getFlyBoard().getPlayers();
-    List<Player> playersSorted = players.stream().sorted(Comparator.comparing(Player::getCredits).reversed()).toList();
+    private void endgame() {
+        int index = 1;
+        Logger.debug(controller.getNickname() + " has ended game.");
+        List<Player> playersSorted;
+        synchronized (controller.getFlyboardLock()) {
+            List<Player> players = controller.getFlyBoard().getPlayers();
+            playersSorted = players.stream().sorted(Comparator.comparing(Player::getCredits).reversed()).toList();
+        }
 
-    clearConsole();
-    System.out.println(BLUE + "THE GAME HAS ENDED" + RESET);
-    System.out.println("These are the final credits for each player: ");
+        clearConsole();
+        System.out.println(BLUE + "THE GAME HAS ENDED" + RESET);
+        System.out.println("These are the final credits for each player: ");
 
-    for (Player p  : playersSorted) {
-        HousingColor color = p.getColor();
-        System.out.println(color.colorToString() + index + " : "+ p.getNickname() + " finished with " + p.getCredits()+ " credits "+ RESET);
-        index++;
+        for (Player p : playersSorted) {
+            HousingColor color = p.getColor();
+            System.out.println(color.colorToString() + index + " : " + p.getNickname() + " finished with " + p.getCredits() + " credits " + RESET);
+            index++;
+        }
+
+        String winner = playersSorted.stream().max(Comparator.comparing(Player::getCredits)).get().getNickname();
+
+        if (controller.getNickname().equals(winner)) {
+            System.out.println(GREEN + "\nYOU WON THE GAME" + RESET);
+        } else {
+            System.out.println(RED + "\nYOU LOST THE GAME" + RESET);
+            System.out.println("The winner is " + winner);
+        }
+
+        System.out.println("\n\nPress enter to exit...");
+        String buffer = scanner.nextLine();
+        System.exit(0);
     }
-
-    String winner = playersSorted.stream().max(Comparator.comparing(Player::getCredits)).get().getNickname();
-
-    if (controller.getNickname().equals(winner)) {
-        System.out.println(GREEN + "\nYOU WON THE GAME" + RESET);
-    } else {
-        System.out.println(RED + "\nYOU LOST THE GAME" + RESET);
-        System.out.println("The winner is " + winner);
-    }
-
-    System.out.println("\n\nPress enter to exit...");
-    String buffer = scanner.nextLine();
-    System.exit(0);
-}
 
     private void printYouCanRotateHourglass() {
-        if(controller.getPendingHourglass()) {
+        if (controller.getPendingHourglass()) {
             //controller.setState(GameState.END_BUILDING);
             return;
         }
@@ -249,8 +252,7 @@ private void endgame() {
                 }
             }
 
-        }
-        else if (input.equalsIgnoreCase("n")) {
+        } else if (input.equalsIgnoreCase("n")) {
             continueAsking = false;
         }
 
@@ -332,7 +334,7 @@ private void endgame() {
             System.out.println(BLUE + "IT'S TIME TO BUILD YOUR SHIP!" + RESET);
             firstBuilding = false;
             //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partita Add commentMore actions
-            if(controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE)  && mode.equals(GameMode.NORMAL)){
+            if (controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE) && mode.equals(GameMode.NORMAL)) {
                 controller.startHourglass();
             }
         }
@@ -372,7 +374,7 @@ private void endgame() {
         }
 
         try {
-            if(!controller.getFinishedLastHourglass())
+            if (!controller.getFinishedLastHourglass())
                 controller.handleBuildingShip(choice);
         } catch (CannotRotateHourglassException e) {
             System.out.println(RED + "You can't rotate hourglass!" + RESET);
@@ -713,7 +715,7 @@ private void endgame() {
     /**
      * Prints end of building menu
      */
-    private void endBuildingMenu(){
+    private void endBuildingMenu() {
         System.out.println(BLUE + "Waiting for other players" + RESET);
     }
 
@@ -770,7 +772,7 @@ private void endgame() {
         String input = "";
         while (!incorrectComponents.isEmpty()) {
             int choice = -1;
-            while(choice < 1 || choice > incorrectComponents.size()) {
+            while (choice < 1 || choice > incorrectComponents.size()) {
                 controller.getShipBoard().drawShipboard();
                 System.out.println("Following components are not properly connected: " + incorrectComponents);
                 System.out.print("Select a incorrect component to remove from the list (1 - " + incorrectComponents.size() + "): ");
@@ -796,7 +798,7 @@ private void endgame() {
         List<Set<Component>> standAloneBlocks = controller.getStandAloneBlocks();
         if (standAloneBlocks.size() > 1) {
             int choice = -1;
-            while(choice < 0){
+            while (choice < 0) {
                 System.out.println("There are blocks of components that are not connected to each other. These are the stand alone blocks:");
                 for (Set<Component> standAloneBlock : standAloneBlocks) {
                     System.out.println("Block: " + standAloneBlock.stream().map(Component::getCordinate).toList());
@@ -885,7 +887,7 @@ private void endgame() {
 
             case COMPARING -> {
                 SldAdvCard card = controller.getPlayedCard();
-                switch (card){
+                switch (card) {
                     default -> System.out.println(" COMPARING NOT IMPLEMENTED FOR " + card.getCardName());
                 }
             }
@@ -904,14 +906,14 @@ private void endgame() {
 
             case EPIDEMIC_END -> epidemicEndInfo();
 
-            case ASK_LEAVE ->  askLeave();
+            case ASK_LEAVE -> askLeave();
             case FINALIZED -> {
 
             }
         }
     }
 
-    public void compareFirePower(){
+    public void compareFirePower() {
         SldAdvCard card = controller.getPlayedCard();
         ShipBoard shipBoard = controller.getShipBoard();
         FlyBoard flyBoard = controller.getFlyBoard();
@@ -920,20 +922,19 @@ private void endgame() {
 //        List<Cordinate> drillCords = shipBoard.getDoubleDrills();
         int ris = card.comparePower(flyBoard, flyBoard.getPlayerByUsername(controller.getNickname()));
         if (ris > 0) {
-            System.out.println("your baseStrength is:" +baseStrength + " and is bigger than the card strength");
+            System.out.println("your baseStrength is:" + baseStrength + " and is bigger than the card strength");
             System.out.println("do you want to activate any double drill  ? y/n ");
-        }else if(ris == 0){
+        } else if (ris == 0) {
             System.out.println("Your baseStrength is the same of the card's one, do you want to activate any double drill  ? y/n");
-        }
-        else{
+        } else {
             System.out.println("Your baseStrength is lower than the card's one,do you want to activate any double drill  ? y/n ");
         }
         String input = "";
         while (!input.equals("y") && !input.equals("n")) {
             input = scanner.nextLine();
-            if(input.equals("y")){
+            if (input.equals("y")) {
                 drillChoice();
-            }else if (input.equals("n")){
+            } else if (input.equals("n")) {
                 drillChoice();
             }
         }
@@ -942,23 +943,22 @@ private void endgame() {
     public void planetChoice() {
         System.out.println("Do you want to land on any planet? y/n");
         String input = "";
-        while(!input.equals("y") && !input.equals("n")) {
+        while (!input.equals("y") && !input.equals("n")) {
             input = scanner.nextLine();
-            if(!input.equals("y") && !input.equals("n")) {
+            if (!input.equals("y") && !input.equals("n")) {
                 System.out.println(RED + "Invalid choice!" + RESET);
             }
         }
-        if(input.equals("n")){
+        if (input.equals("n")) {
             controller.landOnPlanet(-1);
-        }
-        else {
+        } else {
             SldAdvCard card = controller.getPlayedCard();
             List<Planet> planets = card.getPlanets();
             List<Planet> availablePlanets = new ArrayList<>();
-            availablePlanets = planets.stream().filter(x->!x.getPlayer().isPresent()).toList();
+            availablePlanets = planets.stream().filter(x -> !x.getPlayer().isPresent()).toList();
             System.out.println("Which planet do you want to land on?");
             for (Planet planet : availablePlanets) {
-                System.out.println(planets.indexOf(planet)+1);
+                System.out.println(planets.indexOf(planet) + 1);
             }
             int numPlanet = 0;
             while (true) {
@@ -1058,8 +1058,7 @@ private void endgame() {
                 else
                     System.out.println(RED + "Invalid activated engine" + RESET);
             }
-        }
-        else{
+        } else {
             controller.activateDoubleEngine(0);
         }
     }
@@ -1068,7 +1067,7 @@ private void endgame() {
         controller.drawNewAdvCard();
     }
 
-    private void askAcceptEffect(){
+    private void askAcceptEffect() {
         SldAdvCard card = controller.getPlayedCard();
         String choice = "";
         while (!choice.equals("y") && !choice.equals("n")) {
@@ -1077,12 +1076,12 @@ private void endgame() {
             choice = scanner.nextLine().trim().toLowerCase();
         }
 
-        if (choice.equals("n")){
+        if (choice.equals("n")) {
             controller.skipEffect();
             return;
         }
 
-        switch (card){
+        switch (card) {
             case SldAbandonedShip abandonedShip -> {
                 controller.setCardState(CardState.CREW_REMOVE_CHOICE);
             }
@@ -1091,11 +1090,11 @@ private void endgame() {
                 controller.applyEffect();
             }
 
-            case SldSmugglers sldSmugglers ->{
+            case SldSmugglers sldSmugglers -> {
                 controller.setState(GameState.DRILL_CHOICE);
             }
 
-            case SldSlavers sldSlavers  -> {
+            case SldSlavers sldSlavers -> {
                 controller.applyEffect();
             }
 
@@ -1118,7 +1117,7 @@ private void endgame() {
         ShipBoard shipBoard = controller.getShipBoard();
         int removed = 0;
 
-        while (removed < toRemove){
+        while (removed < toRemove) {
             System.out.println("\nCrew member #" + removed + 1);
             String input = "";
             int row = 0;
@@ -1164,11 +1163,11 @@ private void endgame() {
                 System.out.println("Invalid cordinate");
                 continue;
             }
-            if (shipBoard.getOptComponentByCord(cord).get().getGuests().isEmpty()){
+            if (shipBoard.getOptComponentByCord(cord).get().getGuests().isEmpty()) {
                 System.out.println("This component has no guest to eliminate");
                 continue;
             }
-            if (shipBoard.getOptComponentByCord(cord).get().getGuests().size() == (int)crewPositionsToRemove.stream().filter(c -> c.equals(cord)).count()){
+            if (shipBoard.getOptComponentByCord(cord).get().getGuests().size() == (int) crewPositionsToRemove.stream().filter(c -> c.equals(cord)).count()) {
                 System.out.println("This component has no guests reamining to eliminate");
                 continue;
             }
@@ -1180,7 +1179,7 @@ private void endgame() {
         controller.removeCrew(crewPositionsToRemove);
     }
 
-    private void goodPlacement(){
+    private void goodPlacement() {
         SldAdvCard card = controller.getPlayedCard();
         List<GoodType> toInsert = new ArrayList<>();
 
@@ -1200,9 +1199,9 @@ private void endgame() {
         System.out.println("3, End placement (the good yet to placed will be discarded");
 
         choice = scanner.nextLine();
-        if (choice.equals("1")){
+        if (choice.equals("1")) {
             System.out.println("Available goods in your hand");
-            for (GoodType type : toInsert){
+            for (GoodType type : toInsert) {
                 System.out.print(type + "\t");
             }
             System.out.println("Select the type :");
@@ -1213,7 +1212,7 @@ private void endgame() {
 
             List<Cordinate> availableDepots = shipBoard.getAvailableDepots(type);
 
-            if (! availableDepots.isEmpty()) {
+            if (!availableDepots.isEmpty()) {
                 for (int i = 0; i < availableDepots.size(); i++) {
                     System.out.println(i + 1 + ". " + availableDepots.get(i));
                 }
@@ -1223,34 +1222,32 @@ private void endgame() {
                 Component comp = shipBoard.getOptComponentByCord(availableDepots.get(chosenDepot - 1)).get();
 
                 controller.addGood(comp.getId(), type);
-            }
-            else{
+            } else {
                 System.out.println("not enough space for the good chosen. Try to remove one first");
                 controller.setCardState(CardState.GOODS_PLACEMENT);
             }
-        }
-        else if (choice.equals("2")){
+        } else if (choice.equals("2")) {
             List<Cordinate> depotCords = new ArrayList<>();
             Iterator<Cordinate> cordinateIterator = Cordinate.getIterator();
 
-            while (cordinateIterator.hasNext()){
+            while (cordinateIterator.hasNext()) {
                 Cordinate cord = cordinateIterator.next();
                 if (shipBoard.getOptComponentByCord(cord).isEmpty())
                     continue;
 
                 List<GoodType> goods = shipBoard.getOptComponentByCord(cord).get().getStoredGoods();
-                if (! goods.isEmpty())
+                if (!goods.isEmpty())
                     depotCords.add(cord);
             }
 
-            for (int i = 0; i < depotCords.size(); i++){
-                System.out.println(i+1 + ". " + depotCords.get(i));
+            for (int i = 0; i < depotCords.size(); i++) {
+                System.out.println(i + 1 + ". " + depotCords.get(i));
             }
             System.out.print("Select a housing by its number :");
             int chosenHousing = Integer.parseInt(scanner.nextLine().trim());
             Component depot = shipBoard.getOptComponentByCord(depotCords.get(chosenHousing - 1)).get();
             System.out.println("Available goods to remove");
-            for (GoodType type : depot.getStoredGoods()){
+            for (GoodType type : depot.getStoredGoods()) {
                 System.out.println(type);
             }
             System.out.print("Select a good to remove : ");
@@ -1259,14 +1256,13 @@ private void endgame() {
             controller.removeGood(depot.getId(), type);
 
             System.out.println();
-        }
-        else if (choice.equals("3")){
+        } else if (choice.equals("3")) {
             controller.skipEffect();
         }
 
     }
 
-    private void drillChoice(){
+    private void drillChoice() {
         ShipBoard ship = controller.getShipBoard();
         ship.drawShipboard();
         SldAdvCard card = controller.getPlayedCard();
@@ -1275,13 +1271,13 @@ private void endgame() {
 
         List<Cordinate> drillCords = ship.getDoubleDrills();
         System.out.println("These are the available double drills in your ShipBoard:");
-        for (int i = 0; i < drillCords.size(); i++){
-            System.out.println(i+1 + ". " + drillCords.get(i));
+        for (int i = 0; i < drillCords.size(); i++) {
+            System.out.println(i + 1 + ". " + drillCords.get(i));
         }
         List<Cordinate> activatedDrills = new ArrayList<>();
 
         boolean stopAsking = false;
-        while ( activatedDrills.size() < energyAvailable && activatedDrills.size() < drillCords.size() && !stopAsking) {
+        while (activatedDrills.size() < energyAvailable && activatedDrills.size() < drillCords.size() && !stopAsking) {
             System.out.println("You currently have " + energyAvailable + " batteries");
             System.out.println("Actual fire power : " + power);
 
@@ -1310,7 +1306,7 @@ private void endgame() {
 
     }
 
-    private void rollDice(){
+    private void rollDice() {
         System.out.println("You are the leader. Press enter to roll the dices");
         String pressed = scanner.nextLine();
 
@@ -1327,11 +1323,11 @@ private void endgame() {
         controller.setRollResult(first, second);
     }
 
-    private void waitingRoll(){
+    private void waitingRoll() {
         System.out.println("Waiting for the leader to roll the dices");
     }
 
-    private void shieldSelection(){
+    private void shieldSelection() {
         SldAdvCard card = controller.getPlayedCard();
         ShipBoard shipBoard = controller.getShipBoard();
         Direction direction = null;
@@ -1348,7 +1344,7 @@ private void endgame() {
             }
 
             case SldCombatZone combatZone -> {
-                CannonPenalty cannon =controller.getCannon();
+                CannonPenalty cannon = controller.getCannon();
                 direction = cannon.getDirection();
             }
 
@@ -1375,18 +1371,16 @@ private void endgame() {
             }
 
 
-
-
             default -> Logger.error("caso non previsto");
         }
 
         String choice = "";
-        if (possibleToActivate){
+        if (possibleToActivate) {
             while (choice.equals("")) {
                 System.out.println("Activate a shield to protect (y/n) : ");
                 choice = scanner.nextLine().trim().toLowerCase();
 
-                if (!(choice.equals("y") || choice.equals("n"))){
+                if (!(choice.equals("y") || choice.equals("n"))) {
                     choice = "";
                     continue;
                 }
@@ -1415,8 +1409,7 @@ private void endgame() {
 
                 default -> Logger.error("caso non previsto");
             }
-        }
-        else{
+        } else {
             controller.getShipBoard().removeComponent(controller.getCordinate());
 
             controller.setState(GameState.VALIDATION);
@@ -1427,12 +1420,12 @@ private void endgame() {
 
     }
 
-    private void askOneDoubleDrill(){
+    private void askOneDoubleDrill() {
         String choice = "";
         ShipBoard shipBoard = controller.getShipBoard();
         boolean activate = false;
 
-        if (shipBoard.getQuantBatteries() > 0){
+        if (shipBoard.getQuantBatteries() > 0) {
             switch (controller.getPlayedCard()) {
                 case SldMeteorSwarm meteorSwarm -> {
                     System.out.println("hit on " + controller.getMeteor().getCordinateHit());
@@ -1440,13 +1433,13 @@ private void endgame() {
                     List<Cordinate> possibleDrills = shipBoard.possibleDrills(meteor.getDirection(), meteor.getNumber());
 
 
-                    if (possibleDrills.isEmpty()){
+                    if (possibleDrills.isEmpty()) {
                         System.out.println("No possibile drill to cover");
                         controller.advanceMeteor(true, false);
                         return;
                     }
 
-                    for (Cordinate cord : possibleDrills){
+                    for (Cordinate cord : possibleDrills) {
                         int idComp = shipBoard.getOptComponentByCord(cord).get().getId();
                         if (controller.getFlyBoard().getComponentById(idComp).getFirePower(false) > 0) {
                             controller.advanceMeteor(false, false);
@@ -1465,8 +1458,7 @@ private void endgame() {
                             }
                             boolean destroyed = choice.equals("y");
                             controller.advanceMeteor(destroyed, !destroyed);
-                        }
-                        else{
+                        } else {
                             controller.advanceMeteor(true, false);
                         }
                     }
@@ -1476,21 +1468,22 @@ private void endgame() {
             }
         }
 
-        if (!activate){
+        if (!activate) {
             controller.removeComponent(controller.getMeteor().getCordinateHit());
         }
 //        controller.advanceMeteor();
     }
 
-    private void stardustEndInfo(){
+    private void stardustEndInfo() {
         int exposedConn;
-        synchronized (controller.getShipboardLock()){
+        synchronized (controller.getShipboardLock()) {
             exposedConn = controller.getShipBoard().getExposedConnectors();
         }
         System.out.println("Stardust has been applied:");
         System.out.println("You have " + exposedConn + " exposed connectors, so you lost " + exposedConn + " positions");
     }
-    private void askLeave(){
+
+    private void askLeave() {
         int chose = 0;
 
         while (chose == 0) {
@@ -1500,15 +1493,15 @@ private void endgame() {
             System.out.println("4. Keep flying");
 
             System.out.print("Make your decision : ");
-            try{
+            try {
                 chose = Integer.parseInt(scanner.nextLine());
 
-                if (chose < 0 || chose > 4){
+                if (chose < 0 || chose > 4) {
                     System.out.println(RED + "invalid option. Try again.");
                     controller.setCardState(CardState.ASK_LEAVE);
                 }
 
-                switch (chose){
+                switch (chose) {
                     case 1 -> controller.leaveFlight(true);
                     case 2 -> {
                         controller.getFlyBoard().drawCircuit();
@@ -1535,12 +1528,14 @@ private void endgame() {
 //            return ;
 //        }
 
-    private void epidemicEndInfo(){
+    private void epidemicEndInfo() {
         System.out.println("Epidemic has been applied:");
         System.out.println("Look at your shipboard and check your crew!");
     }
 
-    /** SECONDARY METHOD */
+    /**
+     * SECONDARY METHOD
+     */
     private void clearConsole() {
         System.out.print("\033[H\033[2J");
     }
@@ -1575,7 +1570,7 @@ private void endgame() {
             controller.getFlyBoard().getSldAdvCardByID(cardId).disegnaCard();
     }
 
-    private void addCrewMenu(){
+    private void addCrewMenu() {
         clearConsole();
 
         Map<Cordinate, List<GuestType>> addedCrew = new HashMap<>();
@@ -1656,7 +1651,7 @@ private void endgame() {
                 clearConsole();
             }
 
-            if (secondChoice == 0){
+            if (secondChoice == 0) {
                 clearConsole();
                 continue;
             }
@@ -1664,8 +1659,8 @@ private void endgame() {
             secondChoice -= 1;
             Cordinate chosenCord = availableCord.get(secondChoice);
 
-            if (guestSelected.equals(GuestType.BROWN) || guestSelected.equals(GuestType.PURPLE)){
-                if (alreadyInserted.contains(guestSelected)){
+            if (guestSelected.equals(GuestType.BROWN) || guestSelected.equals(GuestType.PURPLE)) {
+                if (alreadyInserted.contains(guestSelected)) {
                     clearConsole();
                     System.out.println(RED + "It is possible to insert only a alien for kind." + RESET);
                     continue;
@@ -1675,10 +1670,9 @@ private void endgame() {
             shipBoard.getOptComponentByCord(chosenCord).get().addGuest(guestSelected);
             alreadyInserted.add(guestSelected);
 
-            if (addedCrew.containsKey(chosenCord)){
+            if (addedCrew.containsKey(chosenCord)) {
                 addedCrew.get(chosenCord).add(guestSelected);
-            }
-            else{
+            } else {
                 addedCrew.put(chosenCord, new ArrayList<>());
                 addedCrew.get(chosenCord).add(guestSelected);
             }

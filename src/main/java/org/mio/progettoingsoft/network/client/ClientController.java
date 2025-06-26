@@ -750,7 +750,7 @@ public class ClientController {
             flyBoard.getPlayerByUsername(nick).addCredits(credits);
             tot = flyBoard.getPlayerByUsername(nick).getCredits();
         }
-//        support.firePropertyChange("credits", 0, tot);
+        support.firePropertyChange("credits", 0, tot);
     }
 
     public void crewLost(int idComp) {
@@ -915,9 +915,12 @@ public class ClientController {
 
     public void removeComponentFromModel(String nickname, Cordinate cord) {
         synchronized (flyboardLock) {
-            Logger.debug("removed component of " + nickname + " from cordinate " + cord);
-            ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-            otherShip.removeComponent(cord);
+            if (nickname.equals(this.nickname)) {
+                Logger.debug("removed component of " + nickname + " from cordinate " + cord);
+                ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+                shipBoard.drawShipboard();
+                otherShip.removeComponent(cord);
+            }
         }
     }
 
@@ -933,7 +936,6 @@ public class ClientController {
     public void cannonHit(CannonType type, Direction direction, int number) {
         System.out.println(direction + " " + number);
         shipBoard.drawShipboard();
-
 
 
         cannon = new CannonPenalty(direction, type);
@@ -959,7 +961,7 @@ public class ClientController {
             boolean valid = shipBoard.isShipValid();
             if (valid) {
                 advanceCannon(false, false);
-            }else{
+            } else {
                 setState(GameState.VALIDATION);
             }
         } else {
@@ -989,9 +991,12 @@ public class ClientController {
     }
 
     public void leaveFlightFromModel(String nickname) {
+        Logger.info(nickname + " leave flight from model");
+        int index = -1;
         synchronized (flyboardLock) {
             Player player = flyBoard.getPlayerByUsername(nickname);
             flyBoard.getScoreBoard().remove(player);
+
 
             for (int i = 0; i < flyBoard.getCircuit().size(); i++) {
                 Optional<Player> optionalPlayer = flyBoard.getCircuit().get(i);
@@ -1001,10 +1006,13 @@ public class ClientController {
 
                 if (optionalPlayer.get().getNickname().equals(nickname)) {
                     flyBoard.getCircuit().set(i, Optional.empty());
-                    return;
+                    index = i;
+                    break;
                 }
             }
         }
+        support.firePropertyChange("circuit", index, -1);
+        Logger.info("Property fired");
     }
 
     public void addCrew(Map<Cordinate, List<GuestType>> addedCrew) {
@@ -1031,6 +1039,7 @@ public class ClientController {
     public Cordinate getCordinate() {
         return cordinate;
     }
+
     public void notifyCrash(String nickname) {
         setState(GameState.GAME_CRASH);
     }

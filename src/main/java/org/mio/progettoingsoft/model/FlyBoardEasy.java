@@ -134,6 +134,15 @@ public class FlyBoardEasy extends FlyBoard {
     }
 
     @Override
+    public List<Integer> getHiddenDeck() {
+        throw new IncorrectFlyBoardException("No hidden deck available");
+    }
+
+    @Override
+    public void buildAdventureDeck() {
+        throw new IncorrectFlyBoardException("Not implemented yet");
+    }
+    @Override
     public void setLittleDecks(List<List<Integer>> decks){
         throw new IncorrectFlyBoardException("No little decks to set");
     }
