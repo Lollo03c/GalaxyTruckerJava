@@ -1,10 +1,16 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.components.*;
-import org.mio.progettoingsoft.Component;
+import org.mio.progettoingsoft.model.*;
+import org.mio.progettoingsoft.model.components.Depot;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.HousingColor;
+import org.mio.progettoingsoft.model.enums.ComponentType;
+import org.mio.progettoingsoft.model.enums.Connector;
+import org.mio.progettoingsoft.model.enums.Direction;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.server.GameManager;
 
 
 import java.io.IOException;
@@ -515,7 +521,7 @@ public class ShipCell {
         Component alienHouse = new AlienHousing(4,GuestType.BROWN,Connector.FLAT,Connector.TRIPLE,Connector.DOUBLE,Connector.SINGLE);
         */
 
-        Component fullDepot = new Depot(30,true,false,Connector.FLAT,Connector.DOUBLE,Connector.TRIPLE,Connector.SINGLE);
+        Component fullDepot = new Depot(30,true,false, Connector.FLAT,Connector.DOUBLE,Connector.TRIPLE,Connector.SINGLE);
         fullDepot.addGood(GoodType.BLUE);
         fullDepot.addGood(GoodType.YELLOW);
         fullDepot.addGood(GoodType.GREEN);

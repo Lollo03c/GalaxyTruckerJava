@@ -1,8 +1,8 @@
 package org.mio.progettoingsoft.model.events;
 
-import org.mio.progettoingsoft.advCards.Planet;
-import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.model.advCards.Planet;
+import org.mio.progettoingsoft.model.advCards.sealed.CardState;
+import org.mio.progettoingsoft.model.components.GoodType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
 

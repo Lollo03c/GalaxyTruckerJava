@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.network.messages;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.Direction;
+import org.mio.progettoingsoft.model.Cordinate;
+import org.mio.progettoingsoft.model.enums.Direction;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 
 public final class MeteorMessage extends Message {

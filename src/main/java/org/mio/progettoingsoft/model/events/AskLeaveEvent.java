@@ -1,6 +1,5 @@
 package org.mio.progettoingsoft.model.events;
 
-import org.mio.progettoingsoft.advCards.sealed.CardState;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 
 import java.util.Map;

@@ -2,14 +2,15 @@ package org.mio.progettoingsoft;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GuestType;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
-import org.mio.progettoingsoft.model.ShipBoardEasy;
-import org.mio.progettoingsoft.model.ShipBoardNormal;
+import org.mio.progettoingsoft.model.*;
+import org.mio.progettoingsoft.model.enums.Direction;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.server.GameManager;
 import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.*;

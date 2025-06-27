@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.network.messages;
 
-import org.mio.progettoingsoft.advCards.sealed.SldStardust;
+import org.mio.progettoingsoft.model.advCards.sealed.SldStardust;
 
 public final class StardustMessage extends Message {
     private final SldStardust card;

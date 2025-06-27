@@ -1,8 +1,9 @@
 package org.mio.progettoingsoft.components;
 
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.model.Component;
+import org.mio.progettoingsoft.model.components.EnergyDepot;
+import org.mio.progettoingsoft.model.enums.Connector;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import static org.junit.jupiter.api.Assertions.*;

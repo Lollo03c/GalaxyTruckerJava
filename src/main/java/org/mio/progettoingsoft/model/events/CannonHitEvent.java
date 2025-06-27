@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.model.events;
 
-import org.mio.progettoingsoft.Direction;
+import org.mio.progettoingsoft.model.enums.Direction;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;

@@ -1,11 +1,12 @@
 package org.mio.progettoingsoft.components;
 
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.model.Component;
+import org.mio.progettoingsoft.model.components.Depot;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.enums.Connector;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
-import java.net.CookieHandler;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.exceptions;
 
-import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.model.Player;
 
 public class NoPowerException extends RuntimeException {
     private String username;

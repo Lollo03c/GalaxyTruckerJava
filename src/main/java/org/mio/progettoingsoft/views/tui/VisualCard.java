@@ -1,11 +1,9 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.mio.progettoingsoft.AdvCardType;
-import org.mio.progettoingsoft.AdventureCard;
-import org.mio.progettoingsoft.Direction;
-import org.mio.progettoingsoft.advCards.*;
-import org.mio.progettoingsoft.advCards.sealed.*;
-import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.model.advCards.*;
+import org.mio.progettoingsoft.model.advCards.sealed.*;
+import org.mio.progettoingsoft.model.enums.Direction;
+import org.mio.progettoingsoft.model.components.GoodType;
 
 import java.util.ArrayList;
 import java.util.List;

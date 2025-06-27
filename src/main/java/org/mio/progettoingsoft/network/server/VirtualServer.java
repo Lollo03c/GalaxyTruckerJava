@@ -1,8 +1,8 @@
 package org.mio.progettoingsoft.network.server;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GuestType;
+import org.mio.progettoingsoft.model.Cordinate;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 
 import java.rmi.Remote;

@@ -1,9 +1,10 @@
 package org.mio.progettoingsoft.components;
 
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.Connector;
-import org.mio.progettoingsoft.Direction;
+import org.mio.progettoingsoft.model.Component;
+import org.mio.progettoingsoft.model.components.Pipe;
+import org.mio.progettoingsoft.model.enums.Connector;
+import org.mio.progettoingsoft.model.enums.Direction;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -2,14 +2,17 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.*;
+import org.mio.progettoingsoft.model.Cordinate;
+import org.mio.progettoingsoft.model.FlyBoard;
+import org.mio.progettoingsoft.model.Game;
+import org.mio.progettoingsoft.model.ShipBoard;
+import org.mio.progettoingsoft.model.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.server.GameManager;
 import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SldCombatZoneTest {
     GameServer game;

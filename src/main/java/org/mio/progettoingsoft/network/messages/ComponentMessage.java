@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.network.messages;
 
-import org.mio.progettoingsoft.Cordinate;
+import org.mio.progettoingsoft.model.Cordinate;
 
 import java.io.Serializable;
 

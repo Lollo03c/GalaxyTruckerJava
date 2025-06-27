@@ -1,9 +1,6 @@
 package org.mio.progettoingsoft.model;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.ShipBoard;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 
 import java.util.ArrayList;

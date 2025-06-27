@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft;
 
 import org.junit.jupiter.api.Test;
+import org.mio.progettoingsoft.model.enums.Connector;
 
 import static org.junit.jupiter.api.Assertions.*;
 

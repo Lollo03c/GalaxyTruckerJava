@@ -1,17 +1,20 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.*;
-import org.mio.progettoingsoft.advCards.sealed.*;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GuestType;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
-import org.mio.progettoingsoft.model.FlyBoardNormal;
+import org.mio.progettoingsoft.model.*;
+import org.mio.progettoingsoft.model.advCards.CannonPenalty;
+import org.mio.progettoingsoft.model.advCards.Meteor;
+import org.mio.progettoingsoft.model.advCards.Planet;
+import org.mio.progettoingsoft.model.advCards.sealed.*;
+import org.mio.progettoingsoft.model.enums.Direction;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.enums.GameState;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;

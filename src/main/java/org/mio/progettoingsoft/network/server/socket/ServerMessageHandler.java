@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.network.server.socket;
 
-import org.mio.progettoingsoft.GameManager;
+import org.mio.progettoingsoft.network.server.GameManager;
 import org.mio.progettoingsoft.network.messages.*;
 import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.Logger;

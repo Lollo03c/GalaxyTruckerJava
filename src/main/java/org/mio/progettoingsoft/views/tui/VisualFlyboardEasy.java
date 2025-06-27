@@ -1,9 +1,8 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.Player;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.model.FlyBoardEasy;
-import org.mio.progettoingsoft.model.FlyBoardNormal;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.*;

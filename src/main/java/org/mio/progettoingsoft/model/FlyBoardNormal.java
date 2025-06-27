@@ -2,10 +2,10 @@ package org.mio.progettoingsoft.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.sealed.*;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.components.HousingColor;
+import org.mio.progettoingsoft.model.advCards.sealed.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.network.server.GameManager;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardNormal;
 
