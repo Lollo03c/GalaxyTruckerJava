@@ -1,0 +1,34 @@
+@startuml
+== Choose position ==
+Client -> Server : getStartingPosition()
+Server -> Client
+Client -> Server : choosePlace(position)
+alt isPlaceAvailable(position)
+    loop for all players
+        Server -> Client : setPlayerPosition(position)
+    end
+    Server -> Client : setState(GameState.ENDBUILDING)
+else
+    Server -> Client : setState(GameState:CHOOSE_POSITION)
+end
+
+alt isPlayerLast()
+    loop for all players
+        Server -> Client : setState(GameState.VALIDATION)
+    end
+end
+
+== Validation ==
+loop for all incorrect components
+    Client -> Server : removeComponent
+end
+loop for all players
+    Server -> Client : removeComponent(nickname, idComp)
+end
+Client -> Server : endValidation()
+alt isShipValid()
+    Server -> Client : setState(GameState.ADD_CREW)
+else
+    Server -> Client : setState(GameState.VALIDATION)
+end
+@enduml

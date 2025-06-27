@@ -1,2 +1,0 @@
-- Fase di setup: se il client rimane fermo su "Scegli numero giocatori" e si avvia un altro client,
-    il secondo client vedrà le game info (null) della partita creata prima
