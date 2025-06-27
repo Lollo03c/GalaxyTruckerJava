@@ -622,4 +622,6 @@ public abstract class FlyBoard implements FlyBoardServer {
     public void setPlayedFirstCard(boolean playedFirstCard) {
         this.playedFirstCard = playedFirstCard;
     }
+
+
 }

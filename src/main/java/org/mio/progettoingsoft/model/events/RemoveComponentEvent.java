@@ -20,9 +20,10 @@ public final class RemoveComponentEvent extends Event{
 
     @Override
     public void send(Map<String, VirtualClient> clients){
-        for (VirtualClient client : clients.values()){
+        for (String nick : clients.keySet()){
             try{
-                client.removeComponent(nickname, cordinate);
+                if (!nick.equals(nickname))
+                    clients.get(nick).removeComponent(nickname, cordinate);
             } catch (Exception e) {
                 ServerController.getInstance().handleGameCrash(e, nickname, 0);
             }

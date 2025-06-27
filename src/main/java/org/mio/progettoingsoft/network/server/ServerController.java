@@ -362,15 +362,15 @@ public class ServerController {
             } else {
                 switch (flyBoard.getPlayedCard()) {
                     case SldPirates pirates -> {
-                        advanceCannon(idGame, nickname, false, usedBattery);
+                        advanceCannon(idGame, nickname, true, usedBattery);
                     }
 
                     case SldCombatZone combatZone -> {
-                        advanceCannon(idGame, nickname, false, usedBattery);
+                        advanceCannon(idGame, nickname, true, usedBattery);
                     }
 
                     case SldMeteorSwarm meteorSwarm ->{
-                        advanceMeteor(idGame, nickname, false, usedBattery);
+                        advanceMeteor(idGame, nickname, true, usedBattery);
                     }
 
                     default -> {
@@ -501,6 +501,7 @@ public class ServerController {
         }
         flyBoard.setPlayedFirstCard(true);
         int id = flyBoard.drawCard();
+
         SldAdvCard card = flyBoard.getSldAdvCardByID(id);
         if (id == 999) {
             setEndGame(idGame);
@@ -1132,7 +1133,7 @@ public class ServerController {
 
         Logger.info("RemoveComponentFromAllExcept " + nickname);
 
-        if (flyBoard.getPlayedCard() == null) {
+        if (flyBoard.isPlayedFirstCard() == false) {
             for (String nick : clients.keySet()) {
                 try {
                     if (!nick.equals(nickname)) {

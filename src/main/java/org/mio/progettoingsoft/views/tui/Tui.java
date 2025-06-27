@@ -1414,7 +1414,9 @@ public class Tui implements View {
                 default -> Logger.error("caso non previsto");
             }
         } else {
-            controller.getShipBoard().removeComponent(cord);
+//            controller.getShipBoard().removeComponent(cord);
+            controller.removeComponentImmediate(cord);
+
 
             controller.setState(GameState.VALIDATION);
         }

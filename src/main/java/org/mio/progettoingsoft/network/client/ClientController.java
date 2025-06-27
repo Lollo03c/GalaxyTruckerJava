@@ -793,13 +793,18 @@ public class ClientController {
      */
     public void rotateHourglass() {
         try {
-            if (pendingHourglass) {
-                throw new CannotRotateHourglassException("hourglass timer is already started");
-            } else if (hourglassCounter == 3) {
-                throw new CannotRotateHourglassException("hourglass cannot be rotated anymore");
+            try {
+                if (pendingHourglass) {
+                    throw new CannotRotateHourglassException("hourglass timer is already started");
+                } else if (hourglassCounter == 3) {
+                    throw new CannotRotateHourglassException("hourglass cannot be rotated anymore");
+                }
+                pendingHourglass = true;
+                server.startHourglass(idGame);
             }
-            pendingHourglass = true;
-            server.startHourglass(idGame);
+            catch (CannotRotateHourglassException e){
+
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1342,7 +1347,7 @@ public class ClientController {
     public void setRollResult(int first, int second) {
         try {
             //todo e' da cambiare
-            server.setRollResult(idGame, nickname, 3, 3);
+            server.setRollResult(idGame, nickname, first, second);
         } catch (Exception e) {
         }
     }
@@ -1431,12 +1436,10 @@ public class ClientController {
      */
     public void removeComponentFromModel(String nickname, Cordinate cord) {
         synchronized (flyboardLock) {
-            if (nickname.equals(this.nickname)) {
-                Logger.debug("removed component of " + nickname + " from cordinate " + cord);
-                ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
-                shipBoard.drawShipboard();
-                otherShip.removeComponent(cord);
-            }
+            Logger.debug("removed component of " + nickname + " from cordinate " + cord);
+            ShipBoard otherShip = flyBoard.getPlayerByUsername(nickname).getShipBoard();
+            otherShip.removeComponent(cord);
+
         }
     }
 

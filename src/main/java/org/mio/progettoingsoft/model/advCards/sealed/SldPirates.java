@@ -209,13 +209,12 @@ public final class SldPirates extends SldAdvCard{
         if (energy)
             player.getShipBoard().removeEnergy(1);
 
-        if (destroyed) {
-            Optional<Cordinate> optCord = actualCannon.findHit(player.getShipBoard(), actualCannon.getNumber());
-            player.getShipBoard().removeComponent(optCord.get());
-
-            Event event = new RemoveComponentEvent(nickname, optCord.get());
-            game.addEvent(event);
-        }
+//        if (destroyed) {
+//            Optional<Cordinate> optCord = actualCannon.findHit(player.getShipBoard(), actualCannon.getNumber());
+//
+////            Event event = new RemoveComponentEvent(nickname, optCord.get());
+////            game.addEvent(event);
+//        }
 
         synchronized (flyBoard) {
             actualCannon.getPlayerstoHit().remove(player);
