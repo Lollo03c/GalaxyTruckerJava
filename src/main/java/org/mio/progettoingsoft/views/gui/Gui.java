@@ -32,6 +32,7 @@ import org.mio.progettoingsoft.advCards.sealed.*;
 import org.mio.progettoingsoft.components.GoodType;
 import org.mio.progettoingsoft.components.GuestType;
 import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
 import org.mio.progettoingsoft.model.enums.GameInfo;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.network.client.ClientController;
@@ -45,6 +46,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
+import static org.mio.progettoingsoft.GameState.CHOOSE_POSITION;
 import static org.mio.progettoingsoft.GameState.DRAW_CARD;
 
 /**
@@ -79,6 +81,8 @@ public class Gui extends Application implements View {
     //true -> first time in adventure card view
     private boolean firstAdventureStart = true;
     private boolean removed = false;
+    // used to determine if the end of building is chosen by the user or forced by the hourglass
+    private boolean isForced = false;
     private boolean acceptEffect;
     private double screenHeight;
     private double screenWidth;
@@ -153,6 +157,7 @@ public class Gui extends Application implements View {
     private ProgressBar hourglassProgressBar;
     private Label cycleLabel;
     private Button rotateHourglassBtn;
+    private Button adventureRotateBtn;
     // modal stage and view components for the uncovered components "gallery"
     private Stage uncoveredComponentModalStage;
     private TilePane uncoveredComponentsTilePane;
@@ -222,9 +227,6 @@ public class Gui extends Application implements View {
                         creditsLabel.setText("Your credits: " + evt.getNewValue());
                     }
                 });
-            }
-            case "hourglassCounter" -> {
-                statesQueue.add(GameState.STARTED_HOURGLASS);
             }
         }
     }
@@ -306,7 +308,10 @@ public class Gui extends Application implements View {
             case CHOOSE_POSITION -> choosePositionView(false);
             case WRONG_POSITION -> choosePositionView(true);
             case VALIDATION -> validationShipView();
-            case END_BUILDING -> waitingForAdventureStartView();
+            case END_BUILDING -> {
+                controller.setFinishedBuilding(true);
+                waitingForAdventureStartView();
+            }
             case DRAW_CARD -> advStartedView(false, removed);
             case YOU_CAN_DRAW_CARD -> advStartedView(true, removed);
             case NEW_CARD -> loadNewCard();
@@ -322,17 +327,30 @@ public class Gui extends Application implements View {
             }
             case FINISH_HOURGLASS -> {
                 hourglassCycle = controller.getHourglassCounter();
-                if (hourglassCycle <= 2) {
+                if (hourglassCycle <= 1) {
                     rotateHourglassBtn.setDisable(false);
+                }
+                if (hourglassCycle <= 2) {
+                    if (adventureRotateBtn != null) {
+                        adventureRotateBtn.setDisable(false);
+                    }
                 }
             }
             case FINISH_LAST_HOURGLASS -> {
+                if(!controller.getFinishedBuilding()) {
+                    isForced = true;
+                    controller.freeDeck();
+                    controller.endBuild();
+                }
             }
             case STARTED_HOURGLASS -> {
                 remainings = total;
                 hourglassCycle = controller.getHourglassCounter();
                 cycleLabel.setText("Hourglass counter: " + hourglassCycle);
                 rotateHourglassBtn.setDisable(true);
+                if (adventureRotateBtn != null) {
+                    adventureRotateBtn.setDisable(true);
+                }
                 hourglassTimeline.playFromStart();
             }
             case ENDGAME -> endGameView();
@@ -583,7 +601,11 @@ public class Gui extends Application implements View {
             rotateHourglassBtn = new Button("Rotate Hourglass");
             rotateHourglassBtn.setOnAction(event -> {
                 if (controller.getHourglassCounter() < 2) {
-                    controller.startHourglass();
+                    try {
+                        controller.handleBuildingShip(8);
+                    } catch (CannotRotateHourglassException e) {
+                        event.consume();
+                    }
                 }
             });
             rotateHourglassBtn.setDisable(true);
@@ -1296,6 +1318,12 @@ public class Gui extends Application implements View {
             choosePlaceBox.getChildren().add(btn);
         }
 
+        choosePositionStage.setOnCloseRequest(evt -> {
+            if (isForced) {
+                evt.consume();
+            }
+        });
+
         box.getChildren().addAll(circuitImageView, choosePlaceLabel, choosePlaceBox);
         choosePositionStage.setScene(new Scene(box));
         choosePositionStage.show();
@@ -1309,6 +1337,18 @@ public class Gui extends Application implements View {
         VBox box = new VBox();
         box.setAlignment(Pos.CENTER);
         box.getChildren().add(new Label("Waiting for adventure start"));
+
+        adventureRotateBtn = new Button("Rotate hourglass");
+        adventureRotateBtn.setOnAction(evt -> {
+            try {
+                controller.rotateHourglass();
+                box.getChildren().remove(adventureRotateBtn);
+                box.getChildren().add(new Label("Last hourglass cycle started..."));
+            } catch (CannotRotateHourglassException e) {
+                evt.consume();
+            }
+        });
+        box.getChildren().add(adventureRotateBtn);
         root.getChildren().add(box);
     }
 

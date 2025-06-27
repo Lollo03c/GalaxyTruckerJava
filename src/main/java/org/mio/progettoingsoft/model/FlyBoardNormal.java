@@ -114,10 +114,10 @@ public class FlyBoardNormal extends FlyBoard  {
         if (firstUseHourglass){
             this.hourglass = new Hourglass(GameManager.getInstance().getOngoingGames().get(idGame));
             firstUseHourglass = false;
-            hourglass.avvia();
+            hourglass.start();
         }
         else{
-            hourglass.avvia();
+            hourglass.start();
         }
     }
 

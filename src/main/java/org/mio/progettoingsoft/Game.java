@@ -6,6 +6,7 @@ import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.model.interfaces.GameClient;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.client.VirtualClient;
+import org.mio.progettoingsoft.network.server.ServerController;
 import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.*;
@@ -54,10 +55,10 @@ public class Game implements GameServer, GameClient {
     /**
      * Constructs a new Game with the specified game ID and testing mode.
      *
-     * @param idGame the unique identifier of the game
+     * @param idGame  the unique identifier of the game
      * @param testing true if the game is in testing mode; false otherwise
      */
-    public Game(int idGame, boolean testing){
+    public Game(int idGame, boolean testing) {
         this.idGame = idGame;
         gameController = new GameController(this, eventsQueue, testing);
         this.testing = testing;
@@ -69,11 +70,11 @@ public class Game implements GameServer, GameClient {
      * This method also resets the creation flag in the GameManager singleton
      * and notifies all threads waiting for the game to be created.
      *
-     * @param mode the selected game mode
+     * @param mode       the selected game mode
      * @param numPlayers the expected number of players
      */
     @Override
-    public void setupGame(GameMode mode, int numPlayers){
+    public void setupGame(GameMode mode, int numPlayers) {
 
         synchronized (GameManager.getInstance().getLockCreatingGame()) {
             GameManager.getInstance().getCreatingGame().set(false);
@@ -90,7 +91,7 @@ public class Game implements GameServer, GameClient {
      * @return The game ID.
      */
     @Override
-    public int getIdGame(){
+    public int getIdGame() {
         return idGame;
     }
 
@@ -100,7 +101,7 @@ public class Game implements GameServer, GameClient {
      * @return The number of players.
      */
     @Override
-    public int getNumPlayers(){
+    public int getNumPlayers() {
         return numPlayers;
     }
 
@@ -110,8 +111,8 @@ public class Game implements GameServer, GameClient {
      * @return The {@link GameMode}.
      */
     @Override
-    public GameMode getGameMode(){
-        return  mode;
+    public GameMode getGameMode() {
+        return mode;
     }
 
     /**
@@ -121,7 +122,7 @@ public class Game implements GameServer, GameClient {
      * @return A {@link Map} where keys are player nicknames (String) and values are {@link VirtualClient} instances.
      */
     @Override
-    public Map<String, VirtualClient> getClients(){
+    public Map<String, VirtualClient> getClients() {
         return clients;
     }
 
@@ -129,10 +130,10 @@ public class Game implements GameServer, GameClient {
      * Adds a player to the game.
      *
      * @param nickname the player's nickname
-     * @param client the VirtualClient representing the player
+     * @param client   the VirtualClient representing the player
      */
     @Override
-    public void addPlayer(String nickname, VirtualClient client){
+    public void addPlayer(String nickname, VirtualClient client) {
         clients.put(nickname, client);
     }
 
@@ -142,7 +143,7 @@ public class Game implements GameServer, GameClient {
      * @return true if no players have joined yet; false otherwise
      */
     @Override
-    public boolean isFull(){
+    public boolean isFull() {
         return numPlayers == clients.size();
     }
 
@@ -163,7 +164,7 @@ public class Game implements GameServer, GameClient {
      * distributes initial game data to clients, and starts the hourglass timer.
      */
     @Override
-    public void startGame(){
+    public void startGame() {
 
         if (!testing)
             createFlyboard(mode, clients.keySet());
@@ -177,9 +178,9 @@ public class Game implements GameServer, GameClient {
                 ));
         List<List<Integer>> decks = flyboard.getLittleDecks();
 
-        for (VirtualClient client : clients.values()){
+        for (VirtualClient client : clients.values()) {
             try {
-                client.setFlyBoard(mode ,colorMap, decks);
+                client.setFlyBoard(mode, colorMap, decks);
                 client.setState(GameState.GAME_START);
                 client.setState(GameState.BUILDING_SHIP);
             } catch (Exception e) {
@@ -187,7 +188,9 @@ public class Game implements GameServer, GameClient {
             }
         }
 
-//        flyboard.startHourglass(idGame);
+        Logger.info("Game " + idGame + " started");
+
+        ServerController.getInstance().startHourglass(idGame);
 //        for(VirtualClient client : getClients().values()){
 //            try {
 //                client.startedHourglass(idGame);
@@ -195,7 +198,7 @@ public class Game implements GameServer, GameClient {
 //                throw new RuntimeException(e);
 //            }
 //        }
-        Logger.info("Game " + idGame + " started");
+
     }
 
     /**
@@ -204,7 +207,7 @@ public class Game implements GameServer, GameClient {
      * @return The {@link FlyBoard} object.
      */
     @Override
-    public FlyBoard getFlyboard(){
+    public FlyBoard getFlyboard() {
         return flyboard;
     }
 
@@ -214,14 +217,14 @@ public class Game implements GameServer, GameClient {
      * @return The {@link GameController} object.
      */
     @Override
-    public GameController getController(){
+    public GameController getController() {
         return gameController;
     }
 
     /**
      * Creates and initializes the FlyBoard for the current game session.
      *
-     * @param mode the selected game mode
+     * @param mode      the selected game mode
      * @param nicknames the set of player nicknames to include
      */
     public void createFlyboard(GameMode mode, Set<String> nicknames) {
@@ -230,19 +233,19 @@ public class Game implements GameServer, GameClient {
 
     /**
      * add en event to precess
+     *
      * @param event the event to add
      */
     @Override
-    public void addEvent(Event event){
+    public void addEvent(Event event) {
         eventsQueue.add(event);
     }
 
     /**
-     *
      * @return the {@link BlockingQueue} of {@link Event} to process
      */
     @Override
-    public BlockingQueue<Event> getEventsQueue(){
+    public BlockingQueue<Event> getEventsQueue() {
         return eventsQueue;
     }
 
@@ -253,7 +256,7 @@ public class Game implements GameServer, GameClient {
      * @return The {@link Object} serving as a lock.
      */
     @Override
-    public Object getLock(){
+    public Object getLock() {
         return lock;
     }
 

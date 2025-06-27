@@ -50,6 +50,15 @@ public class ClientController {
     }
 
     /**
+     * Set whether the client has finished the building phase.
+     *
+     * @param bool: true if the build is finished
+     */
+    public void setFinishedBuilding(boolean bool){
+        finishedBuilding = bool;
+    }
+
+    /**
      * Returns the current value of the hourglass counter.
      *
      * @return The current hourglass counter value.
@@ -72,7 +81,7 @@ public class ClientController {
      */
     public void incrementHourglassCounter() {
         hourglassCounter++;
-        support.firePropertyChange("hourglassCounter", null, hourglassCounter);
+        setState(GameState.STARTED_HOURGLASS);
     }
 
     /**
@@ -790,7 +799,7 @@ public class ClientController {
             if (pendingHourglass) {
                 throw new CannotRotateHourglassException("hourglass timer is already started");
             } else if (hourglassCounter == 3) {
-                throw new CannotRotateHourglassException("hourglass cannote be rotated anymore");
+                throw new CannotRotateHourglassException("hourglass cannot be rotated anymore");
             }
             pendingHourglass = true;
             server.startHourglass(idGame);
@@ -953,7 +962,9 @@ public class ClientController {
      */
     public void freeDeck() {
         try {
-            server.freeDeck(idGame, nickname, inHandDeck);
+            if(inHandDeck != -1)
+                server.freeDeck(idGame, nickname, inHandDeck);
+            inHandDeck = -1;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

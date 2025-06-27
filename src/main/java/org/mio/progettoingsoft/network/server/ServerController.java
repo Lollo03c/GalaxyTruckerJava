@@ -505,19 +505,6 @@ public class ServerController {
             throw new NotYourTurnException();
         }
         flyBoard.setPlayedFirstCard(true);
-//        SldAdvCard card = flyBoard.getSldAdvCardByID(29);
-//
-////        SldAdvCard card = flyBoard.drawSldAdvCard();
-//        int id = 16;
-//
-//        //int id = 999;
-//        //if id is 999 the deck is empty
-////        id = ;
-//        if(id == 999){
-//            setEndGame(idGame);
-//            return;
-//        }
-//        card = flyBoard.getSldAdvCardByID(id);
         int id = flyBoard.drawCard();
         SldAdvCard card = flyBoard.getSldAdvCardByID(id);
         if (id == 999) {
@@ -1267,6 +1254,7 @@ public class ServerController {
 
         if (flyBoard.getAddCrewPlayers().isEmpty()) {
             flyBoard.buildAdventureDeck();
+            this.startHourglass(idGame);
             String nickLeader = flyBoard.getScoreBoard().getFirst().getNickname();
 
             for (String n : game.getClients().keySet()) {

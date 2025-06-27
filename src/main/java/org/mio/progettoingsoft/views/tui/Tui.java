@@ -126,12 +126,9 @@ public class Tui implements View {
                 System.out.println(GREEN + "Hourglass has finished its cycle number : " + controller.getHourglassCounter() + RESET);
                 if (controller.getFinishedBuilding()) {
                     controller.setState(GameState.END_BUILDING);
-                    //controller.setState(GameState.YOU_CAN_ROTATE_HOURGLASS);
                 }
             }
             case FINISH_LAST_HOURGLASS -> {
-                //todo : problema quando setto lo stato a choose_position dato che prima lo stato era a ship_building o qualcosa
-                //di simile e deve processare l'input mi genera un'eccezione
                 if (!controller.getFinishedBuilding()) {
                     System.out.println(GREEN + "Last Hourglass is terminated : the time to build your shipBoard is over!" + RESET);
                     if (controller.getFlyBoard().getMode().equals(GameMode.NORMAL)) {
@@ -332,11 +329,11 @@ public class Tui implements View {
         GameMode mode = controller.getFlyBoard().getMode();
         if (firstBuilding) {
             System.out.println(BLUE + "IT'S TIME TO BUILD YOUR SHIP!" + RESET);
-            firstBuilding = false;
-            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partita Add commentMore actions
-            if (controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE) && mode.equals(GameMode.NORMAL)) {
-                controller.startHourglass();
-            }
+//            firstBuilding = false;
+//            //decido di far partire la clessidra dal client con la firstHousing blu che c'è in ogni partita Add commentMore actions
+//            if (controller.getShipBoard().getHousingColor().equals(HousingColor.BLUE) && mode.equals(GameMode.NORMAL)) {
+//                controller.startHourglass();
+//            }
         }
 
         int choice = -1;
@@ -1196,7 +1193,7 @@ public class Tui implements View {
 
         System.out.println("\n1. Insert a good in the shipboard");
         System.out.println("2. Remove a good in the shipboard");
-        System.out.println("3, End placement (the good yet to placed will be discarded");
+        System.out.println("3. End placement (the good yet to placed will be discarded)");
 
         choice = scanner.nextLine();
         if (choice.equals("1")) {

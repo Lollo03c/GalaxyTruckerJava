@@ -13,9 +13,9 @@ import java.util.TimerTask;
  * notifies the game controller.
  */
 public class Hourglass {
-    private static final int durataSecondi = 5;
-    private final int maxAttivazioni = 3;
-    private int attivazioni = 0;
+    private static final int durationSecs = 10;
+    private final int maxActivations = 3;
+    private int activations = 0;
     private GameServer game;
 
     /**
@@ -31,7 +31,7 @@ public class Hourglass {
      * @return The duration in seconds.
      */
     public static int getTotal(){
-        return durataSecondi;
+        return durationSecs;
     }
 
     /**
@@ -42,25 +42,25 @@ public class Hourglass {
      * and schedules a {@link TimerTask} to notify the game controller
      * via {@code game.getController().finishHourglass()} when the time expires.
      */
-    public void avvia() {
-        if (attivazioni >= maxAttivazioni) {
-            System.out.println("La clessidra ha già raggiunto il numero massimo di attivazioni.");
+    public void start() {
+        if (activations >= maxActivations) {
+            Logger.debug("Hourglass already did " + activations + " cycles");
             return;
         }
-        Logger.debug("La clessidra è stata avviata : " + attivazioni);
-        attivazioni++;
-        int numeroAttivazione = attivazioni;
+        Logger.debug("Hourglass started : " + activations);
+        activations++;
+        int nActivations = activations;
 
-        System.out.println("Clessidra attivata. Timer " + numeroAttivazione + " in corso...");
+        Logger.debug("Hourglass started. Timer " + nActivations + " is running");
 
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Timer " + numeroAttivazione + " scaduto!");
-                game.getController().finishHourglass(numeroAttivazione);
+                Logger.debug("Timer " + nActivations + " ended");
+                game.getController().finishHourglass(nActivations);
             }
-        }, durataSecondi * 1000L);
+        }, durationSecs * 1000L);
     }
 }
 
