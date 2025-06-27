@@ -16,7 +16,6 @@ class EngineTest {
         assertEquals(Direction.BACK, engine.getDirection());
         engine.rotate(0);
         assertEquals(Direction.BACK, engine.getDirection());
-        System.out.println(engine.toString());
 
         assertEquals(1, engine.getEnginePower(true));
         assertEquals(1, engine.getEnginePower(false));

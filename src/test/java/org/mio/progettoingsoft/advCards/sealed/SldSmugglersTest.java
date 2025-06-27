@@ -77,10 +77,6 @@ class SldSmugglersTest {
 
             assertEquals(CardState.FINALIZED, card.getState());
 
-//            assertEquals("andrea", card.getActualPlayer().getNickname());
-//            controller.activateDoubleDrills(gameId, "andrea", Collections.emptyList());
-//            assertEquals(0, flyBoard.getPlayerByUsername("andrea").getShipBoard().getStoredQuantity(GoodType.RED));
-            System.out.println("eseguito");
         }
     }
 
@@ -104,9 +100,7 @@ class SldSmugglersTest {
 
 
             assertEquals("lollo", card.getActualPlayer().getNickname());
-            flyBoard.getPlayerByUsername("lollo").getShipBoard().drawShipboard();
             controller.activateDoubleDrills(gameId, "lollo", Collections.emptyList());
-            flyBoard.getPlayerByUsername("lollo").getShipBoard().drawShipboard();
             assertEquals(0, flyBoard.getPlayerByUsername("lollo").getShipBoard().getStoredQuantity(GoodType.RED));
             assertEquals(0, flyBoard.getPlayerByUsername("lollo").getShipBoard().getStoredQuantity(GoodType.YELLOW));
             assertEquals(2, flyBoard.getPlayerByUsername("lollo").getShipBoard().getStoredQuantity(GoodType.GREEN));

@@ -62,8 +62,6 @@ class SldEpidemicTest {
             player.getShipBoard().drawShipboard();
         }
 
-
-
     }
 
 }

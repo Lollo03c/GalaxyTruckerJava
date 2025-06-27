@@ -16,7 +16,6 @@ class DoubleEngineTest {
         assertEquals(Direction.BACK, engine.getDirection());
         engine.rotate(0);
         assertEquals(Direction.BACK, engine.getDirection());
-        System.out.println(engine.toString());
 
         assertEquals(2, engine.getEnginePower(true));
         assertEquals(0, engine.getEnginePower(false));

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.mio.progettoingsoft.advCards.sealed.SldEpidemicTest" time="0.75" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.mio.progettoingsoft.advCards.sealed.SldEpidemicTest" time="0.07" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="23"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IT"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-23.0.2\bin"/>
-    <property name="sun.java.command" value="C:\Users\berna\AppData\Local\Temp\surefire14946022486454138606\surefirebooter-20250626234940552_3.jar C:\Users\berna\AppData\Local\Temp\surefire14946022486454138606 2025-06-26T23-49-40_346-jvmRun1 surefire-20250626234940552_1tmp surefire_0-20250626234940552_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650\surefirebooter-20250627105302659_3.jar C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650 2025-06-27T10-53-02_473-jvmRun1 surefire-20250627105302659_1tmp surefire_0-20250627105302659_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\berna\IdeaProjects\IS25-AM34\target\test-classes;C:\Users\berna\IdeaProjects\IS25-AM34\target\classes;C:\Users\berna\.m2\repository\org\openjfx\javafx-controls\23.0.2\javafx-controls-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-controls\23.0.2\javafx-controls-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-base\23.0.2\javafx-base-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-base\23.0.2\javafx-base-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-linux.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-mac-aarch64.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-fxml\23.0.2\javafx-fxml-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-fxml\23.0.2\javafx-fxml-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.2\junit-jupiter-api-5.10.2.jar;C:\Users\berna\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\berna\.m2\repository\org\junit\platform\junit-platform-commons\1.10.2\junit-platform-commons-1.10.2.jar;C:\Users\berna\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\berna\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.2\junit-jupiter-engine-5.10.2.jar;C:\Users\berna\.m2\repository\org\junit\platform\junit-platform-engine\1.10.2\junit-platform-engine-1.10.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.18.2\jackson-databind-2.18.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.18.2\jackson-annotations-2.18.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.18.2\jackson-core-2.18.2.jar;C:\Users\berna\.m2\repository\org\slf4j\slf4j-api\2.0.9\slf4j-api-2.0.9.jar;C:\Users\berna\.m2\repository\ch\qos\logback\logback-classic\1.5.13\logback-classic-1.5.13.jar;C:\Users\berna\.m2\repository\ch\qos\logback\logback-core\1.5.13\logback-core-1.5.13.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\berna\AppData\Local\Temp\surefire14946022486454138606\surefirebooter-20250626234940552_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650\surefirebooter-20250627105302659_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="23.0.2+7-58"/>
@@ -58,34 +58,15 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="67.0"/>
   </properties>
-  <testcase name="prova" classname="org.mio.progettoingsoft.advCards.sealed.SldEpidemicTest" time="0.748">
-    <system-out><![CDATA[[20, 4, 17, 5]
-[21, 40, 30, 32, 25, 26, 31, 39, 29]
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
-&amp#27;[34m[2025-06-26 23:49:42] [main] [INFO] [Game] Game 1 started&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:42] [main] [DEBUG] [ServerController] antonio draws card Epidemic&amp#27;[0m
+  <testcase name="prova" classname="org.mio.progettoingsoft.advCards.sealed.SldEpidemicTest" time="0.067">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
+&amp#27;[34m[2025-06-27 10:53:04] [main] [INFO] [Game] Game 1 started&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [ServerController] antonio draws card Epidemic&amp#27;[0m
         4        5        6        7        8        9       10    
                       &amp#27;[37m┌&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┐&amp#27;[0m         &amp#27;[37m┌&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┐&amp#27;[0m                  
                       &amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37md&amp#27;[0m&amp#27;[37mr&amp#27;[0m&amp#27;[37mi&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m         &amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37md&amp#27;[0m&amp#27;[37mr&amp#27;[0m&amp#27;[37mi&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m                  
@@ -164,16 +145,16 @@
 9   &amp#27;[37m╢&amp#27;[0m&amp#27;[37md&amp#27;[0m&amp#27;[37me&amp#27;[0m&amp#27;[37mp&amp#27;[0m&amp#27;[37mo&amp#27;[0m&amp#27;[37mt&amp#27;[0m&amp#27;[37m2&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m         &amp#27;[33m│&amp#27;[0m&amp#27;[33mm&amp#27;[0m&amp#27;[33mo&amp#27;[0m&amp#27;[33md&amp#27;[0m&amp#27;[33mu&amp#27;[0m&amp#27;[33ml&amp#27;[0m&amp#27;[33me&amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m╟&amp#27;[0m&amp#27;[37m╢&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m╟&amp#27;[0m&amp#27;[37m╢&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m
     &amp#27;[37m╢&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m▓&amp#27;[0m&amp#27;[37m▓&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m╟&amp#27;[0m&amp#27;[37m╢&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m↓&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m↓&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m         &amp#27;[33m│&amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m &amp#27;[0m&amp#27;[33m│&amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[33m●&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m↓&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m
     &amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m         &amp#27;[33m└&amp#27;[0m&amp#27;[33m─&amp#27;[0m&amp#27;[33m─&amp#27;[0m&amp#27;[33m─&amp#27;[0m&amp#27;[33m─&amp#27;[0m&amp#27;[33m─&amp#27;[0m&amp#27;[33m─&amp#27;[0m&amp#27;[33m─&amp#27;[0m&amp#27;[33m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 40&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 61&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 37&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 46&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 43&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 33&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 51&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 52&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 47&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:43] [main] [DEBUG] [GameController] setto lo stato : EPIDEMIC_END a antonio&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 40&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 61&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 37&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 43&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 33&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 46&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 52&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 51&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [RemoveGuestEvent] Removed crew memeber from 47&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:04] [main] [DEBUG] [GameController] setto lo stato : EPIDEMIC_END a antonio&amp#27;[0m
         4        5        6        7        8        9       10    
                       &amp#27;[37m┌&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┐&amp#27;[0m         &amp#27;[37m┌&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┐&amp#27;[0m                  
                       &amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37md&amp#27;[0m&amp#27;[37mr&amp#27;[0m&amp#27;[37mi&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m         &amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37md&amp#27;[0m&amp#27;[37mr&amp#27;[0m&amp#27;[37mi&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m                  

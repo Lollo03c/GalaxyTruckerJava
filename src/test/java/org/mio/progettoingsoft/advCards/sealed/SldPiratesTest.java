@@ -42,8 +42,6 @@ class SldPiratesTest {
         controller.choosePlace(gameId, "andrea", 3);
         flyBoard.getPlayerByUsername("andrea").getShipBoard().removeComponent(new Cordinate(0, 2));
         flyBoard.getPlayerByUsername("andrea").getShipBoard().removeComponent(new Cordinate(3, 6));
-//        flyBoard.getPlayerByUsername("andrea").getShipBoard().drawShipboard();
-//        controller.drawCard(gameId, "antonio");
         int a = 0;
 
         controller.drawCardTest(gameId, "antonio", cardId);
@@ -61,7 +59,6 @@ class SldPiratesTest {
         card.init(game);
         card.setNextPlayer();
 
-        System.out.println("antonio" + flyBoard.getPlayerByUsername("antonio").getColor());
         controller.activateDoubleDrills(gameId, "antonio", Collections.emptyList());
         controller.activateDoubleDrills(gameId, "andrea", Collections.emptyList());
 
@@ -86,7 +83,6 @@ class SldPiratesTest {
         card.init(game);
         card.setNextPlayer();
 
-        System.out.println("antonio" + flyBoard.getPlayerByUsername("antonio").getColor());
         controller.activateDoubleDrills(gameId, "antonio", new ArrayList<>(List.of(
                 new Cordinate(0, 4)
         )));

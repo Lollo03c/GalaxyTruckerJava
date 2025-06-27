@@ -16,7 +16,6 @@ class ShieldTest {
 
         assertTrue(shield.getShieldDirections().contains(Direction.FRONT));
         assertTrue(shield.getShieldDirections().contains(Direction.RIGHT));
-        System.out.println(shield);
     }
 
     @Test
@@ -26,7 +25,6 @@ class ShieldTest {
 
         assertTrue(shield.getShieldDirections().contains(Direction.RIGHT));
         assertTrue(shield.getShieldDirections().contains(Direction.BACK));
-        System.out.println(shield);
     }
 
     @Test
@@ -36,7 +34,6 @@ class ShieldTest {
 
         assertTrue(shield.getShieldDirections().contains(Direction.BACK));
         assertTrue(shield.getShieldDirections().contains(Direction.LEFT));
-        System.out.println(shield);
     }
 
     @Test
@@ -46,6 +43,5 @@ class ShieldTest {
 
         assertTrue(shield.getShieldDirections().contains(Direction.LEFT));
         assertTrue(shield.getShieldDirections().contains(Direction.FRONT));
-        System.out.println(shield);
     }
 }

@@ -71,9 +71,6 @@ class SldCombatZoneTest {
             ShipBoard lollo = flyBoard.getPlayerByUsername("lollo").getShipBoard();
 
             card.init(game);
-            System.out.println(anto.getBaseEnginePower());
-            System.out.println(andrea.getBaseEnginePower());
-            System.out.println(lollo.getBaseEnginePower());
 
             controller.activateDoubleEngine(gameId, "antonio", 0);
             controller.activateDoubleEngine(gameId, "andrea", 0);
@@ -113,17 +110,11 @@ class SldCombatZoneTest {
 
             flyBoard.drawCircuit();
 
-            System.out.println(anto.getBaseEnginePower());
-            System.out.println(andrea.getBaseEnginePower());
-            System.out.println(lollo.getBaseEnginePower());
 
             controller.activateDoubleEngine(gameId, "antonio", 0);
             controller.activateDoubleEngine(gameId, "lollo", 0);
             controller.activateDoubleEngine(gameId, "andrea", 0);
 
-            anto.drawShipboard();
-
-//            controller.
         }
     }
 }

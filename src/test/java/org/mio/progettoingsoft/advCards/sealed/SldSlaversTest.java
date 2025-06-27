@@ -54,14 +54,6 @@ class SldSlaversTest {
         Player andrea = flyBoard.getPlayerByUsername("andrea");
         Player lollo = flyBoard.getPlayerByUsername("lollo");
 
-        System.out.println(antonio.getShipBoard().getBaseFirePower());
-        System.out.println(andrea.getShipBoard().getBaseFirePower());
-        System.out.println(lollo.getShipBoard().getBaseFirePower());
-
-        antonio.getShipBoard().drawShipboard();
-        andrea.getShipBoard().drawShipboard();
-        lollo.getShipBoard().drawShipboard();
-
 
         card.init(game);
         card.setNextPlayer();

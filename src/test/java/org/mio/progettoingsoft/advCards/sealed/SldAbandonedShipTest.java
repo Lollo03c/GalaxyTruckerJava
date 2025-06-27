@@ -90,7 +90,6 @@ class SldAbandonedShipTest {
                 new Cordinate(2, 4) )
         );
 
-        flyBoard.getPlayerByUsername("antonio").getShipBoard().drawShipboard();
         SldAbandonedShip abandonedShip = (SldAbandonedShip) card;
         assertThrows(IncorrectFlyBoardException.class, () -> controller.removeCrew(gameId, "andrea", removeAntonio));
         assertThrows(IncorrectFlyBoardException.class, () -> controller.removeCrew(gameId, "antonio", null));
@@ -125,12 +124,8 @@ class SldAbandonedShipTest {
         );
 
 
-        System.out.println(card.getActualPlayer().getNickname());
-        card.getActualPlayer().getShipBoard().drawShipboard();
-
         SldAbandonedShip abandonedShip = (SldAbandonedShip) card;
         controller.removeCrew(gameId, "antonio", card.actualPlayer.getColor().equals(HousingColor.BLUE) ? removeBlue : removeYellow);
-        card.getActualPlayer().getShipBoard().drawShipboard();
 
         assertEquals(CardState.FINALIZED, card.getState());
     }
@@ -142,10 +137,6 @@ class SldAbandonedShipTest {
 
 
         controller.skipEffect(gameId, "antonio", cardId);
-
-        flyBoard.getPlayerByUsername("andrea").getShipBoard().drawShipboard();
-
-        System.out.println(card.getActualPlayer().getNickname());
         SldAbandonedShip abandonedShip = (SldAbandonedShip) card;
         controller.removeCrew(gameId, "andrea", card.actualPlayer.getColor().equals(HousingColor.BLUE) ? removeBlue : removeYellow);
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.mio.progettoingsoft.ShipBoardTest" time="0.259" tests="25" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.mio.progettoingsoft.ShipBoardTest" time="0.192" tests="25" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="23"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IT"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-23.0.2\bin"/>
-    <property name="sun.java.command" value="C:\Users\berna\AppData\Local\Temp\surefire14946022486454138606\surefirebooter-20250626234940552_3.jar C:\Users\berna\AppData\Local\Temp\surefire14946022486454138606 2025-06-26T23-49-40_346-jvmRun1 surefire-20250626234940552_1tmp surefire_0-20250626234940552_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650\surefirebooter-20250627105302659_3.jar C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650 2025-06-27T10-53-02_473-jvmRun1 surefire-20250627105302659_1tmp surefire_0-20250627105302659_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\berna\IdeaProjects\IS25-AM34\target\test-classes;C:\Users\berna\IdeaProjects\IS25-AM34\target\classes;C:\Users\berna\.m2\repository\org\openjfx\javafx-controls\23.0.2\javafx-controls-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-controls\23.0.2\javafx-controls-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-base\23.0.2\javafx-base-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-base\23.0.2\javafx-base-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-linux.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-mac-aarch64.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-fxml\23.0.2\javafx-fxml-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-fxml\23.0.2\javafx-fxml-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.2\junit-jupiter-api-5.10.2.jar;C:\Users\berna\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\berna\.m2\repository\org\junit\platform\junit-platform-commons\1.10.2\junit-platform-commons-1.10.2.jar;C:\Users\berna\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\berna\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.2\junit-jupiter-engine-5.10.2.jar;C:\Users\berna\.m2\repository\org\junit\platform\junit-platform-engine\1.10.2\junit-platform-engine-1.10.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.18.2\jackson-databind-2.18.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.18.2\jackson-annotations-2.18.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.18.2\jackson-core-2.18.2.jar;C:\Users\berna\.m2\repository\org\slf4j\slf4j-api\2.0.9\slf4j-api-2.0.9.jar;C:\Users\berna\.m2\repository\ch\qos\logback\logback-classic\1.5.13\logback-classic-1.5.13.jar;C:\Users\berna\.m2\repository\ch\qos\logback\logback-core\1.5.13\logback-core-1.5.13.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\berna\AppData\Local\Temp\surefire14946022486454138606\surefirebooter-20250626234940552_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650\surefirebooter-20250627105302659_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="23.0.2+7-58"/>
@@ -58,188 +58,31 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="67.0"/>
   </properties>
-  <testcase name="should_swap_bookedComponents" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.012">
-    <system-out><![CDATA[[1, 5, 10, 7]
-[32, 39, 31, 35, 27, 37, 28, 33, 40]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
+  <testcase name="should_swap_bookedComponents" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007"/>
+  <testcase name="should_test_stored_quantity" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008"/>
+  <testcase name="should_find_adjacent_components" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_find_incorrect_connected_components" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ShipBoard] Incorrect connected: (6, 7) id 2&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ShipBoard] Incorrect connected: (6, 8) id 3&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ShipBoard] Incorrect connected: (7, 7) id 52&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ShipBoard] Incorrect connected: (7, 8) id 4&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ShipBoard] Incorrect connected: (8, 8) id 12&amp#27;[0m
 ]]></system-out>
   </testcase>
-  <testcase name="should_test_stored_quantity" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.011">
-    <system-out><![CDATA[[19, 15, 5, 17]
-[22, 23, 21, 38, 34, 25, 24, 32, 37]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_find_adjacent_components" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[7, 20, 16, 6]
-[39, 40, 28, 23, 32, 37, 36, 25, 22]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_find_incorrect_connected_components" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.011">
-    <system-out><![CDATA[[15, 13, 20, 5]
-[29, 30, 33, 23, 38, 36, 37, 28, 27]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ShipBoard] Incorrect connected: (6, 7) id 2&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ShipBoard] Incorrect connected: (6, 8) id 3&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ShipBoard] Incorrect connected: (7, 7) id 52&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ShipBoard] Incorrect connected: (7, 8) id 4&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ShipBoard] Incorrect connected: (8, 8) id 12&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_find_rotated_engines" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[15, 20, 9, 5]
-[23, 36, 35, 39, 28, 32, 38, 27, 25]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_count_exposed_connector" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.009">
-    <system-out><![CDATA[[6, 7, 12, 14]
-[31, 40, 29, 27, 30, 34, 25, 28, 39]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_find_incorrect_drills" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007">
-    <system-out><![CDATA[[2, 17, 13, 8]
-[33, 35, 39, 36, 23, 34, 38, 22, 30]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-[(6, 7), (7, 8), (7, 9), (8, 7)]
-]]></system-out>
-  </testcase>
-  <testcase name="should_test_shipboard_dimensions" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[3, 1, 4, 5]
-[38, 28, 23, 22, 31, 32, 21, 34, 40]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_remove_component" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[4, 6, 17, 7]
-[40, 38, 31, 39, 30, 32, 23, 28, 24]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_add_human" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.025">
-    <system-out><![CDATA[[4, 6, 11, 14]
-[35, 40, 38, 37, 23, 33, 29, 24, 28]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-[14, 10, 20, 11]
-[34, 40, 30, 21, 26, 22, 23, 31, 39]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
-&amp#27;[34m[2025-06-26 23:49:45] [main] [INFO] [Game] Game 1 started&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ServerController] antonio added component 40 (7, 6) 0&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ServerController] antonio added component 41 (6, 7) 0&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ServerController] antonio added component 138 (7, 5) 0&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [ServerController] andrea added component 43 (6, 7) 0&amp#27;[0m
+  <testcase name="should_find_rotated_engines" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_count_exposed_connector" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007"/>
+  <testcase name="should_find_incorrect_drills" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_test_shipboard_dimensions" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_remove_component" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_add_human" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.034">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
+&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [Game] Game 1 started&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio added component 40 (7, 6) 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio added component 41 (6, 7) 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio added component 138 (7, 5) 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] andrea added component 43 (6, 7) 0&amp#27;[0m
         4        5        6        7        8        9       10    
                                                                    
                                                                    
@@ -292,10 +135,14 @@
 9                                                                  
                                                                    
                                                                    
-&amp#27;[34m[2025-06-26 23:49:45] [main] [INFO] [ServerController] antonio ended ship building, has removed incorrect components and now needs to validate his ship.&amp#27;[0m
-&amp#27;[34m[2025-06-26 23:49:45] [main] [INFO] [ServerController] Ship antonio is valid.&amp#27;[0m
-&amp#27;[34m[2025-06-26 23:49:45] [main] [INFO] [ServerController] andrea ended ship building, has removed incorrect components and now needs to validate his ship.&amp#27;[0m
-&amp#27;[34m[2025-06-26 23:49:45] [main] [INFO] [ServerController] Ship andrea is valid.&amp#27;[0m
+&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [ServerController] antonio ended ship building, has removed incorrect components and now needs to validate his ship.&amp#27;[0m
+&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [ServerController] Ship antonio is valid.&amp#27;[0m
+&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [ServerController] andrea ended ship building, has removed incorrect components and now needs to validate his ship.&amp#27;[0m
+&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [ServerController] Ship andrea is valid.&amp#27;[0m
+antonio {(7, 6)=[BROWN], (7, 7)=[HUMAN, HUMAN]}
+andrea {(7, 7)=[HUMAN, HUMAN], (6, 7)=[HUMAN]}
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started : 1&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started. Timer 2 is running&amp#27;[0m
         4        5        6        7        8        9       10    
                                                                    
                                                                    
@@ -362,109 +209,17 @@
 &amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m&amp#27;[37m╚&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m═&amp#27;[0m&amp#27;[37m╝&amp#27;[0m
 ]]></system-out>
   </testcase>
-  <testcase name="should_find_engines_with_components_behind" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007">
-    <system-out><![CDATA[[5, 7, 13, 12]
-[30, 24, 39, 26, 22, 28, 27, 25, 21]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
+  <testcase name="should_find_engines_with_components_behind" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.005"/>
+  <testcase name="should_test_matrix_id_creation" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_remove_energy" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
 ]]></system-out>
   </testcase>
-  <testcase name="should_test_matrix_id_creation" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[13, 4, 20, 19]
-[24, 31, 23, 32, 40, 39, 22, 29, 37]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_remove_energy" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.012">
-    <system-out><![CDATA[[13, 16, 1, 14]
-[31, 39, 27, 33, 34, 32, 38, 25, 26]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_find_pieces_not_connected" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007">
-    <system-out><![CDATA[[8, 4, 12, 9]
-[30, 24, 21, 27, 31, 36, 40, 37, 38]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_get_base_engine_power" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007">
-    <system-out><![CDATA[[16, 18, 10, 2]
-[28, 34, 21, 24, 22, 38, 40, 23, 37]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_get_drills" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[1, 14, 19, 16]
-[38, 21, 40, 36, 25, 31, 30, 22, 28]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-        4        5        6        7        8        9       10    
+  <testcase name="should_find_pieces_not_connected" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_get_base_engine_power" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006"/>
+  <testcase name="should_get_drills" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007">
+    <system-out><![CDATA[        4        5        6        7        8        9       10    
                                         &amp#27;[37m┌&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┐&amp#27;[0m                  
                                         &amp#27;[37m│&amp#27;[0m&amp#27;[37md&amp#27;[0m&amp#27;[37mo&amp#27;[0m&amp#27;[37mu&amp#27;[0m&amp#27;[37mb&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37me&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m                  
 5                                       &amp#27;[37m│&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37md&amp#27;[0m&amp#27;[37mr&amp#27;[0m&amp#27;[37mi&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37ml&amp#27;[0m&amp#27;[37m &amp#27;[0m&amp#27;[37m│&amp#27;[0m                  
@@ -492,162 +247,20 @@
     &amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m         &amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m╦&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m╦&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m&amp#27;[37m└&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m─&amp#27;[0m&amp#27;[37m┘&amp#27;[0m
 ]]></system-out>
   </testcase>
-  <testcase name="shoud_get_base_fire_power" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006">
-    <system-out><![CDATA[[8, 2, 4, 6]
-[22, 24, 26, 36, 40, 30, 34, 37, 28]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_count_guests" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007">
-    <system-out><![CDATA[[15, 17, 6, 3]
-[28, 35, 29, 21, 40, 24, 27, 33, 30]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_remove_booked_component" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[1, 4, 15, 16]
-[24, 34, 27, 22, 35, 31, 36, 38, 25]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_find_incorrect_engines" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.01">
-    <system-out><![CDATA[[15, 10, 9, 6]
-[31, 25, 36, 24, 28, 37, 22, 39, 29]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_book_a_component" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.007">
-    <system-out><![CDATA[[17, 16, 12, 14]
-[39, 21, 24, 34, 33, 30, 26, 23, 35]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_get_covered_direction_from_shield" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.008">
-    <system-out><![CDATA[[2, 13, 4, 17]
-[28, 25, 22, 37, 24, 39, 35, 30, 32]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_get_double_drills" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.014">
-    <system-out><![CDATA[[5, 7, 19, 4]
-[22, 30, 21, 37, 27, 23, 36, 25, 31]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_count_double_engine" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.012">
-    <system-out><![CDATA[[16, 14, 15, 8]
-[40, 35, 33, 34, 26, 38, 31, 37, 29]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-]]></system-out>
-  </testcase>
-  <testcase name="should_stole_goods" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.009">
-    <system-out><![CDATA[[15, 3, 6, 17]
-[30, 27, 35, 37, 40, 26, 28, 39, 34]
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [Depot] Added&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 16&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 16&amp#27;[0m
-&amp#27;[90m[2025-06-26 23:49:45] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 16&amp#27;[0m
+  <testcase name="shoud_get_base_fire_power" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.004"/>
+  <testcase name="should_count_guests" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.004"/>
+  <testcase name="should_remove_booked_component" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.005"/>
+  <testcase name="should_find_incorrect_engines" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.005"/>
+  <testcase name="should_book_a_component" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.005"/>
+  <testcase name="should_get_covered_direction_from_shield" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.005"/>
+  <testcase name="should_get_double_drills" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.005"/>
+  <testcase name="should_count_double_engine" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.004"/>
+  <testcase name="should_stole_goods" classname="org.mio.progettoingsoft.ShipBoardTest" time="0.006">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 16&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 16&amp#27;[0m
+&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 16&amp#27;[0m
 ]]></system-out>
   </testcase>
 </testsuite>

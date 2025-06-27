@@ -79,16 +79,13 @@ class SldAbandonedStationTest {
 
         int idComp = first.getShipBoard().getOptComponentByCord(new Cordinate(1, 2)).get().getId();
         first.getShipBoard().getOptComponentByCord(new Cordinate(1, 2)).get().removeGood(GoodType.YELLOW);
-        first.getShipBoard().drawShipboard();
 
         controller.addGood(gameId, "antonio", idComp, GoodType.YELLOW);
-        first.getShipBoard().drawShipboard();
 
         controller.removeGood(gameId, "antonio",
                 first.getShipBoard().getOptComponentByCord(new Cordinate(3, 6)).get().getId(),
                 GoodType.RED);
 
-        first.getShipBoard().drawShipboard();
 
         controller.skipEffect(gameId, "antonio", cardId);
         assertEquals(CardState.FINALIZED, card.getState());

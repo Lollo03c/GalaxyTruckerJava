@@ -4,7 +4,6 @@ import org.mio.progettoingsoft.Component;
 import org.mio.progettoingsoft.ComponentType;
 import org.mio.progettoingsoft.Connector;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
-import org.mio.progettoingsoft.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +98,6 @@ public class Depot extends Component {
         if (type.equals(GoodType.RED) && !isHazard)
             throw new IncorrectShipBoardException("Depot is not hazard");
         storedGoods.add(type);
-        Logger.debug("Added");
     }
 
     /**

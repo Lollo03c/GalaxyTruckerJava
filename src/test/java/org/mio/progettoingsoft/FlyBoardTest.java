@@ -43,10 +43,6 @@ class FlyBoardTest {
     @Test
     public void should_build_little_decks() {
         FlyBoard fly = new FlyBoardNormal(Set.of("Stefano", "Andrea", "Antonio", "Lorenzo"));
-        for (List<Integer> deck : fly.getLittleDecks()) {
-            System.out.println(deck.toString());
-        }
-        System.out.println(fly.getHiddenDeck().toString());
 
         assertEquals(3, fly.getLittleDecks().size());
         assertNotNull(fly.getHiddenDeck());
@@ -78,13 +74,9 @@ class FlyBoardTest {
     @Test
     public void should_build_deck_for_adventure() {
         FlyBoard fly = new FlyBoardNormal(Set.of("Stefano", "Andrea", "Antonio", "Lorenzo"));
-        for (List<Integer> deck : fly.getLittleDecks()) {
-            System.out.println(deck.toString());
-        }
-        System.out.println(fly.getHiddenDeck().toString());
+
         fly.buildAdventureDeck();
         assertEquals(12, fly.getDeck().size());
-        System.out.println(fly.getDeck().toString());
     }
 
 

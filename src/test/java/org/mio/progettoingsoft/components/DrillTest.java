@@ -20,7 +20,6 @@ class DrillTest {
         assertEquals(1, drill.getFirePower(true));
         assertEquals(1, drill.getFirePower(false));
         assertEquals(Direction.FRONT, drill.getDirection());
-        System.out.println(drill.toString());
     }
 
     @Test

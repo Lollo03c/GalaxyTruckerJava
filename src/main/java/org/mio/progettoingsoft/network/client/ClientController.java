@@ -1580,8 +1580,6 @@ public class ClientController {
             pl.getShipBoard().addGuestToShip();
         }
 
-
-
         try {
             server.addCrew(idGame, nickname, addedCrew);
         } catch (Exception e) {

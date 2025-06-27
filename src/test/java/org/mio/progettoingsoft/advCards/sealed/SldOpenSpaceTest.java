@@ -87,7 +87,6 @@ class SldOpenSpaceTest {
         SldOpenSpace openSpace = (SldOpenSpace) card;
 
         Player player = flyBoard.getPlayerByUsername("antonio");
-        player.getShipBoard().drawShipboard();
         openSpace.applyEffect(player, 1);
     }
 
@@ -101,7 +100,6 @@ class SldOpenSpaceTest {
         SldOpenSpace openSpace = (SldOpenSpace) card;
 
         Player player = flyBoard.getPlayerByUsername("antonio");
-        player.getShipBoard().drawShipboard();
         assertThrows(IncorrectShipBoardException.class, () -> openSpace.applyEffect(player, 6));
     }
     @Test
@@ -114,7 +112,6 @@ class SldOpenSpaceTest {
         SldOpenSpace openSpace = (SldOpenSpace) card;
 
         Player player = flyBoard.getPlayerByUsername("antonio");
-        player.getShipBoard().drawShipboard();
         assertThrows(IncorrectShipBoardException.class, () -> openSpace.applyEffect(player, -1));
     }
 
@@ -128,7 +125,6 @@ class SldOpenSpaceTest {
         SldOpenSpace openSpace = (SldOpenSpace) card;
 
         Player player = flyBoard.getPlayerByUsername("antonio");
-        player.getShipBoard().drawShipboard();
         assertThrows(IncorrectShipBoardException.class, () -> openSpace.applyEffect(player, 2));
     }
 
@@ -143,7 +139,6 @@ class SldOpenSpaceTest {
 
 
         Player zero = flyBoard.getPlayerByUsername("antonio");
-        zero.getShipBoard().drawShipboard();
 
         int initial = zero.getShipBoard().getQuantBatteries();
         openSpace.applyEffect(zero, 1);
@@ -163,15 +158,12 @@ class SldOpenSpaceTest {
         SldOpenSpace openSpace = (SldOpenSpace) card;
 
         Player zero = flyBoard.getPlayerByUsername("antonio");
-        zero.getShipBoard().drawShipboard();
         openSpace.applyEffect(zero, 0);
 
         Player first = flyBoard.getPlayerByUsername("andrea");
-        first.getShipBoard().drawShipboard();
         openSpace.applyEffect(first, 1);
 
         Player second = flyBoard.getPlayerByUsername("lollo");
-        second.getShipBoard().drawShipboard();
         openSpace.applyEffect(second, 0);
 
     }

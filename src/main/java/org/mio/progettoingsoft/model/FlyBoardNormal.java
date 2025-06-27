@@ -144,7 +144,6 @@ public class FlyBoardNormal extends FlyBoard  {
                 j++;
             }
         }
-        System.out.println(levelOneCards.toString());
 
         List<Integer> levelTwoCards = new ArrayList<>();
         j = 0;
@@ -154,7 +153,6 @@ public class FlyBoardNormal extends FlyBoard  {
                 j++;
             }
         }
-        System.out.println(levelTwoCards.toString());
 
         for (int i = 0; i < 3; i++)
             littleDecks.get(i).add(levelOneCards.get(i));

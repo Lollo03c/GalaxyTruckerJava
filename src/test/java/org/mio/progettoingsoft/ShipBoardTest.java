@@ -18,25 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ShipBoardTest {
 
-/*
-    QUESTO TEST NON GIRA: devo ancora capire se ho scritto male il test o se bisogna sistemare le classi
-    @Test
-    void should_create_basic_ship_board(){
-        ShipBoard ship = new ShipBoard(HousingColor.BLUE);;
-        for(int i = 0; i < ship.getRows(); i++){
-            for(int j = 0; j < ship.getColumns(); j++){
-                if(i == 2 && j == 3) {
-                    assertEquals(ComponentType.HOUSING, ship.getComponent(i, j).getType());
-                    assertTrue(ship.getComponent(i, j).isFirstHousing());
-                }
-                else
-                    if(ship.isValidPosition(i,j))
-                        assertTrue(ship.isEmptyComponent(i,j));
-            }
-        }
-    }
- */
-
     private FlyBoard flyBoard;
     private ShipBoard first, second, third, fourth;
     private ShipBoard yellow, validationTestShipBoard;
@@ -140,7 +121,6 @@ class ShipBoardTest {
         }
     }
 
-    //todo bisogna farlo ricorsivo
     @Test
     void should_remove_component(){
         yellow.removeComponent(new Cordinate(0, 4));
@@ -325,7 +305,6 @@ class ShipBoardTest {
         validationTestShipBoard.addComponentToPosition(65, new Cordinate(1, 5), 0); // depot
         validationTestShipBoard.addComponentToPosition(106, new Cordinate(2, 5), 0);
 
-        System.out.println(validationTestShipBoard.getIncorrectDrills());
         assertEquals(4, validationTestShipBoard.getIncorrectDrills().size());
     }
 

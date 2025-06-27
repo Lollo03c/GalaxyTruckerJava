@@ -253,6 +253,7 @@ public class Gui extends Application implements View {
         this.stage = stage;
         this.root = new StackPane();
         this.stage.setTitle("Galaxy Trucker");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream(IMG_PATH + OTHERS_REL_PATH + "logo_mod" + IMG_JPG_EXTENSION)));
         this.stage.setScene(new Scene(root));
         this.stage.setMaximized(true);
         shipViewBorderPane = new BorderPane();
