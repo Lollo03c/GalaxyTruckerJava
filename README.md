@@ -8,9 +8,9 @@ held by prof. Alessandro Margara in the academic year 2024-2025.<br>
 | Functionality                | State |
 |:-----------------------------|:-----:|
 | Basic rules                  |  ✅   |
-| Complete rules               |  🟡   |
-| CLI                          |  🟡   |
-| GUI                          |  🟡   |
+| Complete rules               |  ✅   |
+| CLI                          |  ✅   |
+| GUI                          |  ✅   |
 | Socket                       |  ✅   |
 | RMI                          |  ✅   |
 | Multiple matches             |  ✅   |
@@ -23,6 +23,8 @@ held by prof. Alessandro Margara in the academic year 2024-2025.<br>
 🟡 Implementing
 ✅ Implemented
 
+Note for the teachers: we had a problem while adding jars to the deliverables directory, so we added them a few minutes after 13.00 with the "added jar" commit
+
 ## Team - IS25-AM34
 - ### [Antonio Augello](https://github.com/AntonioAh)<br/>antonio1.augello@mail.polimi.it
 - ### [Lorenzo Baggi](https://github.com/Lollo03c)<br/>lorenzo1.baggi@mail.polimi.it
@@ -32,9 +34,11 @@ held by prof. Alessandro Margara in the academic year 2024-2025.<br>
 
 ## Project Startup Guide
 
+The client and the server must be launched with the command: ```java -jar [jar-file] [server-ip]```
+
 To simplify running the code, custom scripts have been created that automate building and launching the server and clients. 
 These scripts allow you to start one or more clients and optionally the server with a single command, opening new terminal 
-windows for each process where supported.
+windows for each process where supported. Clients and server are launched with the loopback address
 
 **Important:** Maven must be installed and available in your system PATH for these scripts to work.
 
