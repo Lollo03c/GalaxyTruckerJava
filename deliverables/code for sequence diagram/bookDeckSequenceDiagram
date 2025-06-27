@@ -1,0 +1,19 @@
+@startuml
+== Book deck ==
+Client -> Server : bookComponent(idGame, nickname, deckNum)
+alt isDeckAvailable(deckNum)
+    Server -> Client : setInHandDeck(deckNum)
+    loop for all players
+        Server -> Client : bookedDeck(deckNum)
+    end
+    Server -> Client : setState(GameState.VIEW_DECK)
+else
+    Server -> Client : setState(GameState.UNABLE_DECK)
+end
+
+Client -> Server : freeDeck(idGame, nickname, deckNum)
+loop for all players
+    Server -> Client : freeDeck(deckNum)
+end
+Server -> Client : setState(GameState.BUILDING_SHIP)
+@enduml

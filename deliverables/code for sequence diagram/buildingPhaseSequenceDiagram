@@ -1,0 +1,38 @@
+@startuml
+== Draw Covered Component ==
+Client -> Server : getCoveredComponent()
+Server -> Client : setInHandComponent()
+Server -> Client : setState(GameState.COMPONENT_MENU)
+alt “place component”
+	Client -> Server : addComponent(idGame, nick, idComp, coordinate, rotation)
+	loop for all players
+		Server -> Client : addComponent(nick, idComp, coordinate, rotation)
+	end
+else “discard component”
+	Client -> Server : discardComponent(idGame, idComp)
+	loop for all players
+		Server -> Client : discardComponent(idGame, idComp)
+	end
+end
+
+== Draw Uncovered Component ==
+Client -> Server : getUncoveredComponent()
+alt !uncoveredComponet.isEmpty()
+
+	Client -> Server : drawUncoveredComponent(choice)
+        	alt isUncoveredComponentAvailable
+		loop for all players
+         			Server -> Client: removeUncoveredComponent
+        		end
+		Server -> Client : setInHandComponent(id)
+        		Server -> Client : setState(GameState.COMPONENT_MENU)
+        	else
+		Server -> Client : setState(GameState.UNABLE_UNCOVERED_COMPONENT
+	end
+
+else
+
+	Client <- Client : "no uncovered components"
+
+end
+@enduml
