@@ -2,14 +2,17 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Game;
-import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
+import org.mio.progettoingsoft.model.Cordinate;
+import org.mio.progettoingsoft.model.FlyBoard;
+import org.mio.progettoingsoft.model.Game;
+import org.mio.progettoingsoft.model.advCards.sealed.CardState;
+import org.mio.progettoingsoft.model.advCards.sealed.SldAbandonedShip;
+import org.mio.progettoingsoft.model.advCards.sealed.SldAdvCard;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
+import org.mio.progettoingsoft.network.server.GameManager;
 import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.*;
@@ -125,7 +128,7 @@ class SldAbandonedShipTest {
 
 
         SldAbandonedShip abandonedShip = (SldAbandonedShip) card;
-        controller.removeCrew(gameId, "antonio", card.actualPlayer.getColor().equals(HousingColor.BLUE) ? removeBlue : removeYellow);
+        controller.removeCrew(gameId, "antonio", card.getActualPlayer().getColor().equals(HousingColor.BLUE) ? removeBlue : removeYellow);
 
         assertEquals(CardState.FINALIZED, card.getState());
     }
@@ -138,7 +141,7 @@ class SldAbandonedShipTest {
 
         controller.skipEffect(gameId, "antonio", cardId);
         SldAbandonedShip abandonedShip = (SldAbandonedShip) card;
-        controller.removeCrew(gameId, "andrea", card.actualPlayer.getColor().equals(HousingColor.BLUE) ? removeBlue : removeYellow);
+        controller.removeCrew(gameId, "andrea", card.getActualPlayer().getColor().equals(HousingColor.BLUE) ? removeBlue : removeYellow);
 
         assertEquals(CardState.FINALIZED, card.getState());
     }
