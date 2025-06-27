@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IT"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-23.0.2\bin"/>
-    <property name="sun.java.command" value="C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650\surefirebooter-20250627105302659_3.jar C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650 2025-06-27T10-53-02_473-jvmRun1 surefire-20250627105302659_1tmp surefire_0-20250627105302659_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\berna\AppData\Local\Temp\surefire5298698901056526879\surefirebooter-20250627125237680_3.jar C:\Users\berna\AppData\Local\Temp\surefire5298698901056526879 2025-06-27T12-52-37_476-jvmRun1 surefire-20250627125237680_1tmp surefire_0-20250627125237680_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\berna\IdeaProjects\IS25-AM34\target\test-classes;C:\Users\berna\IdeaProjects\IS25-AM34\target\classes;C:\Users\berna\.m2\repository\org\openjfx\javafx-controls\23.0.2\javafx-controls-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-controls\23.0.2\javafx-controls-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-base\23.0.2\javafx-base-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-base\23.0.2\javafx-base-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-linux.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-graphics\23.0.2\javafx-graphics-23.0.2-mac-aarch64.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-fxml\23.0.2\javafx-fxml-23.0.2.jar;C:\Users\berna\.m2\repository\org\openjfx\javafx-fxml\23.0.2\javafx-fxml-23.0.2-win.jar;C:\Users\berna\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.2\junit-jupiter-api-5.10.2.jar;C:\Users\berna\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\berna\.m2\repository\org\junit\platform\junit-platform-commons\1.10.2\junit-platform-commons-1.10.2.jar;C:\Users\berna\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\berna\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.2\junit-jupiter-engine-5.10.2.jar;C:\Users\berna\.m2\repository\org\junit\platform\junit-platform-engine\1.10.2\junit-platform-engine-1.10.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.18.2\jackson-databind-2.18.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.18.2\jackson-annotations-2.18.2.jar;C:\Users\berna\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.18.2\jackson-core-2.18.2.jar;C:\Users\berna\.m2\repository\org\slf4j\slf4j-api\2.0.9\slf4j-api-2.0.9.jar;C:\Users\berna\.m2\repository\ch\qos\logback\logback-classic\1.5.13\logback-classic-1.5.13.jar;C:\Users\berna\.m2\repository\ch\qos\logback\logback-core\1.5.13\logback-core-1.5.13.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\berna\AppData\Local\Temp\surefire6775920641767768650\surefirebooter-20250627105302659_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\berna\AppData\Local\Temp\surefire5298698901056526879\surefirebooter-20250627125237680_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="23.0.2+7-58"/>
@@ -58,37 +58,37 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="67.0"/>
   </properties>
-  <testcase name="should_add_some_goods" classname="org.mio.progettoingsoft.advCards.sealed.SldSmugglersTest" time="0.013">
-    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
-&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [Game] Game 1 started&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio draws card Smugglers&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a antonio&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio[(5, 8), (6, 5)]&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
+  <testcase name="should_add_some_goods" classname="org.mio.progettoingsoft.advCards.sealed.SldSmugglersTest" time="0.016">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
+&amp#27;[34m[2025-06-27 12:52:40] [main] [INFO] [Game] Game 1 started&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio draws card Smugglers&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a antonio&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio[(5, 8), (6, 5)]&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [RemoveEnergyEvent] removed energy from 6&amp#27;[0m
 power 9.5over 8
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [FlyBoard] Moving -1 days from antonio&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController$1] event movePlayer gestito&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [FlyBoard] evento movePlayer lanciato&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] setto lo stato : GOODS_PLACEMENT a antonio&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] Salto effetto carta 22&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] setto lo stato : FINALIZED a antonio&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [FlyBoard] Moving -1 days from antonio&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController$1] event movePlayer gestito&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [FlyBoard] evento movePlayer lanciato&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] setto lo stato : GOODS_PLACEMENT a antonio&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] Salto effetto carta 22&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] setto lo stato : FINALIZED a antonio&amp#27;[0m
 ]]></system-out>
   </testcase>
-  <testcase name="should_get_parameters" classname="org.mio.progettoingsoft.advCards.sealed.SldSmugglersTest" time="0.011">
-    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
-&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [Game] Game 1 started&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio draws card Smugglers&amp#27;[0m
+  <testcase name="should_get_parameters" classname="org.mio.progettoingsoft.advCards.sealed.SldSmugglersTest" time="0.009">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
+&amp#27;[34m[2025-06-27 12:52:40] [main] [INFO] [Game] Game 1 started&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio draws card Smugglers&amp#27;[0m
 &amp#27;[35m╔&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m╗&amp#27;[0m
 &amp#27;[35m║&amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35mS&amp#27;[0m&amp#27;[35mm&amp#27;[0m&amp#27;[35mu&amp#27;[0m&amp#27;[35mg&amp#27;[0m&amp#27;[35mg&amp#27;[0m&amp#27;[35ml&amp#27;[0m&amp#27;[35me&amp#27;[0m&amp#27;[35mr&amp#27;[0m&amp#27;[35ms&amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m &amp#27;[0m&amp#27;[35m║&amp#27;[0m
 &amp#27;[35m║&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m║&amp#27;[0m
@@ -106,25 +106,25 @@ power 9.5over 8
 &amp#27;[35m╚&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m2&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m═&amp#27;[0m&amp#27;[35m╝&amp#27;[0m
 ]]></system-out>
   </testcase>
-  <testcase name="should_add_reject_all" classname="org.mio.progettoingsoft.advCards.sealed.SldSmugglersTest" time="0.012">
-    <system-out><![CDATA[&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
-&amp#27;[34m[2025-06-27 10:53:05] [main] [INFO] [Game] Game 1 started&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio draws card Smugglers&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a antonio&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] antonio[]&amp#27;[0m
+  <testcase name="should_add_reject_all" classname="org.mio.progettoingsoft.advCards.sealed.SldSmugglersTest" time="0.01">
+    <system-out><![CDATA[&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] Chiamato registerListener&amp#27;[0m
+&amp#27;[34m[2025-06-27 12:52:40] [main] [INFO] [Game] Game 1 started&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [Hourglass] Hourglass started : 0&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [Hourglass] Hourglass started. Timer 1 is running&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio assigned to ship YELLOW&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] andrea assigned to ship BLUE&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] lollo assigned to ship RED&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio draws card Smugglers&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a antonio&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] antonio[]&amp#27;[0m
 power 5.5over 8
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a andrea&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] andrea[]&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a andrea&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] andrea[]&amp#27;[0m
 power 5.0over 8
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a lollo&amp#27;[0m
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [ServerController] lollo[]&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] setto lo stato : DRILL_CHOICE a lollo&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [ServerController] lollo[]&amp#27;[0m
 power 5.5over 8
-&amp#27;[90m[2025-06-27 10:53:05] [main] [DEBUG] [GameController] setto lo stato : FINALIZED a lollo&amp#27;[0m
+&amp#27;[90m[2025-06-27 12:52:40] [main] [DEBUG] [GameController] setto lo stato : FINALIZED a lollo&amp#27;[0m
 ]]></system-out>
   </testcase>
 </testsuite>
