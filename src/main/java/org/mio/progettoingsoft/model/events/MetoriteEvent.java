@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.model.events;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.Direction;
+import org.mio.progettoingsoft.model.Cordinate;
+import org.mio.progettoingsoft.model.enums.Direction;
 import org.mio.progettoingsoft.model.enums.MeteorType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;

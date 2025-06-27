@@ -18,27 +18,24 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
-import org.mio.progettoingsoft.*;
-import org.mio.progettoingsoft.advCards.CannonPenalty;
-import org.mio.progettoingsoft.advCards.Meteor;
-import org.mio.progettoingsoft.advCards.sealed.*;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GuestType;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.advCards.CannonPenalty;
+import org.mio.progettoingsoft.model.advCards.Meteor;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.CannotRotateHourglassException;
-import org.mio.progettoingsoft.model.enums.GameInfo;
-import org.mio.progettoingsoft.model.enums.GameMode;
+import org.mio.progettoingsoft.model.*;
+import org.mio.progettoingsoft.model.advCards.sealed.*;
+import org.mio.progettoingsoft.model.enums.*;
 import org.mio.progettoingsoft.network.client.ClientController;
 import org.mio.progettoingsoft.utils.Logger;
 import org.mio.progettoingsoft.views.View;
-import org.mio.progettoingsoft.model.Hourglass;
 
 import java.beans.PropertyChangeEvent;
 import java.util.*;
@@ -46,8 +43,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
-import static org.mio.progettoingsoft.GameState.CHOOSE_POSITION;
-import static org.mio.progettoingsoft.GameState.DRAW_CARD;
+import static org.mio.progettoingsoft.model.enums.GameState.DRAW_CARD;
 
 /**
  * GUI class: we decided to use the JavaFX framework

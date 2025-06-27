@@ -130,7 +130,7 @@
                             <finalName>server</finalName> <!-- nome file -->
                             <archive>
                                 <manifest>
-                                    <mainClass>org.mio.progettoingsoft.ServerMain</mainClass>
+                                    <mainClass>org.mio.progettoingsoft.network.server.ServerMain</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -150,7 +150,7 @@
                             <finalName>client</finalName> <!-- nome file -->
                             <archive>
                                 <manifest>
-                                    <mainClass>org.mio.progettoingsoft.ClientMain</mainClass>
+                                    <mainClass>org.mio.progettoingsoft.network.client.ClientMain</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

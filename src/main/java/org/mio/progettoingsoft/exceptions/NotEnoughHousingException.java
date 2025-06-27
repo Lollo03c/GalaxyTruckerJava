@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.exceptions;
 
-import org.mio.progettoingsoft.components.GuestType;
+import org.mio.progettoingsoft.model.components.GuestType;
 
 public class NotEnoughHousingException extends RuntimeException{
     public NotEnoughHousingException(GuestType type){

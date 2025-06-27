@@ -2,8 +2,11 @@ package org.mio.progettoingsoft.components;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.Connector;
+import org.mio.progettoingsoft.model.Component;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.Housing;
+import org.mio.progettoingsoft.model.components.HousingColor;
+import org.mio.progettoingsoft.model.enums.Connector;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
 
 import java.util.Collections;

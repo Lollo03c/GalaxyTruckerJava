@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.exceptions;
 
-import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.model.components.GoodType;
 
 public class FullGoodDepotException extends RuntimeException {
     public FullGoodDepotException(String message) {

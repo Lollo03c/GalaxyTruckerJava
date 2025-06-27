@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.model.events;
 
-import org.mio.progettoingsoft.components.GoodType;
+import org.mio.progettoingsoft.model.components.GoodType;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
 

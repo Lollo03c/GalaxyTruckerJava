@@ -1,7 +1,7 @@
 package org.mio.progettoingsoft.model.interfaces;
 
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.GameController;
+import org.mio.progettoingsoft.model.FlyBoard;
+import org.mio.progettoingsoft.network.server.GameController;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.events.Event;
 import org.mio.progettoingsoft.network.client.VirtualClient;

@@ -2,8 +2,7 @@ package org.mio.progettoingsoft;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.model.FlyBoardNormal;
-import org.mio.progettoingsoft.model.ShipBoardNormal;
+import org.mio.progettoingsoft.model.*;
 
 import java.util.HashSet;
 import java.util.Set;

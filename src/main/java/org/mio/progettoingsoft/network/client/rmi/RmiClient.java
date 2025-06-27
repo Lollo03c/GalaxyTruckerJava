@@ -1,12 +1,12 @@
 package org.mio.progettoingsoft.network.client.rmi;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.Direction;
-import org.mio.progettoingsoft.GameState;
-import org.mio.progettoingsoft.advCards.sealed.CardState;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GuestType;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.Cordinate;
+import org.mio.progettoingsoft.model.enums.Direction;
+import org.mio.progettoingsoft.model.enums.GameState;
+import org.mio.progettoingsoft.model.advCards.sealed.CardState;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.CannonType;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.enums.MeteorType;

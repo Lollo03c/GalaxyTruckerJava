@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.model.events;
 
-import org.mio.progettoingsoft.advCards.sealed.CardState;
+import org.mio.progettoingsoft.model.advCards.sealed.CardState;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
 

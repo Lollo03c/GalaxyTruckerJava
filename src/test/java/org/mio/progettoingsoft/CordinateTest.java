@@ -1,6 +1,7 @@
 package org.mio.progettoingsoft;
 
 import org.junit.jupiter.api.Test;
+import org.mio.progettoingsoft.model.Cordinate;
 
 import java.util.ArrayList;
 import java.util.Iterator;

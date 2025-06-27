@@ -1,8 +1,13 @@
 package org.mio.progettoingsoft;
 
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.components.*;
 import org.mio.progettoingsoft.exceptions.IncorrectShipBoardException;
+import org.mio.progettoingsoft.model.Component;
+import org.mio.progettoingsoft.model.components.Drill;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.Housing;
+import org.mio.progettoingsoft.model.enums.Connector;
 
 import static org.junit.jupiter.api.Assertions.*;
 

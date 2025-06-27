@@ -2,12 +2,9 @@ package org.mio.progettoingsoft.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Player;
-import org.mio.progettoingsoft.ShipBoard;
-import org.mio.progettoingsoft.advCards.sealed.*;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.IncorrectFlyBoardException;
+import org.mio.progettoingsoft.model.advCards.sealed.*;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.views.tui.VisualFlyboardEasy;
 

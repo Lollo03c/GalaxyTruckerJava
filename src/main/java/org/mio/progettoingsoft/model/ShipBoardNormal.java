@@ -1,15 +1,11 @@
 package org.mio.progettoingsoft.model;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.ShipBoard;
-import org.mio.progettoingsoft.components.GoodType;
-import org.mio.progettoingsoft.components.GuestType;
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.components.GoodType;
+import org.mio.progettoingsoft.model.components.GuestType;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.exceptions.InvalidCordinate;
 import org.mio.progettoingsoft.views.tui.VisualShipboardNormal;
 
-import java.time.Year;
 import java.util.*;
 
 public class ShipBoardNormal extends ShipBoard {

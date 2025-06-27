@@ -1,7 +1,6 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.ShipBoard;
+import org.mio.progettoingsoft.model.Component;
 
 import java.util.ArrayList;
 import java.util.List;

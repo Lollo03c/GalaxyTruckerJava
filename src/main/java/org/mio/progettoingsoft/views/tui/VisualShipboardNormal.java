@@ -1,9 +1,9 @@
 package org.mio.progettoingsoft.views.tui;
 
-import org.mio.progettoingsoft.Component;
-import org.mio.progettoingsoft.Connector;
-import org.mio.progettoingsoft.ShipBoard;
-import org.mio.progettoingsoft.components.*;
+import org.mio.progettoingsoft.model.Component;
+import org.mio.progettoingsoft.model.components.*;
+import org.mio.progettoingsoft.model.enums.Connector;
+import org.mio.progettoingsoft.model.ShipBoard;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.network.messages;
 
-import org.mio.progettoingsoft.components.HousingColor;
+import org.mio.progettoingsoft.model.components.HousingColor;
 import org.mio.progettoingsoft.model.enums.GameMode;
 
 import java.util.List;

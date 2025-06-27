@@ -1,10 +1,8 @@
 package org.mio.progettoingsoft.network.messages;
 
-import org.mio.progettoingsoft.Cordinate;
-import org.mio.progettoingsoft.components.GuestType;
+import org.mio.progettoingsoft.model.Cordinate;
+import org.mio.progettoingsoft.model.components.GuestType;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 

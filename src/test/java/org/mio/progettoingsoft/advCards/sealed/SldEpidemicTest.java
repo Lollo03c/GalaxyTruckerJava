@@ -2,18 +2,17 @@ package org.mio.progettoingsoft.advCards.sealed;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mio.progettoingsoft.FlyBoard;
-import org.mio.progettoingsoft.Game;
-import org.mio.progettoingsoft.GameManager;
-import org.mio.progettoingsoft.Player;
+import org.mio.progettoingsoft.model.FlyBoard;
+import org.mio.progettoingsoft.model.Game;
+import org.mio.progettoingsoft.network.server.GameManager;
+import org.mio.progettoingsoft.model.Player;
+import org.mio.progettoingsoft.model.advCards.sealed.SldAdvCard;
 import org.mio.progettoingsoft.model.enums.GameMode;
 import org.mio.progettoingsoft.model.interfaces.GameServer;
 import org.mio.progettoingsoft.network.server.ServerController;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SldEpidemicTest {
     GameServer game;

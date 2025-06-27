@@ -1,6 +1,6 @@
 package org.mio.progettoingsoft.model.events;
 
-import org.mio.progettoingsoft.GameState;
+import org.mio.progettoingsoft.model.enums.GameState;
 import org.mio.progettoingsoft.network.client.VirtualClient;
 import org.mio.progettoingsoft.network.server.ServerController;
 
